@@ -6,11 +6,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Biopen\SaasBundle\Command\GoGoAbstractCommand;
 
-class GenerateElementsCommand extends ContainerAwareCommand
+class GenerateElementsCommand extends GoGoAbstractCommand
 {
-    protected function configure()
+    protected function gogoConfigure()
     {
        $this
         ->setName('app:elements:generate')
@@ -21,10 +21,12 @@ class GenerateElementsCommand extends ContainerAwareCommand
     ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function gogoExecute($em, InputInterface $input, OutputInterface $output)
     {
+      $this->output = $output;
+
       $this->getContainer()->get('biopen.random_creation_service')->generate($input->getArgument('number'), $input->getArgument('generateVotes'));
 
-      $output->writeln('Element générés !');
+      $this->log('Element générés !');
     }
 }

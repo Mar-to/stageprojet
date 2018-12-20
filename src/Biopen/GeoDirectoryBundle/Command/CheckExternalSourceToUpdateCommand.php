@@ -20,19 +20,19 @@ class CheckExternalSourceToUpdateCommand extends GoGoAbstractCommand
     }
 
     protected function gogoExecute($em, InputInterface $input, OutputInterface $output)
-    {
-      $qb = $em->createQueryBuilder('BiopenGeoDirectoryBundle:SourceExternal');
+    {      
+      $qb = $em->createQueryBuilder('BiopenGeoDirectoryBundle:ImportDynamic');
       
-      $sourcesToUpdate = $qb->field('refreshFrequencyInDays')->gt(0)               
+      $dynamicImports = $qb->field('refreshFrequencyInDays')->gt(0)               
                 ->field('nextRefresh')->lte(new \DateTime())
                 ->getQuery()->execute();
       $importService = $this->getContainer()->get('biopen.element_import');
 
-      $this->log('CheckExternalSourceToUpdate : Nombre de sources à mettre à jour : ' . $sourcesToUpdate->count());
+      $this->log('CheckExternalSourceToUpdate : Nombre de sources à mettre à jour : ' . $dynamicImports->count());
 
-      foreach ($sourcesToUpdate as $key => $source)
+      foreach ($dynamicImports as $key => $import)
       { 
-        $this->log('Updating source : ' . $source->getName());
+        $this->log('Updating source : ' . $import->getSource()->getName());
         $dataToImport = $importService->importJson($source);        
       }      
     }

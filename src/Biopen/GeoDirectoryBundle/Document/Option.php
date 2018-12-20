@@ -188,7 +188,7 @@ class Option
 
     public function __toString() 
     {
-        return "(Option) " . $this->getName();
+        return $this->getName();
     }
 
     public function getNameWithParent()

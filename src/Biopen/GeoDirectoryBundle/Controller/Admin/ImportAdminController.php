@@ -23,12 +23,13 @@ class ImportAdminController extends Controller
 
     private function executeImport($import)
     {        
-        $result = $this->get('biopen.element_import')->importCsv($import);
+        $result = $this->get('biopen.element_import')->startImport($import);
         if ($result === null) 
             $this->addFlash('sonata_flash_error', "Un erreur s'est produite lors du chargement du fichier Csv. Vérifiez que le fichier est bien valide");
         else
             $this->addFlash('sonata_flash_success', 'Les ' . $result .' éléments ont été importés avec succès ');
     }
+
 
     // This method is just an overwrite of the SonataAdminCRUDController for calling the executeImport once the document is created
     public function createAction()
@@ -76,8 +77,7 @@ class ImportAdminController extends Controller
                 $this->admin->checkAccess('create', $object);
 
                 try {
-                    $object = $this->admin->create($object);                    
-
+                    $object = $this->admin->create($object);   
                     $this->executeImport($object);
 
                     // redirect to create mode

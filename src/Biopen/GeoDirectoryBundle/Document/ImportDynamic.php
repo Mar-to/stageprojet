@@ -10,14 +10,8 @@ use \Datetime;
  *
  * @MongoDB\Document
  */
-class SourceExternal extends Source
+class ImportDynamic extends Import
 {
-    /**
-     * @var string   
-     * @MongoDB\Field(type="string")
-     */
-    private $url;
-
     /**
      * @var string   
      * @MongoDB\Field(type="int")
@@ -38,7 +32,7 @@ class SourceExternal extends Source
      */
     private $nextRefresh = null;
 
-    public function isExternalsource() { return true; }
+    public function isDynamicImport() { return true; }
 
     public function updateNextRefreshDate() 
     {
@@ -50,28 +44,6 @@ class SourceExternal extends Source
             $date->setTimestamp($this->getLastRefresh());
             $this->setNextRefresh($date->add($interval));
         }
-    }    
-
-    /**
-     * Set url
-     *
-     * @param string $url
-     * @return $this
-     */
-    public function setUrl($url)
-    {
-        $this->url = $url;
-        return $this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return string $url
-     */
-    public function getUrl()
-    {
-        return $this->url;
     }    
 
     /**

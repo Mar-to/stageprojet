@@ -10,6 +10,8 @@ use Biopen\CoreBundle\Document\AbstractFile;
 /** 
 * @MongoDB\Document 
 * @Vich\Uploadable
+* Import data into GoGoCarto. the data can imported through a static file, or via API url
+* The Import can be made once for all (static import) or dynamically every X days (ImportDynamic)
 */
 class Import extends AbstractFile
 {
@@ -22,20 +24,27 @@ class Import extends AbstractFile
     private $id;
 
     /**
-     * @var string
-     * @MongoDB\ReferenceOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Source", cascade={"persist"})
+     * @var string   
+     * @MongoDB\Field(type="string")
      */
-    private $source;
+    public $sourceName;
 
     /**
-     * @MongoDB\ReferenceOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Category", cascade={"persist"})
+     * @var string   
+     * Url of API to get the data
+     * @MongoDB\Field(type="string")
+     */
+    private $url;
+
+    /**
+     * @MongoDB\ReferenceOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Category")
      */
     private $parentCategoryToCreateOptions = null;
 
     /**
-     * @MongoDB\EmbedOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Option")
+     * @MongoDB\ReferenceMany(targetDocument="Biopen\GeoDirectoryBundle\Document\Option")
      */
-    private $optionTemplate;
+    private $optionsToAddToEachElement = [];
 
     /**
      * @MongoDB\Field(type="bool")
@@ -48,6 +57,8 @@ class Import extends AbstractFile
     private $geocodeIfNecessary = false;    
     
     public function __construct() {}
+
+    public function isDynamicImport() { return false; }
 
     /**
      * Get id
@@ -82,26 +93,26 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set optionTemplate
+     * Set url
      *
-     * @param Biopen\GeoDirectoryBundle\Document\Option $optionTemplate
+     * @param string $url
      * @return $this
      */
-    public function setOptionTemplate(\Biopen\GeoDirectoryBundle\Document\Option $optionTemplate)
+    public function setUrl($url)
     {
-        $this->optionTemplate = $optionTemplate;
+        $this->url = $url;
         return $this;
     }
 
     /**
-     * Get optionTemplate
+     * Get url
      *
-     * @return Biopen\GeoDirectoryBundle\Document\Option $optionTemplate
+     * @return string $url
      */
-    public function getOptionTemplate()
+    public function getUrl()
     {
-        return $this->optionTemplate;
-    }
+        return $this->url;
+    }    
 
     /**
      * Set createMissingOptions
@@ -148,24 +159,54 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set source
+     * Add optionsToAddToEachElement
      *
-     * @param Biopen\GeoDirectoryBundle\Document\Source $source
+     * @param Biopen\GeoDirectoryBundle\Document\Option $optionsToAddToEachElement
+     */
+    public function addOptionsToAddToEachElement(\Biopen\GeoDirectoryBundle\Document\Option $optionsToAddToEachElement)
+    {
+        $this->optionsToAddToEachElement[] = $optionsToAddToEachElement;
+    }
+
+    /**
+     * Remove optionsToAddToEachElement
+     *
+     * @param Biopen\GeoDirectoryBundle\Document\Option $optionsToAddToEachElement
+     */
+    public function removeOptionsToAddToEachElement(\Biopen\GeoDirectoryBundle\Document\Option $optionsToAddToEachElement)
+    {
+        $this->optionsToAddToEachElement->removeElement($optionsToAddToEachElement);
+    }
+
+    /**
+     * Get optionsToAddToEachElement
+     *
+     * @return \Doctrine\Common\Collections\Collection $optionsToAddToEachElement
+     */
+    public function getOptionsToAddToEachElement()
+    {
+        return $this->optionsToAddToEachElement;
+    }
+
+    /**
+     * Set sourceName
+     *
+     * @param string $sourceName
      * @return $this
      */
-    public function setSource(\Biopen\GeoDirectoryBundle\Document\Source $source)
+    public function setSourceName($sourceName)
     {
-        $this->source = $source;
+        $this->sourceName = $sourceName;
         return $this;
     }
 
     /**
-     * Get source
+     * Get sourceName
      *
-     * @return Biopen\GeoDirectoryBundle\Document\Source $source
+     * @return string $sourceName
      */
-    public function getSource()
+    public function getSourceName()
     {
-        return $this->source;
+        return $this->sourceName;
     }
 }

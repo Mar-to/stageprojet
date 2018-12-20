@@ -13,8 +13,8 @@ class ImportAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->with("Importer des données depuis un fichier CSV", 
-                    ["description" => "Les colonnes importantes du CSV sont les suivantes : 
+            ->with("Importer des données depuis un fichier CSV ou une API Json", 
+                    ["description" => "Les colonnes/propriétés importantes sont les suivantes : 
                     <ul>
                     <li><b>name</b> Le titre de la fiche</li>
                     <li><b>taxonomy</b> la liste des options séparées par des virgules. Exple: Alimentation, Restaurant
@@ -27,19 +27,27 @@ class ImportAdmin extends AbstractAdmin
                     </ul>
                     Vous pouvez ensuite avoir n'importe quelles autres colonnes, elles seront importées. Veillez à faire concorder le nom des colonnes avec le nom des champs de votre formulaire"
                     ])
-                // ->add('source', 'sonata_type_model', array(), array(
-                //     'class'=> 'Biopen\GeoDirectoryBundle\Document\Source', 
-                //     'required' => true, 
-                //     'label' => 'Source des données',
-                //     'mapped' => true))
-                ->add('file', 'file', array('label' => 'Fichier à importer'))
-                ->add('geocodeIfNecessary', null, array('required' => false, 'label' => 'Géocoder si élements sans latitude ni longitude'))
+                ->add('sourceName', 'text', array(
+                    'required' => true,                  
+                    'label' => 'Nom de la source des données'))
+                ->add('file', 'file', array('label' => 'Fichier à importer', 'required' => false))
+                ->add('url', 'text', array('label' => 'Ou Url vers une API Json', 'required' => false))
+                ->add('geocodeIfNecessary', null, array('required' => false, 'label' => 'Géocoder les élements sans latitude ni longitude à partir de leur adresse'))
                 ->add('createMissingOptions', null, array('required' => false, 'label' => 'Créer les options manquantes'))
                 // ->add('parentCategoryToCreateOptions', 'sonata_type_model', array(
                 //     'class'=> 'Biopen\GeoDirectoryBundle\Document\Category', 
                 //     'required' => false, 
+                //     'btn_add' => false,
                 //     'label' => 'Catégorie parente pour créer les options manquantes',
                 //     'mapped' => true), array('admin_code' => 'admin.category'))
+                ->add('createMissingOptions', null, array('required' => false, 'label' => 'Créer les options manquantes à partir des catégories renseignées dans chaque élément'))
+                ->add('optionsToAddToEachElement', 'sonata_type_model', array(
+                    'class'=> 'Biopen\GeoDirectoryBundle\Document\Option', 
+                    'required' => false, 
+                    'choices_as_values' => true,
+                    'multiple' => true,
+                    'btn_add' => false,
+                    'label' => 'Options à ajouter à chaque élément importé'), array('admin_code' => 'admin.option'))                
             ->end()
         ;
     }

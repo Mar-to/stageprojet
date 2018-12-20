@@ -215,7 +215,7 @@ class Element
     /**
      * The source from where the element has been imported or created
      *
-     * @MongoDB\ReferenceOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Source")
+     * @MongoDB\ReferenceOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Import")
      */
     private $source;
 
@@ -690,6 +690,23 @@ class Element
         $this->openHours = null;
         $this->data = null;
         $this->privateData = null;
+    }
+
+    public function setCustomData($data, $privateProps)
+    {
+        $privateData = [];
+        foreach ($privateProps as $key => $prop) {
+            if (array_key_exists($prop, $data)) {
+                $privateData[$prop] = $data[$prop];
+                unset($data[$prop]);
+            }
+        }
+
+        if ($this->getData()) $data = array_merge($this->getData(), $data); // keeping also old data
+        $this->setData($data);
+        
+        if ($this->getPrivateData()) $privateData = array_merge($this->getPrivateData(), $privateData); // keeping also old data
+        $this->setPrivateData($privateData);
     }
 
     /**
@@ -1398,10 +1415,10 @@ class Element
     /**
      * Set source
      *
-     * @param Biopen\GeoDirectoryBundle\Document\Source $source
+     * @param Biopen\GeoDirectoryBundle\Document\Import $source
      * @return $this
      */
-    public function setSource(\Biopen\GeoDirectoryBundle\Document\Source $source)
+    public function setSource(\Biopen\GeoDirectoryBundle\Document\Import $source)
     {
         $this->source = $source;
         return $this;
@@ -1410,7 +1427,7 @@ class Element
     /**
      * Get source
      *
-     * @return Biopen\GeoDirectoryBundle\Document\Source $source
+     * @return Biopen\GeoDirectoryBundle\Document\Import $source
      */
     public function getSource()
     {

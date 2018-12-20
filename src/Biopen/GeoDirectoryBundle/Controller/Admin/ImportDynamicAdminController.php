@@ -6,13 +6,13 @@ use Sonata\AdminBundle\Controller\CRUDController as Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class SourceExternalAdminController extends Controller
+class ImportDynamicAdminController extends Controller
 {
     public function refreshAction()
     {
         $object = $this->admin->getSubject();
 
-        $this->get('biopen.async')->callCommand('app:elements:importSource', [$object->getName()]);
+        $this->get('biopen.async')->callCommand('app:elements:importSource', [$object->getId()]);
         $this->addFlash('sonata_flash_success', "Les éléments sont en cours d'importation. Cela peut prendre plusieurs minutes.");
 
         // $dataToImport = $this->get('biopen.element_import')->importJson($object);        

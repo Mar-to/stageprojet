@@ -17,6 +17,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 use Biopen\GeoDirectoryBundle\Document\Element;
 use Biopen\GeoDirectoryBundle\Document\UserInteraction;
+use Biopen\GeoDirectoryBundle\Document\UserInteractionVote;
 use Biopen\GeoDirectoryBundle\Document\Coordinates;
 use Biopen\GeoDirectoryBundle\Document\OptionValue;
 use Biopen\GeoDirectoryBundle\Document\PostalAddress;
@@ -99,9 +100,9 @@ class RandomCreationService
 
 	      $new_element->setGeo(new Coordinates($lat, $lng));
 	      $new_element->setAddress(new PostalAddress($lipsum->words(rand(4,8)), $lipsum->words(rand(1,3))));       
-	      $new_element->setDescription($lipsum->words(rand(3,20)));
-	      $new_element->setTelephone('0678459586');
-	      $new_element->setWebsite('http://www.element-info.fr');
+	      // $new_element->setDescription($lipsum->words(rand(3,20)));
+	      // $new_element->setTelephone('0678459586');
+	      // $new_element->setWebsite('http://www.element-info.fr');
 	      $new_element->setEmail('element@bio.fr');
 	      $new_element->setStatus($this->randWithSet($statusSet));
          
@@ -109,16 +110,16 @@ class RandomCreationService
       	{
       		if ($generateVotes)
       		{
-	      		$nbreVotes = rand(0,5);
-	      		for ($j=0; $j < $nbreVotes; $j++) 
-	      		{ 
-	      			$vote = new UserInteraction();
-	      			$vote->setValue($this->randWithSet($new_element->getStatus() == 0 ? $voteNewSet : $voteEditSet));
-	      			$vote->setUserEmail($lipsum->words(1) . '@gmail.com');
-	      			if (rand(0,1)) $vote->setComment($lipsum->words(rand(6,10)));
-	      			$this->em->persist($vote);
-	      			$new_element->addVote($vote);
-	      		}
+	      		// $nbreVotes = rand(0,5);
+	      		// for ($j=0; $j < $nbreVotes; $j++) 
+	      		// { 
+	      		// 	$vote = new UserInteractionVote();
+	      		// 	$vote->setValue($this->randWithSet($new_element->getStatus() == 0 ? $voteNewSet : $voteEditSet));
+	      		// 	$vote->setUserEmail($lipsum->words(1) . '@protonmail.com');
+	      		// 	if (rand(0,1)) $vote->setComment($lipsum->words(rand(6,10)));
+	      		// 	$this->em->persist($vote);
+	      		// 	$new_element->addVote($vote);
+	      		// }
 	      	}
       	}
 

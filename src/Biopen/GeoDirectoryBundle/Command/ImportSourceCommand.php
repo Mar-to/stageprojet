@@ -17,27 +17,29 @@ class ImportSourceCommand extends GoGoAbstractCommand
        $this
         ->setName('app:elements:importSource')
         ->setDescription('Check for updating external sources')
-        ->addArgument('sourceName', InputArgument::REQUIRED, 'The name of the source');
+        ->addArgument('sourceNameOrImportId', InputArgument::REQUIRED, 'The name of the source');
     }
 
     protected function gogoExecute($em, InputInterface $input, OutputInterface $output)
     {
       try {
-        $source = $em->getRepository('BiopenGeoDirectoryBundle:SourceExternal')->findOneByName($input->getArgument('sourceName'));
         $this->output = $output;
+        $sourceNameOrId = $input->getArgument('sourceNameOrImportId');
+        $import = $em->getRepository('BiopenGeoDirectoryBundle:ImportDynamic')->find($sourceNameOrId);
+        if (!$import) $import = $em->getRepository('BiopenGeoDirectoryBundle:ImportDynamic')->findOneBySourceName($sourceNameOrId); 
 
-        if (!$source) 
+        if (!$import) 
         {
-          $message = "ERREUR pendant l'import : Aucune source avec pour nom " . $input->getArgument('sourceName') . " n'existe dans la base de donnée " . $input->getArgument('dbname');
+          $message = "ERREUR pendant l'import : Aucune source avec pour nom ou id " . $input->getArgument('sourceNameOrImportId') . " n'existe dans la base de donnée " . $input->getArgument('dbname');
           $this->error($message);
           return;
         }
-        $this->log('Updating source ' . $source->getName() . ' for project ' . $input->getArgument('dbname') . ' begins...');
+        $this->log('Updating source ' . $import->getSourceName() . ' for project ' . $input->getArgument('dbname') . ' begins...');
         $this->log('Downloading the data...');
         $importService = $this->getContainer()->get('biopen.element_import');
-        $dataToImport = $importService->importJson($source, true);
+        $dataToImport = $importService->importJson($import, true);
         $this->log('Data downloaded. ' . count($dataToImport) . ' elements to import...');  
-        $count = $importService->import($dataToImport, $source);
+        $count = $importService->importData($dataToImport, $import);
         $this->log('Updating source completed : ' . $count . ' elements successfully imported');  
       } catch (\Exception $e) {
           $this->error($e->getMessage());

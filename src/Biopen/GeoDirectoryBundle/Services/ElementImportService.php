@@ -27,10 +27,12 @@ class ElementImportService
 	private $elementActionService;
 
 	protected $createMissingOptions;
+	protected $optionsToAddToEachElement;
 	protected $parentCategoryToCreateMissingOptions;
 	protected $missingOptionDefaultAttributesForCreate;
 	
 	protected $coreFields = ['id', 'name', 'taxonomy', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'email', 'latitude', 'longitude', 'images', 'owner', 'source'];
+	protected $privateDataProps;
 	/**
     * Constructor
     */
@@ -43,6 +45,11 @@ class ElementImportService
 		$this->currentRow = [];
   }
 
+  public function startImport($import) {
+  	if ($import->getUrl()) return $this->importJson($import);
+  	else return $this->importCsv($import);
+  }
+
   public function importCsv($import)
   {
   	$fileName = $import->calculateFilePath();
@@ -51,18 +58,13 @@ class ElementImportService
 		$data = $this->converter->convert($fileName, ',');
 		if ($data === null) return null;		
 
-		return $this->import($data, 
-												 $import->getSource(),
-												 $import->getGeocodeIfNecessary(),
-												 $import->getCreateMissingOptions(),
-												 $import->getParentCategoryToCreateOptions());
+		return $this->importData($data, $import);
   }
 
-  public function importJson($externalSource, $onlyGetData = false)
+  public function importJson($import, $onlyGetData = false)
   {
-  	$json = file_get_contents($externalSource->getUrl());
+  	$json = file_get_contents($import->getUrl());
     $data = json_decode($json, true);
-
     // data can be stored inside a data attribute
     if (array_key_exists('data', $data)) $data = $data['data'];
 
@@ -90,50 +92,51 @@ class ElementImportService
 
     if ($onlyGetData) return $data;
 
-    $elementImportedCount = $this->import($data, $externalSource, true, true);   
+    $elementImportedCount = $this->importData($data, $import);   
 
     return $elementImportedCount;
   }
 
-	public function import($data, 
-												 $source,
-												 $geocodeIfNecessary = false,
-												 $createMissingOptions = true,
-												 $parentCategoryToCreateOptions = null)
+	public function importData($data, $import)
 	{		
 		$this->createOptionsMappingTable();
-
+		if (!$data) return 0;
 		// Define the size of record, the frequency for persisting the data and the current index of records
 		$size = count($data); $batchSize = 50; $i = 1;
 
 		// initialize create missing options configuration
-		$this->createMissingOptions = $createMissingOptions;
-		$this->parentCategoryToCreateMissingOptions = $parentCategoryToCreateOptions ?: $this->em->getRepository('BiopenGeoDirectoryBundle:Category')->findOneByIsRootCategory(true);
+		$this->createMissingOptions = $import->getCreateMissingOptions(); 
+		$this->optionsToAddToEachElement = $import->getOptionsToAddToEachElement(); 
+		$this->parentCategoryToCreateMissingOptions = $import->getParentCategoryToCreateOptions() ?: $this->em->getRepository('BiopenGeoDirectoryBundle:Category')->findOneByIsRootCategory(true);
 		$this->missingOptionDefaultAttributesForCreate = [
 			"useIconForMarker" => false,
 			"useColorForMarker" => false
 		];	
 
+		// Getting the private field of the custom data
+		$config = $this->em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+    $this->privateDataProps = $config->getApi()->getPublicApiPrivateProperties();
+
 		$data = $this->fixsOntology($data);
 		$data = $this->addMissingFieldsToData($data);
 
-		if (get_class($source) == "Biopen\GeoDirectoryBundle\Document\SourceExternal") 
+		if ($import->isDynamicImport()) 
 		{
-			$source->setLastRefresh(time());
-	    $source->updateNextRefreshDate(); 	    
-			$this->em->persist($source);
+			$import->setLastRefresh(time());
+	    $import->updateNextRefreshDate(); 	    
+			$this->em->persist($import);
 			$this->em->flush();
 		}		
 		// processing each data
 		foreach($data as $element) 
 		{
-			$this->createElementFromArray($element, $source, $geocodeIfNecessary);
+			$this->createElementFromArray($element, $import);
 
 			if (($i % $batchSize) === 0)
 			{
 			   $this->em->flush();
 			   $this->em->clear();
-			   $this->em->persist($source);
+			   $this->em->persist($import);
 			}
 			$i++;
 		}			   
@@ -142,19 +145,19 @@ class ElementImportService
 		$this->em->flush();
 		$this->em->clear();	 
 
-		if ($source->isExternalsource())
+		if ($import->isDynamicImport())
 		{
-			$this->em->persist($source);
+			$this->em->persist($import);
 
 	    $qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 	    $qb->remove()
-	    	 ->field('source')->references($source)
+	    	 ->field('source')->references($import)
 	    	 ->field('status')->notEqual(ElementStatus::DynamicImportTemp)
 	    	 ->getQuery()->execute();
 
 	    $qb->updateMany()
 	    	 ->field('status')->set(ElementStatus::DynamicImport)
-	    	 ->field('source')->references($source)
+	    	 ->field('source')->references($import)
 	    	 ->field('status')->equals(ElementStatus::DynamicImportTemp)
 	    	 ->getQuery()->execute();
 	  }
@@ -162,7 +165,7 @@ class ElementImportService
 		return $size;
 	}
 
-	private function createElementFromArray($row, $source, $geocodeIfNecessary)
+	private function createElementFromArray($row, $import)
 	{
 		$this->currentRow = $row;
 		$new_element = new Element();
@@ -173,9 +176,9 @@ class ElementImportService
 		$new_element->setAddress($address);
 
 		$new_element->setEmail($row['email']);
-		$defaultSourceName = $source ? $source->getName() : 'Inconnu';
-		$new_element->setSourceKey(strlen($row['source']) > 0 ? $row['source'] : $defaultSourceName);
-		if ($source) $new_element->setSource($source);
+		$defaultSourceName = $import ? $import->getSourceName() : 'Inconnu';
+		$new_element->setSourceKey( (strlen($row['source']) > 0 && $row['source'] != 'Inconnu') ? $row['source'] : $defaultSourceName);
+		$new_element->setSource($import);
 
 		if (array_key_exists('owner', $row)) $new_element->setUserOwnerEmail($row['owner']);
 		
@@ -183,7 +186,7 @@ class ElementImportService
 
 		if (strlen($row['latitude']) == 0 || strlen($row['longitude']) == 0 || $row['latitude'] == 'null' || $row['latitude'] == null)
 		{
-			if ($geocodeIfNecessary)
+			if ($import->getGeocodeIfNecessary())
 			{
 				try 
 			   {
@@ -206,7 +209,7 @@ class ElementImportService
 		$this->createCategories($new_element, $row);
 		$this->createImages($new_element, $row);
 		$this->saveCustomFields($new_element, $row);
-		$status = ($source && $source->isExternalsource()) ? ElementStatus::DynamicImportTemp : ElementStatus::AddedByAdmin;
+		$status = $import->isDynamicImport() ? ElementStatus::DynamicImportTemp : ElementStatus::AddedByAdmin;
 		$this->elementActionService->import($new_element, false, null, $status);		
 		$this->em->persist($new_element);
 	}
@@ -242,11 +245,13 @@ class ElementImportService
 	private function saveCustomFields($element, $raw_data)
 	{
 		$customFields = array_diff(array_keys($raw_data), $this->coreFields);
-		$customData = [];
-		foreach ($customFields as $customField) {
+		$customFields = array_diff($customFields, ['lat', 'long', 'lon', 'lng', 'title', 'nom', 'categories']);
+		$customData = [];		
+    foreach ($customFields as $customField) {
 			$customData[$customField] = $raw_data[$customField];
-		}
-		$element->setData($customData);
+		}		
+
+    $element->setCustomData($customData, $this->privateDataProps);
 	}
 
 	private function createOptionsMappingTable($options = null)
@@ -318,6 +323,15 @@ class ElementImportService
 					foreach ($this->mappingTableIds[$optionNameSlug]['idAndParentsId'] as $key => $optionId) 
 						if (!in_array($optionId, $optionsIdAdded)) $optionsIdAdded[] = $this->AddOptionValue($element, $optionId);									
 			}			
+		}
+
+		// Manually add some options to each element imported
+		if ($this->optionsToAddToEachElement)
+		{
+			foreach ($this->optionsToAddToEachElement  as $option) {
+				$optionId = $option->getId();
+				if (!in_array($optionId, $optionsIdAdded)) $optionsIdAdded[] = $this->AddOptionValue($element, $optionId);						
+			}
 		}
 
 		if (count($element->getOptionValues()) == 0) $element->setModerationState(ModerationState::NoOptionProvided); 		
