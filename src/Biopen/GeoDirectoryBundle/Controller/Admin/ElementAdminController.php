@@ -42,14 +42,22 @@ class ElementAdminController extends Controller
 
     // ------------ BATCH ACTIONS ---------------
 
-    public function batchActionDelete(ProxyQueryInterface $selectedModelQuery)
+    public function batchActionSoftDelete(ProxyQueryInterface $selectedModelQuery)
     {
-        return $this->batchStatus('batchDeleteFunction', $selectedModelQuery, 'delete');
+        return $this->batchStatus('batchSoftDeleteFunction', $selectedModelQuery, 'delete');
     }
 
-    public function batchDeleteFunction($elementActionService, $selectedModel, $sendMail, $comment)
+    public function batchSoftDeleteFunction($elementActionService, $selectedModel, $sendMail, $comment)
     {
         $elementActionService->delete($selectedModel, $sendMail, $comment);
+    }
+
+    public function batchActionDelete(ProxyQueryInterface $selectedModelQuery)
+    {
+        $selectedModelQuery->remove()->getQuery()->execute();
+        return new RedirectResponse(
+            $this->admin->generateUrl('list', array('filter' => $this->admin->getFilterParameters()))
+        );
     }
 
     public function batchActionRestore(ProxyQueryInterface $selectedModelQuery)

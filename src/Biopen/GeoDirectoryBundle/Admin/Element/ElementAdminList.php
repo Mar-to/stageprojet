@@ -85,7 +85,7 @@ class ElementAdminList extends ElementAdminFilters
       $actions = [];
       $actions['validation'] = $this->createBatchConfig('Valider', 'validation');   
       $actions['refusal'] = $this->createBatchConfig('Refuser', 'refusal');
-      $actions['delete'] = $this->createBatchConfig('Supprimer', 'delete');
+      $actions['softDelete'] = $this->createBatchConfig('Supprimer (changement de status)', 'softDelete');
       $actions['restore'] = $this->createBatchConfig('Restaurer', 'restore');
       $actions['resolveReports'] = $this->createBatchConfig('Résoudre la modération', 'resolveReports');
       
@@ -108,6 +108,7 @@ class ElementAdminList extends ElementAdminFilters
            ['type' => 'choice',  'choices' => $this->optionsChoices, 'id' => 'optionsToAdd', 'label' => 'Catégories à ajouter'],
          ]
       );
+      $actions['delete'] = ['label' => 'Supprimer définitivement'];
 
       return $actions;
    }
