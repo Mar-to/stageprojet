@@ -21,8 +21,9 @@ class ConfigurationListener
             $uow->computeChangeSets();
             $changeset = $uow->getDocumentChangeSet($document); 
             if (array_key_exists("publicApiPrivateProperties", $changeset)) {
-                $oldPrivateProperties = array_values($changeset['publicApiPrivateProperties'][0]);
-                $newPrivateProperties = array_values($changeset['publicApiPrivateProperties'][1]);
+                $privatePropChanged = $changeset['publicApiPrivateProperties'];
+                $oldPrivateProperties = $privatePropChanged[0] ? array_values($privatePropChanged[0]) : [];
+                $newPrivateProperties = $privatePropChanged[1] ? array_values($privatePropChanged[1]) : [];
                 $removedProps = array_diff($oldPrivateProperties, $newPrivateProperties);
                 $addedProps = array_diff($newPrivateProperties, $oldPrivateProperties);
 
