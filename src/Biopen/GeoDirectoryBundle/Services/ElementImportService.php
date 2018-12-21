@@ -104,7 +104,7 @@ class ElementImportService
 		$this->createOptionsMappingTable();
 		if (!$data) return 0;
 		// Define the size of record, the frequency for persisting the data and the current index of records
-		$size = count($data); $batchSize = 100; $i = 1;
+		$size = count($data); $batchSize = 100; $i = 0;
 
 		if ($import->isDynamicImport()) 
 		{
@@ -135,7 +135,10 @@ class ElementImportService
 		// processing each data
 		foreach($data as $element) 
 		{
-			try { $this->createElementFromArray($element, $import); }
+			try { 
+				$this->createElementFromArray($element, $import); 
+				$i++;
+			}
 			catch (\Exception $e) { }
 
 			if (($i % $batchSize) === 0)
@@ -144,8 +147,7 @@ class ElementImportService
 			   $this->em->clear();
 			   // After flush, we need to get again the import from the DB to avoid doctrine raising errors
 			   $import = $this->em->getRepository('BiopenGeoDirectoryBundle:ImportDynamic')->find($import->getId());   
-			}
-			$i++;
+			}			
 		}			   
 
 		// Flushing and clear data on queue
@@ -169,7 +171,7 @@ class ElementImportService
 	    	 ->getQuery()->execute();
 	  }
 
-		return $size;
+		return $i;
 	}
 
 	private function createElementFromArray($row, $import)
@@ -190,8 +192,7 @@ class ElementImportService
 		if (array_key_exists('owner', $row)) $new_element->setUserOwnerEmail($row['owner']);
 		
 		$lat = 0;$lng = 0;
-
-		if (!is_string($row['latitude']) || strlen($row['latitude']) == 0 || strlen($row['longitude']) == 0 || $row['latitude'] == 'null' || $row['latitude'] == null)
+		if (strlen($row['latitude']) == 0 || strlen($row['longitude']) == 0 || $row['latitude'] == 'null' || $row['latitude'] == null)
 		{
 			if ($import->getGeocodeIfNecessary())
 			{
