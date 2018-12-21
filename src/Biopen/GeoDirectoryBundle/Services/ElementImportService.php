@@ -135,7 +135,8 @@ class ElementImportService
 		// processing each data
 		foreach($data as $element) 
 		{
-			$this->createElementFromArray($element, $import);
+			try { $this->createElementFromArray($element, $import); }
+			catch (\Exception $e) { }
 
 			if (($i % $batchSize) === 0)
 			{
