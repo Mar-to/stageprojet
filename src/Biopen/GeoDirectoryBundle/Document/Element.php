@@ -67,9 +67,6 @@ class ElementImage extends EmbeddedImage
  *   @MongoDB\Index(keys={"geo"="2d"}),
  *   @MongoDB\Index(keys={"name"="text"})
  * })
- * 
- * 
- * @Gedmo\Loggable
  */
 class Element
 {

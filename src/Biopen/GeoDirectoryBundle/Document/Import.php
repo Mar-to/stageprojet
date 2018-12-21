@@ -37,12 +37,12 @@ class Import extends AbstractFile
     private $url;
 
     /**
-     * @MongoDB\ReferenceOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Category")
+     * @MongoDB\ReferenceOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Category", cascade={"persist"})
      */
     private $parentCategoryToCreateOptions = null;
 
     /**
-     * @MongoDB\ReferenceMany(targetDocument="Biopen\GeoDirectoryBundle\Document\Option")
+     * @MongoDB\ReferenceMany(targetDocument="Biopen\GeoDirectoryBundle\Document\Option", cascade={"persist"})
      */
     private $optionsToAddToEachElement = [];
 

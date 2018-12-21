@@ -21,14 +21,14 @@ use Biopen\GeoDirectoryBundle\Document\ElementImage;
 class ElementImportService
 {   
 	private $em;
-	private $mappingTableIds;
+	private $mappingTableIds = [];
 	private $converter;
 	private $geocoder;
 	private $elementActionService;
 
 	protected $createMissingOptions;
-	protected $optionsToAddToEachElement;
-	protected $parentCategoryToCreateMissingOptions;
+	protected $optionIdsToAddToEachElement = [];
+	protected $parentCategoryIdToCreateMissingOptions;
 	protected $missingOptionDefaultAttributesForCreate;
 	
 	protected $coreFields = ['id', 'name', 'taxonomy', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'email', 'latitude', 'longitude', 'images', 'owner', 'source'];
@@ -65,6 +65,8 @@ class ElementImportService
   {
   	$json = file_get_contents($import->getUrl());
     $data = json_decode($json, true);
+    if ($data === null) return null;		
+
     // data can be stored inside a data attribute
     if (array_key_exists('data', $data)) $data = $data['data'];
 
@@ -80,7 +82,7 @@ class ElementImportService
 				$address = $row['address'];
 
 				if (gettype($address) == "string") $data[$key]['streetAddress'] = $address;
-				else {
+				else if ($address) {
 					if (array_key_exists('streetAddress', $address))   $data[$key]['streetAddress']   = $address['streetAddress'];
 					if (array_key_exists('addressLocality', $address)) $data[$key]['addressLocality'] = $address['addressLocality'];
 					if (array_key_exists('postalCode', $address))      $data[$key]['postalCode']      = $address['postalCode'];
@@ -98,16 +100,26 @@ class ElementImportService
   }
 
 	public function importData($data, $import)
-	{		
+	{
 		$this->createOptionsMappingTable();
 		if (!$data) return 0;
 		// Define the size of record, the frequency for persisting the data and the current index of records
-		$size = count($data); $batchSize = 50; $i = 1;
+		$size = count($data); $batchSize = 100; $i = 1;
+
+		if ($import->isDynamicImport()) 
+		{
+			$import->setLastRefresh(time());
+	    $import->updateNextRefreshDate(); 	    
+		}
 
 		// initialize create missing options configuration
 		$this->createMissingOptions = $import->getCreateMissingOptions(); 
-		$this->optionsToAddToEachElement = $import->getOptionsToAddToEachElement(); 
-		$this->parentCategoryToCreateMissingOptions = $import->getParentCategoryToCreateOptions() ?: $this->em->getRepository('BiopenGeoDirectoryBundle:Category')->findOneByIsRootCategory(true);
+		$parent = $import->getParentCategoryToCreateOptions() ?: $this->em->getRepository('BiopenGeoDirectoryBundle:Category')->findOneByIsRootCategory(true);
+		$this->parentCategoryIdToCreateMissingOptions = $parent->getId();
+		foreach ($import->getOptionsToAddToEachElement() as $option) {
+			$this->optionIdsToAddToEachElement[] = $option->getId();
+		}
+
 		$this->missingOptionDefaultAttributesForCreate = [
 			"useIconForMarker" => false,
 			"useColorForMarker" => false
@@ -120,13 +132,6 @@ class ElementImportService
 		$data = $this->fixsOntology($data);
 		$data = $this->addMissingFieldsToData($data);
 
-		if ($import->isDynamicImport()) 
-		{
-			$import->setLastRefresh(time());
-	    $import->updateNextRefreshDate(); 	    
-			$this->em->persist($import);
-			$this->em->flush();
-		}		
 		// processing each data
 		foreach($data as $element) 
 		{
@@ -136,14 +141,15 @@ class ElementImportService
 			{
 			   $this->em->flush();
 			   $this->em->clear();
-			   $this->em->persist($import);
+			   // After flush, we need to get again the import from the DB to avoid doctrine raising errors
+			   $import = $this->em->getRepository('BiopenGeoDirectoryBundle:ImportDynamic')->find($import->getId());   
 			}
 			$i++;
 		}			   
 
 		// Flushing and clear data on queue
 		$this->em->flush();
-		$this->em->clear();	 
+		$this->em->clear();	    
 
 		if ($import->isDynamicImport())
 		{
@@ -184,7 +190,7 @@ class ElementImportService
 		
 		$lat = 0;$lng = 0;
 
-		if (strlen($row['latitude']) == 0 || strlen($row['longitude']) == 0 || $row['latitude'] == 'null' || $row['latitude'] == null)
+		if (!is_string($row['latitude']) || strlen($row['latitude']) == 0 || strlen($row['longitude']) == 0 || $row['latitude'] == 'null' || $row['latitude'] == null)
 		{
 			if ($import->getGeocodeIfNecessary())
 			{
@@ -206,7 +212,7 @@ class ElementImportService
 		if ($lat == 0 || $lng == 0) $new_element->setModerationState(ModerationState::GeolocError);
 		$new_element->setGeo(new Coordinates((float)$lat, (float)$lng));
 
-		$this->createCategories($new_element, $row);
+		$this->createCategories($new_element, $row, $import);
 		$this->createImages($new_element, $row);
 		$this->saveCustomFields($new_element, $row);
 		$status = $import->isDynamicImport() ? ElementStatus::DynamicImportTemp : ElementStatus::AddedByAdmin;
@@ -259,8 +265,7 @@ class ElementImportService
 		if ($options === null) $options = $this->em->getRepository('BiopenGeoDirectoryBundle:Option')->findAll();
 
 		foreach($options as $option)
-		{		
-			
+		{			
 			$ids = [
 				'id' => $option->getId(), 
 				'idAndParentsId' => $option->getIdAndParentOptionIds()
@@ -303,7 +308,7 @@ class ElementImportService
 	     return (substr($haystack, 0, $length) === $needle);
 	}
 
-	private function createCategories($element, $row)
+	private function createCategories($element, $row, $import)
 	{
 		$optionsIdAdded = [];
 		$options = is_array($row['taxonomy']) ? $row['taxonomy'] : explode(',', $row['taxonomy']);	
@@ -325,13 +330,9 @@ class ElementImportService
 			}			
 		}
 
-		// Manually add some options to each element imported
-		if ($this->optionsToAddToEachElement)
-		{
-			foreach ($this->optionsToAddToEachElement  as $option) {
-				$optionId = $option->getId();
-				if (!in_array($optionId, $optionsIdAdded)) $optionsIdAdded[] = $this->AddOptionValue($element, $optionId);						
-			}
+		// Manually add some options to each element imported		
+		foreach ($this->optionIdsToAddToEachElement as $optionId) {
+			if (!in_array($optionId, $optionsIdAdded)) $optionsIdAdded[] = $this->AddOptionValue($element, $optionId);						
 		}
 
 		if (count($element->getOptionValues()) == 0) $element->setModerationState(ModerationState::NoOptionProvided); 		
@@ -348,10 +349,10 @@ class ElementImportService
 
 	private function createOption($name)
 	{
-		$this->em->persist($this->parentCategoryToCreateMissingOptions);
 		$option = new Option();
 		$option->setName($name);
-		$option->setParent($this->parentCategoryToCreateMissingOptions);
+		$parent = $this->em->getRepository('BiopenGeoDirectoryBundle:Category')->find($this->parentCategoryIdToCreateMissingOptions);
+		$option->setParent($parent);
 		$option->setUseIconForMarker($this->missingOptionDefaultAttributesForCreate["useIconForMarker"]);
 		$option->setUseColorForMarker($this->missingOptionDefaultAttributesForCreate["useColorForMarker"]);
 		$this->em->persist($option);
