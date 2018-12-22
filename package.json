@@ -1,7 +1,7 @@
 {
   "name": "GoGoCarto",
   "version": "2.0.0",
-  "homepage": "https://github.com/pixelhumain/GoGoCarto",
+  "homepage": "https://gitlab.adullact.net/pixelhumain/GoGoCarto",
   "description": "Collaborative mapping directory",
   "keywords": [
     "map",
@@ -12,13 +12,10 @@
   "license": "GPL-3.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pixelhumain/GoGoCarto.git"
+    "url": "https://gitlab.adullact.net/pixelhumain/GoGoCarto.git"
   },
   "engines": {
     "node": "6.5.0"
-  },
-  "dependencies": {
-    "GoGoCartoJs": "github:pixelhumain/gogocartojs"
   },
   "devDependencies": {
     "del": "^2.2.2",
@@ -32,5 +29,8 @@
     "gulp-uglify": "^2.0.0",
     "node-notifier": "^4.6.1",
     "watchify": "^3.8.0"
+  },
+  "dependencies": {
+    "gogocarto-js": "^1.1.1"
   }
 }

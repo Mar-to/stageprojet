@@ -37,7 +37,7 @@ gulp.task('scriptsElementForm', function() {
 });
 
 gulp.task('scriptsLibs', function() {
-  gulp.src(['node_modules/GoGoCartoJs/dist/gogocarto.js'])
+  gulp.src(['node_modules/gogocarto-js/dist/gogocarto.js'])
       .pipe(gulp.dest('web/js'));
   return gulp.src(['src/Biopen/GeoDirectoryBundle/Resources/js/libs/**/*.js', 
                    'src/Biopen/CoreBundle/Resources/js/libs/**/*.js', 
@@ -57,11 +57,11 @@ gulp.task('sass', function () {
 });
 
 gulp.task('gogocarto_assets', function() {
-    gulp.src(['node_modules/GoGoCartoJs/dist/*.css*',])
+    gulp.src(['node_modules/gogocarto-js/dist/*.css*',])
      .pipe(gulp.dest('web/assets/css'));
-     gulp.src(['node_modules/GoGoCartoJs/dist/fonts/**/*',])
+     gulp.src(['node_modules/gogocarto-js/dist/fonts/**/*',])
      .pipe(gulp.dest('web/assets/css/fonts'));
-     gulp.src(['node_modules/GoGoCartoJs/dist/images/**/*'])
+     gulp.src(['node_modules/gogocarto-js/dist/images/**/*'])
      .pipe(gulp.dest('web/assets/css/images'));
 });
 
@@ -123,10 +123,10 @@ gulp.task('watch', function() {
   gulp.watch(['src/Biopen/GeoDirectoryBundle/Resources/js/**/*.js', '!src/Biopen/GeoDirectoryBundle/Resources/js/element-form/**/*.js'], 
               ['scriptsExternalPages']);
 
-  gulp.watch(['node_modules/GoGoCartoJs/dist/**/*'], 
+  gulp.watch(['node_modules/gogocarto-js/dist/**/*'], 
               ['gogocarto_assets']);
   
-  gulp.watch(['src/Biopen/GeoDirectoryBundle/Resources/js/libs/**/*.js','src/Biopen/CoreBundle/Resources/js/libs/**/*.js','node_modules/GoGoCartoJs/dist/gogocarto.js'], ['scriptsLibs']);
+  gulp.watch(['src/Biopen/GeoDirectoryBundle/Resources/js/libs/**/*.js','src/Biopen/CoreBundle/Resources/js/libs/**/*.js','node_modules/gogocarto-js/dist/gogocarto.js'], ['scriptsLibs']);
 
   gulp.watch(['src/Biopen/CoreBundle/Resources/js/home.js'], ['scriptsHome']);
   // Watch image files
