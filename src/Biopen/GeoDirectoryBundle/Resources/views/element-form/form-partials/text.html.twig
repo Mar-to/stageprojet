@@ -40,7 +40,7 @@
   {% endif %}
 
   {# NAME #}
-  {% set baseName = field.type == "title" or field.type == "email" ? "biopen_elementbundle_element" : "data" %}
+  {% set baseName = field.type == "title" ? "biopen_elementbundle_element" : "data" %}
   {% set fieldName = field.type == "email" ? 'email' : field.name %}
   {# TYPE #}
   {% set inputType = field.subtype is defined ? field.subtype : field.type == "number" ? "number" : "text" %}

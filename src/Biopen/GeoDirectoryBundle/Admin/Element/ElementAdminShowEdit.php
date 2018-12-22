@@ -24,7 +24,7 @@ class ElementAdminShowEdit extends ElementAdminList
 	  $formMapper
 	  ->with('Informations générales', array())
 		  ->add('name', 'text')	 
-      ->add('email', 'text', array('required' => false))      
+      ->add('email', 'text', array('required' => false, 'disabled' => true, 'label' => 'Email de contact'))      
       ->add('userOwnerEmail', 'text', array('required' => false))
       ->add('images', 'sonata_type_collection', array('by_reference' => true, 'type_options' => array('delete' => true)), 
          array('edit' => 'inline', 'inline' => 'table'))

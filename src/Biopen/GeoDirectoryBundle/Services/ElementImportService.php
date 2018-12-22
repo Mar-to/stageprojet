@@ -31,7 +31,7 @@ class ElementImportService
 	protected $parentCategoryIdToCreateMissingOptions;
 	protected $missingOptionDefaultAttributesForCreate;
 	
-	protected $coreFields = ['id', 'name', 'taxonomy', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'email', 'latitude', 'longitude', 'images', 'owner', 'source'];
+	protected $coreFields = ['id', 'name', 'taxonomy', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source'];
 	protected $privateDataProps;
 	/**
     * Constructor
@@ -184,7 +184,6 @@ class ElementImportService
 		$address = new PostalAddress($row['streetAddress'], $row['addressLocality'], $row['postalCode'], $row["addressCountry"]);
 		$new_element->setAddress($address);
 
-		$new_element->setEmail($row['email']);
 		$defaultSourceName = $import ? $import->getSourceName() : 'Inconnu';
 		$new_element->setSourceKey( (strlen($row['source']) > 0 && $row['source'] != 'Inconnu') ? $row['source'] : $defaultSourceName);
 		$new_element->setSource($import);

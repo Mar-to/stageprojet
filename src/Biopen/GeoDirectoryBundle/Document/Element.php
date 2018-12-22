@@ -531,7 +531,6 @@ class Element
         $privateJson = '{';        
         // status
         $privateJson .= '"status": ' . $this->getStatus() . ',';
-        if ($this->email) $privateJson .= '"email":' . json_encode($this->email) . ',';
         $privateJson .= '"moderationState": ' . $this->getModerationState() . ',';
         // CUSTOM PRIVATE DATA
         foreach ($this->getPrivateData() as $key => $value) {
@@ -691,6 +690,9 @@ class Element
 
     public function setCustomData($data, $privateProps)
     {
+        if (array_key_exists('email', $data)) {
+            $this->setEmail($data['email']);
+        }
         $privateData = [];
         foreach ($privateProps as $key => $prop) {
             if (array_key_exists($prop, $data)) {
@@ -1494,6 +1496,9 @@ class Element
      */ 
     public function getEmail() 
     { 
-        return $this->email; 
+        if ($this->email) return $this->email; 
+        if (array_key_exists('email', $this->data)) return $this->data['email'];
+        if (array_key_exists('email', $this->privateData)) return $this->privateData['email'];
+        return "";
     } 
 }

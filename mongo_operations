@@ -99,4 +99,4 @@ db.Option.updateMany({}, { $unset: { displayOption: "" } })
 
 
 # Convert static data to new customizable fields
-db.Element.updateMany( { } , { $rename: { 'website': 'data.website', 'telephone':'data.telephone', 'commitment':'data.commitment', 'description':'data.description', 'descriptionMore':'data.descriptionMore', 'openHoursMoreInfos':'data.openHoursMoreInfos', 'urls':'data.urls' } } )
+db.Element.updateMany( { } , { $rename: { 'website': 'data.website', 'telephone':'data.telephone', 'commitment':'data.commitment', 'description':'data.description', 'descriptionMore':'data.descriptionMore', 'openHoursMoreInfos':'data.openHoursMoreInfos', 'urls':'data.urls', 'email':'data.email' } } )
