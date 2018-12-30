@@ -57,5 +57,5 @@ services:
 
     biopen.gogocartojs_service:
        class: Biopen\GeoDirectoryBundle\Services\GoGoCartoJsService
-       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.context", "@router", "@session" ]
+       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.context", "@router", "@session", "%base_protocol%" ]
        scope: request

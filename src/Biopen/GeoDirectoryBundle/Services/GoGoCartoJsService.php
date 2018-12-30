@@ -8,12 +8,13 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class GoGoCartoJsService
 {
-  public function __construct(DocumentManager $documentManager, SecurityContext $securityContext, $router, $session)
+  public function __construct(DocumentManager $documentManager, SecurityContext $securityContext, $router, $session, $base_protocol)
   {
     $this->odm = $documentManager;
     $this->securityContext = $securityContext;
     $this->router = $router;
     $this->session = $session;
+    $this->base_protocol = $base_protocol;
   }
 
   public function getConfig() 
@@ -174,7 +175,7 @@ class GoGoCartoJsService
       "data" =>
       [
           "taxonomy" => json_decode($taxonomyJson),
-          "elements" => $this->router->generate('biopen_api_elements_index', [], UrlGeneratorInterface::ABSOLUTE_URL),
+          "elements" => $this->getAbsolutePath('biopen_api_elements_index'),
           "requestByBounds" => true,
       ],
     ];
@@ -187,9 +188,9 @@ class GoGoCartoJsService
     $result['inIframe'] = $feature->getActiveInIframe();
     
     if ($route == 'biopen_element_edit')
-      $url = str_replace('fake', '', $this->router->generate('biopen_element_edit', ['id'=>'fake'], UrlGeneratorInterface::ABSOLUTE_URL));
+      $url = str_replace('fake', '', $this->getAbsolutePath('biopen_element_edit', ['id'=>'fake']));
     elseif ($route)
-      $url = $this->router->generate($route, [], UrlGeneratorInterface::ABSOLUTE_URL);
+      $url = $this->getAbsolutePath($route);
     else
       $url = '';
     $result['url'] = $url;
@@ -198,5 +199,10 @@ class GoGoCartoJsService
     if (array_key_exists('options', $overwrite)) $result['options'] = $overwrite['options'];
     
     return $result;
+  }
+
+  private function getAbsolutePath($route, $params = []) 
+  {
+    return $this->base_protocol . ':' . $this->router->generate($route, $params, UrlGeneratorInterface::NETWORK_PATH);
   }
 }
