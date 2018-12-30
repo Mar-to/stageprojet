@@ -28,190 +28,151 @@ class ElementInteractionController extends Controller
 {
     public function voteAction(Request $request)
     {
-        if($request->isXmlHttpRequest())
-        {
-            if (!$this->container->get('biopen.config_service')->isUserAllowed('vote', $request)) 
-                return $this->returnResponse(false,"Désolé, vous n'êtes pas autorisé à voter !");
+        if (!$this->container->get('biopen.config_service')->isUserAllowed('vote', $request)) 
+            return $this->returnResponse(false,"Désolé, vous n'êtes pas autorisé à voter !");
 
-            // CHECK REQUEST IS VALID
-            if (!$request->get('elementId') || $request->get('value') === null) 
-                return $this->returnResponse(false,"Les paramètres du vote sont incomplets");
+        // CHECK REQUEST IS VALID
+        if (!$request->get('elementId') || $request->get('value') === null) 
+            return $this->returnResponse(false,"Les paramètres du vote sont incomplets");
 
-            $em = $this->get('doctrine_mongodb')->getManager(); 
+        $em = $this->get('doctrine_mongodb')->getManager(); 
 
-            $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));           
+        $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));           
 
-            $resultMessage = $this->get('biopen.element_vote_service')
-                             ->voteForElement($element, $request->get('value'), $request->get('comment'), $request->get('userEmail'));
-         
-            return $this->returnResponse(true, $resultMessage, $element->getStatus());     
-        }
-        else 
-        {
-            return new JsonResponse("Not valid ajax request");
-        }
+        $resultMessage = $this->get('biopen.element_vote_service')
+                         ->voteForElement($element, $request->get('value'), $request->get('comment'), $request->get('userEmail'));
+     
+        return $this->returnResponse(true, $resultMessage, $element->getStatus());   
     }
 
     public function reportErrorAction(Request $request)
-    {
-        if($request->isXmlHttpRequest())
-        {              
-            if (!$this->container->get('biopen.config_service')->isUserAllowed('report', $request)) 
-                return $this->returnResponse(false,"Désolé, vous n'êtes pas autorisé à signaler d'erreurs !");
-            
-            // CHECK REQUEST IS VALID
-            if (!$request->get('elementId') || $request->get('value') === null || !$request->get('userEmail')) 
-                return $this->returnResponse(false,"Les paramètres du signalement sont incomplets");
-            
-            $em = $this->get('doctrine_mongodb')->getManager(); 
+    {           
+        if (!$this->container->get('biopen.config_service')->isUserAllowed('report', $request)) 
+            return $this->returnResponse(false,"Désolé, vous n'êtes pas autorisé à signaler d'erreurs !");
+        
+        // CHECK REQUEST IS VALID
+        if (!$request->get('elementId') || $request->get('value') === null || !$request->get('userEmail')) 
+            return $this->returnResponse(false,"Les paramètres du signalement sont incomplets");        
 
-            $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId')); 
+        $em = $this->get('doctrine_mongodb')->getManager(); 
 
-            $report = new UserInteractionReport();    
-            $report->setValue($request->get('value'));
-            $report->updateUserInformation($this->container->get('security.context'), $request->get('userEmail'));
-            $comment = $request->get('comment');
-            if ($comment) $report->setComment($comment);
-            
-            $element->addReport($report);
+        $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId')); 
 
-            $element->updateTimestamp();
-            
-            $em->persist($element);
-            $em->flush();
-         
-            return $this->returnResponse(true, "Merci, votre signalement a bien été enregistré !");        
-        }
-        else 
-        {
-            return new JsonResponse("Not valid ajax request");
-        }
+        $report = new UserInteractionReport();    
+        $report->setValue($request->get('value'));
+        $report->updateUserInformation($this->container->get('security.context'), $request->get('userEmail'));
+        $comment = $request->get('comment');
+        if ($comment) $report->setComment($comment);
+        
+        $element->addReport($report);
+
+        $element->updateTimestamp();
+       
+        $em->persist($element);
+        $em->flush();
+     
+        return $this->returnResponse(true, "Merci, votre signalement a bien été enregistré !");
     }
 
     public function deleteAction(Request $request)
     {
-        if($request->isXmlHttpRequest())
-        {
-            if (!$this->container->get('biopen.config_service')->isUserAllowed('delete', $request)) 
-                return $this->returnResponse(false,"Désolé, vous n'êtes pas autorisé à supprimer un élément !"); 
+        if (!$this->container->get('biopen.config_service')->isUserAllowed('delete', $request)) 
+            return $this->returnResponse(false,"Désolé, vous n'êtes pas autorisé à supprimer un élément !"); 
 
-            // CHECK REQUEST IS VALID
-            if (!$request->get('elementId')) 
-                return $this->returnResponse(false,"Les paramètres sont incomplets");
+        // CHECK REQUEST IS VALID
+        if (!$request->get('elementId')) 
+            return $this->returnResponse(false,"Les paramètres sont incomplets");
 
-            $em = $this->get('doctrine_mongodb')->getManager(); 
-            $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));           
+        $em = $this->get('doctrine_mongodb')->getManager(); 
+        $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));           
 
-            $elementActionService = $this->container->get('biopen.element_action_service');
-            $elementActionService->delete($element, true, $request->get('message'));
+        $elementActionService = $this->container->get('biopen.element_action_service');
+        $elementActionService->delete($element, true, $request->get('message'));
 
-            $em->persist($element);
-            $em->flush();
-         
-            return $this->returnResponse(true, "L'élément a bien été supprimé");        
-        }
-        else 
-        {
-            return new JsonResponse("Not valid ajax request");
-        }
+        $em->persist($element);
+        $em->flush();
+     
+        return $this->returnResponse(true, "L'élément a bien été supprimé");        
     }
 
     public function resolveReportsAction(Request $request)
     {
-        if($request->isXmlHttpRequest())
-        {
-            if (!$this->container->get('biopen.config_service')->isUserAllowed('directModeration', $request)) 
-                return $this->returnResponse(false,"Désolé, vous n'êtes pas autorisé à modérer cet élément !"); 
+        if (!$this->container->get('biopen.config_service')->isUserAllowed('directModeration', $request)) 
+            return $this->returnResponse(false,"Désolé, vous n'êtes pas autorisé à modérer cet élément !"); 
 
-            // CHECK REQUEST IS VALID
-            if (!$request->get('elementId')) 
-                return $this->returnResponse(false,"Les paramètres sont incomplets");
+        // CHECK REQUEST IS VALID
+        if (!$request->get('elementId')) 
+            return $this->returnResponse(false,"Les paramètres sont incomplets");
 
-            $em = $this->get('doctrine_mongodb')->getManager(); 
-            $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));           
+        $em = $this->get('doctrine_mongodb')->getManager(); 
+        $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));           
 
-            $elementActionService = $this->container->get('biopen.element_action_service');
-            $elementActionService->resolveReports($element, $request->get('comment'), true);
+        $elementActionService = $this->container->get('biopen.element_action_service');
+        $elementActionService->resolveReports($element, $request->get('comment'), true);
 
-            $em->persist($element);
-            $em->flush();
-         
-            return $this->returnResponse(true, "L'élément a bien été modéré");        
-        }
-        else 
-        {
-            return new JsonResponse("Not valid ajax request");
-        }
+        $em->persist($element);
+        $em->flush();
+     
+        return $this->returnResponse(true, "L'élément a bien été modéré");        
     }
 
     public function sendMailAction(Request $request)
     {
-        if($request->isXmlHttpRequest())
-        {
-            if (!$this->container->get('biopen.config_service')->isUserAllowed('sendMail', $request))
-                return $this->returnResponse(false,"Désolé, vous n'êtes pas autorisé à envoyer des mails !"); 
+        if (!$this->container->get('biopen.config_service')->isUserAllowed('sendMail', $request))
+            return $this->returnResponse(false,"Désolé, vous n'êtes pas autorisé à envoyer des mails !"); 
 
-            // CHECK REQUEST IS VALID
-            if (!$request->get('elementId') || !$request->get('subject') || !$request->get('content') || !$request->get('userEmail')) 
-                return $this->returnResponse(false,"Les paramètres sont incomplets");
+        // CHECK REQUEST IS VALID
+        if (!$request->get('elementId') || !$request->get('subject') || !$request->get('content') || !$request->get('userEmail')) 
+            return $this->returnResponse(false,"Les paramètres sont incomplets");
 
-            $em = $this->get('doctrine_mongodb')->getManager(); 
-            $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));           
+        $em = $this->get('doctrine_mongodb')->getManager(); 
+        $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));           
 
-            $securityContext = $this->container->get('security.context');
-            $user = $securityContext->getToken()->getUser(); 
+        $securityContext = $this->container->get('security.context');
+        $user = $securityContext->getToken()->getUser(); 
 
-            $senderMail = $request->get('userEmail');
+        $senderMail = $request->get('userEmail');
 
-            // TODO make it configurable
-            $mailSubject = 'Message reçu depuis la plateforme ' . $this->getParameter('instance_name');
-            $mailContent = 
-                "<p>Bonjour <i>" . $element->getName() . '</i>,</p>
-                <p>Vous avez reçu un message de la part de <a href="mailto:' . $senderMail . '">' . $senderMail . "</a></br>
-                </p>
-                <p><b>Titre du message</b></p><p> " . $request->get('subject') . "</p>
-                <p><b>Contenu</b></p><p> " . $request->get('content') . "</p>";
+        // TODO make it configurable
+        $mailSubject = 'Message reçu depuis la plateforme ' . $this->getParameter('instance_name');
+        $mailContent = 
+            "<p>Bonjour <i>" . $element->getName() . '</i>,</p>
+            <p>Vous avez reçu un message de la part de <a href="mailto:' . $senderMail . '">' . $senderMail . "</a></br>
+            </p>
+            <p><b>Titre du message</b></p><p> " . $request->get('subject') . "</p>
+            <p><b>Contenu</b></p><p> " . $request->get('content') . "</p>";
 
-            $mailService = $this->container->get('biopen.mail_service');
-            $mailService->sendMail($element->getEmail(), $mailSubject, $mailContent);
+        $mailService = $this->container->get('biopen.mail_service');
+        $mailService->sendMail($element->getEmail(), $mailSubject, $mailContent);
 
-            return $this->returnResponse(true, "L'email a bien été envoyé");        
-        }
-        else 
-        {
-            return new JsonResponse("Not valid ajax request");
-        }
+        return $this->returnResponse(true, "L'email a bien été envoyé");        
     }
 
     public function stampAction(Request $request)
     {
-        if($request->isXmlHttpRequest())
+        // CHECK REQUEST IS VALID
+        if (!$request->get('stampId') || $request->get('value') === null || !$request->get('elementId')) 
+            return $this->returnResponse(false,"Les paramètres sont incomplets");
+
+        $em = $this->get('doctrine_mongodb')->getManager(); 
+        $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));           
+        $stamp = $em->getRepository('BiopenGeoDirectoryBundle:Stamp')->find($request->get('stampId'));
+        $securityContext = $this->container->get('security.context');
+        $user = $securityContext->getToken()->getUser(); 
+
+        if (!in_array($stamp, $user->getAllowedStamps()->toArray()))  return $this->returnResponse(false,"Vous n'êtes pas autorisé à utiliser cette étiquette");
+        
+        if ($request->get('value') == "true")
         {
-            // CHECK REQUEST IS VALID
-            if (!$request->get('stampId') || $request->get('value') === null || !$request->get('elementId')) 
-                return $this->returnResponse(false,"Les paramètres sont incomplets");
-
-            $em = $this->get('doctrine_mongodb')->getManager(); 
-            $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));           
-            $stamp = $em->getRepository('BiopenGeoDirectoryBundle:Stamp')->find($request->get('stampId'));
-            $securityContext = $this->container->get('security.context');
-            $user = $securityContext->getToken()->getUser(); 
-
-            if (!in_array($stamp, $user->getAllowedStamps()->toArray()))  return $this->returnResponse(false,"Vous n'êtes pas autorisé à utiliser cette étiquette");
-            
-            if ($request->get('value') == "true")
-            {
-                if (!in_array($stamp, $element->getStamps()->toArray())) $element->addStamp($stamp);
-            }
-            else
-                $element->removeStamp($stamp); 
-
-            $em->persist($element);
-            $em->flush();           
-
-            return $this->returnResponse(true, "L'étiquette a bien été modifiée", $element->getStampIds());        
+            if (!in_array($stamp, $element->getStamps()->toArray())) $element->addStamp($stamp);
         }
-        else return new JsonResponse("Not valid ajax request");
+        else
+            $element->removeStamp($stamp); 
+
+        $em->persist($element);
+        $em->flush();           
+
+        return $this->returnResponse(true, "L'étiquette a bien été modifiée", $element->getStampIds());        
     }
 
     private function returnResponse($success, $message, $data = null)
@@ -221,10 +182,16 @@ class ElementInteractionController extends Controller
         if ($data !== null) $response['data'] = $data;
 
         $serializer = $this->container->get('jms_serializer');
-        $responseJson = $serializer->serialize($response, 'json');  
+        $responseJson = $serializer->serialize($response, 'json');
+    
+        $em = $this->get('doctrine_mongodb')->getManager(); 
+        $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
 
-        $response = new Response($responseJson);    
+        $response = new Response($responseJson);        
+        if ($config->getApi()->getInternalApiAuthorizedDomains())
+           $response->headers->set('Access-Control-Allow-Origin', $config->getApi()->getInternalApiAuthorizedDomains());
         $response->headers->set('Content-Type', 'application/json');
+
         return $response;
     }    
 }
