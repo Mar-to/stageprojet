@@ -23,7 +23,6 @@
   .gogo-load-css #element-form-content .option-field.inline { background-color:  {{ textSoft }}; }
 
   .gogo-load-css .dropdown-content { background-color: {{ contentBgd }}; }
-  .gogo-load-css .dropdown-content { background-color: {{ contentBgdSoft }}; }
   .gogo-load-css .dropdown-content li>span { color: {{ textSoft }}; }
 
   .gogo-load-css .main-options-container label.main-option-radio-label:after
@@ -114,9 +113,10 @@
   .gogo-load-css .open-hours-container.impair { background-color: {{ contentBgdSoft }}; }
 
   {# Error #}
-  .mandatory-asterisk:after, label .error, .input-field.error .prefix, 
+  label .error, .input-field.error .prefix, 
   .gogo-load-css #input-address-field.error:after, #input-address-field.error #input-address:after, h1.error, h2.error, label.error 
    { color: {{ error }} !important; }
+   .mandatory-asterisk:after { color: {{ secondary }}; }
   .input-field.error.select-input.invalid-required input {
     border-bottom: 1px solid {{ error }} !important;
     box-shadow: 0 1px 0 0 {{ error }} !important;

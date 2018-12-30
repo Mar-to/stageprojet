@@ -33,7 +33,7 @@ jQuery(document).ready(function()
 
 		// open automatically mandatory sub select
 		var firstMandatorySubSelect = optionField.find('.category-field.mandatory .select-dropdown')[0];
-		if (firstMandatorySubSelect) setTimeout(function() { firstMandatorySubSelect.click(); }, 350);
+		if (firstMandatorySubSelect) setTimeout(function() { firstMandatorySubSelect.click(); }, 200);
 	});
 
 	$('.option-field-delete').click(function()
