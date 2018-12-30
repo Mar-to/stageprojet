@@ -50,6 +50,12 @@
     box-shadow: none !important;
   }
 
+  {% set placeholderFocusColor = disable ~ '!important' %}
+  .gogo-load-css input::-webkit-input-placeholder { color: {{ placeholderFocusColor }}; }
+  .gogo-load-css input::-moz-placeholder { color: {{ placeholderFocusColor }}; }
+  .gogo-load-css input:-ms-input-placeholder { color: {{ placeholderFocusColor }}; }
+  .gogo-load-css input:-moz-placeholder { color: {{ placeholderFocusColor }}; }
+
   {# Input Label #}  
   .gogo-load-css label { color: {{ textSoft }}; } 
   .gogo-load-css label.gogo-form-label { color: {{ disable }} !important }
