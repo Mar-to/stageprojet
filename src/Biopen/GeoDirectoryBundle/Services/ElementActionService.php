@@ -121,18 +121,18 @@ class ElementActionService
       $element->updateTimestamp();
    }
 
-   public function resolveReports($element, $message = '')
+   public function resolveReports($element, $message = '', $addContribution = false)
    {    
-      $elements = $element->getUnresolvedReports();
-      if (count($elements) > 0)
-         foreach ($elements as $key => $report) 
+      $reports = $element->getUnresolvedReports();
+      if (count($reports) > 0)
+         foreach ($reports as $key => $report) 
          {
             $report->setResolvedMessage($message);
             $report->updateResolvedBy($this->securityContext);
             $report->setIsResolved(true);
             $this->mailService->sendAutomatedMail('report', $element, $message, $report);
          }
-      else
+      else if ($addContribution)
          $this->addContribution($element, $message, InteractType::ModerationResolved, $element->getStatus());
 
       $element->setModerationState(ModerationState::NotNeeded);
@@ -146,13 +146,13 @@ class ElementActionService
       $this->em->flush();      
    }
 
-   private function addContribution($element, $message, $InteractType, $status, $directModerationWithHash = false)
+   private function addContribution($element, $message, $interactType, $status, $directModerationWithHash = false)
    {
       $contribution = new UserInteractionContribution();
       $contribution->updateUserInformation($this->securityContext, null, $directModerationWithHash);
       $contribution->setResolvedMessage($message);
       $contribution->updateResolvedBy($this->securityContext, null, $directModerationWithHash);
-      $contribution->setType($InteractType);
+      $contribution->setType($interactType);
       $contribution->setStatus($status);
       $element->addContribution($contribution);
    }

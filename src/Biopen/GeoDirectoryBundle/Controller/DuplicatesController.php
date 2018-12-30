@@ -56,7 +56,7 @@ class DuplicatesController extends GoGoController
             foreach ($duplicates as $key => $duplicate) {
                $em->persist($element);
                foreach($duplicates as $dup) { if($dup != $duplicate) $duplicate->addNonDuplicate($dup); }
-               $elementActionService->resolveReports($duplicate, 'Marqué comme non doublon');
+               $elementActionService->resolveReports($duplicate, 'Marqué comme non doublon', true);
             }
             
             $element->clearPotentialDuplicates();            

@@ -131,7 +131,7 @@ class ElementInteractionController extends Controller
             $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));           
 
             $elementActionService = $this->container->get('biopen.element_action_service');
-            $elementActionService->resolveReports($element, $request->get('comment'));
+            $elementActionService->resolveReports($element, $request->get('comment'), true);
 
             $em->persist($element);
             $em->flush();

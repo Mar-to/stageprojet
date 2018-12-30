@@ -77,7 +77,7 @@ class ElementAdminController extends Controller
 
     public function batchResolveReportsFunction($elementActionService, $selectedModel, $sendMail, $comment)
     {
-        $elementActionService->resolveReports($selectedModel, $comment);
+        $elementActionService->resolveReports($selectedModel, $comment, true);
     }
 
     public function batchActionValidation(ProxyQueryInterface $selectedModelQuery)
