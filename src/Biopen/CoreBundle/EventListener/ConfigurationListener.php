@@ -16,6 +16,9 @@ class ConfigurationListener
         $document = $args->getDocument();
         $dm = $args->getDocumentManager();
 
+        // Change the database to fit the private property config
+        // There is two attribute in element : data & privateData
+        // If an custom field is private, it will be stored in privateData instead of data
         if ($document instanceof ConfigurationApi) {
             $uow = $dm->getUnitOfWork();
             $uow->computeChangeSets();
