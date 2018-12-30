@@ -189,7 +189,7 @@ class GoGoCartoJsService
     if ($route == 'biopen_element_edit')
       $url = str_replace('fake', '', $this->router->generate('biopen_element_edit', ['id'=>'fake'], UrlGeneratorInterface::ABSOLUTE_URL));
     elseif ($route)
-      $url['url'] = $this->router->generate($route, [], UrlGeneratorInterface::ABSOLUTE_URL);
+      $url = $this->router->generate($route, [], UrlGeneratorInterface::ABSOLUTE_URL);
     else
       $url = '';
     $result['url'] = $url;
