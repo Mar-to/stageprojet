@@ -36,16 +36,6 @@ jQuery(document).ready(function()
 	// ---------------
 	// LISTENERS
 	// ---------------
-  
-  // add description more field if description is too long
-  var inputDescription = $('#input-description');
-  var inputDescriptionMore = $('#input-description-more');
-  
-  if (inputDescriptionMore.val() && inputDescriptionMore.val().length > 0) inputDescriptionMore.parent('.input-field').show();
-
-  inputDescription.on('input', function() {
-    if ($(this).hasClass('invalid')) inputDescriptionMore.parent('.input-field').slideDown(800);
-  });
 	
 	// OPEN HOURS
 	// 2nd time slot

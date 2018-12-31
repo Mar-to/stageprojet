@@ -8,14 +8,6 @@
   <link rel="stylesheet" href="{{ asset('assets/css/pages.css?ver=' ~ version) }}"> 
   <link rel="stylesheet" href="{{ asset('assets/css/home.css?ver=' ~ version) }}">   
 
-  <style>
-	  body { 
-	  	{% if config.backgroundImage %}
-	  		background-image: url({{ config.backgroundImage.imageUrl }}); 
-	  	{% endif %}
-	  }
-	</style>	
-
 {% endblock %}
 
 {# BODY CONTENT #}
