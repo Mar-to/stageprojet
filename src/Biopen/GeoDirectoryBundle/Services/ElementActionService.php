@@ -104,6 +104,12 @@ class ElementActionService
 
    public function delete($element, $sendMail = true, $message = null)
    {
+      if ($element->getStatus() == ElementStatus::DynamicImport) {
+         $import = $element->getSource();
+         $import->addIdToIgnore($element->getOldId());
+         $this->em->persist($import);
+      } 
+
       $this->addContribution($element, $message, InteractType::Deleted, ElementStatus::Deleted);
       $newStatus = $element->isPotentialDuplicate() ? ElementStatus::Duplicate : ElementStatus::Deleted;
       $element->setStatus($newStatus); 

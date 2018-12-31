@@ -176,6 +176,7 @@ class ElementImportService
 
 	private function createElementFromArray($row, $import)
 	{
+		if (in_array($row['id'], $import->getIdsToIgnore())) return;
 		$this->currentRow = $row;
 		$new_element = new Element();
 		$new_element->setOldId($row['id']);	 	

@@ -32,6 +32,14 @@ class ImportDynamic extends Import
      */
     private $nextRefresh = null;
 
+    /**
+     * After importing some Data, if the user delete some elements, their ids will be remembered
+     * so next time we do not import them again
+     *
+     * @MongoDB\Field(type="collection")
+     */
+    private $idsToIgnore = [];
+
     public function isDynamicImport() { return true; }
 
     public function updateNextRefreshDate() 
@@ -45,6 +53,11 @@ class ImportDynamic extends Import
             $this->setNextRefresh($date->add($interval));
         }
     }    
+
+    public function addIdToIgnore($id) 
+    {
+        $this->idsToIgnore[] = $id;
+    }
 
     /**
      * Set refreshFrequencyInDays
@@ -110,5 +123,28 @@ class ImportDynamic extends Import
     public function getNextRefresh()
     {
         return $this->nextRefresh;
+    }
+
+
+    /**
+     * Set idsToIgnore
+     *
+     * @param collection $idsToIgnore
+     * @return $this
+     */
+    public function setIdsToIgnore($idsToIgnore)
+    {
+        $this->idsToIgnore = $idsToIgnore;
+        return $this;
+    }
+
+    /**
+     * Get idsToIgnore
+     *
+     * @return collection $idsToIgnore
+     */
+    public function getIdsToIgnore()
+    {
+        return $this->idsToIgnore;
     }
 }

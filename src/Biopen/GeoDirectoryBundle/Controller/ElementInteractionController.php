@@ -85,11 +85,11 @@ class ElementInteractionController extends Controller
 
         $em = $this->get('doctrine_mongodb')->getManager(); 
         $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));           
+        $em->persist($element);
 
         $elementActionService = $this->container->get('biopen.element_action_service');
         $elementActionService->delete($element, true, $request->get('message'));
-
-        $em->persist($element);
+        
         $em->flush();
      
         return $this->returnResponse(true, "L'élément a bien été supprimé");        

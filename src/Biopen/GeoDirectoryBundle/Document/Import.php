@@ -12,6 +12,10 @@ use Biopen\CoreBundle\Document\AbstractFile;
 * @Vich\Uploadable
 * Import data into GoGoCarto. the data can imported through a static file, or via API url
 * The Import can be made once for all (static import) or dynamically every X days (ImportDynamic)
+*
+* @MongoDB\InheritanceType("SINGLE_COLLECTION")
+* @MongoDB\DiscriminatorField("type")
+* @MongoDB\DiscriminatorMap({"normal"="Import", "dynamic"="ImportDynamic"})
 */
 class Import extends AbstractFile
 {
