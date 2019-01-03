@@ -73,7 +73,7 @@ class Element
     /**
      * @var int
      *  
-     * @MongoDB\Id(strategy="ALNUM") @MongoDB\UniqueIndex
+     * @MongoDB\Id(strategy="ALNUM")
      */
     public $id;
 
