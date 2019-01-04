@@ -1,11 +1,16 @@
 Installation and Production Instructions
 ========================================
 
-*Last update : 2018/06/04*
+*Last update : 2019/01/04*
 
 Feel free to add some more informations if you solve installation issues !
 
-**There is a script for debian installation** named install_debian.sh in this docs directory ! After installation completed, go to http://localhost/GoGoCarto/web/app_dev.php/project/initialize to initialize your project
+Quick install
+-------------
+
+- **Debian script**: there is a script for debian installation named install_debian.sh in this docs directory ! After installation, go to http://localhost/GoGoCarto/web/app_dev.php/project/initialize to initialize your project.
+
+- **Docker containers**: please follow the instructions [here](installation_docker.md).
 
 Requirements
 ------------
@@ -23,6 +28,8 @@ To do so, please run :
 composer config "platform.ext-mongo" "1.6.16" && composer require alcaeus/mongo-php-adapter
 ```
 
+Consider the [Docker installation](installation_docker.md) if you run into troubles installing these softwares.
+
 Installation
 ------------
 
@@ -38,7 +45,7 @@ Php dependency (symfony, bundles...)
 ```
 composer install
 ```
-*During installation, config/parameters file will be created, leave default fields*
+*During installation, app/config/parameters.yml file will be created, leave default fields*
 
 Workflow dependencies (compiling sass and javascript)
 ```

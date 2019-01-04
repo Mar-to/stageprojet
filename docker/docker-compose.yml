@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+
+  gogocarto:
+    build: server
+    container_name: gogocarto
+    volumes:
+      - ..:/var/www
+    ports:
+      - "80:80"
+    links:
+      - mongo:mongo
+
+  mongo:
+    image: mongo:3.4.18-jessie
+    container_name: mongo
+    volumes:
+      - ./.mongo:/data/db
+    ports:
+      - "27017:27017"

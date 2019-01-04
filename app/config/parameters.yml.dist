@@ -31,3 +31,6 @@ parameters:
     oauth_google_secret: "disabled"
     oauth_facebook_id: "disabled"
     oauth_facebook_secret: "disabled"
+
+    # MONGODB
+    mongodb_server: "mongodb://localhost:27017"
