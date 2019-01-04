@@ -77,6 +77,12 @@ services:
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Contenus", label: Bandeaux de la page d'accueil }
 
+    admin.webhook:
+        class: Biopen\CoreBundle\Admin\WebhookAdmin
+        arguments: [~, Biopen\CoreBundle\Document\Webhook, 'PixSortableBehaviorBundle:SortableAdmin']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: Webhooks }
+
     admin.partner:
         class: Biopen\CoreBundle\Admin\PartnerAdmin
         arguments: [~, Biopen\CoreBundle\Document\Partner, 'PixSortableBehaviorBundle:SortableAdmin']
