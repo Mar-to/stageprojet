@@ -79,7 +79,7 @@ services:
 
     admin.webhook:
         class: Biopen\CoreBundle\Admin\WebhookAdmin
-        arguments: [~, Biopen\CoreBundle\Document\Webhook, 'PixSortableBehaviorBundle:SortableAdmin']
+        arguments: [~, Biopen\CoreBundle\Document\Webhook, 'SonataAdminBundle:CRUD']
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: Webhooks }
 

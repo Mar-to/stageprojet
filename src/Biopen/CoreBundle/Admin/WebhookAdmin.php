@@ -41,6 +41,11 @@ class WebhookAdmin extends AbstractAdmin
     {
         $listMapper
             ->addIdentifier('url')
+            ->add('format', 'choice', ['choices' => [
+                WebhookFormat::Raw => 'Brut',
+                WebhookFormat::Mattermost => 'Mattermost',
+                WebhookFormat::Slack => 'Slack'
+            ]])
             ->add('_action', 'actions', array(
                 'actions' => array(
                     'show' => array(),
