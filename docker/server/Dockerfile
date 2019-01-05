@@ -68,4 +68,4 @@ COPY apache.conf /etc/apache2/sites-available/000-default.conf
 # We don't need this directory
 RUN rm -R /var/www/html
 
-WORKDIR /var/www/web
+WORKDIR /var/www
