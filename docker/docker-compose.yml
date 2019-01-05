@@ -17,7 +17,7 @@ services:
       - mongo:mongo
 
   mongo:
-    image: mongo:3.4.18-jessie
+    image: shikhir/alpine-mongodb
     container_name: mongo
     volumes:
       - ./.mongo:/data/db
