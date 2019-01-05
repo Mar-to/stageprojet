@@ -10,11 +10,11 @@ services:
       - /var/www/var/cache
       - /var/www/var/logs
       - /var/www/var/sessions
-
     ports:
       - "80:80"
     links:
       - mongo:mongo
+    tty: true
 
   mongo:
     image: shikhir/alpine-mongodb
@@ -23,6 +23,7 @@ services:
       - mongo:/data/db
     ports:
       - "27017:27017"
+    tty: true
 
 volumes:
   mongo: {}
