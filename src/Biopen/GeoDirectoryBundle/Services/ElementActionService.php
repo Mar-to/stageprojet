@@ -42,12 +42,13 @@ class ElementActionService
    /**
    * Constructor
    */
-   public function __construct(DocumentManager $documentManager, SecurityContext $securityContext, MailService $mailService, ElementPendingService $elementPendingService)
+   public function __construct(DocumentManager $documentManager, SecurityContext $securityContext, MailService $mailService, ElementPendingService $elementPendingService, WebhookService $webhookService)
    {
       $this->em = $documentManager;
       $this->securityContext = $securityContext;
       $this->mailService = $mailService;
       $this->elementPendingService = $elementPendingService;
+      $this->webhookService = $webhookService;
    }
 
    public function import($element, $sendMail = false, $message = null, $status = null)

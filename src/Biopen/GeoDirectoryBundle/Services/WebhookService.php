@@ -2,6 +2,8 @@
 
 namespace Biopen\GeoDirectoryBundle\Services;
 
+use Biopen\CoreBundle\Document\Webhook;
+use Biopen\CoreBundle\Document\WebhookPost;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 class WebhookService
@@ -18,9 +20,16 @@ class WebhookService
 
     public function post()
     {
-	    $webhooks = $this->em->getRepository('BiopenCoreBundle:Webhook')->findRootCategories();
+        /** @var Webhook[] $webhooks */
+	    $webhooks = $this->em->getRepository('BiopenCoreBundle:Webhook')->findAll();
 
-	    print_r($webhooks);
+	    foreach( $webhooks as $webhook ) {
+	        $post = new WebhookPost();
+            $post->setUrl($webhook->getUrl());
+            $post->setData(['text' => 'Hello world']);
+            $this->em->persist($post);
+        }
 
+	    $this->em->flush();
   }
 }

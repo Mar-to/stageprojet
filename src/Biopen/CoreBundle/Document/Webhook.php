@@ -47,7 +47,7 @@ class Webhook
      * @param string $format
      * @return $this
      */
-    public function setName($format)
+    public function setFormat($format)
     {
         $this->format = $format;
         return $this;
