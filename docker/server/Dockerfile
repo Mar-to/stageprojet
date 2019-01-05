@@ -17,7 +17,6 @@ RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl
 RUN docker-php-ext-install imap
 RUN docker-php-ext-install intl
 RUN docker-php-ext-install mcrypt
-RUN docker-php-ext-install mysql mysqli pdo pdo_mysql
 RUN docker-php-ext-install soap
 RUN docker-php-ext-install tidy
 RUN docker-php-ext-install xmlrpc
@@ -68,4 +67,4 @@ COPY apache.conf /etc/apache2/sites-available/000-default.conf
 # We don't need this directory
 RUN rm -R /var/www/html
 
-WORKDIR /var/www/web
+WORKDIR /var/www
