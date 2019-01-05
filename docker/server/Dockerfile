@@ -17,7 +17,6 @@ RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl
 RUN docker-php-ext-install imap
 RUN docker-php-ext-install intl
 RUN docker-php-ext-install mcrypt
-RUN docker-php-ext-install mysql mysqli pdo pdo_mysql
 RUN docker-php-ext-install soap
 RUN docker-php-ext-install tidy
 RUN docker-php-ext-install xmlrpc
