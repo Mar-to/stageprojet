@@ -11,6 +11,13 @@ abstract class WebhookFormat
     const Slack = 'slack';
 }
 
+abstract class WebhookAction
+{
+    const Add = 'add';
+    const Update = 'update';
+    const Delete = 'delete';
+}
+
 /** @MongoDB\Document */
 class Webhook
 {
