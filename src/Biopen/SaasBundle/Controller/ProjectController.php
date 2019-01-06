@@ -43,18 +43,29 @@ class ProjectController extends AbstractSaasController
     {
         if (!$this->isAuthorized()) return $this->redirectToRoute('biopen_homepage');
 
+        $odm = $this->get('doctrine_mongodb')->getManager(); 
+        $domain = $request->request->get('form')['domainName'];  
+        if ($domain) // if submiting the form
+        {
+            $existingProject = $odm->getRepository(Project::class)->findOneByDomainName($domain);
+            // fix a bug sometime the form says that the project already exist but actually we just created it
+            // but it has not been initialized
+            // so redirect to initialize project
+            if ($existingProject && $existingProject->getDataSize() == 0) 
+                return $this->redirect($this->generateUrlForProject($existingProject, 'biopen_saas_initialize_project'));
+        }
+
         $project = new Project();
 
         $projectForm = $this->createFormBuilder($project)
             ->add('name', null, array('required' => true))
             ->add('domainName', null, array('required' => true))
-            ->getForm();
-        $odm = $this->get('doctrine_mongodb')->getManager();
+            ->getForm();          
 
         if ($projectForm->handleRequest($request)->isValid())
         {            
             $odm->persist($project);          
-
+            $odm->flush();
             // initialize commands
             $commands = (new GoGoMainCommand())->scheduledCommands;
             foreach ($commands as $commandName => $period) {
@@ -107,7 +118,6 @@ class ProjectController extends AbstractSaasController
             $projectOdm->persist($taxonomy);
             
             $projectOdm->flush();
-
             $projectOdm->getSchemaManager()->updateIndexes();         
 
             $url = $this->generateUrlForProject($project, 'biopen_saas_initialize_project');
