@@ -119,7 +119,7 @@ class ElementPendingService
       if ($modifiedElement)
       {
          // copying following attributes
-         $attributes = ['name', 'geo', 'address', 'commitment', 'description', 'descriptionMore', 'telephone', 'email', 'website', 'optionValues', 'openHours', 'openHoursMoreInfos'];
+         $attributes = ['name', 'geo', 'address', 'optionValues', 'email', 'openHours', 'images', 'data', 'privateData'];
          foreach ($attributes as $key) 
          {
            $getter = 'get' . ucfirst($key);

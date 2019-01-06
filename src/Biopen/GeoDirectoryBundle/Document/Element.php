@@ -1281,6 +1281,12 @@ class Element
         $this->images[] = $image;
     }
 
+
+    public function setImages($images)
+    {
+        $this->images = $images;
+    }
+
     /**
      * Remove image
      *
