@@ -79,5 +79,6 @@
       template += $(this).text() + '\n';
     })
     $('textarea[data-id="body-template"]').text(template).change();
+    $('input[type=checkbox].use-markdown').prop('checked', true)
   }
 </script>

@@ -13,8 +13,14 @@ class ConfigurationInfobar
     /** @MongoDB\Field(type="string") */
     public $headerTemplate = null;
 
+    /** @MongoDB\Field(type="bool") */
+    public $headerTemplateUseMarkDown = true;
+
     /** @MongoDB\Field(type="string") */
     public $bodyTemplate = null;
+
+     /** @MongoDB\Field(type="bool") */
+    public $bodyTemplateUseMarkDown = true;
 
 
     /**
@@ -81,5 +87,49 @@ class ConfigurationInfobar
     public function getHeaderTemplate()
     {
         return $this->headerTemplate;
+    }
+
+    /**
+     * Set headerTemplateUseMarkDown
+     *
+     * @param bool $headerTemplateUseMarkDown
+     * @return $this
+     */
+    public function setHeaderTemplateUseMarkDown($headerTemplateUseMarkDown)
+    {
+        $this->headerTemplateUseMarkDown = $headerTemplateUseMarkDown;
+        return $this;
+    }
+
+    /**
+     * Get headerTemplateUseMarkDown
+     *
+     * @return bool $headerTemplateUseMarkDown
+     */
+    public function getHeaderTemplateUseMarkDown()
+    {
+        return $this->headerTemplateUseMarkDown;
+    }
+
+    /**
+     * Set bodyTemplateUseMarkDown
+     *
+     * @param bool $bodyTemplateUseMarkDown
+     * @return $this
+     */
+    public function setBodyTemplateUseMarkDown($bodyTemplateUseMarkDown)
+    {
+        $this->bodyTemplateUseMarkDown = $bodyTemplateUseMarkDown;
+        return $this;
+    }
+
+    /**
+     * Get bodyTemplateUseMarkDown
+     *
+     * @return bool $bodyTemplateUseMarkDown
+     */
+    public function getBodyTemplateUseMarkDown()
+    {
+        return $this->bodyTemplateUseMarkDown;
     }
 }

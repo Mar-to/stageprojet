@@ -118,10 +118,12 @@ class GoGoCartoJsService
       [
           "width" => $config->getInfobar()->getWidth(),
           "headerTemplate" => [
-              "content" => $config->getInfobar()->getHeaderTemplate()
+              "content" => $config->getInfobar()->getHeaderTemplate(),
+              "isMarkdown" => $config->getInfobar()->getHeaderTemplateUseMarkdown()
           ],
           "bodyTemplate" => [
-              "content" => $config->getInfobar()->getBodyTemplate()
+              "content" => $config->getInfobar()->getBodyTemplate(),
+              "isMarkdown" => $config->getInfobar()->getBodyTemplateUseMarkdown()
           ]
       ],
       "map" =>
