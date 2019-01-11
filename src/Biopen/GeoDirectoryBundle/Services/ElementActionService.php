@@ -55,7 +55,7 @@ class ElementActionService
       if ($status === null) $status = ElementStatus::AddedByAdmin;
       $this->addContribution($element, $message, InteractType::Import, $status);
       $element->setStatus($status); 
-      if($sendMail) $this->mailService->sendAutomatedMail('add', $element, $message);
+      if ($sendMail) $this->mailService->sendAutomatedMail('add', $element, $message);
       $element->updateTimestamp();
    }
 
@@ -108,13 +108,14 @@ class ElementActionService
          $import = $element->getSource();
          $import->addIdToIgnore($element->getOldId());
          $this->em->persist($import);
-      } 
+      } else {
+         if($sendMail) $this->mailService->sendAutomatedMail('delete', $element, $message);
+      }
 
       $this->addContribution($element, $message, InteractType::Deleted, ElementStatus::Deleted);
       $newStatus = $element->isPotentialDuplicate() ? ElementStatus::Duplicate : ElementStatus::Deleted;
       $element->setStatus($newStatus); 
-      $this->resolveReports($element, $message);
-      if($sendMail) $this->mailService->sendAutomatedMail('delete', $element, $message);
+      $this->resolveReports($element, $message);      
       $element->updateTimestamp();
    }
 
