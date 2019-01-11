@@ -11,8 +11,8 @@ With the Docker installation, you have all the required softwares installed in t
 
 * Enter the `gogocarto` container with this command: `docker exec -it gogocarto bash`
 
-* Run all the commands given in the [installation instructions](installation.md) (composer, npm, gulp, symfony console commands...)
+* Run `./post_install.sh` from within the `gogocarto` container. This will launch all the required commands to finish the installation.
 
-* **Warning**: During the `composer install`, when the script asks you for the parameters value, don't use the default value of the `mongodb_server` config. Use `mongodb://mongo:27017` instead of the default `mongodb://localhost:27017` value.
+* **Warning**: During the `composer install`, when the script asks you for the parameters value, use `mongodb://mongo:27017` for the `mongodb_server` config instead of the default `mongodb://localhost:27017` value.
 
 * Go to `http://localhost/app_dev.php/project/initialize` to initialize the project
