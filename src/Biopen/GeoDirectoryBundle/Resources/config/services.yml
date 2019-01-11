@@ -31,7 +31,7 @@ services:
 
     biopen.webhook_service:
       class: Biopen\GeoDirectoryBundle\Services\WebhookService
-      arguments: [ "@doctrine.odm.mongoDB.document_manager", "@router", "@templating.helper.assets" ]
+      arguments: [ "@doctrine.odm.mongoDB.document_manager", "@router", "@request_stack" ]
 
     biopen.json_generator:
         class: Biopen\GeoDirectoryBundle\EventListener\JsonRepresentationGenerator

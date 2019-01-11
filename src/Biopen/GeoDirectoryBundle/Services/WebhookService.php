@@ -2,6 +2,8 @@
 
 namespace Biopen\GeoDirectoryBundle\Services;
 
+use Biopen\CoreBundle\Document\Configuration;
+use Biopen\CoreBundle\Document\ConfImage;
 use Biopen\CoreBundle\Document\User;
 use Biopen\GeoDirectoryBundle\Document\Webhook;
 use Biopen\GeoDirectoryBundle\Document\WebhookAction;
@@ -9,7 +11,8 @@ use Biopen\GeoDirectoryBundle\Document\WebhookFormat;
 use Biopen\GeoDirectoryBundle\Document\WebhookPost;
 use Biopen\GeoDirectoryBundle\Document\Element;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Symfony\Bundle\FrameworkBundle\Templating\Helper\AssetsHelper;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Router;
 
 class WebhookService
@@ -18,16 +21,18 @@ class WebhookService
 
 	protected $router;
 
-	protected $assetsHelper;
+	/** @var Request $request */
+	protected $request;
 
-    public function __construct(DocumentManager $documentManager, Router $router, AssetsHelper $assetsHelper)
+    public function __construct(DocumentManager $documentManager, Router $router, RequestStack $requestStack)
     {
     	 $this->em = $documentManager;
     	 $this->router = $router;
-    	 $this->assetsHelper = $assetsHelper;
+    	 $this->request = $requestStack->getCurrentRequest();
     }
 
-    public function getNotificationText($data) {
+    public function getNotificationText($data)
+    {
         switch($data['action']) {
             case WebhookAction::Add:
                 return "**AJOUT** Acteur \"{$data['data']['name']}\" ajoutée par {$data['user']}\n{$data['link']}";
@@ -38,7 +43,21 @@ class WebhookService
         }
     }
 
-    public function formatData($format, $data) {
+    public function getBotIcon()
+    {
+        /** @var Configuration $config */
+        $config = $this->em->getRepository(Configuration::class)->findConfiguration();
+
+        /** @var ConfImage $img */
+        $img = $config->getFavicon() ? $config->getFavicon() : $config->getLogo();
+
+        return $img
+            ? $img->getImageUrl('128x128', 'png')
+            : $this->request->getUriForPath('/assets/img/default-icon.png');
+    }
+
+    public function formatData($format, $data)
+    {
         switch($format) {
             case WebhookFormat::Raw:
                 return $data;
@@ -46,8 +65,7 @@ class WebhookService
             case WebhookFormat::Mattermost:
                 return [
                     "username" => 'Gogocarto Bot',
-                    // TODO generate absolute URL to icon (and find the icon from the user parameters)
-                    "icon_url" => $this->assetsHelper->getUrl('/img/default-icon.png'),
+                    "icon_url" => $this->getBotIcon(),
                     "text" => $data['text']
                 ];
 
