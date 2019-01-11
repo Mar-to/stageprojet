@@ -5,7 +5,9 @@ namespace Biopen\GeoDirectoryBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Gedmo\Mapping\Annotation as Gedmo;
 
-/** @MongoDB\Document */
+/**
+ * @MongoDB\Document(repositoryClass="Biopen\GeoDirectoryBundle\Repository\WebhookPostRepository")
+ */
 class WebhookPost
 {
     /** @MongoDB\Id(strategy="INCREMENT") */
@@ -24,14 +26,14 @@ class WebhookPost
     public $createdAt;
 
     /** @MongoDB\Field(type="int") */
-    public $numRetry;
+    public $numAttempts;
 
     /** @MongoDB\Field(type="date") */
-    public $latestRetry;
+    public $latestAttemptAt;
 
     function __construct()
     {
-        $this->numRetry = 0;
+        $this->numAttempts = 0;
     }
 
     function __toString()
@@ -94,21 +96,43 @@ class WebhookPost
     }
 
     /**
-     * Set num retry
+     * Set num attempts
      *
-     * @param int $numRetry
+     * @param int $numAttempts
      * @return $this
      */
-    public function setNumRetry($numRetry)
+    public function setNumAttempts($numAttempts)
     {
-        $this->data = $numRetry;
+        $this->numAttempts = $numAttempts;
         return $this;
+    }
+
+    /**
+     * Increment num attempts
+     *
+     * @param int $numAttempts
+     * @return $this
+     */
+    public function incrementNumAttempts()
+    {
+        $this->numAttempts++;
+        return $this;
+    }
+
+    /**
+     * Get num attempts
+     *
+     * @return int $numAttempts
+     */
+    public function getNumAttempts()
+    {
+        return $this->numAttempts;
     }
 
     /**
      * Set createdAt
      *
-     * @param date $createdAt
+     * @param \DateTime $createdAt
      * @return $this
      */
     public function setCreatedAt($createdAt)
@@ -120,7 +144,7 @@ class WebhookPost
     /**
      * Get createdAt
      *
-     * @return date $createdAt
+     * @return \DateTime $createdAt
      */
     public function getCreatedAt()
     {
@@ -128,34 +152,24 @@ class WebhookPost
     }
 
     /**
-     * Get num retry
+     * Set latest attempt date
      *
-     * @return int $numRetry
-     */
-    public function getNumRetry()
-    {
-        return $this->numRetry;
-    }
-
-    /**
-     * Set latest retry
-     *
-     * @param \DateTime $latestRetry
+     * @param \DateTime $latestAttemptAt
      * @return $this
      */
-    public function setLastRefresh($latestRetry)
+    public function setLatestAttemptAt($latestAttemptAt)
     {
-        $this->latestRetry = $latestRetry;
+        $this->latestAttemptAt = $latestAttemptAt;
         return $this;
     }
 
     /**
-     * Get latest retry
+     * Get latest attempt date
      *
-     * @return \DateTime $latestRetry
+     * @return \DateTime $latestAttemptAt
      */
-    public function getLatestRetry()
+    public function getLatestAttemptAt()
     {
-        return $this->latestRetry;
+        return $this->latestAttemptAt;
     }
 }

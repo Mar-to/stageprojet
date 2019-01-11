@@ -11,6 +11,8 @@ use Biopen\GeoDirectoryBundle\Document\WebhookFormat;
 use Biopen\GeoDirectoryBundle\Document\WebhookPost;
 use Biopen\GeoDirectoryBundle\Document\Element;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Client;
+use GuzzleHttp\Pool;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Router;
@@ -31,7 +33,65 @@ class WebhookService
     	 $this->request = $requestStack->getCurrentRequest();
     }
 
-    public function getNotificationText($data)
+    public function queue($actionType, Element $element, User $user)
+    {
+        /** @var Webhook[] $webhooks */
+        $webhooks = $this->em->getRepository(Webhook::class)->findAll();
+
+        foreach( $webhooks as $webhook ) {
+
+            $data = [
+                'action' => $actionType,
+                'user' => $user->getDisplayName(),
+                'link' => str_replace('%23', '#', $this->router->generate('biopen_directory_showElement', array('id'=>$element->getId()), true)),
+                'data' => json_decode($element->getBaseJson(), true)
+            ];
+
+            $data['text'] = $this->getNotificationText($data);
+
+            $post = new WebhookPost();
+            $post->setUrl($webhook->getUrl());
+            $post->setData($this->formatData($webhook->getFormat(), $data));
+            $this->em->persist($post);
+        }
+
+        $this->em->flush();
+    }
+
+    /**
+     * @param WebhookPost[] $webhookPosts
+     */
+    public function callMultiple(array $webhookPosts)
+    {
+        $client = new Client();
+
+        $requests = function () use( $webhookPosts ) {
+            foreach($webhookPosts as $webhookPost) {
+                yield new \GuzzleHttp\Psr7\Request('POST', $webhookPost->getUrl(), [], json_encode($webhookPost->getData()));
+            }
+        };
+
+        $pool = new Pool($client, $requests(), [
+            'concurrency' => 5,
+            'fulfilled' => function ($response, $index) use ($webhookPosts) {
+                $this->em->clear($webhookPosts[$index]);
+            },
+            'rejected' => function ($reason, $index) use ($webhookPosts) {
+                $webhookPosts[$index]->incrementNumAttempts();
+                $webhookPosts[$index]->setLatestAttemptAt(new \DateTime());
+            },
+        ]);
+
+        // Initiate the transfers and create a promise
+        $promise = $pool->promise();
+
+        // Force the pool of requests to complete.
+        $promise->wait();
+
+        $this->em->flush();
+    }
+
+    private function getNotificationText($data)
     {
         switch($data['action']) {
             case WebhookAction::Add:
@@ -43,7 +103,7 @@ class WebhookService
         }
     }
 
-    public function getBotIcon()
+    private function getBotIcon()
     {
         /** @var Configuration $config */
         $config = $this->em->getRepository(Configuration::class)->findConfiguration();
@@ -56,7 +116,7 @@ class WebhookService
             : $this->request->getUriForPath('/assets/img/default-icon.png');
     }
 
-    public function formatData($format, $data)
+    private function formatData($format, $data)
     {
         switch($format) {
             case WebhookFormat::Raw:
@@ -73,29 +133,4 @@ class WebhookService
                 return ["text" => $data['text']];
         }
     }
-
-    public function queue($actionType, Element $element, User $user)
-    {
-        /** @var Webhook[] $webhooks */
-	    $webhooks = $this->em->getRepository(Webhook::class)->findAll();
-
-	    foreach( $webhooks as $webhook ) {
-
-	        $data = [
-                'action' => $actionType,
-                'user' => $user->getDisplayName(),
-                'link' => str_replace('%23', '#', $this->router->generate('biopen_directory_showElement', array('id'=>$element->getId()), true)),
-                'data' => json_decode($element->getBaseJson(), true)
-            ];
-
-	        $data['text'] = $this->getNotificationText($data);
-
-	        $post = new WebhookPost();
-            $post->setUrl($webhook->getUrl());
-            $post->setData($this->formatData($webhook->getFormat(), $data));
-            $this->em->persist($post);
-        }
-
-	    $this->em->flush();
-  }
 }
