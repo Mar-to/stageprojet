@@ -3,7 +3,7 @@
 {% block field %}
   {% spaceless %}
       {% if value %}
-      	<span class="label label-success">{{ value|date('d/m/Y') }}</span>
+      	<span class="label label-success">{{ value|date('d/m/Y - H:i') }}</span>
       {% else %}
       	<span class="label label-default">Manuelle</span>
       {% endif %}

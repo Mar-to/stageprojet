@@ -49,7 +49,7 @@ class ImportDynamic extends Import
         {           
             $interval = new \DateInterval('P' . $this->getRefreshFrequencyInDays() .'D');
             $date = new DateTime();
-            $date->setTimestamp($this->getLastRefresh());
+            $date->setTimestamp(time());
             $this->setNextRefresh($date->add($interval));
         }
     }    
@@ -68,6 +68,7 @@ class ImportDynamic extends Import
     public function setRefreshFrequencyInDays($refreshFrequencyInDays)
     {
         $this->refreshFrequencyInDays = $refreshFrequencyInDays;
+        $this->updateNextRefreshDate();
         return $this;
     }
 
