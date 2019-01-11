@@ -1,6 +1,6 @@
 <?php
 
-namespace Biopen\CoreBundle\Document;
+namespace Biopen\GeoDirectoryBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 

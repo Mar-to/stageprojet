@@ -78,8 +78,8 @@ services:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Contenus", label: Bandeaux de la page d'accueil }
 
     admin.webhook:
-        class: Biopen\CoreBundle\Admin\WebhookAdmin
-        arguments: [~, Biopen\CoreBundle\Document\Webhook, 'SonataAdminBundle:CRUD']
+        class: Biopen\GeoDirectoryBundle\Admin\WebhookAdmin
+        arguments: [~, Biopen\GeoDirectoryBundle\Document\Webhook, 'SonataAdminBundle:CRUD']
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: Webhooks }
 

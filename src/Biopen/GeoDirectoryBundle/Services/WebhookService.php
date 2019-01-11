@@ -3,10 +3,10 @@
 namespace Biopen\GeoDirectoryBundle\Services;
 
 use Biopen\CoreBundle\Document\User;
-use Biopen\CoreBundle\Document\Webhook;
-use Biopen\CoreBundle\Document\WebhookAction;
-use Biopen\CoreBundle\Document\WebhookFormat;
-use Biopen\CoreBundle\Document\WebhookPost;
+use Biopen\GeoDirectoryBundle\Document\Webhook;
+use Biopen\GeoDirectoryBundle\Document\WebhookAction;
+use Biopen\GeoDirectoryBundle\Document\WebhookFormat;
+use Biopen\GeoDirectoryBundle\Document\WebhookPost;
 use Biopen\GeoDirectoryBundle\Document\Element;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Templating\Helper\AssetsHelper;
@@ -20,9 +20,6 @@ class WebhookService
 
 	protected $assetsHelper;
 
-	/**
-     * Constructor
-     */
     public function __construct(DocumentManager $documentManager, Router $router, AssetsHelper $assetsHelper)
     {
     	 $this->em = $documentManager;
@@ -62,7 +59,7 @@ class WebhookService
     public function queue($actionType, Element $element, User $user)
     {
         /** @var Webhook[] $webhooks */
-	    $webhooks = $this->em->getRepository('BiopenCoreBundle:Webhook')->findAll();
+	    $webhooks = $this->em->getRepository(Webhook::class)->findAll();
 
 	    foreach( $webhooks as $webhook ) {
 

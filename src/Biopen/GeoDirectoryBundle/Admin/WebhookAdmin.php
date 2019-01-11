@@ -1,8 +1,8 @@
 <?php
 
-namespace Biopen\CoreBundle\Admin;
+namespace Biopen\GeoDirectoryBundle\Admin;
 
-use Biopen\CoreBundle\Document\WebhookFormat;
+use Biopen\GeoDirectoryBundle\Document\WebhookFormat;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
