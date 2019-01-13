@@ -28,7 +28,11 @@
 
       .collapsible-header 
       {
+        line-height: 2rem;
+        padding: .5rem 1rem;
+
         .name { font-weight: bold; }
+        .updated-at { font-style: italic; opacity: .7; }
         .actions { float: right; padding-top: 3px; }
         .btn-edit {
           font-size: 1.3rem;
@@ -66,7 +70,8 @@
       .collapsible-body {
         padding: 1rem;
         padding-bottom: 0;
-        .source { font-weight: bold; }
+        .key { font-weight: bold; }
+        .value { opacity: .7; }
         div { margin-bottom: 1rem; }
       }
     }

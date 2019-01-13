@@ -4,7 +4,10 @@
 
     {% for duplicate in duplicates %}
         <li>           
-            <a class="duplicate-name" href="{{ duplicate.showUrlFromController(controller)}}" target="_blank"><b>{{ duplicate.name }} </b></a>
+            <a class="duplicate-name" href="{{ duplicate.showUrlFromController(controller)}}" target="_blank"><b>
+              {{ duplicate.name }}
+              {% if duplicate.sourceKey %}<i> ({{ duplicate.sourceKey }})</i>{% endif %}
+            </b></a>
            
             {% if automaticMerge %}
               {% if duplicate.status == '-6' %}
@@ -16,7 +19,6 @@
             {% if duplicate.moderationState == 4 %}
               <span class="label label-warning">Doublon potentiel</span>
             {% endif %}
-            <div class="element-description"><i>{{ duplicate.description }}</i></div>
         </li>
     {% endfor %}
   </ul>

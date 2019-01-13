@@ -120,7 +120,7 @@ class Element
     /**
      * Labels/Tags added to an element by specific organisations/people
      *
-     * @MongoDB\ReferenceMany(targetDocument="Biopen\GeoDirectoryBundle\Document\Stamp", cascade={"all"})
+     * @MongoDB\ReferenceMany(targetDocument="Biopen\GeoDirectoryBundle\Document\Stamp")
      */
     private $stamps;
 
@@ -409,11 +409,17 @@ class Element
     {
         $result = [];
         if ($this->nonDuplicates) 
-            $result = array_map(function($nonDuplicate) {
-                return $nonDuplicate->getId();
-            }, $this->nonDuplicates->toArray());
+            try {
+                 $result = array_map(function($nonDuplicate) {
+                    return $nonDuplicate->getId();
+                }, $this->nonDuplicates->toArray());
+            } catch (\Exception $e) {
+                // fixs error when one of the non duplicates as been deleted and is not found
+                $result = [];
+                $this->nonDuplicates = [];
+            }
         if ($this->getId()) $result[] = $this->getId();
-        return $result;
+        return $result;            
     }
 
     public function isPotentialDuplicate() { return $this->moderationState == ModerationState::PotentialDuplicate; }
@@ -427,10 +433,8 @@ class Element
         { 
             $diffDays = (float) date_diff($a->getUpdatedAt(), $b->getUpdatedAt())->format('%d');
             if ($diffDays != 0) return $diffDays;
-            $diffComitment = strlen($b->getCommitment()) - strlen($a->getCommitment());
-            if ($diffComitment != 0) return $diffComitment;
             return $b->countOptionsValues() - $a->countOptionsValues();
-        }); 
+        });
         return $duplicates;
     }  
 
@@ -460,6 +464,14 @@ class Element
             case ModerationState::GeolocError:
                 if ($this->getGeo()->getLatitude() != 0 && $this->getGeo()->getLongitude() != 0) 
                     $needed = false;
+                break;
+            case ModerationState::PotentialDuplicate:
+                $potDups = $this->getPotentialDuplicates();
+                $count = is_array($potDups) ? count($potDups) : $potDups->count();
+                if ($count) {
+                    $needed = false;
+                    $this->setIsDuplicateNode(false);
+                }
                 break;
         }
 
