@@ -62,6 +62,8 @@ class Import extends AbstractFile
     
     public function __construct() {}
 
+    public function __toString() { return "Import " . $this->sourceName; }
+
     public function isDynamicImport() { return false; }
 
     /**

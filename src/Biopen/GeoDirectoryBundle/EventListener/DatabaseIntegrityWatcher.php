@@ -12,14 +12,15 @@ use Application\Sonata\UserBundle\Document\Group;
 use Biopen\GeoDirectoryBundle\Document\Option;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
-/* check databas eintegrity : when removing an option, need to remove all references to this options */
+/* check database integrity : for example when removing an option, need to remove all references to this options */
 class DatabaseIntegrityWatcher
 {
+	
+
 	public function preRemove(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $args)
 	{
 		$document = $args->getDocument();
 		$dm = $args->getDocumentManager();
-
 		if ($document instanceof Option)
 		{
 			$option = $document;
