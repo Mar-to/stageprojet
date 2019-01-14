@@ -49,7 +49,7 @@ class DuplicatesActionsController extends BulkActionsAbstractController
          $duplicates[] = $element;
 
          if (count($perfectMatches) > 0) $element = $this->automaticMerge($element, $perfectMatches);
-         
+
          if (count($otherDuplicates) > 0)
          {
             $otherDuplicates[] = $element;
@@ -80,16 +80,53 @@ class DuplicatesActionsController extends BulkActionsAbstractController
       foreach($sortedDuplicates as $duplicate) $this->duplicatesFound[$duplicate->getId()] = true; 
 
       $merged = array_shift($sortedDuplicates); 
+      $mergedData = $merged->getData();
+      $mergedPrivateData = $merged->getPrivateData();
+      $mergedOptionIds = $merged->getOptionIds();
 
       foreach($sortedDuplicates as $duplicate) {
-         if ($duplicate->getId() != $merged->getId())
+         // Auto merge option values
+         foreach ($duplicate->getOptionValues() as $dupOptionValue) 
          {
-            // setting this moderation so when deleted it becomes "deleted duplicate" instead of just "deleted"
-            $duplicate->setModerationState(ModerationState::PotentialDuplicate); 
-            $this->elementActionService->delete($duplicate, false);
+            if (!in_array($dupOptionValue->getOptionId(), $mergedOptionIds)) 
+            {
+               $mergedOptionIds[] = $dupOptionValue->getOptionId();
+               $merged->addOptionValue($dupOptionValue);
+            }
          }
+         // Auto merge custom attributes
+         foreach($duplicate->getData() as $key => $value)
+         {
+            if ($value && (!array_key_exists($key, $mergedData) || !$mergedData[$key] 
+                           || ($key == 'description' && strlen($value) > strlen($mergedData[$key]))))
+               $mergedData[$key] = $value;
+         }
+         foreach($duplicate->getPrivateData() as $key => $value)
+         {
+            if ($value && (!array_key_exists($key, $mergedPrivateData) || !$mergedPrivateData[$key] 
+                           || ($key == 'description' && strlen($value) > strlen($mergedPrivateData[$key]))))
+               $mergedPrivateData[$key] = $value;
+         }
+         // Auto merge special attributes
+         if ($duplicate->getImages()->count() > $merged->getImages()->count()) $merged->setImages($duplicate->getImages());
+         if (!$merged->getOpenHours() && $duplicate->getOpenHours()) $merged->setOpenHours($duplicate->getOpenHours());
+         if (!$merged->getUserOwnerEmail() && $duplicate->getUserOwnerEmail()) $merged->setUserOwnerEmail($duplicate->getUserOwnerEmail());
+         if (!$merged->getAddress()->isComplete()) {
+            $address = $merged->getAddress();
+            $dupAddress = $duplicate->getAddress();
+            if (!$address->getStreetAddress() && $dupAddress->getStreetAddress()) $address->setStreetAddress($dupAddress->getStreetAddress());
+            if (!$address->getAddressLocality() && $dupAddress->getAddressLocality()) $address->setAddressLocality($dupAddress->getAddressLocality());
+            if (!$address->getAddressCountry() && $dupAddress->getAddressCountry()) $address->setAddressCountry($dupAddress->getAddressCountry());
+            if (!$address->getPostalCode() && $dupAddress->getPostalCode()) $address->setPostalCode($dupAddress->getPostalCode());
+            $merged->setAddress($address);
+         }
+         // setting this moderation so when deleted it becomes "deleted duplicate" instead of just "deleted"
+         $duplicate->setModerationState(ModerationState::PotentialDuplicate); 
+         $this->elementActionService->delete($duplicate, false);
       }
       $merged->setModerationState(ModerationState::NotNeeded); 
+      $merged->setData($mergedData);
+      $merged->setPrivateData($mergedPrivateData);
 
       return $merged;
    }   

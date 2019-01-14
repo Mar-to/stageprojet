@@ -60,6 +60,11 @@ class PostalAddress
       return $result;
     }
 
+    public function isComplete()
+    {
+      return $this->streetAddress && $this->addressLocality && $this->postalCode && $this->addressCountry;
+    }
+
     public function toJson()
     {
         $result = "";

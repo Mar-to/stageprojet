@@ -431,8 +431,14 @@ class Element
         $duplicates[] = $this;
         usort($duplicates, function ($a, $b) 
         { 
-            $diffDays = (float) date_diff($a->getUpdatedAt(), $b->getUpdatedAt())->format('%d');
+            // Keep in priority the one from our DB instead of the on dynamically imported
+            $aIsDynamicImported = $a->getSource() && $a->getSource()->isDynamicImport();
+            $bIsDynamicImported = $b->getSource() && $b->getSource()->isDynamicImport();
+            if ($aIsDynamicImported != $bIsDynamicImported) return $aIsDynamicImported - $bIsDynamicImported;
+            // Or get the more recent
+            $diffDays = (float) date_diff($a->getUpdatedAt(), $b->getUpdatedAt())->format('%d'); 
             if ($diffDays != 0) return $diffDays;
+            // Or the one with more categories
             return $b->countOptionsValues() - $a->countOptionsValues();
         });
         return $duplicates;
