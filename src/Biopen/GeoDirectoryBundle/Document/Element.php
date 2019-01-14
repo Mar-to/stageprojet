@@ -726,6 +726,11 @@ class Element
         $this->setPrivateData($privateData);
     }
 
+    public function getCustomProperty($key)
+    {
+        return array_key_exists($key, $this->data) ? $this->data[$key] : (array_key_exists($key, $this->privateData) ? $this->privateData[$key] : null);
+    }
+
     /**
      * Set status
      *

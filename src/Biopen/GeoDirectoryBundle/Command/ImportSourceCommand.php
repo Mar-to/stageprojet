@@ -39,8 +39,7 @@ class ImportSourceCommand extends GoGoAbstractCommand
         $importService = $this->getContainer()->get('biopen.element_import');
         $dataToImport = $importService->importJson($import, true);
         $this->log('Data downloaded. ' . count($dataToImport) . ' elements to import...');  
-        $count = $importService->importData($dataToImport, $import);
-        $this->log('Updating source completed : ' . $count . ' elements successfully imported');  
+        $this->log($importService->importData($dataToImport, $import));
       } catch (\Exception $e) {
           $this->error($e->getMessage());
       }

@@ -99,6 +99,7 @@ class ElementAdminShowEdit extends ElementAdminList
        	->add('id')
         ->add('images', null, array('template' => '@BiopenAdmin/partials/show_element_images.html.twig'))
         ->add('randomHash')
+        ->add('oldId', null, array('label' => 'Id dans la base de données importée'))
         ->add('sourceKey', null, array('label' => 'Source'))
 	      ->add('createdAt', 'datetime', array("format" => "d/m/Y à H:i"))
 	      ->add('updatedAt', 'datetime', array("format" => "d/m/Y à H:i"))

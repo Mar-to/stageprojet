@@ -224,7 +224,6 @@ class ElementRepository extends DocumentRepository
     $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
     $radius = $distance / 110;
     $qb->field('geo')->withinCenter((float)$lat, (float)$lng, $radius);
-    $qb->field('status')->notEqual(ElementStatus::DynamicImport);
     $qb->field('createdAt')->gt($date);
     $qb = $this->filterVisibles($qb);
     if ($limit) $qb->limit($limit);

@@ -33,6 +33,11 @@ class ElementImportService
 	
 	protected $coreFields = ['id', 'name', 'taxonomy', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source'];
 	protected $privateDataProps;
+
+	protected $countElementCreated = 0;
+	protected $countElementUpdated = 0;
+	protected $countElementNothingToDo = 0;
+	protected $countElementErrors = 0;
 	/**
     * Constructor
     */
@@ -139,7 +144,9 @@ class ElementImportService
 				$this->createElementFromArray($element, $import); 
 				$i++;
 			}
-			catch (\Exception $e) { }
+			catch (\Exception $e) { 
+				$this->countElementErrors++;
+			}
 
 			if (($i % $batchSize) === 0)
 			{
@@ -149,47 +156,52 @@ class ElementImportService
 			   $import = $this->em->getRepository('BiopenGeoDirectoryBundle:ImportDynamic')->find($import->getId());   
 			}			
 		}			   
-
-		// Flushing and clear data on queue
 		$this->em->flush();
-		$this->em->clear();	    
+		$this->em->clear();
 
-		if ($import->isDynamicImport())
-		{
-			$this->em->persist($import);
-
-	    $qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
-	    $qb->remove()
-	    	 ->field('source')->references($import)
-	    	 ->field('status')->notEqual(ElementStatus::DynamicImportTemp)
-	    	 ->getQuery()->execute();
-
-	    $qb->updateMany()
-	    	 ->field('status')->set(ElementStatus::DynamicImport)
-	    	 ->field('source')->references($import)
-	    	 ->field('status')->equals(ElementStatus::DynamicImportTemp)
-	    	 ->getQuery()->execute();
-	  }
-
-		return $i;
+		$result = "Import terminé";
+		if ($this->countElementCreated > 0) $result .= ", " . $this->countElementCreated . " éléments importés";
+		if ($this->countElementUpdated > 0) $result .= ", " . $this->countElementUpdated . " élements mis à jours";
+		if ($this->countElementNothingToDo > 0) $result .= ", " . $this->countElementNothingToDo . " élements laissés tels quels (rien à mettre à jour)";
+		if ($this->countElementErrors > 0) $result .= ", " . $this->countElementErrors . " erreurs pendant l'import";
+		return $result;
 	}
 
 	private function createElementFromArray($row, $import)
 	{
 		if (in_array($row['id'], $import->getIdsToIgnore())) return;
+		$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+		$qb->field('source')->references($import);
+		$qb->field('oldId')->equals("" . $row['id']);
+		$element = $qb->getQuery()->getSingleResult();
+
+		if ($element) // if element with this Id already exists
+		{
+			// if updated date hasn't change, nothing to do
+			if (array_key_exists('updatedAt', $row) && $row['updatedAt'] == $element->getCustomProperty('updatedAt')) {
+				$this->countElementNothingToDo++;
+				return;
+			}
+			$this->countElementUpdated++;
+		}
+		else
+		{
+			$element = new Element();
+			$this->countElementCreated++;
+		}
 		$this->currentRow = $row;
-		$new_element = new Element();
-		$new_element->setOldId($row['id']);	 	
-		$new_element->setName($row['name']);	 
+		
+		$element->setOldId($row['id']);	 	
+		$element->setName($row['name']);	 
 
 		$address = new PostalAddress($row['streetAddress'], $row['addressLocality'], $row['postalCode'], $row["addressCountry"]);
-		$new_element->setAddress($address);
+		$element->setAddress($address);
 
 		$defaultSourceName = $import ? $import->getSourceName() : 'Inconnu';
-		$new_element->setSourceKey( (strlen($row['source']) > 0 && $row['source'] != 'Inconnu') ? $row['source'] : $defaultSourceName);
-		$new_element->setSource($import);
+		$element->setSourceKey( (strlen($row['source']) > 0 && $row['source'] != 'Inconnu') ? $row['source'] : $defaultSourceName);
+		$element->setSource($import);
 
-		if (array_key_exists('owner', $row)) $new_element->setUserOwnerEmail($row['owner']);
+		if (array_key_exists('owner', $row)) $element->setUserOwnerEmail($row['owner']);
 		
 		$lat = 0;$lng = 0;
 		if (strlen($row['latitude']) == 0 || strlen($row['longitude']) == 0 || $row['latitude'] == 'null' || $row['latitude'] == null)
@@ -211,15 +223,15 @@ class ElementImportService
 			$lng = $row['longitude'];
 		} 
 
-		if ($lat == 0 || $lng == 0) $new_element->setModerationState(ModerationState::GeolocError);
-		$new_element->setGeo(new Coordinates((float)$lat, (float)$lng));
+		if ($lat == 0 || $lng == 0) $element->setModerationState(ModerationState::GeolocError);
+		$element->setGeo(new Coordinates((float)$lat, (float)$lng));
 
-		$this->createCategories($new_element, $row, $import);
-		$this->createImages($new_element, $row);
-		$this->saveCustomFields($new_element, $row);
-		$status = $import->isDynamicImport() ? ElementStatus::DynamicImportTemp : ElementStatus::AddedByAdmin;
-		$this->elementActionService->import($new_element, false, null, $status);		
-		$this->em->persist($new_element);
+		$this->createCategories($element, $row, $import);
+		$this->createImages($element, $row);
+		$this->saveCustomFields($element, $row);
+		$status = $import->isDynamicImport() ? ElementStatus::DynamicImport : ElementStatus::AddedByAdmin;
+		$this->elementActionService->import($element, false, null, $status);		
+		$this->em->persist($element);
 	}
 
 	private function fixsOntology($data)

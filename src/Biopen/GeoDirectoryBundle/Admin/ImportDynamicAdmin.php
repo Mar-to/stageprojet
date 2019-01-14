@@ -25,7 +25,7 @@ class ImportDynamicAdmin extends AbstractAdmin
         $formMapper
             ->add('sourceName', 'text', array('required' => true, 'label' => 'Nom de la source '))
             ->add('url', 'text', array('label' => "Url de l'api Json", 'required' => true))
-            // ->add('geocodeIfNecessary', null, array('required' => false, 'label' => 'Géocoder les élements sans latitude ni longitude à partir de leur adresse'))
+            ->add('geocodeIfNecessary', null, array('required' => false, 'label' => 'Géocoder les élements sans latitude ni longitude à partir de leur adresse'))
             ->add('createMissingOptions', null, array('required' => false, 'label' => 'Créer les options manquantes à partir des catégories renseignées dans chaque élément'))
             ->add('optionsToAddToEachElement', 'sonata_type_model', array(
                 'class'=> 'Biopen\GeoDirectoryBundle\Document\Option', 
