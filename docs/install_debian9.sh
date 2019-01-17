@@ -130,8 +130,8 @@ sudo -u $WEB_USR echo "parameters:
   oauth_facebook_secret: ${OAUTH_FACEBOOK_SECRET}
 " > app/config/parameters.yml
 chown -R $WEB_USR:$WEB_GRP $WEB_DIR/app/config/parameters.yml
-sudo -u $WEB_USR composer config "platform.ext-mongo" "1.6.16" && sudo -u $WEB_USR composer require alcaeus/mongo-php-adapter
-sudo -u $WEB_USR composer install;
+sudo -u $WEB_USR php -d memory_limit=512M /usr/local/bin/composer config "platform.ext-mongo" "1.6.16" && sudo -u $WEB_USR /usr/local/bin/composer require alcaeus/mongo-php-adapter
+sudo -u $WEB_USR php -d memory_limit=512M /usr/local/bin/composer install;
 
 sudo -u $WEB_USR php -d memory_limit=512M bin/console assets:install --symlink web  --no-interaction;
 
