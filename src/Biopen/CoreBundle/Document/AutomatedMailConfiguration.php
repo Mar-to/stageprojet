@@ -22,9 +22,7 @@ class AutomatedMailConfiguration
       $this->setActive($active);
       $this->setSubject($subject);
       $this->setContent($content);
-   }
-
-  
+   }  
 
     /**
      * Set active

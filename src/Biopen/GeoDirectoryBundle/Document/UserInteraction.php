@@ -36,6 +36,7 @@ class UserInteraction
      * @var int
      *
      * @MongoDB\Field(type="int")
+     * @MongoDB\Index
      */
     protected $type;      
 
@@ -43,6 +44,7 @@ class UserInteraction
      * @var string
      *
      * @MongoDB\Field(type="string")
+     * @MongoDB\Index
      */
     protected $userRole = 0;
 
@@ -81,7 +83,6 @@ class UserInteraction
      * @MongoDB\Field(type="string")
      */
     private $resolvedMessage;
-
 
     /**
      * @var date $createdAt

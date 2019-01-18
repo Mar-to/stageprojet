@@ -12,6 +12,7 @@ class UserInteractionContribution extends UserInteraction
      * @var int
      * ElementStatus
      * @MongoDB\Field(type="int")
+     * @MongoDB\Index
      */
     private $status = null;
 
