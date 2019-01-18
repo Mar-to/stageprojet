@@ -13,6 +13,7 @@ use Biopen\GeoDirectoryBundle\Document\Element;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
+use GuzzleHttp\Psr7\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Router;
@@ -61,11 +62,16 @@ class WebhookService
     /**
      * @param WebhookPost[] $webhookPosts
      */
-    public function callMultiple(array $webhookPosts)
+    public function processPosts($limit)
     {
+        $webhookPostRepo = $this->em->getRepository(WebhookPost::class);
+
+        // Get webhook posts in an ordered array
+        $webhookPosts = array_values($webhookPostRepo->findPendings($limit)->toArray());
+
         $client = new Client();
 
-        $requests = function () use( $webhookPosts ) {
+        $requests = function() use( $client, $webhookPosts ) {
             foreach($webhookPosts as $webhookPost) {
                 yield new \GuzzleHttp\Psr7\Request('POST', $webhookPost->getUrl(), [], json_encode($webhookPost->getData()));
             }
@@ -73,8 +79,8 @@ class WebhookService
 
         $pool = new Pool($client, $requests(), [
             'concurrency' => 5,
-            'fulfilled' => function ($response, $index) use ($webhookPosts) {
-                $this->em->clear($webhookPosts[$index]);
+            'fulfilled' => function (Response $response, $index) use ($webhookPosts) {
+                $this->em->remove($webhookPosts[$index]);
             },
             'rejected' => function ($reason, $index) use ($webhookPosts) {
                 $webhookPosts[$index]->incrementNumAttempts();
@@ -89,6 +95,8 @@ class WebhookService
         $promise->wait();
 
         $this->em->flush();
+
+        return( count($webhookPosts) );
     }
 
     private function getNotificationText($data)

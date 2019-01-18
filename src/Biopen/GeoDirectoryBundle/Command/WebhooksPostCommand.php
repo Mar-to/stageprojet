@@ -2,8 +2,6 @@
 
 namespace Biopen\GeoDirectoryBundle\Command;
 
-use Biopen\GeoDirectoryBundle\Document\WebhookPost;
-use Biopen\GeoDirectoryBundle\Repository\WebhookPostRepository;
 use Biopen\GeoDirectoryBundle\Services\WebhookService;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -21,16 +19,11 @@ class WebhooksPostCommand extends GoGoAbstractCommand
 
     protected function gogoExecute($em, InputInterface $input, OutputInterface $output)
     {
-        $webhookPostRepo = $em->getRepository(WebhookPost::class);
-//        $webhookPosts = $webhookPostRepo->findPendings(5);
-//
-//        /** @var WebhookService $webhookService */
-//        $webhookService = $this->getContainer()->get('biopen.webhook_service');
-//
-//        $webhookService->callMultiple($webhookPosts);
-//
-//        $output->writeln('Nombre webhooks traités : ' . count($webhookPosts));
+        /** @var WebhookService $webhookService */
+        $webhookService = $this->getContainer()->get('biopen.webhook_service');
 
-        $output->writeln('Nombre webhooks');
+        $numPosts = $webhookService->processPosts(5);
+
+        $output->writeln('Nombre webhooks traités : ' . $numPosts);
     }
 }

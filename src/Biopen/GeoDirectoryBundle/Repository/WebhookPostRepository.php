@@ -2,6 +2,7 @@
 
 namespace Biopen\GeoDirectoryBundle\Repository;
 
+use Biopen\GeoDirectoryBundle\Document\WebhookPost;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
 class WebhookPostRepository extends DocumentRepository
@@ -17,12 +18,12 @@ class WebhookPostRepository extends DocumentRepository
      * @return mixed
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function findPendings($limit)
+    public function findPendings($limit = null)
     {
-        $qb = $this->createQueryBuilder()
-            ->field('retry')->equals(0);
+        $qb = $this->createQueryBuilder(WebhookPost::class)
+            ->field('numAttempts')->equals(0);
 
-        for( $i=1; $i<=$this->numAttempts; $i++ ) {
+        /*for( $i=1; $i<=$this->numAttempts; $i++ ) {
             // After first try, wait 5m, 25m, 2h, 10h, 2d
             $intervalInMinutes = pow(5, $i);
             $interval = new \DateInterval("P{$intervalInMinutes}M");
@@ -32,7 +33,7 @@ class WebhookPostRepository extends DocumentRepository
                     ->field('numAttempts')->equals($i)
                     ->field('latestAttemptAt')->lt((new \DateTime())->sub($interval))
             );
-        }
+        }*/
 
         return $qb
             ->limit($limit)
@@ -40,5 +41,3 @@ class WebhookPostRepository extends DocumentRepository
             ->execute();
     }
 }
-
-
