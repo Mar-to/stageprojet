@@ -14,7 +14,7 @@ abstract class WebhookFormat
 abstract class WebhookAction
 {
     const Add = 'add';
-    const Update = 'update';
+    const Edit = 'edit';
     const Delete = 'delete';
 }
 

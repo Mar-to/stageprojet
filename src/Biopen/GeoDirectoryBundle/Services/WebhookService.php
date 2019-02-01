@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Response;
+use http\Exception\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Router;
@@ -103,11 +104,13 @@ class WebhookService
     {
         switch($data['action']) {
             case WebhookAction::Add:
-                return "**AJOUT** Acteur \"{$data['data']['name']}\" ajoutée par {$data['user']}\n{$data['link']}";
-            case WebhookAction::Update:
+                return "**AJOUT** Acteur \"{$data['data']['name']}\" ajouté par {$data['user']}\n{$data['link']}";
+            case WebhookAction::Edit:
                 return "**MODIFICATION** Acteur \"{$data['data']['name']}\ mise à jour par {$data['user']}\n{$data['link']}";
             case WebhookAction::Delete:
-                return "**SUPPRESSION** Acteur \"{$data['data']['name']}\" supprimée par {$data['user']}";
+                return "**SUPPRESSION** Acteur \"{$data['data']['name']}\" supprimé par {$data['user']}";
+            default:
+                throw new InvalidArgumentException(sprintf('The webhook action "%s" is invalid.', $data['action']));
         }
     }
 
@@ -139,6 +142,9 @@ class WebhookService
 
             case WebhookFormat::Slack:
                 return ["text" => $data['text']];
+
+            default:
+                throw new InvalidArgumentException(sprintf('The webhook format "%s" is invalid.', $format));
         }
     }
 }
