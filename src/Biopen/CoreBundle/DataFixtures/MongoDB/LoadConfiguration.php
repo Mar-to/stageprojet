@@ -107,12 +107,12 @@ class LoadConfiguration implements FixtureInterface
          $configuration->setElementFormGeocodingHelp("Ne mettez pas de ponctuation, les noms tout en majuscules ne sont pas reconnus non plus. Si la localisation ne fonctionne pas (il arrive que certaines adresses ne soient pas reconnues), entrez le nom de la ville/le village le plus proche, cliquez sur « Localiser », puis placer le point de localisation manuellement. Re-rentrez l’adresse complète dans la barre et passez à la suite du formulaire sans re-cliquer sur « localiser ».");
 
          // IMPORT
-         $configuration->setFontImport('<link href="https://fonts.googleapis.com/css?family=Ubuntu:500,700" rel="stylesheet">');
-         $configuration->setIconImport('<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">');
+         $configuration->setFontImport('');
+         $configuration->setIconImport('<link rel="stylesheet" href="../assets/fonts/fontawesome-5/css/all.css">');
 
          // STYLE
-         $configuration->setMainFont('Ubuntu');
-         $configuration->setTitleFont('Ubuntu');
+         $configuration->setMainFont('Ubuntu, sans-serif');
+         $configuration->setTitleFont('Ubuntu, sans-serif');
          $configuration->setTextColor('#495057');
          $configuration->setPrimaryColor('#64d29b');
          $configuration->setBackgroundColor('#f4f4f4');
