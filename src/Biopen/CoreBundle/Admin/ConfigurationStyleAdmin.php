@@ -34,8 +34,8 @@ class ConfigurationStyleAdmin extends AbstractAdmin
                 ->end()  
                 ->with('Thème et polices', array('class' => 'col-md-6'))
                     ->add('theme', 'choice', array('label' => 'Thème', "choices" => ["default" => "Défaut", "presdecheznous" => "Près de chez Nous", "transiscope" => "Transiscope"]))  
-                    ->add('mainFont', null, array('label' => 'Police principale'))  
-                    ->add('titleFont', null, array('label' => 'Police de titre'))    
+                    ->add('mainFont', null, array('label' => 'Police principale', 'attr' => ['class' => 'gogo-font-picker']))  
+                    ->add('titleFont', null, array('label' => 'Police de titre', 'attr' => ['class' => 'gogo-font-picker']))    
                     
                 ->end()                    
                 ->with('Couleurs principales', array('class' => 'col-md-6'))

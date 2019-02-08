@@ -1,0 +1,41 @@
+<div class="input-container">
+    <input type='hidden' id="{{ form.vars.id }}" name="{{ form.vars.full_name }}" value="{{ form.vars.value }}" class="font-picker" style="width: 100%" placeholder="Select a font or use a custom one"/>
+</div>
+
+<script>
+  jQuery(document).ready(function() {
+    var fonts = [
+        {id: "Roboto, sans-serif", text: 'Roboto'},
+        {id: "Roboto Lt, sans-serif", text: 'Roboto Light'},
+        {id: "Roboto Bk, sans-serif", text: 'Roboto Black'},
+        {id: "Ubuntu, sans-serif", text: 'Ubuntu'},
+        {id: "OpenSans, sans-serif", text: 'OpenSans'},
+        {id: "Lobster, sans-serif", text: 'Lobster'},
+        {id: "Oxygen, sans-serif", text: 'Oxygen'}          
+    ]
+    var value = "{{ form.vars.value }}";
+    var standardValue = false;
+    for (var i = fonts.length - 1; i >= 0; i--) {
+        if (fonts[i].id == value) standardValue = true;
+    }
+    if (!standardValue) fonts.push({id: value, text: value});
+
+
+
+    $(".font-picker").select2({
+        createSearchChoice:function(term, data) { 
+            if ($(data).filter(function() { 
+                return this.text.localeCompare(term)===0; 
+            }).length===0) 
+            {return {id:term, text:term};} 
+        },
+        multiple: false,
+        data: fonts,
+        // formatSelection: function(font) { return $('<span style="font-family: ' + font.id + '">' + font.text + '</span>') },
+        formatResult: function(font) { return $('<span style="font-size:3rem;font-family: ' + font.id + '">' + font.text + '</span>') }
+    });
+  });
+</script>
+    <link rel="stylesheet" href="{{ asset('assets/css/pages.css') }}" />
+<style>
+</style>

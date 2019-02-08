@@ -2,6 +2,7 @@
 @import '../modules/prefixer';
 @import '../modules/variables';
 
+@import 'fonts';
 //@import '../vendors/materialize';
 
 @import '../components/scroll-bar';
@@ -9,9 +10,9 @@
 
 html
 {
-    position: absolute;
-    height: 100%;
-    width: 100%;
+  position: absolute;
+  height: 100%;
+  width: 100%;
 }
 
 body

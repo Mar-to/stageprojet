@@ -1,0 +1,36 @@
+@font-face {
+    font-family: 'Oxygen';
+    src: url('Oxygen-Regular.eot');
+    src: local('Oxygen Regular'), local('Oxygen-Regular'),
+        url('Oxygen-Regular.eot?#iefix') format('embedded-opentype'),
+        url('Oxygen-Regular.woff2') format('woff2'),
+        url('Oxygen-Regular.woff') format('woff'),
+        url('Oxygen-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Oxygen';
+    src: url('Oxygen-Bold.eot');
+    src: local('Oxygen Bold'), local('Oxygen-Bold'),
+        url('Oxygen-Bold.eot?#iefix') format('embedded-opentype'),
+        url('Oxygen-Bold.woff2') format('woff2'),
+        url('Oxygen-Bold.woff') format('woff'),
+        url('Oxygen-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Oxygen';
+    src: url('Oxygen-Light.eot');
+    src: local('Oxygen Light'), local('Oxygen-Light'),
+        url('Oxygen-Light.eot?#iefix') format('embedded-opentype'),
+        url('Oxygen-Light.woff2') format('woff2'),
+        url('Oxygen-Light.woff') format('woff'),
+        url('Oxygen-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+

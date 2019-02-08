@@ -1,0 +1,180 @@
+@font-face {
+  font-family: 'Lobster';
+  src: url('../fonts/Lobster/Lobster-Regular.eot');
+  src: local('Lobster Regular'), local('Lobster-Regular'),
+    url('../fonts/Lobster/Lobster-Regular.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/Lobster/Lobster-Regular.woff2') format('woff2'),
+    url('../fonts/Lobster/Lobster-Regular.woff') format('woff'),
+    url('../fonts/Lobster/Lobster-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('../fonts/Open_Sans/OpenSans-Light.eot');
+  src: local('Open Sans Light'), local('OpenSans-Light'),
+    url('../fonts/Open_Sans/OpenSans-Light.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/Open_Sans/OpenSans-Light.woff2') format('woff2'),
+    url('../fonts/Open_Sans/OpenSans-Light.woff') format('woff'),
+    url('../fonts/Open_Sans/OpenSans-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('../fonts/Open_Sans/OpenSans-Regular.eot');
+  src: local('Open Sans Regular'), local('OpenSans-Regular'),
+    url('../fonts/Open_Sans/OpenSans-Regular.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/Open_Sans/OpenSans-Regular.woff2') format('woff2'),
+    url('../fonts/Open_Sans/OpenSans-Regular.woff') format('woff'),
+    url('../fonts/Open_Sans/OpenSans-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('../fonts/Open_Sans/OpenSans-Bold.eot');
+  src: local('Open Sans Bold'), local('OpenSans-Bold'),
+    url('../fonts/Open_Sans/OpenSans-Bold.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/Open_Sans/OpenSans-Bold.woff2') format('woff2'),
+    url('../fonts/Open_Sans/OpenSans-Bold.woff') format('woff'),
+    url('../fonts/Open_Sans/OpenSans-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('../fonts/Roboto/Roboto-Bold.eot');
+  src: local('Roboto Bold'), local('Roboto-Bold'),
+    url('../fonts/Roboto/Roboto-Bold.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/Roboto/Roboto-Bold.woff2') format('woff2'),
+    url('../fonts/Roboto/Roboto-Bold.woff') format('woff'),
+    url('../fonts/Roboto/Roboto-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto Th';
+  src: url('../fonts/Roboto/Roboto-Thin.eot');
+  src: local('Roboto Thin'), local('Roboto-Thin'),
+    url('../fonts/Roboto/Roboto-Thin.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/Roboto/Roboto-Thin.woff2') format('woff2'),
+    url('../fonts/Roboto/Roboto-Thin.woff') format('woff'),
+    url('../fonts/Roboto/Roboto-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto Bk';
+  src: url('../fonts/Roboto/Roboto-Black.eot');
+  src: local('Roboto Black'), local('Roboto-Black'),
+    url('../fonts/Roboto/Roboto-Black.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/Roboto/Roboto-Black.woff2') format('woff2'),
+    url('../fonts/Roboto/Roboto-Black.woff') format('woff'),
+    url('../fonts/Roboto/Roboto-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto Lt';
+  src: url('../fonts/Roboto/Roboto-Light.eot');
+  src: local('Roboto Light'), local('Roboto-Light'),
+    url('../fonts/Roboto/Roboto-Light.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/Roboto/Roboto-Light.woff2') format('woff2'),
+    url('../fonts/Roboto/Roboto-Light.woff') format('woff'),
+    url('../fonts/Roboto/Roboto-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('../fonts/Roboto/Roboto-Regular.eot');
+  src: local('Roboto Regular'), local('Roboto-Regular'),
+    url('../fonts/Roboto/Roboto-Regular.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/Roboto/Roboto-Regular.woff2') format('woff2'),
+    url('../fonts/Roboto/Roboto-Regular.woff') format('woff'),
+    url('../fonts/Roboto/Roboto-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Oxygen';
+  src: url('../fonts/Oxygen/Oxygen-Regular.eot');
+  src: local('Oxygen Regular'), local('Oxygen-Regular'),
+    url('../fonts/Oxygen/Oxygen-Regular.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/Oxygen/Oxygen-Regular.woff2') format('woff2'),
+    url('../fonts/Oxygen/Oxygen-Regular.woff') format('woff'),
+    url('../fonts/Oxygen/Oxygen-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Oxygen';
+  src: url('../fonts/Oxygen/Oxygen-Bold.eot');
+  src: local('Oxygen Bold'), local('Oxygen-Bold'),
+    url('../fonts/Oxygen/Oxygen-Bold.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/Oxygen/Oxygen-Bold.woff2') format('woff2'),
+    url('../fonts/Oxygen/Oxygen-Bold.woff') format('woff'),
+    url('../fonts/Oxygen/Oxygen-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Oxygen';
+  src: url('../fonts/Oxygen/Oxygen-Light.eot');
+  src: local('Oxygen Light'), local('Oxygen-Light'),
+    url('../fonts/Oxygen/Oxygen-Light.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/Oxygen/Oxygen-Light.woff2') format('woff2'),
+    url('../fonts/Oxygen/Oxygen-Light.woff') format('woff'),
+    url('../fonts/Oxygen/Oxygen-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Ubuntu';
+  src: url('../fonts/Ubuntu/Ubuntu-Bold.eot');
+  src: local('Ubuntu Bold'), local('Ubuntu-Bold'),
+    url('../fonts/Ubuntu/Ubuntu-Bold.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/Ubuntu/Ubuntu-Bold.woff2') format('woff2'),
+    url('../fonts/Ubuntu/Ubuntu-Bold.woff') format('woff'),
+    url('../fonts/Ubuntu/Ubuntu-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Ubuntu';
+  src: url('../fonts/Ubuntu/Ubuntu-Regular.eot');
+  src: local('Ubuntu Regular'), local('Ubuntu-Regular'),
+    url('../fonts/Ubuntu/Ubuntu-Regular.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/Ubuntu/Ubuntu-Regular.woff2') format('woff2'),
+    url('../fonts/Ubuntu/Ubuntu-Regular.woff') format('woff'),
+    url('../fonts/Ubuntu/Ubuntu-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Ubuntu';
+  src: url('../fonts/Ubuntu/Ubuntu-Light.eot');
+  src: local('Ubuntu Light'), local('Ubuntu-Light'),
+    url('../fonts/Ubuntu/Ubuntu-Light.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/Ubuntu/Ubuntu-Light.woff2') format('woff2'),
+    url('../fonts/Ubuntu/Ubuntu-Light.woff') format('woff'),
+    url('../fonts/Ubuntu/Ubuntu-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
