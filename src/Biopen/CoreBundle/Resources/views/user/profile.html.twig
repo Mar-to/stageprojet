@@ -22,7 +22,7 @@
   <div class="error" style="margin-top: 15px;">{{ form_errors(form.email) }}</div>
   <div class="input-field col s12" style="{{ user.email|length > 0 ? 'display:none' : '' }}">
       <i class="material-icons gogo-icon-account-circle prefix"></i>
-      {{ form_widget(form.email, {'id': 'input-username', 'attr': {'class': 'validate'}}) }}
+      {{ form_widget(form.email, {'id': 'input-email', 'attr': {'class': 'validate'}}) }}
       <label for="input-username" class="gogo-form-label">Email</label>
   </div>
 
