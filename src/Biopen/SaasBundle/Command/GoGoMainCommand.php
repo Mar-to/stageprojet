@@ -20,6 +20,7 @@ class GoGoMainCommand extends ContainerAwareCommand
       "app:elements:checkvote" => 24,
       "app:elements:checkExternalSourceToUpdate" => 24,
       "app:users:sendNewsletter" => 1,
+      "app:webhooks:post" => 1
    ];
 
    protected function configure()

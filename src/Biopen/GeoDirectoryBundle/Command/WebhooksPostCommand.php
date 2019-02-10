@@ -24,6 +24,6 @@ class WebhooksPostCommand extends GoGoAbstractCommand
 
         $numPosts = $webhookService->processPosts(5);
 
-        $output->writeln('Nombre webhooks traités : ' . $numPosts);
+        $this->log('Nombre webhooks traités : ' . $numPosts);
     }
 }

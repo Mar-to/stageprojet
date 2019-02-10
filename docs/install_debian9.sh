@@ -279,4 +279,13 @@ ln -nsf /etc/nginx/sites-available/${WEB_URL} /etc/nginx/sites-enabled/${WEB_URL
 nginx -t && service nginx restart
 
 # TODO add crontab automatically
-# See install_debian.sh
+
+# for Normal instance
+# @daily php $WEB_DIR/GoGoCarto/bin/console --env=prod app:elements:checkvote
+# @hourly php $WEB_DIR/GoGoCarto/bin/console --env=prod app:users:sendNewsletter
+# @hourly php $WEB_DIR/GoGoCarto/bin/console --env=prod app:webhooks:post
+# @daily php $WEB_DIR/GoGoCarto/bin/console --env=prod app:elements:checkExternalSourceToUpdate
+
+# for SAAS instance
+# * * * * * php $WEB_DIR/GoGoCarto/bin/console --env=prod app:main-command
+# @daily php $WEB_DIR/GoGoCarto/bin/console --env=prod app:saas:update-projects-info
