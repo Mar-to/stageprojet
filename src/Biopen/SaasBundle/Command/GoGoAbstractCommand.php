@@ -25,11 +25,12 @@ class GoGoAbstractCommand extends ContainerAwareCommand
    protected function execute(InputInterface $input, OutputInterface $output)
    {
       $odm = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
-      $odm->getConfiguration()->setDefaultDB($input->getArgument('dbname'));
       
       $this->logger = $this->getContainer()->get('monolog.logger.commands');
       $this->output = $output;
 
+      if ($input->getArgument('dbname')) $odm->getConfiguration()->setDefaultDB($input->getArgument('dbname'));
+      
       // create dummy user, as some code called from command will maybe need the current user informations
       $token = new AnonymousToken('admin', 'admin', ['ROLE_ADMIN']);      
       $this->getContainer()->get('security.token_storage')->setToken($token);
