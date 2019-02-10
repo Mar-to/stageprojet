@@ -350,6 +350,11 @@ class Element
         $this->optionValues = [];
     }
 
+    public function resetImagess()
+    {
+        $this->images = [];
+    }
+
     public function resetContributions()
     {
         $this->contributions = [];

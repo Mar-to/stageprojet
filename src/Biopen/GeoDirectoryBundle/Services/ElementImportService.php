@@ -356,6 +356,7 @@ class ElementImportService
 
 	private function createImages($element, $row)
 	{
+		$element->resetImages();
 		$images_raw = $row['images'];
 		if (is_string($images_raw) && strlen($images_raw) > 0) $images = explode(',', $row['images']);
 		else if (is_array($images_raw)) $images = $images_raw;
@@ -387,6 +388,7 @@ class ElementImportService
 
 	private function createCategories($element, $row, $import)
 	{
+		$element->resetOptionsValues();
 		$optionsIdAdded = [];
 		$options = is_array($row['taxonomy']) ? $row['taxonomy'] : explode(',', $row['taxonomy']);	
 
