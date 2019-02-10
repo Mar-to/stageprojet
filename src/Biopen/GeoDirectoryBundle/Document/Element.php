@@ -316,7 +316,9 @@ class Element
      * so noone else make action on the same element 
      * @MongoDB\Field(type="int")
      */
-    private $lockUntil = 0;    
+    private $lockUntil = 0; 
+
+    private $preventJsonUpdate = false;   
 
     /**
      * Constructor
@@ -447,8 +449,10 @@ class Element
     /** @MongoDB\PreFlush */
     public function onPreFlush()
     {
-        $this->checkForModerationNeeded();
-        $this->updateJsonRepresentation();
+        if (!$this->getPreventJsonUpdate()) {
+            $this->checkForModerationNeeded();
+            $this->updateJsonRepresentation();
+        }            
     }
 
     // automatically resolve moderation error
@@ -498,9 +502,9 @@ class Element
         if ($this->openHours) $baseJson .= ', "openHours": ' . $this->openHours->toJson(); 
         
         // CREATED AT, UPDATED AT
-        $baseJson .= ', "createdAt":"'    . date_format($this->createdAt,"d/m/Y") . '"';
+        $baseJson .= ', "createdAt":"'    . date_format($this->createdAt,"d/m/Y à H:i") . '"';
         $updatedAt = $this->updatedAt ? $this->updatedAt : $this->createdAt;
-        $updatedAtFormated = gettype($updatedAt) == "integer" ? date("d/m/Y", $updatedAt) : date_format($updatedAt,"d/m/Y");
+        $updatedAtFormated = gettype($updatedAt) == "integer" ? date("d/m/Y à H:i", $updatedAt) : date_format($updatedAt,"d/m/Y à H:i");
         $baseJson .= ', "updatedAt":"'    . $updatedAtFormated . '"';
 
         // OPTIONS VALUES (= TAXONOMY)
@@ -527,9 +531,10 @@ class Element
         if (count($optionDescriptionsJson)) $baseJson .= '"categoriesDescriptions": [' . implode(",", $optionDescriptionsJson) . '],';
 
         // CUSTOM DATA
-        foreach ($this->getData() as $key => $value) {
-            $baseJson .= '"'. $key .'": ' . json_encode($value) . ',';
-        }
+        if ($this->getData())
+            foreach ($this->getData() as $key => $value) {
+                $baseJson .= '"'. $key .'": ' . json_encode($value) . ',';
+            }
         
         // SPECIFIC DATA
         $baseJson .= $this->encodeArrayObjectToJson("stamps", $this->stamps);
@@ -708,16 +713,20 @@ class Element
 
     public function setCustomData($data, $privateProps)
     {
-        if (array_key_exists('email', $data)) {
-            $this->setEmail($data['email']);
-        }
         $privateData = [];
-        foreach ($privateProps as $key => $prop) {
-            if (array_key_exists($prop, $data)) {
-                $privateData[$prop] = $data[$prop];
-                unset($data[$prop]);
+        if ($data != null) 
+        {
+            if (array_key_exists('email', $data)) {
+                $this->setEmail($data['email']);
             }
-        }
+            
+            foreach ($privateProps as $key => $prop) {
+                if (array_key_exists($prop, $data)) {
+                    $privateData[$prop] = $data[$prop];
+                    unset($data[$prop]);
+                }
+            }
+        }            
 
         if ($this->getData()) $data = array_merge($this->getData(), $data); // keeping also old data
         $this->setData($data);
@@ -1526,8 +1535,17 @@ class Element
     public function getEmail() 
     { 
         if ($this->email) return $this->email; 
-        if (array_key_exists('email', $this->data)) return $this->data['email'];
-        if (array_key_exists('email', $this->privateData)) return $this->privateData['email'];
+        if ($this->data && array_key_exists('email', $this->data)) return $this->data['email'];
+        if ($this->privateData && array_key_exists('email', $this->privateData)) return $this->privateData['email'];
         return "";
     } 
+
+
+    public function setPreventJsonUpdate($preventJsonUpdate)
+    {
+        $this->preventJsonUpdate = $preventJsonUpdate;
+        return $this;
+    }
+
+    public function getPreventJsonUpdate() { return $this->preventJsonUpdate || false;}
 }

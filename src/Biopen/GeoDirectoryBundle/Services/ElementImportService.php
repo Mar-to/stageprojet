@@ -40,6 +40,7 @@ class ElementImportService
 	protected $countElementUpdated = 0;
 	protected $countElementNothingToDo = 0;
 	protected $countElementErrors = 0;
+	protected $elementIdsErrors = [];
 	/**
     * Constructor
     */
@@ -84,7 +85,7 @@ class ElementImportService
 				$data[$key]['longitude'] = $row['geo']['longitude'];
 				unset($data[$key]['geo']);
 			}
-			if (array_key_exists('address', $row)) 
+			if (array_key_exists('address', $row))  
 			{
 				$address = $row['address'];
 
@@ -139,15 +140,26 @@ class ElementImportService
 		$data = $this->fixsOntology($data);
 		$data = $this->addMissingFieldsToData($data);
 
-		// processing each data
-		foreach($data as $element) 
+		if ($import->isDynamicImport()) 
 		{
-			try { 
-				$this->createElementFromArray($element, $import); 
+			// before updating the source, we put all elements into DynamicImportTemp status
+			$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element'); 
+			$qb->updateMany() 
+				 ->field('source')->references($import) 
+	       ->field('status')->set(ElementStatus::DynamicImportTemp)
+	       ->getQuery()->execute(); 
+	  }		
+
+		// processing each data
+		foreach($data as $row) 
+		{
+			try { 				
+				$this->createElementFromArray($row, $import); 
 				$i++;
 			}
 			catch (\Exception $e) { 
 				$this->countElementErrors++;
+				$this->elementIdsErrors[] = "" . $row['id'];
 			}
 
 			if (($i % $batchSize) === 0)
@@ -158,34 +170,79 @@ class ElementImportService
 			   $import = $this->em->getRepository('BiopenGeoDirectoryBundle:ImportDynamic')->find($import->getId());   
 			}			
 		}		
-		$result = "Import terminé";
-		if ($this->countElementCreated > 0) $result .= ", " . $this->countElementCreated . " éléments importés";
-		if ($this->countElementUpdated > 0) $result .= ", " . $this->countElementUpdated . " élements mis à jours";
-		if ($this->countElementNothingToDo > 0) $result .= ", " . $this->countElementNothingToDo . " élements laissés tels quels (rien à mettre à jour)";
-		if ($this->countElementErrors > 0) $result .= ", " . $this->countElementErrors . " erreurs pendant l'import";
-		$logType = $this->countElementErrors > 0 ? ($this->countElementErrors > ($size / 4) ? 'error' : 'warning') : 'success';
-		$log = new GoGoLog($logType, $result);
-		$import->addLog($log);
 
 		$this->em->flush();
 		$this->em->clear();
+		$import = $this->em->getRepository('BiopenGeoDirectoryBundle:ImportDynamic')->find($import->getId()); 
+
+		$countElemenDeleted = 0;
+		if ($import->isDynamicImport()) 
+    {  
+      if (count($this->elementIdsErrors) > 0)
+      {
+      	// If there was an error whil retrieving an already existing element
+      	// we set back the status to DynamicImport otherwise it will be deleted just after
+	      $qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');       
+	      $result = $qb->updateMany() 
+	         ->field('source')->references($import)->field('oldId')->in($this->elementIdsErrors)
+	         ->field('status')->set(ElementStatus::DynamicImport) 
+	         ->getQuery()->execute();
+      }
+      
+      // after updating the source, the element still in DynamicImportTemp are the one who are missing
+      // from the new data received, so we need to delete them
+      $qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');       
+      $result = $qb->remove() 
+         ->field('source')->references($import) 
+         ->field('status')->equals(ElementStatus::DynamicImportTemp) 
+         ->getQuery()->execute();
+      $countElemenDeleted = $result['n'];       
+    }  
+
+		$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element'); 
+		$totalCount = $qb->field('status')->field('source')->references($import)->count()->getQuery()->execute();       
+		$result = "Import de " . $import->getSourceName() . " terminé - <strong>Total: " . $totalCount . "</strong>";
+
+		if ($this->countElementCreated > 0) $result .= " - " . $this->countElementCreated . " élément.s importé.s";
+		if ($this->countElementUpdated > 0) $result .= " - " . $this->countElementUpdated . " élement.s mis à jour";
+		if ($this->countElementNothingToDo > 0) $result .= " - " . $this->countElementNothingToDo . " élement.s laissé.s tel.s quel.s (rien à mettre à jour)";
+		if ($countElemenDeleted > 0) $result .= " - " . $countElemenDeleted . " élement.s supprimé.s";
+		if ($this->countElementErrors > 0) $result .= " - " . $this->countElementErrors . " erreur.s pendant l'import";
+
+		$logType = $this->countElementErrors > 0 ? ($this->countElementErrors > ($size / 4) ? 'error' : 'warning') : 'success';
+		$log = new GoGoLog($logType, $result);
+		$import->addLog($log);
+		$this->em->flush();   
 		
 		return $result;
 	}
 
 	private function createElementFromArray($row, $import)
 	{
-		if (in_array($row['id'], $import->getIdsToIgnore())) return;
-		$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
-		$qb->field('source')->references($import);
-		$qb->field('oldId')->equals("" . $row['id']);
-		$element = $qb->getQuery()->getSingleResult();
+		if ($row['id'])
+		{
+			if (in_array($row['id'], $import->getIdsToIgnore())) return;
+			$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+			$qb->field('source')->references($import);
+			$qb->field('oldId')->equals("" . $row['id']);
+			$element = $qb->getQuery()->getSingleResult();
+		} else {
+			$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+			$qb->field('source')->references($import);
+			$qb->field('name')->equals($row['name']);
+			$qb->field('geo.latitude')->equals((float) number_format((float)$row['latitude'], 5));
+			$qb->field('geo.longitude')->equals((float) number_format((float)$row['longitude'], 5));
+			$element = $qb->getQuery()->getSingleResult();
+		}
 
 		if ($element) // if element with this Id already exists
 		{
 			// if updated date hasn't change, nothing to do
 			if (array_key_exists('updatedAt', $row) && $row['updatedAt'] == $element->getCustomProperty('updatedAt')) {
 				$this->countElementNothingToDo++;
+				$element->setPreventJsonUpdate(true);
+				$element->setStatus(ElementStatus::DynamicImport);
+				$this->em->persist($element);
 				return;
 			}
 			$this->countElementUpdated++;

@@ -65,7 +65,9 @@ class Import extends AbstractFile
     */
     private $logs;  
     
-    public function __construct() {}
+    public function __construct() {
+        $this->logs = new \Doctrine\Common\Collections\ArrayCollection();;
+    }
 
     public function __toString() { return "Import " . $this->sourceName; }
 
@@ -247,7 +249,7 @@ class Import extends AbstractFile
      * @return \Doctrine\Common\Collections\Collection $logs
      */
     public function getLogs()
-    {
+    {        
         $logs = is_array($this->logs) ? $this->logs : $this->logs->toArray();
         usort( $logs, function ($a, $b) { return $b->getCreatedAt()->getTimestamp() - $a->getCreatedAt()->getTimestamp(); });
         return $logs;

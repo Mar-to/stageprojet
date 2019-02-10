@@ -18,6 +18,6 @@ class ImportDynamicAdminController extends Controller
         // $result = $this->get('biopen.element_import')->importJson($object);        
         // $this->addFlash('sonata_flash_success', $result);     
 
-        return $this->redirect($this->admin->generateUrl('list'));
+        return $this->redirect($this->admin->generateUrl('edit', ['id' => $object->getId()]));
     }
 }

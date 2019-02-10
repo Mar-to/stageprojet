@@ -38,8 +38,8 @@ class ImportDynamicAdmin extends AbstractAdmin
                 ->add('refreshFrequencyInDays', null, array('required' => false, 'label' => "Fréquence de mise à jours des données en jours (laisser vide pour ne jamais mettre à jour automatiquement"))
                 ->add('idsToIgnore', 'text', array('required' => false, 'attr' => ['class' => 'gogo-display-array'], 'label' => "Liste des IDs à ignorer lors de l'import (pour ignorer un élément, supprimer le et il ne sera plus jamais importé"))
             ->end()
-            ->with('Hitorique', array('class' => 'col-sm-12'))
-                ->add('logs', 'hidden', array('attr' => ['class' => 'gogo-display-logs']))
+            ->with('Historique', array('class' => 'col-sm-12'))
+                ->add('logs', 'hidden', array('attr' => ['class' => 'gogo-display-logs'], 'mapped' => false))
             ->end(); 
     }
 

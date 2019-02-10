@@ -27,7 +27,6 @@ class ImportSourceCommand extends GoGoAbstractCommand
         $sourceNameOrId = $input->getArgument('sourceNameOrImportId');
         $import = $em->getRepository('BiopenGeoDirectoryBundle:ImportDynamic')->find($sourceNameOrId);
         if (!$import) $import = $em->getRepository('BiopenGeoDirectoryBundle:ImportDynamic')->findOneBySourceName($sourceNameOrId); 
-
         if (!$import) 
         {
           $message = "ERREUR pendant l'import : Aucune source avec pour nom ou id " . $input->getArgument('sourceNameOrImportId') . " n'existe dans la base de donnée " . $input->getArgument('dbname');
@@ -39,9 +38,10 @@ class ImportSourceCommand extends GoGoAbstractCommand
         $importService = $this->getContainer()->get('biopen.element_import');
         $dataToImport = $importService->importJson($import, true);
         $this->log('Data downloaded. ' . count($dataToImport) . ' elements to import...');  
-        $this->log($importService->importData($dataToImport, $import));
+        $result = $importService->importData($dataToImport, $import, $this->logger);
+        $this->log($result);
       } catch (\Exception $e) {
-          $this->error($e->getMessage());
+          $this->error("Source: " . $import->getSourceName() . " - " . $e->getMessage());
       }
     }
       
