@@ -95,17 +95,18 @@
         // if (markerPosition)  marker = new L.Marker(markerPosition, { draggable: false } );        
         if (userIsGeolocalized) 
         {
+          {% set secondaryColor = config.getDefaultColor("secondaryColor") %}
           var circle = L.circle(markerPosition, {
-              color: '{{ config.secondaryColor }}',
+              color: '{{ secondaryColor }}',
               opacity: 0.8,
-              fillColor: '{{ config.secondaryColor }}',
+              fillColor: '{{ secondaryColor }}',
               fillOpacity: 0.5,
               radius: user.newsletterRange * 1000
           });
 
           var circleCenter = L.circle(markerPosition, {
-              color: '{{ config.secondaryColor }}',
-              fillColor: '{{ config.secondaryColor }}',
+              color: '{{ secondaryColor }}',
+              fillColor: '{{ secondaryColor }}',
               fillOpacity: 1,
               radius: 100
           });

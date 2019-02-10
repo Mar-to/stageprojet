@@ -1,7 +1,7 @@
-<div class="main-container" style="background-color: {{ config.backgroundColor }};
+<div class="main-container" style="background-color: {{ config.getDefaultColor('backgroundColor') }};
             height: 100%;
             padding: 30px 45px">
-  <div class="header" style="background-color : {{ config.contentBackgroundColor }};
+  <div class="header" style="background-color : {{ config.getDefaultColor('contentBackgroundColor') }};
               max-width: 700px;              
               color: {{ config.textColor }};
               margin: 0 auto;
@@ -15,7 +15,7 @@
     <div style="text-align:center;
                 padding: 10px;
                 border-radius: 5px 5px 0 0;
-                background-color: {{ config.headerColor }};">
+                background-color: {{ config.getDefaultColor('headerColor') }};">
         <a href="{{ homeUrl }}">
           {% if config.logo and config.logo.imageUrl %}
             <img src="{{ config.logo.imageUrl }}" alt="{{ config.appName }}" title="{{ config.appName }}"
@@ -28,8 +28,9 @@
           {% endif %}
         </a>
         {% if config.appBaseline %}
-          <div style="color:{{ config.neutralSoftColor }};
+          <div style="color: {{ config.getDefaultColor('headerTextColor') }};
                     text-transform: uppercase;
+                    margin-top: 8px;
                     font-size: 15px;
                     font-weight: bold;
                     line-height: 30px;

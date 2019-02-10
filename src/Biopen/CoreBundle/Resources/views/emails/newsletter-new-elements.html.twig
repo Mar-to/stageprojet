@@ -16,12 +16,13 @@
                                                 font-weight: 700;
                                                 line-height: 1;
                                                 color: #fff;
-                                                background-color: {{ config.disableColor }};
+                                                background-color: {{ config.getDefaultColor('disableColor') }};
                                                 text-align: center;
                                                 white-space: nowrap;
                                                 vertical-align: baseline;
+                                                margin-left: 6px;
                                                 border-radius: .25em;">
-              {{ element.status == 0 ? 'Modifications' : 'En attente'}}</span>
+              {{ element.status == 0 ? 'En attente' : 'Modifications'}}</span>
           {% endif %}
 
         </div>
@@ -50,7 +51,7 @@
                           text-transform: uppercase;
                           letter-spacing: 1px;
                           border: none;
-                          background-color: {{ config.secondaryColor }};">{{ element.isPending ? 'Voter !' : 'Voir' }}</button>
+                          background-color: {{ config.getDefaultColor('secondaryColor') }};">{{ element.isPending ? 'Voter !' : 'Voir' }}</button>
         </a>
 
       </td>
