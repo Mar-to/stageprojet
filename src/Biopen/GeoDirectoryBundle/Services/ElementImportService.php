@@ -17,6 +17,8 @@ use Biopen\GeoDirectoryBundle\Document\UserRoles;
 use Biopen\GeoDirectoryBundle\Document\PostalAddress;
 use Biopen\GeoDirectoryBundle\Document\ElementUrl;
 use Biopen\GeoDirectoryBundle\Document\ElementImage;
+use Biopen\CoreBundle\Document\GoGoLog;
+use Biopen\CoreBundle\Document\GoGoLogType;
 
 class ElementImportService
 {   
@@ -155,15 +157,19 @@ class ElementImportService
 			   // After flush, we need to get again the import from the DB to avoid doctrine raising errors
 			   $import = $this->em->getRepository('BiopenGeoDirectoryBundle:ImportDynamic')->find($import->getId());   
 			}			
-		}			   
-		$this->em->flush();
-		$this->em->clear();
-
+		}		
 		$result = "Import terminé";
 		if ($this->countElementCreated > 0) $result .= ", " . $this->countElementCreated . " éléments importés";
 		if ($this->countElementUpdated > 0) $result .= ", " . $this->countElementUpdated . " élements mis à jours";
 		if ($this->countElementNothingToDo > 0) $result .= ", " . $this->countElementNothingToDo . " élements laissés tels quels (rien à mettre à jour)";
 		if ($this->countElementErrors > 0) $result .= ", " . $this->countElementErrors . " erreurs pendant l'import";
+		$logType = $this->countElementErrors > 0 ? ($this->countElementErrors > ($size / 4) ? 'error' : 'warning') : 'success';
+		$log = new GoGoLog($logType, $result);
+		$import->addLog($log);
+
+		$this->em->flush();
+		$this->em->clear();
+		
 		return $result;
 	}
 

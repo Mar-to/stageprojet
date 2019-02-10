@@ -1,6 +1,19 @@
 {% extends sonata_block.templates.block_base %}
 
 {% block block %}
+		
+		{% if errors|length %}
+		<div class="sonata-block-log-errors box box-danger">
+        <div class="box-header with-border">
+            <h3 class="box-title">Des erreurs ont eu lieu récemment</h3>
+        </div>
+
+        <div class="box-body">
+        	{% include '@BiopenAdmin/core_custom/custom-fields/display-logs.html.twig' with { logs: errors, dismissLog: true } %}        
+        	
+        </div>
+    </div>
+		{% endif %}
 
 		<div class="row">
       <div class="col-xs-6 col-md-3">       

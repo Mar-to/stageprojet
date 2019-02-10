@@ -20,3 +20,9 @@ biopen_api_configuration:
     defaults: { _controller: BiopenCoreBundle:API:getConfiguration }
     requirements:
         methods: GET
+
+biopen_api_log_hide:
+    path:     /log/{id}/hide
+    defaults: { _controller: BiopenCoreBundle:API:hideLog }
+    requirements:
+        methods: POST

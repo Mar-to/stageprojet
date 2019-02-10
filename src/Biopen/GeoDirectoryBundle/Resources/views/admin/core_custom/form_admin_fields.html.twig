@@ -33,6 +33,8 @@
       {% include '@BiopenAdmin/core_custom/custom-fields/ace-code-editor.html.twig' %}
     {% elseif attr_class == "gogo-display-array" %}
       {% include '@BiopenAdmin/core_custom/custom-fields/display-array.html.twig' %}
+    {% elseif attr_class == "gogo-display-logs" %}
+      {% include '@BiopenAdmin/core_custom/custom-fields/display-logs.html.twig' %}
     {% else %}      
       {% set attr = attr|merge({'class': attr_class ~ ' form-control'}) %}
       {{ parent() }}

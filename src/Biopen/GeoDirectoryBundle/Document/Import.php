@@ -58,7 +58,12 @@ class Import extends AbstractFile
     /**
      * @MongoDB\Field(type="bool")
      */
-    private $geocodeIfNecessary = false;    
+    private $geocodeIfNecessary = false;  
+
+    /**
+    * @MongoDB\ReferenceMany(targetDocument="Biopen\CoreBundle\Document\GoGoLog", cascade={"all"})
+    */
+    private $logs;  
     
     public function __construct() {}
 
@@ -214,5 +219,37 @@ class Import extends AbstractFile
     public function getSourceName()
     {
         return $this->sourceName;
+    }
+
+    /**
+     * Add log
+     *
+     * @param Biopen\CoreBundle\Document\GoGoLog $log
+     */
+    public function addLog(\Biopen\CoreBundle\Document\GoGoLog $log)
+    {
+        $this->logs[] = $log;
+    }
+
+    /**
+     * Remove log
+     *
+     * @param Biopen\CoreBundle\Document\GoGoLog $log
+     */
+    public function removeLog(\Biopen\CoreBundle\Document\GoGoLog $log)
+    {
+        $this->logs->removeElement($log);
+    }
+
+    /**
+     * Get logs
+     *
+     * @return \Doctrine\Common\Collections\Collection $logs
+     */
+    public function getLogs()
+    {
+        $logs = is_array($this->logs) ? $this->logs : $this->logs->toArray();
+        usort( $logs, function ($a, $b) { return $b->getCreatedAt()->getTimestamp() - $a->getCreatedAt()->getTimestamp(); });
+        return $logs;
     }
 }

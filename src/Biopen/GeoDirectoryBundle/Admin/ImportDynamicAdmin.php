@@ -23,19 +23,24 @@ class ImportDynamicAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('sourceName', 'text', array('required' => true, 'label' => 'Nom de la source '))
-            ->add('url', 'text', array('label' => "Url de l'api Json", 'required' => true))
-            ->add('geocodeIfNecessary', null, array('required' => false, 'label' => 'Géocoder les élements sans latitude ni longitude à partir de leur adresse'))
-            ->add('createMissingOptions', null, array('required' => false, 'label' => 'Créer les options manquantes à partir des catégories renseignées dans chaque élément'))
-            ->add('optionsToAddToEachElement', 'sonata_type_model', array(
-                'class'=> 'Biopen\GeoDirectoryBundle\Document\Option', 
-                'required' => false, 
-                'choices_as_values' => true,
-                'multiple' => true,
-                'btn_add' => false,
-                'label' => 'Options à ajouter à chaque élément importé'), array('admin_code' => 'admin.option'))      
-            ->add('refreshFrequencyInDays', null, array('required' => false, 'label' => "Fréquence de mise à jours des données en jours (laisser vide pour ne jamais mettre à jour automatiquement"))
-            ->add('idsToIgnore', 'text', array('required' => false, 'attr' => ['class' => 'gogo-display-array'], 'label' => "Liste des IDs à ignorer lors de l'import (pour ignorer un élément, supprimer le et il ne sera plus jamais importé"));
+            ->with('Improt Dynamique', array('class' => 'col-sm-12'))
+                ->add('sourceName', 'text', array('required' => true, 'label' => 'Nom de la source '))
+                ->add('url', 'text', array('label' => "Url de l'api Json", 'required' => true))
+                ->add('geocodeIfNecessary', null, array('required' => false, 'label' => 'Géocoder les élements sans latitude ni longitude à partir de leur adresse'))
+                ->add('createMissingOptions', null, array('required' => false, 'label' => 'Créer les options manquantes à partir des catégories renseignées dans chaque élément'))
+                ->add('optionsToAddToEachElement', 'sonata_type_model', array(
+                    'class'=> 'Biopen\GeoDirectoryBundle\Document\Option', 
+                    'required' => false, 
+                    'choices_as_values' => true,
+                    'multiple' => true,
+                    'btn_add' => false,
+                    'label' => 'Options à ajouter à chaque élément importé'), array('admin_code' => 'admin.option'))      
+                ->add('refreshFrequencyInDays', null, array('required' => false, 'label' => "Fréquence de mise à jours des données en jours (laisser vide pour ne jamais mettre à jour automatiquement"))
+                ->add('idsToIgnore', 'text', array('required' => false, 'attr' => ['class' => 'gogo-display-array'], 'label' => "Liste des IDs à ignorer lors de l'import (pour ignorer un élément, supprimer le et il ne sera plus jamais importé"))
+            ->end()
+            ->with('Hitorique', array('class' => 'col-sm-12'))
+                ->add('logs', 'hidden', array('attr' => ['class' => 'gogo-display-logs']))
+            ->end(); 
     }
 
     protected function configureRoutes(RouteCollection $collection)

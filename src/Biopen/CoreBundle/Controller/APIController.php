@@ -101,4 +101,15 @@ class APIController extends GoGoController
     $response->headers->set('Content-Type', 'application/json');
     return $response;
   }
+
+  public function hideLogAction($id)
+  {
+    $odm = $this->get('doctrine_mongodb')->getManager();
+    $log = $odm->getRepository('BiopenCoreBundle:GoGoLog')->find($id);
+    $log->setHidden(true);
+    $odm->flush();
+    $response = new Response(json_encode(['success' => true]));  
+    $response->headers->set('Content-Type', 'application/json');
+    return $response;
+  }
 }

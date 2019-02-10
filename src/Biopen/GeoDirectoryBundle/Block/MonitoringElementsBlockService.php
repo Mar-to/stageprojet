@@ -54,6 +54,7 @@ class MonitoringElementsBlockService extends AbstractBlockService
 	    $activeUsersCount = $this->em->createQueryBuilder('BiopenCoreBundle:User')->field('enabled')->equals(true)->count()->getQuery()->execute();
 	    $activeUsersNewsletterCount = $this->em->createQueryBuilder('BiopenCoreBundle:User')->field('enabled')->equals(true)
 	    																				->field('newsletterFrequency')->gt(NewsletterFrequencyOptions::Never)->count()->getQuery()->execute();
+	    $errors = $this->em->getRepository('BiopenCoreBundle:GoGoLog')->findBy(['type' => 'error', 'hidden' => false]);
 	    // merge settings
 	    $settings = $blockContext->getSettings();
 
@@ -66,7 +67,8 @@ class MonitoringElementsBlockService extends AbstractBlockService
 	        'allVisibleCount' => $allVisibleElements,
 	        'visibleNonImportedCount' => $visibleNonImportedElements,
 	        'activeUsersCount' => $activeUsersCount,
-	        'activeUsersNewsletterCount' => $activeUsersNewsletterCount
+	        'activeUsersNewsletterCount' => $activeUsersNewsletterCount,
+	        'errors' => $errors
 	    ), $response);
 	}
 }

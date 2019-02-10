@@ -1,0 +1,26 @@
+<script>
+  var url = "{{ path('biopen_api_log_hide', {'id': 'ID'}) }}"; 
+
+  function hideLog($logId) {
+    $.ajax({
+      method : 'post',
+      url         : url.replace("ID", $logId),
+      complete     : function(data, status, object) {
+        if ($('.sonata-block-log-errors .alert').length == 0) $('.sonata-block-log-errors').hide();         
+      },
+    });
+  }
+</script>
+
+{% set logs = logs is defined ? logs : form.vars.sonata_admin.admin.subject.logs %}
+
+{% for log in logs %}
+  <div class="alert alert-{{ log.type }}">
+    {% if dismissLog is defined %}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Fermer" onclick="hideLog({{log.id}})"><span aria-hidden="true" style="font-size: 1.6rem">Ne plus afficher</span></button>
+    {% endif %}
+    <strong>{{ log.createdAt|date("d/m/Y à H:i") }}</strong> - {{ log.message }}
+  </div>
+{% endfor %}
+
+
