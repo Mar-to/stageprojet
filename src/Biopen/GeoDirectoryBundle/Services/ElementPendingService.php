@@ -109,7 +109,7 @@ class ElementPendingService
    {      
       $this->mailService->sendAutomatedMail('add', $element, $message);
 
-      $this->webhookService->queue('add', $element, $this->securityContext->getToken()->getUser());
+      $this->webhookService->queue('add', $element);
    }
 
    public function refuseNewElement($element) 
@@ -134,7 +134,7 @@ class ElementPendingService
 
       $this->mailService->sendAutomatedMail('edit', $element, $message);
 
-      $this->webhookService->queue('edit', $element, $this->securityContext->getToken()->getUser());
+      $this->webhookService->queue('edit', $element);
    }
 
    private function refuseModifiedElement($element) 

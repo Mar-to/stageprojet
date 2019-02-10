@@ -18,6 +18,7 @@ use http\Exception\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Router;
+use Symfony\Component\Security\Core\SecurityContext;
 
 class WebhookService
 {
@@ -28,23 +29,27 @@ class WebhookService
 	/** @var Request $request */
 	protected $request;
 
-    public function __construct(DocumentManager $documentManager, Router $router, RequestStack $requestStack)
+    public function __construct(DocumentManager $documentManager, Router $router, RequestStack $requestStack, SecurityContext $securityContext)
     {
     	 $this->em = $documentManager;
     	 $this->router = $router;
     	 $this->request = $requestStack->getCurrentRequest();
+         $this->securityContext = $securityContext;
     }
 
-    public function queue($actionType, Element $element, User $user)
+    public function queue($actionType, Element $element)
     {
         /** @var Webhook[] $webhooks */
         $webhooks = $this->em->getRepository(Webhook::class)->findAll();
+
+        $user = $this->securityContext->getToken()->getUser();
+        $userDisplayName = is_string($user) ? $user : $user->getDisplayName();
 
         foreach( $webhooks as $webhook ) {
 
             $data = [
                 'action' => $actionType,
-                'user' => $user->getDisplayName(),
+                'user' => $userDisplayName,
                 'link' => str_replace('%23', '#', $this->router->generate('biopen_directory_showElement', array('id'=>$element->getId()), true)),
                 'data' => json_decode($element->getBaseJson(), true)
             ];
