@@ -203,6 +203,8 @@ class MailService
 
     private function replaceNewElementsList($string, $elements, $user)
     {
+        if (!is_array($elements)) $elements = $elements->toArray();
+
         $pendingElements = array_filter($elements, function($el) { return $el->isPending(); });
         $newElements     = array_filter($elements, function($el) { return !$el->isPending(); });
 

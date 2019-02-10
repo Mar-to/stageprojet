@@ -9,7 +9,22 @@
                   border-bottom: 1px dashed grey;">
 
         {# NAME #}
-        <div class="name" style="font-weight: bold;">{{ element.name | capitalize }}</div>
+        <div class="name" style="font-weight: bold;">
+          {{ element.name | capitalize }}
+          {% if element.isPending %}<span style="padding: .2em .6em .3em;
+                                                font-size: 75%;
+                                                font-weight: 700;
+                                                line-height: 1;
+                                                color: #fff;
+                                                background-color: {{ config.disableColor }};
+                                                text-align: center;
+                                                white-space: nowrap;
+                                                vertical-align: baseline;
+                                                border-radius: .25em;">
+              {{ element.status == 0 ? 'Modifications' : 'En attente'}}</span>
+          {% endif %}
+
+        </div>
         
         {# DESCRIPTION #}
         {% if element.description is defined %}

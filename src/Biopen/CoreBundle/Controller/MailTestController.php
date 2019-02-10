@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Biopen\GeoDirectoryBundle\Document\Coordinates;
+use Biopen\GeoDirectoryBundle\Document\ElementStatus;
+use Biopen\GeoDirectoryBundle\Document\ModerationState;
 
 
 class MailTestController extends Controller
@@ -70,7 +72,10 @@ class MailTestController extends Controller
         $element = $em->getRepository('BiopenCoreBundle:User')->findOneByEnabled(true);
         $element->setLocation('bordeaux');
         $element->setGeo(new Coordinates(44.876,-0.512));
-        $options = $em->getRepository('BiopenGeoDirectoryBundle:Element')->findBy([], null, 30); 
+        $qb = $em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+        $qb->field('status')->gte(ElementStatus::AdminRefused);
+        $qb->field('moderationState')->notIn(array(ModerationState::GeolocError, ModerationState::NoOptionProvided));
+        $options = $qb->limit(30)->getQuery()->execute();
      }
      else
      {
