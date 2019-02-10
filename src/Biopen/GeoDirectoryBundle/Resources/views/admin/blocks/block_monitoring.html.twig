@@ -72,6 +72,43 @@
 			        </a>
 			    </div>
 		  	</div>	
+		  </div>
+		  <div class="row">
+		  	<div class="col-xs-6 col-md-3 col-md-offset-3">       
+    			<!-- small box -->
+			    <div class="small-box bg-purple">
+			        <div class="inner">
+		            <h3>
+		            	{{ activeUsersCount }}
+		            </h3>
+		            <p>Utilisateurs</p>
+			        </div>
+			        <div class="icon">
+			            <i class="fa fa-users"></i>
+			        </div>
+			        <a href="{{ path('admin_biopen_core_user_list')}}?filters=reset" class="small-box-footer">
+			            Afficher <i class="fa fa-arrow-circle-right"></i>
+			        </a>
+			    </div>
+		  	</div>	
+
+		  	<div class="col-xs-6 col-md-3">       
+    			<!-- small box -->
+			    <div class="small-box bg-purple">
+			        <div class="inner">
+		            <h3>
+		            	{{ activeUsersNewsletterCount }}
+		            </h3>
+		            <p>Abonnés à la newsletter</p>
+			        </div>
+			        <div class="icon">
+			            <i class="fa fa-envelope"></i>
+			        </div>
+			        <a href="{{ path('admin_biopen_core_user_list')}}?filter[newsletterFrequency][value]=1" class="small-box-footer">
+			            Afficher <i class="fa fa-arrow-circle-right"></i>
+			        </a>
+			    </div>
+		  	</div>	
 
 		  </div>
 

@@ -115,6 +115,14 @@ class UserAdmin extends AbstractAdmin
             ->add('id')
             ->add('username')
             ->add('locked')
+            ->add('newsletterFrequency', 'doctrine_mongo_callback', array(
+                'label' => 'Reception newsletter', 
+                'field_type' => 'checkbox',
+                'callback' => function($queryBuilder, $alias, $field, $value) {
+                    if (!$value || !$value['value']) { return; }
+                    $queryBuilder->field('newsletterFrequency')->gt(0);
+                    return true;
+                }))
             ->add('email')
             ->add('groups')
         ;

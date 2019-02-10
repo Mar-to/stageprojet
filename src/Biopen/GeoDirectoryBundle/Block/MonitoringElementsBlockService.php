@@ -5,6 +5,7 @@ namespace Biopen\GeoDirectoryBundle\Block;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
+use Biopen\CoreBundle\Document\NewsletterFrequencyOptions;
 
 use Sonata\BlockBundle\Model\BlockInterface;
 use Sonata\BlockBundle\Block\BlockContextInterface;
@@ -50,6 +51,9 @@ class MonitoringElementsBlockService extends AbstractBlockService
 	    $validateElements = $this->em->getRepository('BiopenGeoDirectoryBundle:Element')->findValidated(true);
 	    $allVisibleElements = $this->em->getRepository('BiopenGeoDirectoryBundle:Element')->findVisibles(true, false);
 	    $visibleNonImportedElements = $this->em->getRepository('BiopenGeoDirectoryBundle:Element')->findVisibles(true, true);
+	    $activeUsersCount = $this->em->createQueryBuilder('BiopenCoreBundle:User')->field('enabled')->equals(true)->count()->getQuery()->execute();
+	    $activeUsersNewsletterCount = $this->em->createQueryBuilder('BiopenCoreBundle:User')->field('enabled')->equals(true)
+	    																				->field('newsletterFrequency')->gt(NewsletterFrequencyOptions::Never)->count()->getQuery()->execute();
 	    // merge settings
 	    $settings = $blockContext->getSettings();
 
@@ -60,7 +64,9 @@ class MonitoringElementsBlockService extends AbstractBlockService
 	        'moderationNeededCount' => $moderationNeeded,
 	        'validatesCount' => $validateElements,
 	        'allVisibleCount' => $allVisibleElements,
-	        'visibleNonImportedCount' => $visibleNonImportedElements
+	        'visibleNonImportedCount' => $visibleNonImportedElements,
+	        'activeUsersCount' => $activeUsersCount,
+	        'activeUsersNewsletterCount' => $activeUsersNewsletterCount
 	    ), $response);
 	}
 }
