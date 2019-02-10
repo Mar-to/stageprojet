@@ -11,11 +11,11 @@ services:
 
     biopen.element_action_service:
        class: Biopen\GeoDirectoryBundle\Services\ElementActionService
-       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.context", "@biopen.mail_service", "@biopen.element_pending_service" ]
+       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.context", "@biopen.mail_service", "@biopen.element_pending_service", "@biopen.webhook_service" ]
 
     biopen.element_pending_service:
        class: Biopen\GeoDirectoryBundle\Services\ElementPendingService
-       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.context", "@biopen.mail_service" ]
+       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.context", "@biopen.mail_service", "@biopen.webhook_service" ]
 
     biopen.element_form_service:
        class: Biopen\GeoDirectoryBundle\Services\ElementFormService
@@ -28,6 +28,10 @@ services:
     biopen.random_creation_service:
        class: Biopen\GeoDirectoryBundle\Services\RandomCreationService
        arguments: [ "@doctrine.odm.mongoDB.document_manager" ]
+
+    biopen.webhook_service:
+      class: Biopen\GeoDirectoryBundle\Services\WebhookService
+      arguments: [ "@doctrine.odm.mongoDB.document_manager", "@router", "@request_stack" ]
 
     biopen.json_generator:
         class: Biopen\GeoDirectoryBundle\EventListener\JsonRepresentationGenerator
