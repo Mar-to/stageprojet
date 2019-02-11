@@ -17,6 +17,7 @@ use Biopen\GeoDirectoryBundle\Document\UserRoles;
 use Biopen\GeoDirectoryBundle\Document\PostalAddress;
 use Biopen\GeoDirectoryBundle\Document\ElementUrl;
 use Biopen\GeoDirectoryBundle\Document\ElementImage;
+use Biopen\GeoDirectoryBundle\Document\ImportState;
 use Biopen\CoreBundle\Document\GoGoLog;
 use Biopen\CoreBundle\Document\GoGoLogType;
 
@@ -57,6 +58,10 @@ class ElementImportService
   }
 
   public function startImport($import) {
+  	$import->setCurrState(ImportState::Downloading);
+  	$import->setCurrMessage("Téléchargement des données en cours... Veuillez patienter...");
+  	$this->em->persist($import);
+  	$this->em->flush();
   	if ($import->getUrl()) return $this->importJson($import);
   	else return $this->importCsv($import);
   }
@@ -154,10 +159,13 @@ class ElementImportService
 	       ->getQuery()->execute(); 
 	  }		
 
+	  $import->setCurrState(ImportState::InProgress);
+
 		// processing each data
 		foreach($data as $row) 
 		{
 			try { 				
+				$import->setCurrMessage("Importation des données " . $i . '/' . $size . ' traitées');
 				$this->createElementFromArray($row, $import); 
 				$i++;
 			}
@@ -178,12 +186,14 @@ class ElementImportService
 			   $this->em->clear();
 			   // After flush, we need to get again the import from the DB to avoid doctrine raising errors
 			   $import = $this->em->getRepository('BiopenGeoDirectoryBundle:ImportDynamic')->find($import->getId());   
+			   $this->em->persist($import);
 			}			
 		}		
 
 		$this->em->flush();
 		$this->em->clear();
-		$import = $this->em->getRepository('BiopenGeoDirectoryBundle:ImportDynamic')->find($import->getId()); 
+		$import = $this->em->getRepository('BiopenGeoDirectoryBundle:ImportDynamic')->find($import->getId());
+		$this->em->persist($import);
 
 		$countElemenDeleted = 0;
 		if ($import->isDynamicImport()) 
@@ -229,6 +239,10 @@ class ElementImportService
 		$log = new GoGoLog($logType, $result);
 		$log->setSubcontent(implode('</br>', $this->errorsMessages));
 		$import->addLog($log);
+
+		$import->setCurrState($totalErrors > ($size / 4) ? ImportState::Failed : ImportState::Completed);
+  	$import->setCurrMessage($result . '</br></br>' . implode('</br>', $this->errorsMessages));
+
 		$this->em->flush();   
 		
 		return $result;

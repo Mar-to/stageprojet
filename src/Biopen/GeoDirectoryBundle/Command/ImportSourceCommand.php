@@ -34,13 +34,10 @@ class ImportSourceCommand extends GoGoAbstractCommand
           return;
         }
         $this->log('Updating source ' . $import->getSourceName() . ' for project ' . $input->getArgument('dbname') . ' begins...');
-        $this->log('Downloading the data...');
         $importService = $this->getContainer()->get('biopen.element_import');
-        $dataToImport = $importService->importJson($import, true);
-        $this->log('Data downloaded. ' . count($dataToImport) . ' elements to import...');  
-        $result = $importService->importData($dataToImport, $import, $this->logger);
+        $result = $importService->startImport($import);
         $this->log($result);
-      } catch (\Exception $e) {
+      } catch (\Exception $e) {         
           $this->error("Source: " . $import->getSourceName() . " - " . $e->getMessage());
       }
     }

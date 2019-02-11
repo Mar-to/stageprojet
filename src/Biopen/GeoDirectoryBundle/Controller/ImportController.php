@@ -25,26 +25,32 @@ use joshtronic\LoremIpsum;
 
 class ImportController extends Controller
 {    
-	 public function generateRandom($nombre, $generateVote = false)
-	 {
-	   $lastElementCreated = $this->get('biopen.random_creation_service')->generate($nombre, $generateVote);
+    public function generateRandom($nombre, $generateVote = false)
+    {
+        $lastElementCreated = $this->get('biopen.random_creation_service')->generate($nombre, $generateVote);
 
-	   return new Response('Elements générés');
-  	} 
+        return new Response('Elements générés');
+    } 
 
-  	// public function importCsvAction($fileName, $geocode)
-	  // {
-	  //  $this->get('biopen.element_import')->importCsv($fileName, $geocode);
+    public function availableOptionsAction()
+    {
+        $options = $this->get('doctrine_mongodb')->getManager()->getRepository('BiopenGeoDirectoryBundle:Option')->findAll();
+        $bottomOptions = array_filter($options, function($option) { return $option->getSubcategoriesCount() == 0;});
+        $optionsNames = array_map(function($option) { return $option->getNameWithParent(); }, $bottomOptions);
 
-	  //  return new Response('Elements importés');
-  	// } 
+        return new Response(join('<br>', $optionsNames));
+    }  
 
-   public function availableOptionsAction()
-   {
-      $options = $this->get('doctrine_mongodb')->getManager()->getRepository('BiopenGeoDirectoryBundle:Option')->findAll();
-      $bottomOptions = array_filter($options, function($option) { return $option->getSubcategoriesCount() == 0;});
-      $optionsNames = array_map(function($option) { return $option->getNameWithParent(); }, $bottomOptions);
-
-      return new Response(join('<br>', $optionsNames));
-   }    
+    public function currStateAction($id) 
+    {
+        $em = $this->get('doctrine_mongodb')->getManager();
+        $import = $em->getRepository('BiopenGeoDirectoryBundle:Import')->find($id);
+        $responseArray = array(
+            "state" => $import->getCurrState(),
+            "message" => $import->getCurrMessage()
+        );
+        $response = new Response(json_encode($responseArray));  
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+    }  
 }

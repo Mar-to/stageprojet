@@ -5,6 +5,7 @@ namespace Biopen\GeoDirectoryBundle\Controller\Admin;
 use Sonata\AdminBundle\Controller\CRUDController as Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Biopen\GeoDirectoryBundle\Document\ImportState;
 
 class ImportDynamicAdminController extends Controller
 {
@@ -12,12 +13,23 @@ class ImportDynamicAdminController extends Controller
     {
         $object = $this->admin->getSubject();
 
+        $object->setCurrState(ImportState::Started);
+        $object->setCurrMessage("En attente...");
+        $em = $this->get('doctrine_mongodb')->getManager();
+        $em->persist($object);
+        $em->flush();
+
         $this->get('biopen.async')->callCommand('app:elements:importSource', [$object->getId()]);
-        $this->addFlash('sonata_flash_success', "Les éléments sont en cours d'importation. Cela peut prendre plusieurs minutes.");
 
-        // $result = $this->get('biopen.element_import')->importJson($object);        
-        // $this->addFlash('sonata_flash_success', $result);     
+        // $result = $this->get('biopen.element_import')->importJson($object);  
 
-        return $this->redirect($this->admin->generateUrl('edit', ['id' => $object->getId()]));
+        $redirectionUrl = $this->admin->generateUrl('edit', ['id' => $object->getId()]); 
+        $stateUrl = $this->generateUrl('biopen_import_state', ['id' => $object->getId()]); 
+
+        return $this->render('@BiopenAdmin/pages/import/import-progress.html.twig', [
+          'import' => $object,
+          'redirectUrl' => $redirectionUrl,
+          'stateUrl' => $stateUrl
+        ]);        
     }
 }

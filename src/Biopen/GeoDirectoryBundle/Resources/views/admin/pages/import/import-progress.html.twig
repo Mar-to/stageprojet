@@ -1,0 +1,46 @@
+{% extends '@BiopenAdmin/pages/page_layout.html.twig' %}
+
+{% block page_title %}Importation de {{ import.sourceName }}{% endblock %}
+
+{% block page_content %}
+  <div class="alert alert-default text-center progress-container">
+    <div class="curr-message">En attente...</div>
+    <a style="display:none" class="redirect-url" href="{{redirectUrl}}">Retourner à l'import</a>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      function checkCurrState($logId) {
+        $.ajax({
+          method: 'get',
+          url: '{{ stateUrl }}',
+          success: function(data, status, object) {
+            $('.curr-message').html(data.message);  
+
+            var currClass = 'alert-default';
+            switch(data.state) {
+              case 'downloading': currClass = 'alert-info'; break;
+              case 'in_progress': currClass = 'alert-info'; break;
+              case 'failed': currClass = 'alert-danger'; break;
+              case 'completed': currClass = 'alert-success'; break;
+            }
+            $('.progress-container').removeClass("alert-info").addClass(currClass);
+
+            if (data.state == "failed" || data.state == 'completed') {
+              $('.redirect-url').show();          
+            } else {
+              setTimeout(checkCurrState, 1000);
+            }   
+          },
+        });
+      }
+
+      checkCurrState();
+    });      
+  </script>
+{% endblock %}
+
+
+
+
+

@@ -7,6 +7,15 @@ use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Biopen\CoreBundle\Document\AbstractFile;
 
+abstract class ImportState
+{
+    const Failed = "failed";
+    const Started = "started";     
+    const Downloading = "downloading";
+    const InProgress = "in_progress";    
+    const Completed = "completed";     
+}
+
 /** 
 * @MongoDB\Document 
 * @Vich\Uploadable
@@ -63,7 +72,18 @@ class Import extends AbstractFile
     /**
     * @MongoDB\ReferenceMany(targetDocument="Biopen\CoreBundle\Document\GoGoLog", cascade={"all"})
     */
-    private $logs;  
+    private $logs;
+
+    /**
+     * 
+     * @MongoDB\Field(type="string")
+     */
+    private $currState;
+
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    private $currMessage;
     
     public function __construct() {
         $this->logs = new \Doctrine\Common\Collections\ArrayCollection();;
@@ -253,5 +273,49 @@ class Import extends AbstractFile
         $logs = is_array($this->logs) ? $this->logs : $this->logs->toArray();
         usort( $logs, function ($a, $b) { return $b->getCreatedAt()->getTimestamp() - $a->getCreatedAt()->getTimestamp(); });
         return $logs;
+    }
+
+    /**
+     * Set currState
+     *
+     * @param string $currState
+     * @return $this
+     */
+    public function setCurrState($currState)
+    {
+        $this->currState = $currState;
+        return $this;
+    }
+
+    /**
+     * Get currState
+     *
+     * @return string $currState
+     */
+    public function getCurrState()
+    {
+        return $this->currState;
+    }
+
+    /**
+     * Set currMessage
+     *
+     * @param string $currMessage
+     * @return $this
+     */
+    public function setCurrMessage($currMessage)
+    {
+        $this->currMessage = $currMessage;
+        return $this;
+    }
+
+    /**
+     * Get currMessage
+     *
+     * @return string $currMessage
+     */
+    public function getCurrMessage()
+    {
+        return $this->currMessage;
     }
 }
