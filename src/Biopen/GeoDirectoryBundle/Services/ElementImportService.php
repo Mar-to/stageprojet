@@ -41,6 +41,9 @@ class ElementImportService
 	protected $countElementNothingToDo = 0;
 	protected $countElementErrors = 0;
 	protected $elementIdsErrors = [];
+	protected $errorsMessages = [];
+	protected $errorsCount = [];
+
 	/**
     * Constructor
     */
@@ -160,6 +163,12 @@ class ElementImportService
 			catch (\Exception $e) { 
 				$this->countElementErrors++;
 				$this->elementIdsErrors[] = "" . $row['id'];
+
+				if (!array_key_exists($e->getMessage(), $this->errorsCount)) $this->errorsCount[$e->getMessage()] = 1;
+				else $this->errorsCount[$e->getMessage()]++;
+				$message = '<u>' . $e->getMessage() . '</u> <b>(x' . $this->errorsCount[$e->getMessage()] . ')</b></br>' . $e->getFile() . ' LINE ' . $e->getLine() . '</br>';
+				$message .= 'CONTEXT : ' . print_r($row, true);
+				$this->errorsMessages[$e->getMessage()] = $message;
 			}
 
 			if (($i % $batchSize) === 0)
@@ -200,17 +209,24 @@ class ElementImportService
     }  
 
 		$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element'); 
-		$totalCount = $qb->field('status')->field('source')->references($import)->count()->getQuery()->execute();       
+		$totalCount = $qb->field('status')->field('source')->references($import)->count()->getQuery()->execute();      
+
+		$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element'); 
+		$needModerationCount = $qb->field('source')->references($import)->field('moderationState')->notIn([ModerationState::NotNeeded])->count()->getQuery()->execute();    
+
 		$result = "Import de " . $import->getSourceName() . " terminé - <strong>Total: " . $totalCount . "</strong>";
 
 		if ($this->countElementCreated > 0) $result .= " - " . $this->countElementCreated . " élément.s importé.s";
 		if ($this->countElementUpdated > 0) $result .= " - " . $this->countElementUpdated . " élement.s mis à jour";
 		if ($this->countElementNothingToDo > 0) $result .= " - " . $this->countElementNothingToDo . " élement.s laissé.s tel.s quel.s (rien à mettre à jour)";
 		if ($countElemenDeleted > 0) $result .= " - " . $countElemenDeleted . " élement.s supprimé.s";
+		if ($needModerationCount > 0) $result .= " - " . $needModerationCount . " élement.s incomplets (geoloc ou catégories)";
 		if ($this->countElementErrors > 0) $result .= " - " . $this->countElementErrors . " erreur.s pendant l'import";
 
-		$logType = $this->countElementErrors > 0 ? ($this->countElementErrors > ($size / 4) ? 'error' : 'warning') : 'success';
+		$totalErrors = $needModerationCount + $this->countElementErrors;
+		$logType = $totalErrors > 0 ? ($totalErrors > ($size / 4) ? 'error' : 'warning') : 'success';
 		$log = new GoGoLog($logType, $result);
+		$log->setSubcontent(implode('</br>', $this->errorsMessages));
 		$import->addLog($log);
 		$this->em->flush();   
 		
@@ -219,6 +235,7 @@ class ElementImportService
 
 	private function createElementFromArray($row, $import)
 	{
+		$updateExisting = false;
 		if ($row['id'])
 		{
 			if (in_array($row['id'], $import->getIdsToIgnore())) return;
@@ -238,19 +255,18 @@ class ElementImportService
 		if ($element) // if element with this Id already exists
 		{
 			// if updated date hasn't change, nothing to do
-			if (array_key_exists('updatedAt', $row) && $row['updatedAt'] == $element->getCustomProperty('updatedAt')) {
-				$this->countElementNothingToDo++;
+			if (array_key_exists('updatedAt', $row) && $row['updatedAt'] == $element->getCustomProperty('updatedAt')) {				
 				$element->setPreventJsonUpdate(true);
 				$element->setStatus(ElementStatus::DynamicImport);
 				$this->em->persist($element);
+				$this->countElementNothingToDo++;
 				return;
 			}
-			$this->countElementUpdated++;
+			$updateExisting = true;
 		}
 		else
 		{
-			$element = new Element();
-			$this->countElementCreated++;
+			$element = new Element();			
 		}
 		$this->currentRow = $row;
 		
@@ -295,6 +311,9 @@ class ElementImportService
 		$status = $import->isDynamicImport() ? ElementStatus::DynamicImport : ElementStatus::AddedByAdmin;
 		$this->elementActionService->import($element, false, null, $status);		
 		$this->em->persist($element);
+		
+		if ($updateExisting) $this->countElementUpdated++;
+		else $this->countElementCreated++;
 	}
 
 	private function fixsOntology($data)

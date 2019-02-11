@@ -350,7 +350,7 @@ class Element
         $this->optionValues = [];
     }
 
-    public function resetImagess()
+    public function resetImages()
     {
         $this->images = [];
     }

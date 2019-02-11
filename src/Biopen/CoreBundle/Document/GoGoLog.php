@@ -41,6 +41,13 @@ class GoGoLog
      */
     private $message;
 
+    /**
+     * @var string
+     *
+     * @MongoDB\Field(type="string")
+     */
+    private $subcontent;
+
      /**
      * @var bool
      * When user click "dismiss" log, it will not appear again
@@ -158,5 +165,27 @@ class GoGoLog
     public function getHidden()
     {
         return $this->hidden;
+    }
+
+    /**
+     * Set subcontent
+     *
+     * @param string $subcontent
+     * @return $this
+     */
+    public function setSubcontent($subcontent)
+    {
+        $this->subcontent = $subcontent;
+        return $this;
+    }
+
+    /**
+     * Get subcontent
+     *
+     * @return string $subcontent
+     */
+    public function getSubcontent()
+    {
+        return $this->subcontent;
     }
 }
