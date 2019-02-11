@@ -149,6 +149,7 @@ class ElementImportService
 			$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element'); 
 			$qb->updateMany() 
 				 ->field('source')->references($import) 
+				 ->field('status')->gt(ElementStatus::Deleted) // leave the deleted one as they are, so we know we do not need to import them
 	       ->field('status')->set(ElementStatus::DynamicImportTemp)
 	       ->getQuery()->execute(); 
 	  }		
@@ -238,7 +239,6 @@ class ElementImportService
 		$updateExisting = false;
 		if ($row['id'])
 		{
-			if (in_array($row['id'], $import->getIdsToIgnore())) return;
 			$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 			$qb->field('source')->references($import);
 			$qb->field('oldId')->equals("" . $row['id']);
@@ -255,9 +255,9 @@ class ElementImportService
 		if ($element) // if element with this Id already exists
 		{
 			// if updated date hasn't change, nothing to do
-			if (array_key_exists('updatedAt', $row) && $row['updatedAt'] == $element->getCustomProperty('updatedAt')) {				
+			if ((array_key_exists('updatedAt', $row) && $row['updatedAt'] == $element->getCustomProperty('updatedAt'))) {				
 				$element->setPreventJsonUpdate(true);
-				$element->setStatus(ElementStatus::DynamicImport);
+				if ($element->getStatus() == ElementStatus::DynamicImportTemp) $element->setStatus(ElementStatus::DynamicImport);
 				$this->em->persist($element);
 				$this->countElementNothingToDo++;
 				return;
@@ -308,7 +308,10 @@ class ElementImportService
 		$this->createCategories($element, $row, $import);
 		$this->createImages($element, $row);
 		$this->saveCustomFields($element, $row);
-		$status = $import->isDynamicImport() ? ElementStatus::DynamicImport : ElementStatus::AddedByAdmin;
+		if ($import->isDynamicImport()) // keep the same status for the one who were deleted
+			$status = $element->getStatus() == ElementStatus::DynamicImportTemp ? ElementStatus::DynamicImport : $element->getStatus();
+		else
+			$status = ElementStatus::AddedByAdmin;
 		$this->elementActionService->import($element, false, null, $status);		
 		$this->em->persist($element);
 		

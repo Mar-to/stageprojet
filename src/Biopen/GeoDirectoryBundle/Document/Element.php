@@ -19,8 +19,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Biopen\CoreBundle\Document\EmbeddedImage;
 
 abstract class ElementStatus
-{
-    const DynamicImportTemp = -7; // Temporary status used while importing  
+{    
     const Duplicate = -6;
     const ModifiedPendingVersion = -5;
     const Deleted = -4;
@@ -34,7 +33,8 @@ abstract class ElementStatus
     const ModifiedByAdmin = 4; 
     const ModifiedByOwner = 5; 
     const ModifiedFromHash = 6; // in the emails we provide a link to edit the element with a hash validation
-    const DynamicImport = 7; // Element imported from an ExternalSource, they cannot be edited        
+    const DynamicImport = 7; // Element imported from an ExternalSource, they cannot be edited      
+    const DynamicImportTemp = 8; // Temporary status used while importing    
 }
 
 abstract class ModerationState
@@ -439,8 +439,8 @@ class Element
         usort($duplicates, function ($a, $b) 
         { 
             // Keep in priority the one from our DB instead of the on dynamically imported
-            $aIsDynamicImported = $a->getSource() && $a->getSource()->isDynamicImport();
-            $bIsDynamicImported = $b->getSource() && $b->getSource()->isDynamicImport();
+            $aIsDynamicImported = $a->isDynamicImported();
+            $bIsDynamicImported = $b->isDynamicImported();
             if ($aIsDynamicImported != $bIsDynamicImported) return $aIsDynamicImported - $bIsDynamicImported;
             // Or get the more recent
             $diffDays = (float) date_diff($a->getUpdatedAt(), $b->getUpdatedAt())->format('%d'); 
@@ -450,6 +450,8 @@ class Element
         });
         return $duplicates;
     }  
+
+    public function isDynamicImported() { return $this->getSource() && $this->getSource()->isDynamicImport(); }
 
     /** @MongoDB\PreFlush */
     public function onPreFlush()
