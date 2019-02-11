@@ -59,7 +59,7 @@ class ElementActionService
       if ($sendMail) $this->mailService->sendAutomatedMail('add', $element, $message);
       $element->updateTimestamp();
       
-      $this->webhookService->queue('add', $element);
+      // $this->webhookService->queue('add', $element);
    }
 
    public function add($element, $sendMail = true, $message = null)
