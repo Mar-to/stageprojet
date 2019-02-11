@@ -8,10 +8,16 @@
             <h3 class="box-title">Des erreurs ont eu lieu récemment</h3>
         </div>
 
-        <div class="box-body">
+        <div class="box-body" style="max-height: 500px; overflow: auto">
         	{% include '@BiopenAdmin/core_custom/custom-fields/display-logs.html.twig' with { logs: errors, dismissLog: true } %}        
         	
         </div>
+
+        {% if errors|length > 4 %}
+        	<div class="box-footer">
+             <a href="{{ path('biopen_api_log_hide_all') }}" class="btn btn-default btn-block"><i class="fa fa-list"></i> Supprimer tous les messages</a>
+        	</div>
+        {% endif %}
     </div>
 		{% endif %}
 

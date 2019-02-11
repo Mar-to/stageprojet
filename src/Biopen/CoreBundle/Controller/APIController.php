@@ -112,4 +112,12 @@ class APIController extends GoGoController
     $response->headers->set('Content-Type', 'application/json');
     return $response;
   }
+
+  public function hideAllLogsAction()
+  {
+    $odm = $this->get('doctrine_mongodb')->getManager();
+    $qb = $odm->createQueryBuilder('BiopenCoreBundle:GoGoLog');
+    $qb->updateMany()->field('hidden')->equals(false)->field('hidden')->set(true)->getQuery()->execute(); 
+    return $this->redirectToRoute('sonata_admin_dashboard');
+  }
 }

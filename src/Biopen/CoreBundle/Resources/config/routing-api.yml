@@ -26,3 +26,9 @@ biopen_api_log_hide:
     defaults: { _controller: BiopenCoreBundle:API:hideLog }
     requirements:
         methods: POST
+
+biopen_api_log_hide_all:
+    path:     /logs/hide-all
+    defaults: { _controller: BiopenCoreBundle:API:hideAllLogs }
+    requirements:
+        methods: GET
