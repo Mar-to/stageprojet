@@ -5,7 +5,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
-
+use Biopen\GeoDirectoryBundle\Document\ImportState;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 
 use Biopen\SaasBundle\Command\GoGoAbstractCommand;
@@ -33,11 +33,15 @@ class ImportSourceCommand extends GoGoAbstractCommand
           $this->error($message);
           return;
         }
+        
         $this->log('Updating source ' . $import->getSourceName() . ' for project ' . $input->getArgument('dbname') . ' begins...');
         $importService = $this->getContainer()->get('biopen.element_import');
         $result = $importService->startImport($import);
         $this->log($result);
-      } catch (\Exception $e) {         
+      } catch (\Exception $e) {     
+          $this->odm->persist($import);
+          $import->setCurrState(ImportState::Failed);
+          $import->setCurrMessage($e->getMessage());     
           $this->error("Source: " . $import->getSourceName() . " - " . $e->getMessage());
       }
     }
