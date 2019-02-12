@@ -180,7 +180,7 @@ class ElementImportService
 				$this->errorsMessages[$e->getMessage()] = $message;
 			}
 
-			if (($i % $batchSize) === 0)
+			if (($i % $batchSize) === 1)
 			{
 			   $this->em->flush();
 			   $this->em->clear();
