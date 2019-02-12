@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
+use Biopen\GeoDirectoryBundle\Document\ImportState;
 
 class ImportAdminController extends Controller
 {
@@ -23,11 +24,28 @@ class ImportAdminController extends Controller
 
     private function executeImport($import)
     {        
-        $result = $this->get('biopen.element_import')->startImport($import);
-        if ($result === null) 
-            $this->addFlash('sonata_flash_error', "Un erreur s'est produite lors du chargement du fichier Csv. Vérifiez que le fichier est bien valide");
-        else
-            $this->addFlash('sonata_flash_success', 'Les ' . $result .' éléments ont été importés avec succès ');
+        $object = $import;
+        $em = $this->get('doctrine_mongodb')->getManager();
+        $em->flush();
+
+        $object->setCurrState(ImportState::Started);
+        $object->setCurrMessage("En attente...");
+        
+        $em->persist($object);
+        $em->flush();
+
+        $this->get('biopen.async')->callCommand('app:elements:importSource', [$object->getId()]);
+
+        // $result = $this->get('biopen.element_import')->importJson($object);  
+
+        $redirectionUrl = $this->admin->generateUrl('create');
+        $stateUrl = $this->generateUrl('biopen_import_state', ['id' => $object->getId()]); 
+
+        return $this->render('@BiopenAdmin/pages/import/import-progress.html.twig', [
+          'import' => $object,
+          'redirectUrl' => $redirectionUrl,
+          'stateUrl' => $stateUrl
+        ]);    
     }
 
 
@@ -78,10 +96,7 @@ class ImportAdminController extends Controller
 
                 try {
                     $object = $this->admin->create($object);   
-                    $this->executeImport($object);
-
-                    // redirect to create mode
-                    return $this->redirect($this->admin->generateUrl('create'));
+                    return $this->executeImport($object);
 
                 } catch (ModelManagerException $e) {
                     $this->handleModelManagerException($e);

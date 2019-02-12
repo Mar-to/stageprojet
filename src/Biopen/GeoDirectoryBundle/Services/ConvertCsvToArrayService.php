@@ -9,10 +9,6 @@ class ConvertCsvToArrayService {
     
     public function convert($filename, $delimiter = ',') 
     {
-        if(!file_exists($filename) || !is_readable($filename)) {
-            return FALSE;
-        }
-        
         $header = NULL;
         $data = array();
         

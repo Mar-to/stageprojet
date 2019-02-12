@@ -68,11 +68,11 @@ class ElementImportService
 
   public function importCsv($import)
   {
-  	$fileName = $import->calculateFilePath();
+  	$fileName = $import->getFileUrl();
 
 		// Getting php array of data from CSV
 		$data = $this->converter->convert($fileName, ',');
-		if ($data === null) return null;		
+		if (!$data) return "Cannot open the CSV file";		
 
 		return $this->importData($data, $import);
   }
@@ -185,14 +185,14 @@ class ElementImportService
 			   $this->em->flush();
 			   $this->em->clear();
 			   // After flush, we need to get again the import from the DB to avoid doctrine raising errors
-			   $import = $this->em->getRepository('BiopenGeoDirectoryBundle:ImportDynamic')->find($import->getId());   
+			   $import = $this->em->getRepository('BiopenGeoDirectoryBundle:Import')->find($import->getId());   
 			   $this->em->persist($import);
 			}			
 		}		
 
 		$this->em->flush();
 		$this->em->clear();
-		$import = $this->em->getRepository('BiopenGeoDirectoryBundle:ImportDynamic')->find($import->getId());
+		$import = $this->em->getRepository('BiopenGeoDirectoryBundle:Import')->find($import->getId());
 		$this->em->persist($import);
 
 		$countElemenDeleted = 0;

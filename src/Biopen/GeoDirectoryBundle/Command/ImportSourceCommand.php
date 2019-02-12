@@ -25,11 +25,11 @@ class ImportSourceCommand extends GoGoAbstractCommand
       try {
         $this->output = $output;
         $sourceNameOrId = $input->getArgument('sourceNameOrImportId');
-        $import = $em->getRepository('BiopenGeoDirectoryBundle:ImportDynamic')->find($sourceNameOrId);
-        if (!$import) $import = $em->getRepository('BiopenGeoDirectoryBundle:ImportDynamic')->findOneBySourceName($sourceNameOrId); 
+        $import = $em->getRepository('BiopenGeoDirectoryBundle:Import')->find($sourceNameOrId);
+        if (!$import) $import = $em->getRepository('BiopenGeoDirectoryBundle:Import')->findOneBySourceName($sourceNameOrId); 
         if (!$import) 
         {
-          $message = "ERREUR pendant l'import : Aucune source avec pour nom ou id " . $input->getArgument('sourceNameOrImportId') . " n'existe dans la base de donnée " . $input->getArgument('dbname');
+          $message = "ERREUR pendant l'import : Aucune source avec pour nom ou id " . $input->getArgument('sourceNameOrImportId') . " n'existe dans la base de donnée " . $input->getArgument('dbname');   
           $this->error($message);
           return;
         }
@@ -41,8 +41,9 @@ class ImportSourceCommand extends GoGoAbstractCommand
       } catch (\Exception $e) {     
           $this->odm->persist($import);
           $import->setCurrState(ImportState::Failed);
-          $import->setCurrMessage($e->getMessage());     
-          $this->error("Source: " . $import->getSourceName() . " - " . $e->getMessage());
+          $message = $e->getMessage() . '</br>' . $e->getFile() . ' LINE ' . $e->getLine();
+          $import->setCurrMessage($message);     
+          $this->error("Source: " . $import->getSourceName() . " - " . $message);
       }
     }
       
