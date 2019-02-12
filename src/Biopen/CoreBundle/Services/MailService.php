@@ -66,7 +66,7 @@ class MailService
 
     public function sendAutomatedMail($mailType, $element, $customMessage = null, $option = null)
     {
-        if ($element->isDynamicImported()) return; // do not send email to dynamically imported elements
+        if ($element instanceof Element && $element->isDynamicImported()) return; // do not send email to dynamically imported elements
         
         if (!$customMessage) $customMessage = 'Pas de message particulier';
         $mailConfig = $this->getAutomatedMailConfigFromType($mailType);
