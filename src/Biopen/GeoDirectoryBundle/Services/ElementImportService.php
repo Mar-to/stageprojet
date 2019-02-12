@@ -68,7 +68,7 @@ class ElementImportService
 
   public function importCsv($import)
   {
-  	$fileName = $import->getFileUrl();
+  	$fileName = $import->getFilePath();
 
 		// Getting php array of data from CSV
 		$data = $this->converter->convert($fileName, ',');

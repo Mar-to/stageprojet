@@ -47,6 +47,13 @@ class AbstractFile
    */
   public $fileUrl = "";  
 
+   /**
+   * @var string
+   * memory
+   * @MongoDB\Field(type="string")  
+   */
+  public $filePath = ""; 
+
   /**
    * @MongoDB\Field(type="date")
    *
@@ -75,6 +82,7 @@ class AbstractFile
     if (null !== $file) {
       // store the absolute url of the file so we can directly use it in the json conversion
       $this->fileUrl = $this->calculateFileUrl();
+      $this->filePath = $this->calculateFilePath();
 
       // It is required that at least one field changes if you are using doctrine
       // otherwise the event listeners won't be called and the file is lost      
@@ -202,4 +210,26 @@ class AbstractFile
   {
     return $this->vichUploadFileKey;
   }
+
+    /**
+     * Set filPath
+     *
+     * @param string $filPath
+     * @return $this
+     */
+    public function setFilePath($filePath)
+    {
+        $this->filePath = $filePath;
+        return $this;
+    }
+
+    /**
+     * Get filPath
+     *
+     * @return string $filPath
+     */
+    public function getFilePath()
+    {
+        return $this->filePath;
+    }
 }
