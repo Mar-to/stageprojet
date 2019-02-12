@@ -54,7 +54,20 @@ class ElementAdminController extends Controller
 
     public function batchActionDelete(ProxyQueryInterface $selectedModelQuery)
     {
+        $selectedModels = $selectedModelQuery->execute();
+        $em = $this->get('doctrine_mongodb')->getManager();
+
+        foreach ($selectedModels as $element) {
+            $element->setPreventJsonUpdate(true);
+            $import = $element->getSource(); 
+            $import->addIdToIgnore($element->getOldId()); 
+            $em->persist($import); 
+        }
+        
         $selectedModelQuery->remove()->getQuery()->execute();
+
+        $em->flush();
+        
         return new RedirectResponse(
             $this->admin->generateUrl('list', array('filter' => $this->admin->getFilterParameters()))
         );

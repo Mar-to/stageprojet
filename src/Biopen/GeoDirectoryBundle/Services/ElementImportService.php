@@ -253,6 +253,7 @@ class ElementImportService
 		$updateExisting = false;
 		if ($row['id'])
 		{
+			if (in_array($row['id'], $import->getIdsToIgnore())) return; 
 			$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 			$qb->field('source')->references($import);
 			$qb->field('oldId')->equals("" . $row['id']);
