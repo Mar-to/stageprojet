@@ -323,10 +323,12 @@ class ElementImportService
 		$this->createCategories($element, $row, $import);
 		$this->createImages($element, $row);
 		$this->saveCustomFields($element, $row);
+
 		if ($import->isDynamicImport()) // keep the same status for the one who were deleted
-			$status = $element->getStatus() == ElementStatus::DynamicImportTemp ? ElementStatus::DynamicImport : $element->getStatus();
+			$status = (!$element->getStatus() || $element->getStatus() == ElementStatus::DynamicImportTemp) ? ElementStatus::DynamicImport : $element->getStatus();
 		else
 			$status = ElementStatus::AddedByAdmin;
+
 		$this->elementActionService->import($element, false, null, $status);		
 		$this->em->persist($element);
 		

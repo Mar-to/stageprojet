@@ -19,8 +19,7 @@ use Biopen\GeoDirectoryBundle\Document\ModerationState;
 class ElementAdminAbstract extends AbstractAdmin
 {
 	protected $statusChoices = [
-    '' => 'Inconnu',
-    '-7'=>"En cours d'importation",
+    '' => 'Inconnu',    
     '-6'=>'Doublon supprimé',
 		'-4'=>'Supprimé', 
 		'-3'=>'Refusé (votes) ', 
@@ -34,6 +33,7 @@ class ElementAdminAbstract extends AbstractAdmin
     '5' => 'Modifié par propriétaire',
     '6' => 'Modifié avec lien direct',
     '7' => 'Source externe',
+    '8'=>"En cours d'importation",
 	];
 
 	protected $moderationChoices = [

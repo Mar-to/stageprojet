@@ -58,10 +58,12 @@ class ElementAdminController extends Controller
         $em = $this->get('doctrine_mongodb')->getManager();
 
         foreach ($selectedModels as $element) {
-            $element->setPreventJsonUpdate(true);
-            $import = $element->getSource(); 
-            $import->addIdToIgnore($element->getOldId()); 
-            $em->persist($import); 
+            $element->setPreventJsonUpdate(true);            
+            if ($element->getStatus() == ElementStatus::DynamicImport) {
+                $import = $element->getSource(); 
+                $import->addIdToIgnore($element->getOldId()); 
+                $em->persist($import); 
+            }            
         }
         
         $selectedModelQuery->remove()->getQuery()->execute();
