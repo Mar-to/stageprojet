@@ -54,7 +54,7 @@ class PostalAddress
       if ($this->customFormatedAddress) return $this->customFormatedAddress;
       $result = "";
       if ($this->streetAddress) $result .= $this->streetAddress;
-      if ($this->postalCode || $this->addressLocality) $result .= ', ';
+      if ($this->streetAddress && ($this->postalCode || $this->addressLocality)) $result .= ', ';
       if ($this->postalCode) $result .= $this->postalCode . ' ';
       if ($this->addressLocality) $result .= $this->addressLocality;
       return $result;
