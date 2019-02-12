@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
+use Biopen\GeoDirectoryBundle\Document\ImportDyanmic;
 use Biopen\GeoDirectoryBundle\Document\OptionValue;
 use Biopen\GeoDirectoryBundle\Services\ValidationType;
 
@@ -61,7 +62,7 @@ class ElementAdminController extends Controller
             $element->setPreventJsonUpdate(true);            
             if ($element->getStatus() == ElementStatus::DynamicImport) {
                 $import = $element->getSource(); 
-                $import->addIdToIgnore($element->getOldId()); 
+                if ($import instanceof ImportDyanmic) $import->addIdToIgnore($element->getOldId()); 
                 $em->persist($import); 
             }            
         }
