@@ -3,9 +3,9 @@
 {% block field %}
   {% spaceless %}
       {% if value %}
-      	<span class="label label-success">{{ value|date('d/m/Y - H:i') }}</span>
+        <span class="label label-primary">Tous les {{ value }} jours</span>
       {% else %}
-      	<span class="label label-default">Manuelle</span>
+        <span class="label label-default">Manuelle</span>
       {% endif %}
   {% endspaceless %}
 {% endblock %}

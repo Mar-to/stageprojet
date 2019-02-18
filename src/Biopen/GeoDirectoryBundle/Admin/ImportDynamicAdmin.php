@@ -58,8 +58,10 @@ class ImportDynamicAdmin extends AbstractAdmin
     {
         $listMapper
             ->addIdentifier('sourceName', null, array('label' => 'Nom de la source'))
-            ->add('lastRefresh', 'datetime', array('label' => 'Dernière synchronisation des données', 'format' => 'd/m/Y - H:i'))
-            ->add('nextRefresh', 'date', array('label' => 'Prochaine synchronisation', 'template' => '@BiopenAdmin/partials/list_next_refresh.html.twig'))
+            ->add('lastRefresh', 'datetime', array('label' => 'Dernière synchronisation', 'format' => 'd/m/Y - H:i'))
+            ->add('refreshFrequencyInDays', null, array('label' => 'Mise à jour', 'template' => '@BiopenAdmin/partials/import/list_refresh_frequency.html.twig'))
+            ->add('logs', null, array('label' => "Nombre d'éléments", 'template' => '@BiopenAdmin/partials/import/list_total_count.html.twig'))
+            ->add('nextRefresh', null, array('label' => 'Dernier log', 'template' => '@BiopenAdmin/partials/import/list_log.html.twig'))
             ->add('_action', 'actions', array(
                 'actions' => array(
                     'edit' => array(),

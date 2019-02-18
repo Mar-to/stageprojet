@@ -1,0 +1,31 @@
+{% extends admin.getTemplate('base_list_field') %}
+
+{% block field %}
+  {% spaceless %}
+    {% if object.logs|length > 0 %}
+      {% set log = object.logs[0] %}
+      {% if log.getDataProp('elementsCreatedCount') > 0 %}
+        <span class="label label-success log-label">+{{ log.getDataProp('elementsCreatedCount') }}</span>
+      {% endif %}
+      {% if log.getDataProp('elementsDeletedCount') > 0 %}
+        <span class="label label-danger log-label">-{{ log.getDataProp('elementsDeletedCount') }}</span>
+      {% endif %}
+      {% if log.getDataProp('elementsUpdatedCount') > 0 %}
+        <span class="label label-primary log-label">{{ log.getDataProp('elementsUpdatedCount') }} mis à jour</span>
+      {% endif %}
+      {% if log.getDataProp('elementsNothingToDoCount') > 0 %}
+        <span class="label label-default log-label">{{ log.getDataProp('elementsNothingToDoCount') }} inchangés</span>
+      {% endif %}
+      {% if log.getDataProp('elementsNeedModerationCount') > 0 %}
+        <span class="label label-warning log-label">{{ log.getDataProp('elementsNeedModerationCount') }} incomplets</span>
+      {% endif %}      
+      {% if log.getDataProp('elementsErrorsCount') > 0 %}
+        <span class="label label-danger log-label">{{ log.getDataProp('elementsErrorsCount') }} erreurs</span>
+      {% endif %}
+
+      <style>
+        .label.log-label { margin-right: 5px; }
+      </style>
+    {% endif %}
+  {% endspaceless %}
+{% endblock %}
