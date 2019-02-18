@@ -29,6 +29,7 @@ class ImportDynamicAdminController extends Controller
         return $this->render('@BiopenAdmin/pages/import/import-progress.html.twig', [
           'import' => $object,
           'redirectUrl' => $redirectionUrl,
+          'redirectListUrl' => $redirectionUrl = $this->admin->generateUrl('list'),
           'stateUrl' => $stateUrl
         ]);        
     }

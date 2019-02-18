@@ -5,7 +5,12 @@
 {% block page_content %}
   <div class="alert alert-default text-center progress-container">
     <div class="curr-message">En attente...</div>
-    <a style="display:none" class="redirect-url" href="{{redirectUrl}}">Retourner à l'import</a>
+    <p class="redirect-url" style="display:none">
+      <a href="{{redirectUrl}}"><button class="btn btn-default"><i class="fa fa-pencil" aria-hidden="true"></i>Retourner à l'import</button></a>
+      {% if redirectListUrl is defined %}
+        <a href="{{redirectListUrl}}"><button class="btn btn-default"><i class="fa fa-list" aria-hidden="true"></i>Retourner à la listet</button></a>
+      {% endif %}
+    </p>
   </div>
 
   <script>
@@ -27,7 +32,7 @@
             }
             $('.progress-container').removeClass("alert-info").addClass(currClass);
 
-            if (data.state == "failed" || data.state == 'completed') {
+            if (data.state == "failed" || data.state == 'completed' || data.state == 'errors') {
               $('.redirect-url').show();          
             } else {
               setTimeout(checkCurrState, 1000);
