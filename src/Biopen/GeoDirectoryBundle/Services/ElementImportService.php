@@ -275,6 +275,7 @@ class ElementImportService
 			// if updated date hasn't change, nothing to do
 			if ((array_key_exists('updatedAt', $row) && $row['updatedAt'] == $element->getCustomProperty('updatedAt'))) {				
 				$element->setPreventJsonUpdate(true);
+				$element->setModerationState(ModerationState::NotNeeded); // restting the modearation state so it will be calculated again
 				if ($element->getStatus() == ElementStatus::DynamicImportTemp) $element->setStatus(ElementStatus::DynamicImport);
 				$this->em->persist($element);
 				$this->countElementNothingToDo++;
