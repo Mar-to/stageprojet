@@ -5,7 +5,7 @@ namespace Biopen\CoreBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Gedmo\Mapping\Annotation as Gedmo;
 
-abstract class GoGoLogType
+abstract class GoGoLogLevel
 {
     const Debug = "debug";
     const Info = "info";     
@@ -16,6 +16,11 @@ abstract class GoGoLogType
 
 /**
  * @MongoDB\Document
+ *
+ * @MongoDB\InheritanceType("SINGLE_COLLECTION")
+ * @MongoDB\DiscriminatorField("type")
+ * @MongoDB\DiscriminatorMap({"standard"="GoGoLog", "import"="GoGoLogImport"})
+ * @MongoDB\DefaultDiscriminatorValue("standard")
  */
 class GoGoLog
 {
@@ -32,7 +37,7 @@ class GoGoLog
      * @MongoDB\Field(type="string")
      * @MongoDB\Index
      */
-    private $type;
+    private $level;
 
      /**
      * @var string
@@ -42,11 +47,11 @@ class GoGoLog
     private $message;
 
     /**
-     * @var string
+     * Other informations stored into the log
      *
-     * @MongoDB\Field(type="string")
+     * @MongoDB\Field(type="hash")
      */
-    private $subcontent;
+    private $data = [];
 
      /**
      * @var bool
@@ -63,10 +68,21 @@ class GoGoLog
      */
     protected $createdAt;
 
-    public function __construct($type = null, $message = null)
+    public function __construct($level = null, $message = null, $data = [])
     {
-        $this->type = $type;
+        $this->level = $level;
         $this->message = $message;
+        $this->data = $data;
+    }
+
+    public function displayMessage() 
+    {
+        return $this->getMessage();
+    }  
+
+    public function getDataProp($key) 
+    {
+        return array_key_exists($key, $this->data) ? $this->data[$key] : null;
     }
 
     /**
@@ -124,28 +140,6 @@ class GoGoLog
     }
 
     /**
-     * Set type
-     *
-     * @param string $type
-     * @return $this
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return string $type
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
      * Set hidden
      *
      * @param bool $hidden
@@ -168,24 +162,46 @@ class GoGoLog
     }
 
     /**
-     * Set subcontent
+     * Set level
      *
-     * @param string $subcontent
+     * @param string $level
      * @return $this
      */
-    public function setSubcontent($subcontent)
+    public function setLevel($level)
     {
-        $this->subcontent = $subcontent;
+        $this->level = $level;
         return $this;
     }
 
     /**
-     * Get subcontent
+     * Get level
      *
-     * @return string $subcontent
+     * @return string $level
      */
-    public function getSubcontent()
+    public function getLevel()
     {
-        return $this->subcontent;
+        return $this->level;
+    }
+
+    /**
+     * Set data
+     *
+     * @param hash $data
+     * @return $this
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
+        return $this;
+    }
+
+    /**
+     * Get data
+     *
+     * @return hash $data
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 }

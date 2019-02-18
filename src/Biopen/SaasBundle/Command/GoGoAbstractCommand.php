@@ -8,7 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
 use Biopen\CoreBundle\Document\GoGoLog;
-use Biopen\CoreBundle\Document\GoGoLogType;
+use Biopen\CoreBundle\Document\GoGoLogLevel;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
 class GoGoAbstractCommand extends ContainerAwareCommand
@@ -54,7 +54,7 @@ class GoGoAbstractCommand extends ContainerAwareCommand
    {
       $this->logger->error($message);
       $this->output->writeln('ERROR ' . $message);
-      $log = new GoGoLog(GoGoLogType::Error, 'Error running ' . $this->getName() . ' : ' . $message);
+      $log = new GoGoLog(GoGoLogLevel::Error, 'Error running ' . $this->getName() . ' : ' . $message);
       $this->odm->persist($log);
       $this->odm->flush();
    }

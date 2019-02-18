@@ -18,8 +18,8 @@ use Biopen\GeoDirectoryBundle\Document\PostalAddress;
 use Biopen\GeoDirectoryBundle\Document\ElementUrl;
 use Biopen\GeoDirectoryBundle\Document\ElementImage;
 use Biopen\GeoDirectoryBundle\Document\ImportState;
-use Biopen\CoreBundle\Document\GoGoLog;
-use Biopen\CoreBundle\Document\GoGoLogType;
+use Biopen\CoreBundle\Document\GoGoLogImport;
+use Biopen\CoreBundle\Document\GoGoLogLevel;
 
 class ElementImportService
 {   
@@ -225,27 +225,30 @@ class ElementImportService
 		$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element'); 
 		$needModerationCount = $qb->field('source')->references($import)->field('moderationState')->notIn([ModerationState::NotNeeded])->count()->getQuery()->execute();    
 
-		$result = "Import de " . $import->getSourceName() . " terminé - <strong>Total: " . $totalCount . "</strong>";
+		$message = "Import de " . $import->getSourceName() . " terminé";
 
-		if ($this->countElementCreated > 0) $result .= " - " . $this->countElementCreated . " élément.s importé.s";
-		if ($this->countElementUpdated > 0) $result .= " - " . $this->countElementUpdated . " élement.s mis à jour";
-		if ($this->countElementNothingToDo > 0) $result .= " - " . $this->countElementNothingToDo . " élement.s laissé.s tel.s quel.s (rien à mettre à jour)";
-		if ($countElemenDeleted > 0) $result .= " - " . $countElemenDeleted . " élement.s supprimé.s";
-		if ($needModerationCount > 0) $result .= " - " . $needModerationCount . " élement.s incomplets (geoloc ou catégories)";
-		if ($this->countElementErrors > 0) $result .= " - " . $this->countElementErrors . " erreur.s pendant l'import";
+		$logData = [
+			"elementsCount" => $totalCount,
+			"elementsCreatedCount" => $this->countElementCreated,
+			"elementsUpdatedCount" => $this->countElementUpdated,
+			"elementsNothingToDoCount" => $this->countElementNothingToDo,
+			"elementsNeedModerationCount" => $needModerationCount,
+			"elementsDeletedCount" => $countElemenDeleted,
+			"elementsErrorsCount" => $this->countElementErrors,
+			"errorMessages" => $this->errorsMessages
+		];
 
 		$totalErrors = $needModerationCount + $this->countElementErrors;
-		$logType = $totalErrors > 0 ? ($totalErrors > ($size / 4) ? 'error' : 'warning') : 'success';
-		$log = new GoGoLog($logType, $result);
-		$log->setSubcontent(implode('</br>', $this->errorsMessages));
+		$logLevel = $totalErrors > 0 ? ($totalErrors > ($size / 4) ? 'error' : 'warning') : 'success';
+		$log = new GoGoLogImport($logLevel, $message, $logData);
 		$import->addLog($log);
 
-		$import->setCurrState($totalErrors > ($size / 4) ? ImportState::Failed : ImportState::Completed);
-  	$import->setCurrMessage($result . '</br></br>' . implode('</br>', $this->errorsMessages));
+		$import->setCurrState($totalErrors > 0 ? ($totalErrors == $size ? ImportState::Failed : ImportState::Errors) : ImportState::Completed);
+  	$import->setCurrMessage($log->displayMessage() . '</br></br>' . implode('</br>', $this->errorsMessages));
 
 		$this->em->flush();   
 		
-		return $result;
+		return $message;
 	}
 
 	private function createElementFromArray($row, $import)

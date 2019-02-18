@@ -22,6 +22,7 @@
               case 'downloading': currClass = 'alert-info'; break;
               case 'in_progress': currClass = 'alert-info'; break;
               case 'failed': currClass = 'alert-danger'; break;
+              case 'errors': currClass = 'alert-warning'; break;
               case 'completed': currClass = 'alert-success'; break;
             }
             $('.progress-container').removeClass("alert-info").addClass(currClass);

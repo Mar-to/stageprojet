@@ -8,12 +8,13 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Biopen\CoreBundle\Document\AbstractFile;
 
 abstract class ImportState
-{
-    const Failed = "failed";
+{       
     const Started = "started";     
     const Downloading = "downloading";
     const InProgress = "in_progress";    
-    const Completed = "completed";     
+    const Completed = "completed";  
+    const Errors = "errors";   
+    const Failed = "failed";
 }
 
 /** 
@@ -75,15 +76,19 @@ class Import extends AbstractFile
     private $logs;
 
     /**
-     * 
+     * State of the import when processing. Type of ImportState
+     * When processing import, this variable is being updated in realtime, so the client can follow 
+     * the state of the import also in realtime
      * @MongoDB\Field(type="string")
      */
     private $currState;
 
     /**
+     * A message can be added to the state information
      * @MongoDB\Field(type="string")
      */
     private $currMessage;
+
     
     public function __construct() {
         $this->logs = new \Doctrine\Common\Collections\ArrayCollection();;

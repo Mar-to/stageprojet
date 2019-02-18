@@ -103,3 +103,5 @@ db.Element.updateMany( { } , { $rename: { 'website': 'data.website', 'telephone'
 
 db.Element.updateMany({ 'data.openhours_more_infos': null }, { $unset: { 'data.openhours_more_infos': "" } })
 db.Element.find({ 'data.openhours_more_infos': null })
+
+db.GoGoLog.updateMany( { } , { $rename: { 'type': 'level' } } )
