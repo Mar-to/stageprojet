@@ -26,13 +26,12 @@ class DuplicatesActionsController extends BulkActionsAbstractController
       return $this->elementsBulkAction('detectDuplicates', $request); 
    }
 
-   public function detectDuplicates($element)
+   public function detectDuplicates($element, $em)
    {
       if ($element->getStatus() >= ElementStatus::PendingModification 
           && !array_key_exists($element->getId(), $this->duplicatesFound) 
           && !$element->isPotentialDuplicate())
       {
-         $em = $this->get('doctrine_mongodb')->getManager();
          $distance = 0.4;
          $city = strtolower($element->getAddress()->getAddressLocality());
          if (  in_array($element->getAddress()->getDepartmentCode(), ["75","92","93","94"])
@@ -61,8 +60,6 @@ class DuplicatesActionsController extends BulkActionsAbstractController
             } 
             $element->setIsDuplicateNode(true);          
          }
-
-         $em->flush();
 
          return $this->render('@BiopenAdmin/pages/bulks/bulk_duplicates.html.twig', array(
                'duplicates' => $duplicates, 

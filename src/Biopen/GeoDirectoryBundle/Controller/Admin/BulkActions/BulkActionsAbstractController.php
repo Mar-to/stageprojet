@@ -55,7 +55,7 @@ class BulkActionsAbstractController extends Controller
         $renderedViews = [];
         foreach ($elements as $key => $element) 
         {
-           $view = $this->$functionToExecute($element);  
+           $view = $this->$functionToExecute($element, $em);  
            if ($view) $renderedViews[] = $view;
 
            if ((++$i % 50) == 0) {

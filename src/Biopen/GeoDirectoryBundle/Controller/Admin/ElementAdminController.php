@@ -142,7 +142,7 @@ class ElementAdminController extends Controller
             {
                 $this->$functionToExecute($elementActionService, $selectedModel, $sendMail, $comment);               
                 
-                if ((++$i % 20) == 0) {
+                if ((++$i % 50) == 0) {
                     $documentManager->flush();
                     $documentManager->clear();
                 }
