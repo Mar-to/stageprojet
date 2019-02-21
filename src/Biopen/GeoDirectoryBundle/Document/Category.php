@@ -25,7 +25,7 @@ class Category
      *
      * @MongoDB\Field(type="string")
      */
-    private $name;
+    private $name = "";
 
     /**
      * @var string

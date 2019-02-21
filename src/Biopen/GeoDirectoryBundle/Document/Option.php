@@ -35,7 +35,7 @@ class Option
      * @Groups({"semantic"})
      * @MongoDB\Field(type="string")
      */
-    private $name;
+    private $name = "";
 
     /**
      * @var string
@@ -188,7 +188,7 @@ class Option
 
     public function __toString() 
     {
-        return $this->getName() ? $this->getName() : "unknown";
+        return $this->getName();
     }
 
     public function getNameWithParent()
