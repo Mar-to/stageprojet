@@ -99,6 +99,7 @@
         // prevent adding two contat email attributes
         $('.input-control[data-type=email]').toggle($('.email-field').length == 0);
 
+        // $('.name-wrap input[name=name]').val('email');
         // get all input names (used after for uniqueness)
         var allNames = [];
         $('.fld-name').each(function() {allNames.push($(this).val()); });
@@ -112,12 +113,15 @@
           if (count > 1) newValue += "_bis";
           $(this).val(newValue);          
         });
+
         $('#{{ form.vars.id }}').val(JSON.stringify(formBuilder.actions.getData()));
 
         // Changes icons and icones helpers
         $('a[type=remove].icon-cancel').removeClass('icon-cancel').addClass('fa fa-trash');
         $('a[type=copy].icon-copy').attr('title', 'Dupliquer');
         $('a[type=edit].icon-pencil').attr('title', 'Editer/Masquer');
+
+        $('.email-field input[name=name]').val('email');
       }, 300);
 
       $('input[name="access"]').change(function() {
@@ -144,10 +148,8 @@
   .title-field .name-wrap, .title-field .access-wrap, .title-field .required-wrap,
   .textarea-field .subtype-wrap, .checkbox-field .field-options, .checkbox-field .required-wrap,
   .paragraph-field .subtype-wrap, .header-field .subtype-wrap,
-  .email-field .name-wrap
+  .email-field .name-wrap 
   { display: none !important; }  
-   { display: none !important; }  
-   { display: none !important; }
   
   /* specific fields styling */
   .title-field .required-asterisk, .address-field .required-asterisk, .taxonomy-field .required-asterisk

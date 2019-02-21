@@ -99,8 +99,8 @@ class ProjectController extends AbstractSaasController
             $projectOdm->persist($mainCategory);
 
             $mains = array(
-                array('Option 1'  , 'fa fa-recycle'     , '#98a100'),
-                array('Option 2'  , 'fa fa-home'       , '#7e3200')         
+                array('Catégorie 1'  , 'fa fa-recycle'     , '#98a100'),
+                array('Catégorie 2'  , 'fa fa-home'       , '#7e3200')         
             );
 
             foreach ($mains as $key => $main) 

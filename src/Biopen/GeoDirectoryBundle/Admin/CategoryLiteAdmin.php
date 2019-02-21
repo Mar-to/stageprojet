@@ -27,11 +27,11 @@ class CategoryLiteAdmin extends AbstractAdmin
 	{
 	  $formMapper
 	  
-		  	->add('name', null, array('required' => true, 'label' => 'Nom de la catégorie'))
+		  	->add('name', null, array('required' => true, 'label' => 'Nom du groupe'))
 		  	->add('pickingOptionText', null, array('required' => true, 'label' => 'Text à afficher dans le formulaire : Choisissez ....'))	
 		  	->add('index', null, array('required' => false, 'label' => 'Position'))		  	
 		  	->add('isMandatory', null, array('required' => false, 'label' => "Obligatoire"))	
-		  	->add('singleOption', null, array('required' => false, 'label' => 'Option unique'))
+		  	->add('singleOption', null, array('required' => false, 'label' => 'Choix unique'))
 		  	->add('displayInMenu', null, array('required' => false, 'label' => "Menu"))  
          ->add('displayInInfoBar', null, array('required' => false, 'label' => "Fiche"))  
          ->add('displayInForm', null, array('required' => false, 'label' => "Formulaire")) 

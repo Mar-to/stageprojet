@@ -2,10 +2,17 @@
 <div id="section_admin">
 	<h2 id="admin-title">Validation</h2>
 	
-	<div class="checkbox-container col s12">
-		<input type="checkbox" name="send_mail" id="send_mail" checked/>
-		<label for="send_mail">Avertir {{ config.elementDisplayNameDefinite }} {{ editMode ? 'des modifications' : "de l'ajout" }} en lui envoyant un mail</label> 	
-	</div>
+	{% set emailFieldPresent = false %}
+	{% for field in config.getElementFormFields %}
+		{% if field.type == 'email' %}{% set emailFieldPresent = true %}{% endif %}
+	{% endfor %}
+
+	{% if emailFieldPresent %}
+		<div class="checkbox-container col s12">
+			<input type="checkbox" name="send_mail" id="send_mail" checked/>
+			<label for="send_mail">Avertir {{ config.elementDisplayNameDefinite }} {{ editMode ? 'des modifications' : "de l'ajout" }} en lui envoyant un mail</label> 	
+		</div>
+	{% endif %}
 
 	{# if element is PendingModification #}
 	{% if editMode and element.isPending() %}

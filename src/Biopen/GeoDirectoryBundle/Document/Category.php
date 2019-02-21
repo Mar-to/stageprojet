@@ -79,14 +79,14 @@ class Category
      * @Exclude(if="object.getDisplayInMenu() == false")
      * @MongoDB\Field(type="boolean")
      */
-    private $displayInMenu = false;
+    private $displayInMenu = true;
 
     /**
      * @var bool
      * @Exclude(if="object.getDisplayInInfoBar() == false")
      * @MongoDB\Field(type="boolean")
      */
-    private $displayInInfoBar = false;
+    private $displayInInfoBar = true;
 
     /**
      * @var bool
@@ -159,7 +159,7 @@ class Category
     public function __toString() 
     {
         $parentName = $this->getParent() ? $this->getParent()->getName() . '/' : '';
-        return "(Category) " . $parentName . $this->getName();
+        return "(Groupe) " . $parentName . $this->getName();
     }
 
     /** @MongoDB\PreFlush */

@@ -14,7 +14,7 @@ class ConfigurationAdminController extends Controller
    public function listAction()
    {
       $em = $this->get('doctrine_mongodb')->getManager();
-
+      
       $configuration = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
 
       if ($configuration) 
