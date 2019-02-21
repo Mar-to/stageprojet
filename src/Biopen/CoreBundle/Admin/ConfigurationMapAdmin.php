@@ -21,9 +21,7 @@ class ConfigurationMapAdmin extends AbstractAdmin
 
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $featureStyle = array('class' => 'col-md-6 col-lg-3');
-        $contributionStyle = array('class' => 'col-md-6 col-lg-4');
-        $mailStyle = array('class' => 'col-md-12 col-lg-6');
+        $featureStyle = array('class' => 'col-md-6 col-lg-3 gogo-feature');
         $featureFormOption = ['delete' => false, 'required'=> false, 'label_attr'=> ['style'=> 'display:none']];
         $featureFormTypeOption = ['edit' => 'inline'];
         $container = $this->getConfigurationPool()->getContainer(); 
@@ -82,21 +80,22 @@ class ConfigurationMapAdmin extends AbstractAdmin
                 ->with('Export Iframe', $featureStyle)
                     ->add('exportIframeFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()                       
                 ->with('Affichage des éléments en attente de validation', $featureStyle)
-                    ->add('pendingFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
-                ->with('Afficher la popup custom', $featureStyle)
-                    ->add('customPopupFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
-                
-                ->with('Message popup à faire apparaître sur la carte')
+                    ->add('pendingFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()                
+            ->end()  
+            ->tab('Message personnalisé')  
+                ->with('Message personnalisé à faire apparaitre dans un coin de la carte', ['class' => 'gogo-feature'])
+                    ->add('customPopupFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)
                     ->add('customPopupText', 'sonata_simple_formatter_type', array(
                             'format' => 'richhtml',
-                            'label' => "Texte à afficher (N'oubliez pas d'activer la fonctionalité custom popup !)", 
+                            'label' => 'Texte à afficher (Exemple: "Ce site est encore en version bêta !")',
+                            'label_attr' => ['style' => 'margin-top: 20px'],                             
                             'ckeditor_context' => 'full',
                             'required' => false
                     ))
                     ->add('customPopupId', null, array('label' => 'Numéro de version du popup (à changer quand vous modifiez le texte)', 'required' => false))
                     ->add('customPopupShowOnlyOnce', null, array('label' => "Afficher la popup une fois seulement (si l'utilisateur la ferme, il ne la reverra plus jusqu'à ce que vous changiez le numéro de version)", 'required' => false))
                 ->end()
-            ->end()                  
+            ->end()                
             ->tab('Menu')
                 ->with('Menu (contient les filtre des catégories et la barre de recherche)')
                     ->add('menu.width', 'number', array('label' => "Largueur du menu", 'required' => false))

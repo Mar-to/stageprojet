@@ -1,33 +1,34 @@
 services:
+
+    # --------- CONTENUS -----------
+
+    admin.wrapper:
+        class: Biopen\CoreBundle\Admin\WrapperAdmin
+        arguments: [~, Biopen\CoreBundle\Document\Wrapper, 'PixSortableBehaviorBundle:SortableAdmin']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Contenus", label: Bandeaux de la page d'accueil }
+
+    admin.partner:
+        class: Biopen\CoreBundle\Admin\PartnerAdmin
+        arguments: [~, Biopen\CoreBundle\Document\Partner, 'PixSortableBehaviorBundle:SortableAdmin']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Contenus", label: Partenaires }
+
+    admin.about:
+        class: Biopen\CoreBundle\Admin\AboutAdmin
+        arguments: [~, Biopen\CoreBundle\Document\About, 'PixSortableBehaviorBundle:SortableAdmin']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Contenus", label: Popups type "A propos" }    
+    
+
+    # --------- CONFIGURATION -----------
+    
     admin.config:
         class: Biopen\CoreBundle\Admin\ConfigurationAdmin
         arguments: [~, Biopen\CoreBundle\Document\Configuration, 'BiopenCoreBundle:ConfigurationAdmin']
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: Configuration Générale }
-
-    admin.home_config:
-        class: Biopen\CoreBundle\Admin\ConfigurationHomeAdmin
-        arguments: [~, Biopen\CoreBundle\Document\Configuration, 'BiopenCoreBundle:ConfigurationAdmin']
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: Page d'accueil }
-
-    admin.map_config:
-        class: Biopen\CoreBundle\Admin\ConfigurationMapAdmin
-        arguments: [~, Biopen\CoreBundle\Document\Configuration, 'BiopenCoreBundle:ConfigurationAdmin']
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: La carte }
-
-    admin.form_config:
-        class: Biopen\CoreBundle\Admin\ConfigurationFormContributionsAdmin
-        arguments: [~, Biopen\CoreBundle\Document\Configuration, 'BiopenCoreBundle:ConfigurationAdmin']
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: Formulaire / Contributions }
-
-    admin.map_element_form_config:
-        class: Biopen\CoreBundle\Admin\ConfigurationMapElementFormAdmin
-        arguments: [~, Biopen\CoreBundle\Document\Configuration, 'BiopenCoreBundle:ConfigurationAdmin']
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: La fiche détail }    
+    
 
     admin.style_config:
         class: Biopen\CoreBundle\Admin\ConfigurationStyleAdmin
@@ -35,17 +36,89 @@ services:
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: Style / Couleurs }
 
+    admin.home_config:
+        class: Biopen\CoreBundle\Admin\ConfigurationHomeAdmin
+        arguments: [~, Biopen\CoreBundle\Document\Configuration, 'BiopenCoreBundle:ConfigurationAdmin']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: Page d'Accueil }
+
+    admin.form_config:
+        class: Biopen\CoreBundle\Admin\ConfigurationFormAdmin
+        arguments: [~, Biopen\CoreBundle\Document\Configuration, 'BiopenCoreBundle:ConfigurationAdmin']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: Formulaire }  
+    
+    admin.contributions_config:
+        class: Biopen\CoreBundle\Admin\ConfigurationContributionsAdmin
+        arguments: [~, Biopen\CoreBundle\Document\Configuration, 'BiopenCoreBundle:ConfigurationAdmin']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: Qui peut Contribuer? }    
+
+    admin.map_config:
+        class: Biopen\CoreBundle\Admin\ConfigurationMapAdmin
+        arguments: [~, Biopen\CoreBundle\Document\Configuration, 'BiopenCoreBundle:ConfigurationAdmin']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: La Carte }
+
+    admin.tile_layer:
+        class: Biopen\CoreBundle\Admin\TileLayerAdmin
+        arguments: [~, Biopen\CoreBundle\Document\TileLayer, 'PixSortableBehaviorBundle:SortableAdmin']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: Fonds de Carte }
+
+    admin.map_element_form_config:
+        class: Biopen\CoreBundle\Admin\ConfigurationInfoBarAdmin
+        arguments: [~, Biopen\CoreBundle\Document\Configuration, 'BiopenCoreBundle:ConfigurationAdmin']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: Fiche Détail }
+    
+
     admin.mail_config:
         class: Biopen\CoreBundle\Admin\ConfigurationMailAdmin
         arguments: [~, Biopen\CoreBundle\Document\Configuration, 'BiopenCoreBundle:ConfigurationAdmin']
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: Mails / Newsletter }
 
+
     admin.login_config:
         class: Biopen\CoreBundle\Admin\ConfigurationUserAdmin
         arguments: [~, Biopen\CoreBundle\Document\Configuration, 'BiopenCoreBundle:ConfigurationAdmin']
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: Utilisateurs / Connexion }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: Utilisateurs / Connexion }   
+    
+
+    admin.api_config:
+        class: Biopen\CoreBundle\Admin\ConfigurationAPIAdmin
+        arguments: [~, Biopen\CoreBundle\Document\Configuration, 'BiopenCoreBundle:ConfigurationAdmin']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: APIs }
+
+    admin.webhook:
+        class: Biopen\GeoDirectoryBundle\Admin\WebhookAdmin
+        arguments: [~, Biopen\GeoDirectoryBundle\Document\Webhook, 'SonataAdminBundle:CRUD']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: Webhooks }
+    
+    
+    # --------- HIDDEN -----------
+
+    admin.parter_image:
+        class: Biopen\CoreBundle\Admin\ImageAdmin
+        arguments: [~, Biopen\CoreBundle\Document\PartnerImage, '' ]
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }   
+
+    admin.conf_image:
+        class: Biopen\CoreBundle\Admin\ImageAdmin
+        arguments: [~, Biopen\CoreBundle\Document\ConfImage, '' ]
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }     
+
+    admin.image:
+        class: Biopen\CoreBundle\Admin\ImageAdmin
+        arguments: [~, Biopen\CoreBundle\Document\EmbeddedImage, '' ]
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" } 
 
     admin.feature_config:
         class: Biopen\CoreBundle\Admin\FeatureConfigurationAdmin
@@ -64,48 +137,6 @@ services:
         arguments: [~, Biopen\CoreBundle\Document\AutomatedMailConfiguration, '']
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }
-
-    admin.tile_layer:
-        class: Biopen\CoreBundle\Admin\TileLayerAdmin
-        arguments: [~, Biopen\CoreBundle\Document\TileLayer, 'PixSortableBehaviorBundle:SortableAdmin']
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Configuration", label: Fonds de carte }
-    
-    admin.wrapper:
-        class: Biopen\CoreBundle\Admin\WrapperAdmin
-        arguments: [~, Biopen\CoreBundle\Document\Wrapper, 'PixSortableBehaviorBundle:SortableAdmin']
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Contenus", label: Bandeaux de la page d'accueil }
-
-    admin.partner:
-        class: Biopen\CoreBundle\Admin\PartnerAdmin
-        arguments: [~, Biopen\CoreBundle\Document\Partner, 'PixSortableBehaviorBundle:SortableAdmin']
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Contenus", label: Partenaires }
-
-    admin.about:
-        class: Biopen\CoreBundle\Admin\AboutAdmin
-        arguments: [~, Biopen\CoreBundle\Document\About, 'PixSortableBehaviorBundle:SortableAdmin']
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Contenus", label: Popups type "A propos" }
-    
-    admin.parter_image:
-        class: Biopen\CoreBundle\Admin\ImageAdmin
-        arguments: [~, Biopen\CoreBundle\Document\PartnerImage, '' ]
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }   
-
-    admin.conf_image:
-        class: Biopen\CoreBundle\Admin\ImageAdmin
-        arguments: [~, Biopen\CoreBundle\Document\ConfImage, '' ]
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }     
-
-    admin.image:
-        class: Biopen\CoreBundle\Admin\ImageAdmin
-        arguments: [~, Biopen\CoreBundle\Document\EmbeddedImage, '' ]
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" } 
 
 
     

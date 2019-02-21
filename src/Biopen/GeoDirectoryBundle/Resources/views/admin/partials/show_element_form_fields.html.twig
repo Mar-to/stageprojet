@@ -1,7 +1,7 @@
 {# put this hidden input otherwise the elementFomFieldJson is overwritten with blank string #}
 <input type="hidden" id="{{ form.vars.id }}" name="{{ form.vars.full_name }}" value="{{ form.vars.value }}" />
 
-<h3>Liste des champs disponibles</h3>
+<h3>Liste des champs disponibles via le formulaire</h3>
 {% set fields = value|json_decode %}
 
 {% set filterFromType = {
@@ -22,6 +22,7 @@
   'header': 'header'
 }
 %}
+{% set formFields = [] %}
 <table style="width:100%;margin-bottom: 20px;">
   <tr>
     <th>Nom du champ</th>
@@ -38,16 +39,15 @@
     {% set fieldName = field.name is defined ? field.name : '' %}
     {% if field.type == 'address' %}{% set fieldName = "address" %}{% endif %}
     {% if field.type == 'openhours' %}{% set fieldName = "formatedOpenHours" %}{% endif %}
-    
+    {% set formFields = formFields|merge([fieldName]) %}
+
     {% if field.type == "header" %}
       {% set fieldTag = '## ' ~ field.label %}
     {% elseif field.type == "separator" %}
       {% set fieldTag = '________________________________' %}
     {% else %}
       {% set fieldTag = '{{ ' ~ fieldName ~ gogoFilter ~ ' }}' %}
-    {% endif %}  
-
-    
+    {% endif %}    
     
     <tr {% if field.type in ["separator", "header"] %}style="display:none"{% endif %}>
       <td>{{ fieldName }}</td>
@@ -58,7 +58,32 @@
   {% endfor %}
 </table>
 
-<h2>
+{# Get all the fields in the data, and remove the form fields already listed #}
+{% set allFields = form.vars.attr.dataproperties|split(',') %}
+{% set otherFields = [] %}
+{% for field in allFields %}
+  {% if field not in formFields %}{% set otherFields = otherFields|merge([field]) %}{% endif %}
+{% endfor %}
+
+{% if otherFields|length %}
+  <h3>Autres champs disponibles dans les données</h3>
+
+  <table style="margin-bottom: 20px;">
+    <tr>
+      <th>Nom du champ</th>
+      <th>Utilisation</th>
+    </tr>  
+
+    {% for field in otherFields %}    
+      <tr>
+        <td>{{ field }}</td>
+        <td>{{ '{{ ' ~ field ~ ' }}'}}</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endif %}
+
+<h2 style="margin: 25px 0">
   Contenu de la fiche détail
   <span class="btn btn-primary" id="generate-body-template" onclick="generateBodyTemplate()">Générer automatiquement le contenu de la fiche détail</span>
 </h2>

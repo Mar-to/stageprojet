@@ -13,7 +13,7 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 
-class ConfigurationMapElementFormAdmin extends AbstractAdmin
+class ConfigurationInfoBarAdmin extends AbstractAdmin
 {
     protected $baseRouteName = 'biopen_core_bundle_config_map_element_form_admin_classname';
 
@@ -23,20 +23,24 @@ class ConfigurationMapElementFormAdmin extends AbstractAdmin
     {
         $featureFormOption = ['delete' => false, 'required'=> false, 'label_attr'=> ['style'=> 'display:none']];
 
+        $dm = $this->getConfigurationPool()->getContainer()->get('doctrine_mongodb');
+        $apiProperties = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->findAllCustomProperties();
+        $propertiesText = implode($apiProperties, ',');
+
         $formMapper            
             ->with("Contenu de la Fiche détail (panneau qui s'affiche lors d'un click sur un marker)",
                     ["description" => "Vous pouvez utiliser <a href='https://guides.github.com/features/mastering-markdown/#syntax'>la syntaxe mardown</a> et <a href='https://mozilla.github.io/nunjucks/'>la syntaxe nunjucks (pour des utilisations avancée)</a>
                     <p>Pour afficher la valeur d'un champ de votre formulaire (voir liste des champs ci-arpès) utilisez une double accolades <b>{{ nom_de_mon_champ }}</b>. Vous pouvez également choisir de formatter votre champ avec un filtre en utilisant le symbole <b>|</b> suivi du nom du filtre. Par example, pour afficher un champ en majuscule on pourra faire <b>{{ nom_de_mon_champ|upper }}</b>. Des filtres spéciaux pour gogocarto ont été créés, ils permettent d'afficher simplement certains type de champ. Par example, pour un champ de description longue, on pourra utiliser <b>{{ nom_de_mon_champ_description_longue|gogo_textarea(truncate = 300) }}</b>. Cela coupera la description aux environs de 300 caractères et affichera un petit bouton pour afficher la description entière.<p>
                     <p>Consultez la liste des <a href='https://mozilla.github.io/nunjucks/templating.html#builtin-filters'>filtres nunjucks ici</a>. La liste des filtres de gogocarto n'est pas encore documentée</p>"])
-                ->add('elementFormFieldsJson', 'hidden', array('attr' => ['class' => 'gogo-form-fields'])) 
-                ->add('infobar.headerTemplateUseMarkdown', 'checkbox', array('label' => 'Utiliser la syntaxe markdown pour le header (sinon uniquement Nunjucks)', 'attr' => ['class' => 'use-markdown'], 'required' => false))
+                ->add('elementFormFieldsJson', 'hidden', array('attr' => ['class' => 'gogo-form-fields', 'dataproperties' => $propertiesText])) 
+                ->add('infobar.headerTemplateUseMarkdown', 'checkbox', array('label' => 'Utiliser la syntaxe markdown pour le header (sinon uniquement la syntaxe Nunjucks)', 'attr' => ['class' => 'use-markdown'], 'required' => false))
                 ->add('infobar.headerTemplate', 'text', array('label' => 'En tête de la fiche (header)', 'attr' => ['class' => 'gogo-code-editor', 'format' => 'twig', 'height' => '200'], 'required' => false))
-                ->add('infobar.bodyTemplateUseMarkdown', 'checkbox', array('label' => 'Utiliser la syntaxe markdown pour le body (sinon uniquement Nunjucks)', 'attr' => ['class' => 'use-markdown'], 'required' => false))
+                ->add('infobar.bodyTemplateUseMarkdown', 'checkbox', array('label' => 'Utiliser la syntaxe markdown pour le body (sinon uniquement la syntaxe Nunjucks)', 'attr' => ['class' => 'use-markdown'], 'required' => false))
                 ->add('infobar.bodyTemplate', 'text', array('label' => 'Corps de la fiche (body)', 'attr' => ['class' => 'gogo-code-editor', 'data-id' => 'body-template', 'format' => 'twig', 'height' => '500'], 'required' => false))
                 
                 ->add('infobar.width', 'number', array('label' => "Largeur de la fiche détail (en pixels, par défaut : 540)", 'required' => false))    
             ->end()
-            ->with("Masquer l'email de contact en la remplacant par un bouton \"Envoyer un email\"", 
+            ->with("Masquer l'email de contact en le remplacant par un bouton \"Envoyer un email\"", 
                     ["description" => "<i>Cela permet par exemple d'éviter que des personnes récupèrent tous les emails pour des fin commerciales</i>"])
                 ->add('sendMailFeature','sonata_type_admin', $featureFormOption, ['edit' => 'inline'])
             ->end()    
