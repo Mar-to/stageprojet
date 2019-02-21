@@ -17,6 +17,9 @@
 
 
 {% block show %}  
+  
+  <link href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" rel="stylesheet">
+  {{ config.iconImport | raw }}
 
   <p><a class="btn btn-primary sonata-action-element" href="{{ path('admin_biopen_geodirectory_category_create') }}" style="margin-right: 10px;">
         <i class="fa fa-plus-circle" aria-hidden="true"></i>
@@ -27,7 +30,7 @@
           Ajouter une Catégorie
   </a></p>
 	
-	<div class="well" style="margin-top: 20px; font-size: 15px; line-height: 20px;">
+	<div class="well" style="margin-top: 20px; font-size: 15px; line-height: 26px;">
   	{% if categories|length %}
   		{% for category in categories %}
         {% if category %}
@@ -43,7 +46,7 @@
 
   <div class="alert alert-default">
     <h4>Quelques explications</h4>
-    Les catégories sont toujours regroupées dans des <b><u>Groupe de catégories</u></b></br>
+    Les catégories sont toujours regroupées dans des <b>Groupe de catégories</b></br>
     Pour ajouter des catégories à un Groupe, le plus simple est d'éditer le Groupe de catégories, et vous allez vous apparaitre en bas de page la liste des catégories contenues dans ce groupe. Vous pourrez alors les éditer et en ajouter de nouvelles</br></br>
 
     Vous pouvez avoir plusieurs Groupes de catégories en parrallèle. Pour cela créez un nouveau groupe, enregistrez, puis ajoutez lui ensuite des catégories</br></br>
@@ -83,7 +86,7 @@ $(document).ready(function () {
 
 <style>
 
-.unexpandable .name{ margin-right: 10px; }
+.name{ margin-right: 10px; }
 
 li.category-item
 {

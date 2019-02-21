@@ -29,8 +29,11 @@ class CategoryAdminController extends Controller
         $this->admin->checkAccess('edit', $object[0]);
         $this->admin->setSubject($object);
 
+        $em = $this->get('doctrine_mongodb')->getManager();
+        $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();  
+
         return $this->render('@BiopenAdmin/list/tree_category.html.twig', array(
-            'categories' => $object,
+            'categories' => $object, 'config' => $config
         ), null);
     }
 }
