@@ -1,26 +1,34 @@
 ssh sur serveur gogocarto
 
-certbot certonly \
-> --server https://acme-v02.api.letsencrypt.org/directory \
-> --manual --preferred-challenges dns \
->  -d *.gogocarto.fr -d gogocarto.fr
-
-
-par contre c'est tricky
+certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --preferred-challenges dns -d *.gogocarto.fr -d gogocarto.fr
 
 comme il y a 2 domaines *.gogocarto.fr ET gogocarto.fr
-il te donne un premier code en te demandant de le mettre
+il te donne un premier code en te demandant de le mettre sur gandi
 puis d'appuyer sur entree apres 3 minutes (temps de diffusion)
-mais faut le faire de suite
-et entrer seulement le deuxieme mot de passe
-celui pour gogocarto.fr
+mais faut appuyer direct sur entrée car un deuxième code est donné, celui pour gogocarto.fr
 
-en fait le truc a faire a la main c'est remplir le challenge dns
-il te demande de faire une entrée txt acme-challenge pour gogocarto.fr
-sur l'interface gandi, choisir le domaine gogocarto.fr
-puis Enregistrement dns
-il existe déja l'entree txt , faut changer la valeur
+le truc a faire a la main c'est donc d'aller sur https://admin.gandi.net, choisir le domaine gogocarto.fr puis Enregistrement dns
+if faut éditer l'entrée txt acme-challenge pour gogocarto.fr et mettre al valeur donnée par la ligne de commande
 
 
 https://admin.gandi.net
 
+
+Update
+----
+
+bon ben c'est louche
+
+en tout cas c'est réparé
+bizarre car cela marche pas la premiere fois
+puis ok la deuxieme fois
+aussi il y avait un truc louche avec 2 comptes
+peut etre d'ici 4 mois switcher sur https://github.com/Neilpang/acme.sh
+ 
+github.com
+Neilpang/acme.sh
+A pure Unix shell script implementing ACME client protocol - Neilpang/acme.sh
+apparement il gere l'api de gandi, donc a priori il peut faire tout seul les renouvellements
+faudra creer une clé api chez gandi, virer certbot et tester celui la, pas le temps de le faire, mais on a 4 mois devant nous
+`certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --preferred-challenges dns-01 --agree-tos --manual-public-ip-logging-ok -d *.gogocarto.fr -d gogocarto.fr`
+voila la commande qui a un param --manual-public-ip-logging-ok en plus pour eviter de repondre a des questions lors de l'install
