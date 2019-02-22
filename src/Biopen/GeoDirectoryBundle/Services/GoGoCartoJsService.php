@@ -151,13 +151,14 @@ class GoGoCartoJsService
           "textDarkSoft" => $config->getDefaultTextDarkSoftColor() ,
           "textLight" => $config->getDefaultTextLightColor() ,   
           "textLightSoft" => $config->getDefaultTextLightSoftColor() ,       
-          "interactiveSection" => $config->getDefaultInteractiveSectionColor() 
+          "interactiveSection" => $config->getDefaultInteractiveSectionColor(),
+          "contentBackgroundElementBody" => $config->getDefaultBackgroundElementBodyColor(), // by default calculated from contentBackground
 
           // Non implemented colors
-          // infoBarHeader => undefined, // by default auto colored with main option color
-          // infoBarMenu => undefined,   // by default auto colored with main option color
+          // infoBarHeader => undefined, // by default auto colored with main option color, except for transiscope theme
+          // infoBarMenu => undefined,   // by default auto colored with main option color, except for transiscope theme
           
-          // contentBackgroundElementBody => undefined, // by default calculated from contentBackground
+          
           // menuOptionHover => undefined, // by default calculated from contentBackground
           // lineBorder => undefined, // by default calculated from contentBackground
           

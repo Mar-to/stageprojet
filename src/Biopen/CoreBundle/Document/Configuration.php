@@ -363,6 +363,9 @@ class Configuration implements \JsonSerializable
     protected $contentBackgroundColor;
 
     /** @MongoDB\Field(type="string") */
+    protected $contentBackgroundElementBodyColor;    
+
+    /** @MongoDB\Field(type="string") */
     protected $headerColor;
 
     /** @MongoDB\Field(type="string") */
@@ -518,7 +521,9 @@ class Configuration implements \JsonSerializable
 
     public function getDefaultDisableColor()
     {
-        return $this->disableColor ? $this->disableColor : "#a6a6a6";
+        if ($this->disableColor) return $this->disableColor;
+        $textColor = $this->getColor($this->getDefaultTextContentColor());
+        return $textColor->isDark() ? $textColor->lighten(40)->__toString() : $textColor->darken(40)->__toString();
     }
 
     public function getDefaultSearchBarColor()
@@ -539,6 +544,11 @@ class Configuration implements \JsonSerializable
     public function getDefaultContentBackgroundColor()
     {
         return $this->contentBackgroundColor ? $this->contentBackgroundColor : "#ffffff";
+    }
+
+    public function getDefaultBackgroundElementBodyColor()
+    {
+        return $this->contentBackgroundElementBodyColor ? $this->contentBackgroundElementBodyColor : $this->getDefaultBackgroundColor();
     }
 
     public function getDefaultContentBackgroundSoftColor()
@@ -2916,5 +2926,27 @@ class Configuration implements \JsonSerializable
     public function getInteractiveSectionColor()
     {
         return $this->interactiveSectionColor;
+    }
+
+    /**
+     * Set contentBackgroundElementBodyColor
+     *
+     * @param string $contentBackgroundElementBodyColor
+     * @return $this
+     */
+    public function setContentBackgroundElementBodyColor($contentBackgroundElementBodyColor)
+    {
+        $this->contentBackgroundElementBodyColor = $contentBackgroundElementBodyColor;
+        return $this;
+    }
+
+    /**
+     * Get contentBackgroundElementBodyColor
+     *
+     * @return string $contentBackgroundElementBodyColor
+     */
+    public function getContentBackgroundElementBodyColor()
+    {
+        return $this->contentBackgroundElementBodyColor;
     }
 }

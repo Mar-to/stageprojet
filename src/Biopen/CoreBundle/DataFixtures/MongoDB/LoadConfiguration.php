@@ -105,6 +105,17 @@ class LoadConfiguration implements FixtureInterface
 
          // FORM
          $configuration->setElementFormGeocodingHelp("Ne mettez pas de ponctuation, les noms tout en majuscules ne sont pas reconnus non plus. Si la localisation ne fonctionne pas (il arrive que certaines adresses ne soient pas reconnues), entrez le nom de la ville/le village le plus proche, cliquez sur « Localiser », puis placer le point de localisation manuellement. Re-rentrez l’adresse complète dans la barre et passez à la suite du formulaire sans re-cliquer sur « localiser ».");
+         $configuration->setCollaborativeModerationExplanations("
+            <p>
+              Lorsqu'un élément est ajouté ou modifié, la mise à jour des données n'est pas instantanée. L'élément va d'abords apparaître \"grisé\" sur la carte,
+              et il sera alors possible à tous les utilisateurs logué de voter une et une seule fois pour cet élément. 
+              Ce vote n'est pas une opinion, mais un partage de connaissance. 
+              Si vous connaissez cet élément, ou savez que cet élément n'existe pas, alors votre savoir nous intéresse !
+            </p> 
+            <p>
+              Au bout d'un certain nombre de votes, l'élément pourra alors être automatiquement validé ou refusé. 
+              En cas de litige (des votes à la fois positifs et négatifs), un modérateur interviendra au plus vite. On compte sur vous!
+            </p>");
 
          // IMPORT
          $configuration->setFontImport('');
