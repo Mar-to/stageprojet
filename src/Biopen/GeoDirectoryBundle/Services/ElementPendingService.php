@@ -33,12 +33,11 @@ class ElementPendingService
    /**
    * Constructor
    */
-   public function __construct(DocumentManager $documentManager, SecurityContext $securityContext, MailService $mailService, WebhookService $webhookService)
+   public function __construct(DocumentManager $documentManager, SecurityContext $securityContext, MailService $mailService)
    {
       $this->em = $documentManager;
       $this->securityContext = $securityContext;
       $this->mailService = $mailService;
-      $this->webhookService = $webhookService;
    }
 
    // When element in added or modified by non admin, we go throw this function
@@ -108,8 +107,6 @@ class ElementPendingService
    private function acceptNewElement($element, $message) 
    {      
       $this->mailService->sendAutomatedMail('add', $element, $message);
-
-      $this->webhookService->queue('add', $element);
    }
 
    public function refuseNewElement($element) 
@@ -133,8 +130,6 @@ class ElementPendingService
       }
 
       $this->mailService->sendAutomatedMail('edit', $element, $message);
-
-      $this->webhookService->queue('edit', $element);
    }
 
    private function refuseModifiedElement($element) 

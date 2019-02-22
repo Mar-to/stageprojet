@@ -42,13 +42,12 @@ class ElementActionService
    /**
    * Constructor
    */
-   public function __construct(DocumentManager $documentManager, SecurityContext $securityContext, MailService $mailService, ElementPendingService $elementPendingService, WebhookService $webhookService)
+   public function __construct(DocumentManager $documentManager, SecurityContext $securityContext, MailService $mailService, ElementPendingService $elementPendingService)
    {
       $this->em = $documentManager;
       $this->securityContext = $securityContext;
       $this->mailService = $mailService;
       $this->elementPendingService = $elementPendingService;
-      $this->webhookService = $webhookService;
    }
 
    public function import($element, $sendMail = false, $message = null, $status = null)
@@ -58,8 +57,6 @@ class ElementActionService
       $element->setStatus($status); 
       if ($sendMail) $this->mailService->sendAutomatedMail('add', $element, $message);
       $element->updateTimestamp();
-      
-      // $this->webhookService->queue('add', $element);
    }
 
    public function add($element, $sendMail = true, $message = null)
@@ -68,8 +65,6 @@ class ElementActionService
       $element->setStatus(ElementStatus::AddedByAdmin); 
       if($sendMail) $this->mailService->sendAutomatedMail('add', $element, $message);
       $element->updateTimestamp();
-
-      $this->webhookService->queue('add', $element);
    }
 
    public function edit($element, $sendMail = true, $message = null, $modifiedByOwner = false, $directModerationWithHash = false)
@@ -87,8 +82,6 @@ class ElementActionService
       $element->setStatus($status); 
       if (!$modifiedByOwner) $this->resolveReports($element, $message);      
       $element->updateTimestamp();
-
-      $this->webhookService->queue('edit', $element);
    }
 
    public function createPending($element, $editMode, $userEmail)
@@ -118,8 +111,6 @@ class ElementActionService
       $element->setStatus($newStatus); 
       $this->resolveReports($element, $message);      
       $element->updateTimestamp();
-
-      $this->webhookService->queue('delete', $element);
    }
 
    public function restore($element, $sendMail = true, $message = null)
@@ -129,8 +120,6 @@ class ElementActionService
       $this->resolveReports($element, $message);
       if($sendMail) $this->mailService->sendAutomatedMail('add', $element, $message);
       $element->updateTimestamp();
-
-      $this->webhookService->queue('add', $element);
    }
 
    public function resolveReports($element, $message = '', $addContribution = false)

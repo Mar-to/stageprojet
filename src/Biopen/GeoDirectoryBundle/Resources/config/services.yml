@@ -11,11 +11,11 @@ services:
 
     biopen.element_action_service:
        class: Biopen\GeoDirectoryBundle\Services\ElementActionService
-       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.context", "@biopen.mail_service", "@biopen.element_pending_service", "@biopen.webhook_service" ]
+       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.context", "@biopen.mail_service", "@biopen.element_pending_service" ]
 
     biopen.element_pending_service:
        class: Biopen\GeoDirectoryBundle\Services\ElementPendingService
-       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.context", "@biopen.mail_service", "@biopen.webhook_service" ]
+       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.context", "@biopen.mail_service" ]
 
     biopen.element_form_service:
        class: Biopen\GeoDirectoryBundle\Services\ElementFormService
@@ -40,6 +40,14 @@ services:
             - { name: doctrine_mongodb.odm.event_listener, event: postPersist }
             - { name: doctrine_mongodb.odm.event_listener, event: postUpdate }
             - { name: doctrine_mongodb.odm.event_listener, event: postRemove }
+
+    biopen.webhook_listener:
+      class: Biopen\GeoDirectoryBundle\EventListener\WebhookListener
+      arguments: [ '@biopen.webhook_service' ]
+      tags:
+        - { name: doctrine_mongodb.odm.event_listener, event: postPersist, lazy: true } # lazy to avoid circular dependencies
+        - { name: doctrine_mongodb.odm.event_listener, event: postUpdate, lazy: true } # lazy to avoid circular dependencies
+        - { name: doctrine_mongodb.odm.event_listener, event: postRemove, lazy: true } # lazy to avoid circular dependencies
 
     biopen.db_integrity:
         class: Biopen\GeoDirectoryBundle\EventListener\DatabaseIntegrityWatcher
