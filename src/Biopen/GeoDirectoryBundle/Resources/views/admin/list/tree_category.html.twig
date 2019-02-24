@@ -18,8 +18,8 @@
 
 {% block show %}  
   
-  <link href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" rel="stylesheet">
-  {{ config.iconImport | raw }}
+  <link rel="stylesheet" href="{{ asset('assets/fonts/fontawesome-5/css/all.css') }}" />
+  {{ config.iconImport|raw }}
 
   <p><a class="btn btn-primary sonata-action-element" href="{{ path('admin_biopen_geodirectory_category_create') }}" style="margin-right: 10px;">
         <i class="fa fa-plus-circle" aria-hidden="true"></i>

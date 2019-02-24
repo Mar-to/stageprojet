@@ -119,7 +119,7 @@ class LoadConfiguration implements FixtureInterface
 
          // IMPORT
          $configuration->setFontImport('');
-         $configuration->setIconImport('<link rel="stylesheet" href="../assets/fonts/fontawesome-5/css/all.css">');
+         $configuration->setIconImport('');
 
          // STYLE
          $configuration->setMainFont('Ubuntu, sans-serif');

@@ -34,6 +34,7 @@
 <style>{{ config.customCSS | raw }}</style>
 
 {# the icons as SVG font #}
-{{ config.iconImport | raw }}
+<link rel="stylesheet" href="{{ asset('assets/fonts/fontawesome-5/css/all.css') }}" />
+{{ config.iconImport|raw }}
 
 {{ config.fontImport | raw }}
