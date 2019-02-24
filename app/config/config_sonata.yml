@@ -73,11 +73,21 @@ sonata_admin:
             - { position: top, class: col-md-12, type: sonata.block.service.charts}
         groups:
             Contenus:
-                icon: <i class='fa fa-sticky-note'></i> 
+                icon: <i class='fa fa-file-text'></i> 
             data:
                 label: "Données"
                 icon: <i class='fa fa-database'></i> 
-            Configuration:
+            custom:
+                label: Personnalisation
+                icon: <i class='fa fa-paint-brush'></i>
+            data_model:
+                label: Modèle de donnée
+                icon: <i class='fa fa-database'></i> 
+            emailing:
+                label: Mails / Newsletter
+                icon: <i class='fa fa-envelope'></i>
+            other_config:
+                label: Autre Configuration
                 icon: <i class='fa fa-cogs'></i>
             sonata_user:
                 label: Utilisateurs
