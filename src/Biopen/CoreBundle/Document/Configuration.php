@@ -546,7 +546,7 @@ class Configuration implements \JsonSerializable
         return $this->contentBackgroundColor ? $this->contentBackgroundColor : "#ffffff";
     }
 
-    public function getDefaultBackgroundElementBodyColor()
+    public function getDefaultContentBackgroundElementBodyColor()
     {
         return $this->contentBackgroundElementBodyColor ? $this->contentBackgroundElementBodyColor : $this->getDefaultBackgroundColor();
     }

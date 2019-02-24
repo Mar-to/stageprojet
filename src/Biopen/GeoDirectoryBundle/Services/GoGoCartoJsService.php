@@ -152,7 +152,7 @@ class GoGoCartoJsService
           "textLight" => $config->getDefaultTextLightColor() ,   
           "textLightSoft" => $config->getDefaultTextLightSoftColor() ,       
           "interactiveSection" => $config->getDefaultInteractiveSectionColor(),
-          "contentBackgroundElementBody" => $config->getDefaultBackgroundElementBodyColor(), // by default calculated from contentBackground
+          "contentBackgroundElementBody" => $config->getDefaultContentBackgroundElementBodyColor(), // by default calculated from contentBackground
 
           // Non implemented colors
           // infoBarHeader => undefined, // by default auto colored with main option color, except for transiscope theme
