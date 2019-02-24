@@ -89,6 +89,14 @@ class Import extends AbstractFile
      */
     private $currMessage;
 
+    /** 
+     * After importing some Data, if the user hard delete some elements, their ids will be remembered 
+     * so next time we do not import them again 
+     * 
+     * @MongoDB\Field(type="collection") 
+     */ 
+    private $idsToIgnore = [];    
+
     
     public function __construct() {
         $this->logs = new \Doctrine\Common\Collections\ArrayCollection();;
@@ -97,6 +105,11 @@ class Import extends AbstractFile
     public function __toString() { return "Import " . $this->sourceName; }
 
     public function isDynamicImport() { return false; }
+
+    public function addIdToIgnore($id)  
+    { 
+        $this->idsToIgnore[] = $id; 
+    } 
 
     /**
      * Get id
@@ -323,4 +336,26 @@ class Import extends AbstractFile
     {
         return $this->currMessage;
     }
+
+    /** 
+     * Set idsToIgnore 
+     * 
+     * @param collection $idsToIgnore 
+     * @return $this 
+     */ 
+    public function setIdsToIgnore($idsToIgnore) 
+    { 
+        $this->idsToIgnore = $idsToIgnore; 
+        return $this; 
+    } 
+ 
+    /** 
+     * Get idsToIgnore 
+     * 
+     * @return collection $idsToIgnore 
+     */ 
+    public function getIdsToIgnore() 
+    { 
+        return $this->idsToIgnore; 
+    } 
 }

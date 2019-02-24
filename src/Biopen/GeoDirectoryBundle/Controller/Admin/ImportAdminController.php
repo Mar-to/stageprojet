@@ -36,7 +36,7 @@ class ImportAdminController extends Controller
 
         $this->get('biopen.async')->callCommand('app:elements:importSource', [$object->getId()]);
 
-        // $result = $this->get('biopen.element_import')->importJson($object);  
+        // $result = $this->get('biopen.element_import')->startImport($object);  
 
         $redirectionUrl = $this->admin->generateUrl('create');
         $stateUrl = $this->generateUrl('biopen_import_state', ['id' => $object->getId()]); 

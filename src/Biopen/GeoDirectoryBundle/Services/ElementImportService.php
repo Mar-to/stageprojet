@@ -72,7 +72,7 @@ class ElementImportService
 
 		// Getting php array of data from CSV
 		$data = $this->converter->convert($fileName, ',');
-		if (!$data) return "Cannot open the CSV file";		
+		if (!$data) return "Cannot open the CSV file";
 
 		return $this->importData($data, $import);
   }
@@ -343,7 +343,7 @@ class ElementImportService
 	private function fixsOntology($data)
   {
     $keysTable = ['lat' => 'latitude', 'long' => 'longitude', 'lon' => 'longitude', 'lng' => 'longitude',
-  								'title' => 'name', 'nom' => 'name', 'categories' => 'taxonomy'];
+  								'title' => 'name', 'nom' => 'name', 'categories' => 'taxonomy', 'address' => 'streetAddress'];
 
     foreach ($data as $key => $row) {  
       foreach ($keysTable as $search => $replace) {
@@ -371,7 +371,7 @@ class ElementImportService
 	private function saveCustomFields($element, $raw_data)
 	{
 		$customFields = array_diff(array_keys($raw_data), $this->coreFields);
-		$customFields = array_diff($customFields, ['lat', 'long', 'lon', 'lng', 'title', 'nom', 'categories']);
+		$customFields = array_diff($customFields, ['lat', 'long', 'lon', 'lng', 'title', 'nom', 'categories', 'address']);
 		$customData = [];		
     foreach ($customFields as $customField) {
 			$customData[$customField] = $raw_data[$customField];

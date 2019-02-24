@@ -482,14 +482,6 @@ class Element
                 if ($this->getGeo()->getLatitude() != 0 && $this->getGeo()->getLongitude() != 0) 
                     $needed = false;
                 break;
-            case ModerationState::PotentialDuplicate:
-                $potDups = $this->getPotentialDuplicates();
-                $count = is_array($potDups) ? count($potDups) : $potDups->count();
-                if ($count) {
-                    $needed = false;
-                    $this->setIsDuplicateNode(false);
-                }
-                break;
         }
 
         if (!$needed) $this->setModerationState(ModerationState::NotNeeded);

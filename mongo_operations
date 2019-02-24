@@ -105,3 +105,5 @@ db.Element.updateMany({ 'data.openhours_more_infos': null }, { $unset: { 'data.o
 db.Element.find({ 'data.openhours_more_infos': null })
 
 db.GoGoLog.updateMany( { } , { $rename: { 'type': 'level' } } )
+
+db.Configuration.updateMany( { } , { $set: { 'defautTileLayer': DBRef("TileLayer", 7, "gogocarto_default") }})

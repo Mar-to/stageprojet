@@ -83,7 +83,7 @@ class ProjectController extends AbstractSaasController
             
             // Clone the root configuration into the new project
             // Due to conflicts between ODM, we get the Configuration froma Json API, and convert it to an object
-            $configUrl = $this->getParameter('base_protocol') . $this->getParameter('base_url') . $this->generateUrl('biopen_api_configuration');
+            $configUrl = 'http://' . $this->getParameter('base_url') . $this->generateUrl('biopen_api_configuration');
             $rootConfigToCopy = json_decode(file_get_contents($configUrl));            
             $rootConfigToCopy->appName = $project->getName();
             $rootConfigToCopy->appBaseLine = "";
