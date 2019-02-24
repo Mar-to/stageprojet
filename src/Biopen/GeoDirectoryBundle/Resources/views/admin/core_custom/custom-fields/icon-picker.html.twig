@@ -1,8 +1,11 @@
+{% if preventInput is defined %}
+{% else %}
 <div class="input-group">
   <input data-placement="bottomRight" class="form-control gogo-icon-picker icp icp-auto" value="{{ form.vars.value }}"
        type="text" id="{{ form.vars.id }}" name="{{ form.vars.full_name }}" />
   <span class="input-group-addon"></span>
 </div>
+{% endif %}
 
 <link rel="stylesheet" href="{{ asset('assets/fonts/fontawesome-5/css/all.css') }}" />
 <script src="{{ asset('assets/js/fontawesome-iconpicker.min.js') }}"></script>
@@ -45,6 +48,11 @@
       }
     }; 
     $('.icp-auto').iconpicker(options);
+
+    // In the form buidler, icon field are added dyanmically, so we need to initialize them every 500ms
+    setInterval(function() {
+      $('.fld-icon').iconpicker(options);
+    }, 500);
   }
   });
 </script>

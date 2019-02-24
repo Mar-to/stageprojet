@@ -4,6 +4,8 @@
 
 <script src="{{ asset('assets/js/form-builder.min.js') }}" type="text/javascript"></script>
 
+{% include '@BiopenAdmin/core_custom/custom-fields/icon-picker.html.twig' with { 'preventInput': true } %}
+
 {% set formData = form.vars.sonata_admin.admin.subject.elementFormFieldsJson|default('[]') %}
 <script>
   if (!formBuilderInitialized) {
@@ -122,6 +124,12 @@
         $('a[type=edit].icon-pencil').attr('title', 'Editer/Masquer');
 
         $('.email-field input[name=name]').val('email');
+
+        $('.iconpicker-popover button').click(function(e) {
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        })
       }, 300);
 
       $('input[name="access"]').change(function() {
@@ -178,4 +186,11 @@
   .mandatory { color: #693232; font-style: italic; float: right; }
   #form-builder-container { padding-top: 20px; }
   .checkbox-field input[type="checkbox"] { float: left; margin-right: 10px; }
+
+  .iconpicker .iconpicker-item {
+    width: 36px;
+    height: 36px;
+  }      
+    
+  .iconpicker-popover.popover.right { right: -200px; left: initial !important;}
 </style>

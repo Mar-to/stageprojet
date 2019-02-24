@@ -95,6 +95,10 @@
   i.material-icons {
       top: 4px;
       &.openhours-icons { line-height: 3.2rem; }
+      &.fa, &.fab, &.fas {
+        font-size: 1.8rem;
+        left: 3px;
+      }
   }
 
   .invalid-required + label.gogo-form-label {
