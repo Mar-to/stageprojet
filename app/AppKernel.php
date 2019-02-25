@@ -47,6 +47,7 @@ class AppKernel extends Kernel
             new HWI\Bundle\OAuthBundle\HWIOAuthBundle(),
             new Ob\HighchartsBundle\ObHighchartsBundle(),
             new Vich\UploaderBundle\VichUploaderBundle(),
+            new Sentry\SentryBundle\SentryBundle(),
            
         ];
 

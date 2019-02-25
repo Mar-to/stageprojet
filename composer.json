@@ -54,7 +54,8 @@
         "intervention/image": "^2.4",
         "alcaeus/mongo-php-adapter": "^1.1",
         "ozdemirburak/iris": "^1.2",
-        "guzzlehttp/guzzle": "~6.0"
+        "guzzlehttp/guzzle": "~6.0",
+        "sentry/sentry-symfony": "^1.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

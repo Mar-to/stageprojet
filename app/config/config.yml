@@ -151,7 +151,9 @@ assetic:
         # uglifycss:
         #     bin: C:/users/MARIETTE/AppData/Roaming/npm/uglifycss
 
-            
+# Error monitoring
+sentry:
+    dsn: "https://6145d1aac36c429781fc1b0f79b0da48@sentry.io/1402018"            
             
             
             
