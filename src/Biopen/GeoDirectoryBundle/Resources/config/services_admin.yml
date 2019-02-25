@@ -17,11 +17,6 @@ services:
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: "data", label: Import dynamique }
 
-    admin.stamps:
-        class: Biopen\GeoDirectoryBundle\Admin\StampAdmin
-        arguments: [~, Biopen\GeoDirectoryBundle\Document\Stamp, '' ]
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "data", label: Etiquettes }
 
 
 

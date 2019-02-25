@@ -82,7 +82,13 @@ services:
         arguments: [~, Biopen\CoreBundle\Document\Configuration, 'BiopenCoreBundle:ConfigurationAdmin']
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: emailing, label: Mails / Newsletter }
-
+    
+    admin.stamps:
+        class: Biopen\GeoDirectoryBundle\Admin\StampAdmin
+        arguments: [~, Biopen\GeoDirectoryBundle\Document\Stamp, '' ]
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: other_config, label: Etiquettes }
+            
     admin.login_config:
         class: Biopen\CoreBundle\Admin\ConfigurationUserAdmin
         arguments: [~, Biopen\CoreBundle\Document\Configuration, 'BiopenCoreBundle:ConfigurationAdmin']
