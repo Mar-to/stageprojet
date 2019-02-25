@@ -76,14 +76,14 @@ class Category
 
     /**
      * @var bool
-     * @Exclude(if="object.getDisplayInMenu() == false")
+     * @Exclude(if="object.getDisplayInMenu() == true")
      * @MongoDB\Field(type="boolean")
      */
     private $displayInMenu = true;
 
     /**
      * @var bool
-     * @Exclude(if="object.getDisplayInInfoBar() == false")
+     * @Exclude(if="object.getDisplayInInfoBar() == true")
      * @MongoDB\Field(type="boolean")
      */
     private $displayInInfoBar = true;
