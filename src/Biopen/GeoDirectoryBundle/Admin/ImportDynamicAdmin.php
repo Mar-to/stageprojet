@@ -6,6 +6,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
+use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 
 class ImportDynamicAdmin extends ImportAbstractAdmin
 {
@@ -26,7 +27,7 @@ class ImportDynamicAdmin extends ImportAbstractAdmin
                 ->add('sourceName', 'text', array('required' => true, 'label' => 'Nom de la source '))
                 ->add('url', 'text', array('label' => "Url de l'api Json", 'required' => true))
                 ->add('geocodeIfNecessary', null, array('required' => false, 'label' => 'Géocoder les élements sans latitude ni longitude à partir de leur adresse'))
-                ->add('createMissingOptions', null, array('required' => false, 'label' => 'Créer les catégories manquantes', 'label_attr' => ['title' => "Si une élément importé a une catégorie qui n'existe pas encore sur votre carte, elle sera automatiquement crée"]))
+                ->add('createMissingOptions', null, array('required' => false, 'label' => 'Créer les catégories manquantes', 'label_attr' => ['title' => "Si un élément importé a une catégorie qui n'existe pas encore sur votre carte, elle sera automatiquement crée"]))
                 ->add('optionsToAddToEachElement', 'sonata_type_model', array(
                     'class'=> 'Biopen\GeoDirectoryBundle\Document\Option', 
                     'required' => false, 
@@ -55,12 +56,17 @@ class ImportDynamicAdmin extends ImportAbstractAdmin
     }
     protected function configureListFields(ListMapper $listMapper)
     {
+        $dm = $this->getConfigurationPool()->getContainer()->get('doctrine_mongodb');
+        $deletedElementsCount = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->findDeletedElementsByImportIdCount();
+
         $listMapper
-            ->addIdentifier('sourceName', null, array('label' => 'Nom de la source'))
-            ->add('lastRefresh', 'datetime', array('label' => 'Dernière synchronisation', 'format' => 'd/m/Y - H:i'))
-            ->add('refreshFrequencyInDays', null, array('label' => 'Mise à jour', 'template' => '@BiopenAdmin/partials/import/list_refresh_frequency.html.twig'))
+            ->addIdentifier('sourceName', null, array('label' => 'Nom de la source'))       
+            // Total count
             ->add('logs', null, array('label' => "Nombre d'éléments", 'template' => '@BiopenAdmin/partials/import/list_total_count.html.twig'))
-            ->add('nextRefresh', null, array('label' => 'Dernier log', 'template' => '@BiopenAdmin/partials/import/list_log.html.twig'))
+            // non visibles count
+            ->add('idsToIgnore', null, array('label' => "Non visibles", 'template' => '@BiopenAdmin/partials/import/list_non_visibles_count.html.twig', 'choices' => $deletedElementsCount))
+            ->add('refreshFrequencyInDays', null, array('label' => 'Mise à jour', 'template' => '@BiopenAdmin/partials/import/list_refresh_frequency.html.twig'))
+            ->add('lastRefresh', null, array('label' => 'Derniere mise à jour', 'template' => '@BiopenAdmin/partials/import/list_last_refresh.html.twig'))
             ->add('_action', 'actions', array(
                 'actions' => array(
                     'edit' => array(),

@@ -290,6 +290,26 @@ class ElementRepository extends DocumentRepository
     }
     return $allProperties;
   }
+
+  public function findDeletedElementsByImportIdCount()
+  {
+    $builder = $this->createAggregationBuilder('BiopenGeoDirectoryBundle:Element');
+    $builder
+      ->match()
+        ->field('status')->lte(ElementStatus::AdminRefused)
+      ->group()
+          ->field('_id')
+          ->expression('$source')
+          ->field('count')
+          ->sum(1)
+      ;
+    $queryResult = $builder->execute(); 
+    $result = [];
+    foreach ($queryResult as $key => $value) {
+      $result[$value['_id']['$id']] = $value['count'];
+    }
+    return $result;
+  }  
 }
 
 

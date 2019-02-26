@@ -223,7 +223,9 @@ class ElementImportService
 		$totalCount = $qb->field('status')->field('source')->references($import)->count()->getQuery()->execute();      
 
 		$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element'); 
-		$needModerationCount = $qb->field('source')->references($import)->field('moderationState')->notIn([ModerationState::NotNeeded])->count()->getQuery()->execute();    
+		$elementsMissingGeoCount = $qb->field('source')->references($import)->field('moderationState')->equals(ModerationState::GeolocError)->count()->getQuery()->execute();  
+		$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element'); 
+		$elementsMissingTaxoCount = $qb->field('source')->references($import)->field('moderationState')->equals(ModerationState::NoOptionProvided)->count()->getQuery()->execute();  
 
 		$message = "Import de " . $import->getSourceName() . " terminé";
 
@@ -232,13 +234,14 @@ class ElementImportService
 			"elementsCreatedCount" => $this->countElementCreated,
 			"elementsUpdatedCount" => $this->countElementUpdated,
 			"elementsNothingToDoCount" => $this->countElementNothingToDo,
-			"elementsNeedModerationCount" => $needModerationCount,
+			"elementsMissingGeoCount" => $elementsMissingGeoCount,
+			"elementsMissingTaxoCount" => $elementsMissingTaxoCount,
 			"elementsDeletedCount" => $countElemenDeleted,
 			"elementsErrorsCount" => $this->countElementErrors,
 			"errorMessages" => $this->errorsMessages
 		];
 
-		$totalErrors = $needModerationCount + $this->countElementErrors;
+		$totalErrors = $elementsMissingGeoCount + $elementsMissingTaxoCount + $this->countElementErrors;
 		$logLevel = $totalErrors > 0 ? ($totalErrors > ($size / 4) ? 'error' : 'warning') : 'success';
 		$log = new GoGoLogImport($logLevel, $message, $logData);
 		$import->addLog($log);

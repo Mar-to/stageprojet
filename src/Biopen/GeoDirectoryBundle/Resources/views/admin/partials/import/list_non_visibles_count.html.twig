@@ -1,0 +1,26 @@
+{% extends admin.getTemplate('base_list_field') %}
+
+{% block field %}
+  {% spaceless %}
+    {% set deletedCount = field_description.options.choices[object.id] %}
+    {% if deletedCount > 0 %}
+      <span class="label label-danger log-label">{{ deletedCount }} localement supprimés</span>
+    {% endif %} 
+    {% if object.logs|length > 0 %}
+      {% set log = object.logs[0] %}
+      {% if log.getDataProp('elementsMissingGeoCount') > 0 %}
+        <span class="label label-warning log-label">{{ log.getDataProp('elementsMissingGeoCount') }} sans geoloc</span>
+      {% endif %} 
+      {% if log.getDataProp('elementsMissingTaxoCount') > 0 %}
+        <span class="label label-warning log-label">{{ log.getDataProp('elementsMissingTaxoCount') }} sans categories</span>
+      {% endif %}       
+      {% if log.getDataProp('elementsErrorsCount') > 0 %}
+        <span class="label label-danger log-label">{{ log.getDataProp('elementsErrorsCount') }} erreurs</span>
+      {% endif %}
+
+      <style>
+        .label.log-label { margin-right: 5px; }
+      </style>
+    {% endif %}
+  {% endspaceless %}
+{% endblock %}
