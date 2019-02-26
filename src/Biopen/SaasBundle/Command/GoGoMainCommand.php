@@ -42,6 +42,14 @@ class GoGoMainCommand extends ContainerAwareCommand
 
       if ($commandToExecute !== null)
       {
+        // the project has been deleted
+        if (!$commandToExecute->getProject()) {
+          $logger->info('---- DELETEING command ' . $commandToExecute->getCommandName());
+          $odm->remove($commandToExecute);
+          $odm->flush();
+          return;
+        }
+
          // Updating next execution time  
          $dateNow = new \DateTime();
          $dateNow->setTimestamp(time());

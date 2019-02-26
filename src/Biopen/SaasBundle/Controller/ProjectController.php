@@ -73,7 +73,7 @@ class ProjectController extends AbstractSaasController
                 $scheduledCommand->setProject($project);
                 $scheduledCommand->setNextExecutionAt(time());
                 $scheduledCommand->setCommandName($commandName);
-
+                $project->addCommand($scheduledCommand);
                 $odm->persist($scheduledCommand);
             }
             $odm->flush();
@@ -166,7 +166,7 @@ class ProjectController extends AbstractSaasController
 
             $this->get('session')->getFlashBag()->add('success', "<b>Bienvenue dans votre espace Administrateur !</b></br>
                 L'aventure commence tout juste pour vous, il vous faut maintenant commencer à configurer votre site :)</br>
-                Commencez par la <b>Configuration</b> dans le menu de gauche. Plusieurs pages sont disponibles (attention la plupart ont des onglets!). La documentation manque encore, alors si vous avez des questions rendez vous sur <a target='_blank' href='https://chat.lescommuns.org/channel/gogocarto'>le chat #gogocarto</a> !");
+                Commencez par la <b>Personnalisation</b> dans le menu de gauche. Plusieurs pages sont disponibles (attention la plupart ont des onglets!). La documentation manque encore, alors si vous avez des questions rendez vous sur <a target='_blank' href='https://chat.lescommuns.org/channel/gogocarto'>le chat #gogocarto</a> !");
             $response = $this->redirectToRoute('sonata_admin_dashboard');                      
 
             $this->authenticateUser($user, $response);

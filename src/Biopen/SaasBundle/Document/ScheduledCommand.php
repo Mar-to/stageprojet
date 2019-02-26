@@ -15,7 +15,7 @@ class ScheduledCommand
     private $id;
 
     /** 
-    * @MongoDB\ReferenceOne(targetDocument="Biopen\SaasBundle\Document\Project")
+    * @MongoDB\ReferenceOne(targetDocument="Biopen\SaasBundle\Document\Project", inversedBy="commands")
     */
     public $project;
 

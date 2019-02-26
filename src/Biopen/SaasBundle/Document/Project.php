@@ -52,6 +52,9 @@ class Project
      */
     private $createdAt;
 
+    /** @MongoDB\ReferenceMany(targetDocument="Biopen\SaasBundle\Document\ScheduledCommand", inversedBy="project", cascade={"all"}) */
+    private $commands;
+
     public function getDbName() { return $this->getDomainName(); }
 
     function __toString()
@@ -221,5 +224,39 @@ class Project
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+    public function __construct()
+    {
+        $this->commands = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /**
+     * Add command
+     *
+     * @param Biopen\SaasBundle\Document\ScheduledCommand $command
+     */
+    public function addCommand(\Biopen\SaasBundle\Document\ScheduledCommand $command)
+    {
+        $this->commands[] = $command;
+    }
+
+    /**
+     * Remove command
+     *
+     * @param Biopen\SaasBundle\Document\ScheduledCommand $command
+     */
+    public function removeCommand(\Biopen\SaasBundle\Document\ScheduledCommand $command)
+    {
+        $this->commands->removeElement($command);
+    }
+
+    /**
+     * Get commands
+     *
+     * @return \Doctrine\Common\Collections\Collection $commands
+     */
+    public function getCommands()
+    {
+        return $this->commands;
     }
 }
