@@ -1,7 +1,7 @@
 <!-- Pop up message alerte-->
 {% set oauthLoginAvailable = config.user.loginWithLesCommuns or config.user.loginWithMonPrintemps or config.user.loginWithGoogle or config.user.loginWithFacebook %}
 
-<div id="popup-login" class="modal page-modal {{ oauthLoginAvailable ? 'with-oauth' : '' }}">
+<div id="popup-login" class="modal page-modal {{ oauthLoginAvailable ? 'with-oauth' : 'without-oauth' }}">
   <div class="modal-content page-modal-content">
 
     <span class="icon btn-back gogo-icon-material-design-icons-1" onclick="$('#popup-login').closeModal()"></span>

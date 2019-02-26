@@ -58,6 +58,7 @@
 
 	.modal-content.page-modal-content
 	{		
+    @media #{$small-only} { height: 100%; }
 		.page-modal-footer
 		{
 			text-align: right;

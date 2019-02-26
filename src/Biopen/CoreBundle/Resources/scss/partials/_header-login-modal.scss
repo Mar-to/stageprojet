@@ -9,6 +9,13 @@
 	text-align: center;
 	//top: 20% !important;
 
+	&.without-oauth {
+		@media only screen and (min-width: 601px) {
+			min-width: 550px;
+			width: 550px;
+		}
+	}
+
 	a
 	{
 		color: white;
