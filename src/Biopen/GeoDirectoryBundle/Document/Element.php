@@ -475,7 +475,7 @@ class Element
                 if (!$this->isPending()) $needed = false;
                 break;
             case ModerationState::NoOptionProvided:
-                if ($this->countOptionsValues() > 0)
+                if (!$this->isDynamicImported() && $this->$this->countOptionsValues() > 0)
                     $needed = false;
                 break;
             case ModerationState::GeolocError:

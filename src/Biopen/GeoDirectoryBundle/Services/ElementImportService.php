@@ -275,16 +275,17 @@ class ElementImportService
 
 		if ($element) // if element with this Id already exists
 		{
+			$updatedAtField = $import->getFieldToCheckElementHaveBeenUpdated();
 			// if updated date hasn't change, nothing to do
-			if ((array_key_exists('updatedAt', $row) && $row['updatedAt'] == $element->getCustomProperty('updatedAt'))) {				
-				$element->setPreventJsonUpdate(true);
-				$element->setModerationState(ModerationState::NotNeeded); // restting the modearation state so it will be calculated again
+			if ($updatedAtField && (array_key_exists($updatedAtField, $row) && $row[$updatedAtField] == $element->getCustomProperty($updatedAtField))) {				
+				$element->setPreventJsonUpdate(true);				
 				if ($element->getStatus() == ElementStatus::DynamicImportTemp) $element->setStatus(ElementStatus::DynamicImport);
 				$this->em->persist($element);
 				$this->countElementNothingToDo++;
 				return;
 			}
 			$updateExisting = true;
+			$element->setModerationState(ModerationState::NotNeeded); // restting the modearation state so it will be calculated again
 		}
 		else
 		{
@@ -304,8 +305,8 @@ class ElementImportService
 
 		if (array_key_exists('owner', $row)) $element->setUserOwnerEmail($row['owner']);
 		
-		$lat = 0;$lng = 0;
-		if (!is_string($row['latitude']) || strlen($row['latitude']) == 0 || !is_string($row['longitude']) || strlen($row['longitude']) == 0 || $row['latitude'] == 'null' || $row['latitude'] == null)
+		$lat = $row['latitude']; $lng = $row['longitude'];
+		if (is_object($lat) || strlen($lat) == 0 || is_object($lng) || strlen($lng) == 0 || $lat == 'null' || $lat == null)
 		{
 			if ($import->getGeocodeIfNecessary())
 			{
@@ -318,11 +319,6 @@ class ElementImportService
 			   catch (\Exception $error) { }    
 			}
 		}
-		else
-		{	      
-			$lat = $row['latitude'];
-			$lng = $row['longitude'];
-		} 
 
 		if ($lat == 0 || $lng == 0) $element->setModerationState(ModerationState::GeolocError);
 		$element->setGeo(new Coordinates((float)$lat, (float)$lng));
@@ -453,6 +449,11 @@ class ElementImportService
 					foreach ($this->mappingTableIds[$optionNameSlug]['idAndParentsId'] as $key => $optionId) 
 						if (!in_array($optionId, $optionsIdAdded)) $optionsIdAdded[] = $this->AddOptionValue($element, $optionId);									
 			}			
+		}
+
+		if ($import->getNeedToHaveOptionsOtherThanTheOnesAddedToEachElements()) {
+			// checking option number before adding optionIdsToAddToEachElement
+			if (count($element->getOptionValues()) == 0) $element->setModerationState(ModerationState::NoOptionProvided);
 		}
 
 		// Manually add some options to each element imported		

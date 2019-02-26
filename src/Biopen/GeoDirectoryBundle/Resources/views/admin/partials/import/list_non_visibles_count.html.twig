@@ -2,7 +2,7 @@
 
 {% block field %}
   {% spaceless %}
-    {% set deletedCount = field_description.options.choices[object.id] %}
+    {% set deletedCount = field_description.options.choices[object.id] is defined ? field_description.options.choices[object.id] : 0 %}
     {% if deletedCount > 0 %}
       <span class="label label-danger log-label">{{ deletedCount }} localement supprimés</span>
     {% endif %} 

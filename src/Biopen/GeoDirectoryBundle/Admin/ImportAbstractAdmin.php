@@ -31,7 +31,7 @@ class ImportAbstractAdmin extends AbstractAdmin
                     <li><b>images</b> Des urls vers des images, sous forme de tableau ou séparées par des virgules. Si le champ 'images' n'existe pas, toutes les colonnes/propriétés commançant par le mot 'image' seront utilisée (par example: image_logo, image, imageCouverture ...)</li>
                     
                     </ul>
-                    Vous pouvez ensuite avoir n'importe quelles autres colonnes/propriété, elles seront importées. Veillez à faire concorder le nom des colonnes avec le nom des champs de votre formulaire. </br>Noms des autres champs déjà présent dans vos données : <b>" . $propertiesText . "</b></br><hr>";
+                    Vous pouvez ensuite avoir n'importe quelles autres colonnes/propriété, elles seront importées. Veillez à faire concorder le nom des colonnes avec le nom des champs de votre formulaire. </br>Noms des autres champs déjà présent dans vos données : <b>" . $propertiesText . "</b>";
         return $instructions;
     }
 }

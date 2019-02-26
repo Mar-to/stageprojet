@@ -68,6 +68,17 @@ class Import extends AbstractFile
     /**
      * @MongoDB\Field(type="bool")
      */
+    private $needToHaveOptionsOtherThanTheOnesAddedToEachElements = false;
+
+    /**
+     * @var string   
+     * @MongoDB\Field(type="string")
+     */
+    public $fieldToCheckElementHaveBeenUpdated;
+
+    /**
+     * @MongoDB\Field(type="bool")
+     */
     private $geocodeIfNecessary = false;  
 
     /**
@@ -358,4 +369,48 @@ class Import extends AbstractFile
     { 
         return $this->idsToIgnore; 
     } 
+
+    /**
+     * Set needToHaveOptionsOtherThanTheOnesAddedToEachElements
+     *
+     * @param bool $needToHaveOptionsOtherThanTheOnesAddedToEachElements
+     * @return $this
+     */
+    public function setNeedToHaveOptionsOtherThanTheOnesAddedToEachElements($needToHaveOptionsOtherThanTheOnesAddedToEachElements)
+    {
+        $this->needToHaveOptionsOtherThanTheOnesAddedToEachElements = $needToHaveOptionsOtherThanTheOnesAddedToEachElements;
+        return $this;
+    }
+
+    /**
+     * Get needToHaveOptionsOtherThanTheOnesAddedToEachElements
+     *
+     * @return bool $needToHaveOptionsOtherThanTheOnesAddedToEachElements
+     */
+    public function getNeedToHaveOptionsOtherThanTheOnesAddedToEachElements()
+    {
+        return $this->needToHaveOptionsOtherThanTheOnesAddedToEachElements;
+    }
+
+    /**
+     * Set fieldToCheckElementHaveBeenUpdated
+     *
+     * @param string $fieldToCheckElementHaveBeenUpdated
+     * @return $this
+     */
+    public function setFieldToCheckElementHaveBeenUpdated($fieldToCheckElementHaveBeenUpdated)
+    {
+        $this->fieldToCheckElementHaveBeenUpdated = $fieldToCheckElementHaveBeenUpdated;
+        return $this;
+    }
+
+    /**
+     * Get fieldToCheckElementHaveBeenUpdated
+     *
+     * @return string $fieldToCheckElementHaveBeenUpdated
+     */
+    public function getFieldToCheckElementHaveBeenUpdated()
+    {
+        return $this->fieldToCheckElementHaveBeenUpdated;
+    }
 }
