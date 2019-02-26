@@ -247,7 +247,7 @@ class ElementImportService
 		$import->addLog($log);
 
 		$import->setCurrState($totalErrors > 0 ? ($totalErrors == $size ? ImportState::Failed : ImportState::Errors) : ImportState::Completed);
-  	$import->setCurrMessage($log->displayMessage() . '</br></br>' . implode('</br>', $this->errorsMessages));
+  	$import->setCurrMessage($log->displayMessage());
 
 		$this->em->flush();   
 		

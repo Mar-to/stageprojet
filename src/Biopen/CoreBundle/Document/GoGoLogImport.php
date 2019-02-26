@@ -23,6 +23,7 @@ class GoGoLogImport extends GoGoLog
         if ($this->getDataProp('elementsDeletedCount') > 0) $result .= " - " . $this->getDataProp('elementsDeletedCount') . " élement.s supprimé.s";
         if ($this->getDataProp('elementsErrorsCount') > 0) $result .= " - " . $this->getDataProp('elementsErrorsCount') . " erreur.s pendant l'import";
 
+        if ($this->getDataProp('errorMessages')) $result .= '</br></br>' . implode('</br>', $this->getDataProp('errorMessages'));
         return $result;
     }    
 }
