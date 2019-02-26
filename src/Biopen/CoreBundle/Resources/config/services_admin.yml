@@ -88,12 +88,6 @@ services:
         arguments: [~, Biopen\GeoDirectoryBundle\Document\Stamp, '' ]
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: other_config, label: Etiquettes }
-            
-    admin.login_config:
-        class: Biopen\CoreBundle\Admin\ConfigurationUserAdmin
-        arguments: [~, Biopen\CoreBundle\Document\Configuration, 'BiopenCoreBundle:ConfigurationAdmin']
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: other_config, label: Utilisateurs / Connexion }    
 
     admin.api_config:
         class: Biopen\CoreBundle\Admin\ConfigurationAPIAdmin
@@ -107,6 +101,13 @@ services:
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: other_config, label: Webhooks }
     
+    # -- USER CONF ---
+
+    admin.login_config:
+        class: Biopen\CoreBundle\Admin\ConfigurationUserAdmin
+        arguments: [~, Biopen\CoreBundle\Document\Configuration, 'BiopenCoreBundle:ConfigurationAdmin']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: sonata_user, label: Configuration }    
     
     # --------- HIDDEN -----------
 
