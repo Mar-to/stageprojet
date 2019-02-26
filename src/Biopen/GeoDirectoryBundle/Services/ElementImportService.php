@@ -308,6 +308,7 @@ class ElementImportService
 		$lat = $row['latitude']; $lng = $row['longitude'];
 		if (is_object($lat) || is_array($lat) || strlen($lat) == 0 || is_object($lng) || strlen($lng) == 0 || $lat == 'null' || $lat == null)
 		{
+			$lat = 0; $lng = 0;
 			if ($import->getGeocodeIfNecessary())
 			{
 				try 
