@@ -13,9 +13,6 @@
       {% endif %} 
       {% if log.getDataProp('elementsMissingTaxoCount') > 0 %}
         <span class="label label-warning log-label">{{ log.getDataProp('elementsMissingTaxoCount') }} sans categories</span>
-      {% endif %}       
-      {% if log.getDataProp('elementsErrorsCount') > 0 %}
-        <span class="label label-danger log-label">{{ log.getDataProp('elementsErrorsCount') }} erreurs</span>
       {% endif %}
 
       <style>
