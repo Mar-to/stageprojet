@@ -306,7 +306,7 @@ class ElementImportService
 		if (array_key_exists('owner', $row)) $element->setUserOwnerEmail($row['owner']);
 		
 		$lat = $row['latitude']; $lng = $row['longitude'];
-		if (is_object($lat) || strlen($lat) == 0 || is_object($lng) || strlen($lng) == 0 || $lat == 'null' || $lat == null)
+		if (is_object($lat) || is_array($lat) || strlen($lat) == 0 || is_object($lng) || strlen($lng) == 0 || $lat == 'null' || $lat == null)
 		{
 			if ($import->getGeocodeIfNecessary())
 			{
