@@ -21,6 +21,7 @@ class CheckExternalSourceToUpdateCommand extends GoGoAbstractCommand
 
     protected function gogoExecute($em, InputInterface $input, OutputInterface $output)
     {      
+     
       $qb = $em->createQueryBuilder('BiopenGeoDirectoryBundle:ImportDynamic');
       
       $dynamicImports = $qb->field('refreshFrequencyInDays')->gt(0)               
@@ -32,8 +33,16 @@ class CheckExternalSourceToUpdateCommand extends GoGoAbstractCommand
 
       foreach ($dynamicImports as $key => $import)
       { 
-        $this->log('Updating source : ' . $import->getSource()->getName());
-        $this->log($importService->importJson($source));        
+        $this->log('Updating source : ' . $import->getSourceName());
+        try {          
+          $this->log($importService->startImport($import));  
+        } catch (\Exception $e) {     
+          $this->odm->persist($import);
+          $import->setCurrState(ImportState::Failed);
+          $message = $e->getMessage() . '</br>' . $e->getFile() . ' LINE ' . $e->getLine();
+          $import->setCurrMessage($message);     
+          $this->error("Source: " . $import->getSourceName() . " - " . $message);
+        }      
       }      
     }
 }

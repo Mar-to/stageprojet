@@ -26,18 +26,23 @@ class GoGoAbstractCommand extends ContainerAwareCommand
 
    protected function execute(InputInterface $input, OutputInterface $output)
    {
-      $this->odm = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
-      
-      $this->logger = $this->getContainer()->get('monolog.logger.commands');
-      $this->output = $output;
+      try {
+         $this->odm = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
+         
+         $this->logger = $this->getContainer()->get('monolog.logger.commands');
+         $this->output = $output;
 
-      if ($input->getArgument('dbname')) $this->odm->getConfiguration()->setDefaultDB($input->getArgument('dbname'));
-      
-      // create dummy user, as some code called from command will maybe need the current user informations
-      $token = new AnonymousToken('admin', 'admin', ['ROLE_ADMIN']);      
-      $this->getContainer()->get('security.token_storage')->setToken($token);
+         if ($input->getArgument('dbname')) $this->odm->getConfiguration()->setDefaultDB($input->getArgument('dbname'));
+         
+         // create dummy user, as some code called from command will maybe need the current user informations
+         $token = new AnonymousToken('admin', 'admin', ['ROLE_ADMIN']);      
+         $this->getContainer()->get('security.token_storage')->setToken($token);
 
-      $this->gogoExecute($this->odm, $input, $output);
+         $this->gogoExecute($this->odm, $input, $output);
+      } catch (\Exception $e) {   
+         $message = $e->getMessage() . '</br>' . $e->getFile() . ' LINE ' . $e->getLine();      
+         $this->error("Error executing command: " . $message);
+      }      
    }
 
    protected function gogoExecute($odm, InputInterface $input, OutputInterface $output) {}
