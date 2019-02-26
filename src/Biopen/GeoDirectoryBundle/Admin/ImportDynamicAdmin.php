@@ -33,7 +33,7 @@ class ImportDynamicAdmin extends ImportAbstractAdmin
                     'choices_as_values' => true,
                     'multiple' => true,
                     'btn_add' => false,
-                    'label' => 'Options à ajouter à chaque élément importé'), array('admin_code' => 'admin.option'))      
+                    'label' => 'Catégories à ajouter à chaque élément importé'), array('admin_code' => 'admin.option'))      
                 ->add('refreshFrequencyInDays', null, array('required' => false, 'label' => "Fréquence de mise à jours des données en jours (laisser vide pour ne jamais mettre à jour automatiquement"))
                 ->add('idsToIgnore', 'text', array('required' => false, 'attr' => ['class' => 'gogo-display-array'], 'label' => "Liste des IDs à ignorer lors de l'import", 'label_attr' => ['title' => "Pour ignorer un élément, supprimer le (définitivement) et il ne sera plus jamais importé. Si vous supprimez un élément dynamiquement importé juste en changeant son status (soft delete), l'élément sera quand meme importé mais conservera son status supprimé. Vous pourrez donc à tout moment restaurer cet élement pour le voir apparaitre de nouveau"]))
             ->end() 

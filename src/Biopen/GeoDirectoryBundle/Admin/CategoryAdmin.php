@@ -49,7 +49,7 @@ class CategoryAdmin extends AbstractAdmin
 		  		'class'=> 'Biopen\GeoDirectoryBundle\Document\Option', 
 		  		'required' => false, 
             'choices_as_values' => true,
-		  		'label' => 'Option parente'), array('admin_code' => 'admin.option'))		
+		  		'label' => 'Catégorie parente'), array('admin_code' => 'admin.option'))		
         ->add('isMandatory', null, array('required' => false, 'label' => "Choix obligatoire", 'label_attr' => ['title'=>"Une catégorie de ce groupe doit être obligatoirement selectionnée"]))   
         ->add('singleOption', null, array('required' => false, 'label' => 'Choix unique', 'label_attr' => ['title'=>"Une seule catégorie est selectionnable à la fois"]))         
         ->add('enableDescription', null, array('required' => false, 'label' => "Activer la description des catégories", 'label_attr' => ['title'=>"On pourra renseigner un texte pour décrire chaque catégorie. Par example, pour un catégorie Agriculture, on pourrait ajouter comme texte \"Maraîchage, produits transformés...\""]))   		

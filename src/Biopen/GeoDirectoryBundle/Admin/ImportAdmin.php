@@ -24,7 +24,7 @@ class ImportAdmin extends ImportAbstractAdmin
                 //     'class'=> 'Biopen\GeoDirectoryBundle\Document\Category', 
                 //     'required' => false, 
                 //     'btn_add' => false,
-                //     'label' => 'Catégorie parente pour créer les options manquantes',
+                //     'label' => 'Groupe dans lequel créer les catégories manquantes',
                 //     'mapped' => true), array('admin_code' => 'admin.category'))
                 ->add('createMissingOptions', null, array('required' => false, 'label' => 'Créer les catégories manquantes à partir des catégories renseignées dans chaque élément'))
                 ->add('optionsToAddToEachElement', 'sonata_type_model', array(

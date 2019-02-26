@@ -65,6 +65,57 @@
   {% if field not in formFields %}{% set otherFields = otherFields|merge([field]) %}{% endif %}
 {% endfor %}
 
+<h3>Champs fourni par le système</h3>
+
+<table style="margin-bottom: 20px;">
+  <tr>
+    <th>Nom du champ</th>
+    <th>Description</th>
+    <th>Utilisation</th>
+  </tr>  
+   
+  <tr>
+    <td>status</td>
+    <td><ul>
+    <li>-6: Doublon</li>
+    <li>-4: Supprimé </li>
+    <li>-3: Refusé (votes)  </li>
+    <li>-2: Réfusé (admin) </li>
+    <li>-1: En attente (modifs) </li>
+    <li> 0: En attente (ajout)</li>
+    <li> 1: Validé (admin)</li>
+    <li> 2: Validé (votes)</li>
+    <li> 3: Ajouté par admin</li>
+    <li> 4: Modifié par admin</li>
+    <li> 5: Modifié par propriétaire</li>
+    <li> 6: Modifié avec lien direct</li>
+    <li> 7: Source externe</li>
+  </ul>
+    </td>
+    <td>{{ '{% if status == 2 %} .... {% endif %}'}}</td>
+  </tr>
+
+  <tr>
+    <td>createdAt</td>
+    <td>Date de la création dans la base de donnée</td>
+    <td>{{ 'Créé le : {{ createdAt }}'}}</td>
+  </tr>
+
+  <tr>
+    <td>updatedAt</td>
+    <td>Date de la dernière mise à jour</td>
+    <td>{{ 'Dernière mise à jour : {{ updatedAt }}'}}</td>
+  </tr>
+
+  <tr>
+    <td>sourceKey</td>
+    <td>Nom de la source de cet élément (peut être vide)</td>
+    <td>{% verbatim %}
+      {% if sourceKey == "Fablab" %}Référencé par http://fablabs.io{% endif %}
+    {% endverbatim %}</td>
+  </tr>
+</table>
+
 {% if otherFields|length %}
   <h3>Autres champs disponibles dans les données</h3>
 

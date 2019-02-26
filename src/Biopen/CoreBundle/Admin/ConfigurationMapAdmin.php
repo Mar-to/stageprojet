@@ -102,7 +102,7 @@ class ConfigurationMapAdmin extends AbstractAdmin
                     ->add('menu.smallWidthStyle', 'checkbox', array('label' => "Utiliser un style compréssé", 'label_attr' => ['title' => "Diminue un peu la taille de la police et les marges. Pratique lorsque le nom des catégories sont longues que l'on veut gagner en largeur"], 'required' => false))
                     ->add('menu.showOnePanePerMainOption', 'checkbox', array('label' => "Afficher un sous menu pour chaque catégorie principale", 'required' => false))
                     ->add('menu.showCheckboxForMainFilterPane', 'checkbox', array('label' => "Afficher les checkbox dans la panneau principal", 'required' => false))
-                    ->add('menu.showCheckboxForSubFilterPane', 'checkbox', array('label' => "Afficher les checkbox dans les sous peanneux",  'label_attr' => ['title' => "Valable uniquement si \"afficher un sous menu pour chaque option principale\" est coché"], 'required' => false))
+                    ->add('menu.showCheckboxForSubFilterPane', 'checkbox', array('label' => "Afficher les checkbox dans les sous peanneux",  'label_attr' => ['title' => "Valable uniquement si \"afficher un sous menu pour chaque catégorie principale\" est coché"], 'required' => false))
                 ->end()
             ->end()
         ;           
