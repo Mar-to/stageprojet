@@ -70,7 +70,7 @@ class ImportDynamicAdmin extends ImportAbstractAdmin
             // Total count
             ->add('logs', null, array('label' => "Nombre d'éléments", 'template' => '@BiopenAdmin/partials/import/list_total_count.html.twig'))
             // non visibles count
-            ->add('idsToIgnore', null, array('label' => "Non visibles", 'template' => '@BiopenAdmin/partials/import/list_non_visibles_count.html.twig', 'choices' => $deletedElementsCount))
+            ->add('idsToIgnore', null, array('label' => "Infos", 'template' => '@BiopenAdmin/partials/import/list_non_visibles_count.html.twig', 'choices' => $deletedElementsCount))
             ->add('refreshFrequencyInDays', null, array('label' => 'Mise à jour', 'template' => '@BiopenAdmin/partials/import/list_refresh_frequency.html.twig'))
             ->add('lastRefresh', null, array('label' => 'Derniere mise à jour', 'template' => '@BiopenAdmin/partials/import/list_last_refresh.html.twig'))
             ->add('_action', 'actions', array(

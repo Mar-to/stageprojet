@@ -311,13 +311,9 @@ class ElementImportService
 			$lat = 0; $lng = 0;
 			if ($import->getGeocodeIfNecessary())
 			{
-				try 
-			   {
-			   	$result = $this->geocoder->geocode($address->getFormatedAddress())->first();
-			   	$lat = $result->getLatitude();
-			   	$lng = $result->getLongitude();	
-			   }
-			   catch (\Exception $error) { }    
+		   	$result = $this->geocoder->geocode($address->getFormatedAddress())->first();
+		   	$lat = $result->getLatitude();
+		   	$lng = $result->getLongitude();	
 			}
 		}
 

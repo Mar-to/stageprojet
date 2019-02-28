@@ -1,9 +1,9 @@
 {% extends "@BiopenCoreBundle/page-layout.html.twig" %}
 
 {% set pageName = 'partners' %}
-{% set navTitle = "Qui sommes nous ?" %}
+{% set navTitle = "{{ config.partnerPageTitle }}" %}
 
-{% block title %}Qui sommes nous ?{% endblock %}
+{% block title %}{{ config.partnerPageTitle }}{% endblock %}
 
 {# BODY CONTENT #}
 {% block body_content %}
