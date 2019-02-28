@@ -62,7 +62,7 @@ class APIController extends GoGoController
     if ($elementId) 
     {
       $element = $elementRepo->findOneBy(array('id' => $elementId));
-      $elementsJson = $element->getJson($includePrivateFields, $isAdmin);
+      $elementsJson = $element ? $element->getJson($includePrivateFields, $isAdmin) : null;
     }
     else 
     {
@@ -84,7 +84,13 @@ class APIController extends GoGoController
       $elementsJson = $this->encodeElementArrayToJsonArray($elementsFromDB, $fullRepresentation, $isAdmin, $includePrivateFields);        
     }   
 
-    if ($jsonLdRequest)
+    $status = 200;
+    if (!$elementsJson)
+    {
+      $responseJson = '{ "error": "Element does not exists" }';
+      $status = 500;
+    }
+    else if ($jsonLdRequest)
     {
       $responseJson = '{
         "@context" : "https://rawgit.com/jmvanel/rdf-convert/master/context-gogo.jsonld",
@@ -103,7 +109,7 @@ class APIController extends GoGoController
     // $responseSize = strlen($elementsJson);
     // $date = date('d/m/Y'); 
     
-    return $this->createResponse($responseJson, $config);
+    return $this->createResponse($responseJson, $config, $status);
   }    
 
   public function getTaxonomyAction(Request $request, $id = null, $_format = 'json')
@@ -159,9 +165,9 @@ class APIController extends GoGoController
     return $_format == 'jsonld' || $request->headers->get('Accept') == 'application/ld+json';
   }
 
-  private function createResponse($text, $config)
+  private function createResponse($text, $config, $status = 200)
   {
-    $response = new Response($text);
+    $response = new Response($text, $status);
     if ($config->getApi()->getInternalApiAuthorizedDomains())
       $response->headers->set('Access-Control-Allow-Origin', $config->getApi()->getInternalApiAuthorizedDomains());
     $response->headers->set('Content-Type', 'application/json');
