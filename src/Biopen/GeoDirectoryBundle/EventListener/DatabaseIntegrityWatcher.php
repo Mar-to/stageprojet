@@ -10,6 +10,7 @@ namespace Biopen\GeoDirectoryBundle\EventListener;
 use Biopen\GeoDirectoryBundle\Document\Element;
 use Application\Sonata\UserBundle\Document\Group;
 use Biopen\GeoDirectoryBundle\Document\Option;
+use Biopen\GeoDirectoryBundle\Document\ImportDynamic;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 /* check database integrity : for example when removing an option, need to remove all references to this options */
@@ -57,6 +58,12 @@ class DatabaseIntegrityWatcher
 	        $user->removeGroup($group);
 	      }
 	    }
+		}
+		else if ($document instanceof ImportDynamic)
+		{
+			$import = $document;
+			$qb = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->createQueryBuilder();
+      $elements = $qb->remove()->field('source')->references($import)->getQuery()->execute();
 		}
 	}
 }
