@@ -31,7 +31,7 @@
       <div class="col s12 contrib-config-section">
         {# CONTRIBUTION_CONFIG #}
         <h2>Ouverture à la contribution publique</h2>
-        
+        <p id="please-choose-contribution" class="error-label" style="display:none">Veuillez choisir une option</p>
         {% set contribOptions = [
             ['open', 'Ouvert', 'Tous les utilisateurs peuvent ajouter/modifier/supprimer librement'],
             ['intermediate', 'Intermédiaire', 'Tous les utilisateurs peuvent contribuer, mais les contributions doivent être modérées par des administrateurs'],
@@ -48,7 +48,7 @@
       </div>
     </div>    
     
-    <button class="btn" type="submit" onclick="performSubmit();">Créer</button>  
+    <button class="btn" type="submit" onclick="performSubmit(event);">Créer</button>  
     
     <div class="overlay">
       <div class="overlay-content">
@@ -71,17 +71,25 @@
       timer = setTimeout(function() { slugifyDomain(); }, 200);
     });
 
-    function performSubmit() {
-      console.log("submiting");
-      showWaitingMessage();
-      slugifyDomain();      
-      $('form').submit();
+    function performSubmit(e) {      
+      $('.required').each(function() {
+        if (!$(this).val()) $(this).addClass('error');
+        else $(this).removeClass('error');
+      });
+
+      if ($('input[name=contrib]:checked').length == 0) {
+        $('#please-choose-contribution').show();
+        e.preventDefault();
+      } else if ($('.error').length == 0) {
+        showWaitingMessage();
+        slugifyDomain();      
+        $('form').submit();
+      }      
     }
 
     function showWaitingMessage() {
       $("button[type=submit]").prop('disabled', true);
       $('.overlay').show();
-      console.log("show overlay");
     }
 
     function slugifyDomain() { $('#input-domain').val(slugify($('#input-domain').val())); }
