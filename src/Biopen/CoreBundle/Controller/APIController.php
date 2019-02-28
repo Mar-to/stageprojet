@@ -38,11 +38,15 @@ class APIController extends GoGoController
     $em = $this->get('doctrine_mongodb')->getManager();
     $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
     $img = $config->getFavicon() ? $config->getFavicon() : $config->getLogo();
+    
     if ($img) {
       $imgUrl = $img->getImageUrl('512x512', 'png');
       $imageData = InterventionImage::make($img->calculateFilePath('512x512', 'png'));
     } else {
-      $imgUrl = $this->getRequest()->getUriForPath('/assets/img/default-icon.png');
+      $imgUrl = $this->getRequest()->getUriForPath('/assets/img/default-icon.png');      
+      if ($this->container->get('kernel')->getEnvironment() == 'dev') {
+        $imgUrl = str_replace('app_dev.php/', '', $imgUrl);
+      }
       $imageData = InterventionImage::make($imgUrl);
     }
 
