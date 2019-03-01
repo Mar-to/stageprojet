@@ -21,6 +21,13 @@ There is a whole back office to manage data, contents, configuration
 
 [See more screenshot of the backoffice](docs/backoffice-screenshots.md)
 
+Tutorials
+-----------------
+
+![https://video.colibris-outilslibres.org/videos/watch/62279fe4-06d9-4fdc-8e0d-3d5de3c05072](web/assets/img/gogocarto_video_thumbnail.png "Thumbnail")
+
+[Check all videos here (in french)](https://video.colibris-outilslibres.org/video-channels/gogocarto_channel/videos)
+
 GoGoCarto & GoGoCartoJs
 ------------------
 
