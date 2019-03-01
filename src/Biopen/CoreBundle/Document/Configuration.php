@@ -477,8 +477,12 @@ class Configuration implements \JsonSerializable
 
     public function getColor($colorString)
     {
-        if (strpos($colorString, '#') !== false) return new Hex($colorString);
-        else return new Rgba($colorString);
+        try {
+            if (strpos($colorString, '#') !== false) return new Hex($colorString);
+            else return new Rgba($colorString);
+        } catch (\Exception $e) {
+            return new Hex("#000");
+        }        
     }
     public function getDefaultColor($colorName)
     {
