@@ -32,7 +32,7 @@ The GoGoCarto project is divided into two separate projects.
 Stack
 -----
 
-Symfony2, Twig templates, SASS, MaterializeCSS, Javascript, Gulp
+Symfony2, Typescript, MaterializeCSS
 
 Documentation
 -------------
