@@ -169,7 +169,8 @@ class ElementFormController extends GoGoController
 				
 				// filling the form with the previous element created in case we want to recopy its informations (only for admins)
 				$elementForm = $this->get('form.factory')->create(ElementType::class, $element);
-
+				$isMinorModification = false;
+				
 				$session->remove('elementWaitingForDuplicateCheck');
 				$session->remove('duplicatesElements');		
 			}
@@ -184,7 +185,7 @@ class ElementFormController extends GoGoController
 				}
 				else $needToCheckDuplicates = false;
 
-				// custom handling form (to creating OptionValues for example)
+				// custom handling form (creating OptionValues for example)
 				list($element, $isMinorModification) = $this->get("biopen.element_form_service")->handleFormSubmission($element, $request, $editMode, $userEmail, $isAllowedDirectModeration, $originalElement, $em);	
 
 				if ($needToCheckDuplicates)	

@@ -33,7 +33,10 @@ class ConfigurationMailAdmin extends AbstractAdmin
         $formMapper            
             ->tab('Mails auto pour les ' . $config->getElementDisplayNamePlural())
                 ->with("Informations concernant les mails automatiques", array('box_class' => 'box box-danger', 
-                    'description' => 'Ces mails sont envoyés automatiquement aux ' . $config->getElementDisplayNamePlural() . " lorsque leur fiche est ajoutée, modifiée ou supprimée.</br>
+                    'description' => '
+                     <div class="text-and-iframe-container">
+                     <div class="iframe-container-aside"><iframe height="200" sandbox="allow-same-origin allow-scripts" src="https://video.colibris-outilslibres.org/videos/embed/d5d007ec-e5c6-4a50-ab66-572e35e8905a" frameborder="0" allowfullscreen></iframe></div>
+                    Ces mails sont envoyés automatiquement aux ' . $config->getElementDisplayNamePlural() . " lorsque leur fiche est ajoutée, modifiée ou supprimée.</br>
                     Il est possible d'inclure les variables suivantes dans les messages (en conservant les '{{}}' ) : </br>
                     <li>{{ element }} le nom de " . $config->getElementDisplayNameDefinite() . "</li>
                     <li>{{ showUrl }} l'adresse qui renvoie à la visualisation de la fiche</li>
@@ -41,6 +44,7 @@ class ConfigurationMailAdmin extends AbstractAdmin
                     <li>{{ homeUrl }} l'adresse de la page d'accueil du site</li>
                     <li>{{ directEditElementUniqueUrl }} l'adresse unique pour éditer directement l'élément sans être admin</li>
                     <li>{{ customMessage }} le message personnel qui a été rédigé par les admins (uniquement lors de la suppression)</li></br>
+                    </div>
                     Vous pouvez également utiliser ces variables dans les contenus spéciaux de l'éditeur de texte. Par example dans le champs URL de la popup 
                     qui s'ouvre lorsqu'on clique sur d'ajouter un lien.</br>
                     <b>Une fois le mail sauvegardé</b>, vous pouvez cliquer sur les boutons <b>TESTER</b> pour visualiser le rendu"))->end()

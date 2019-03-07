@@ -23,7 +23,9 @@ class ConfigurationFormAdmin extends AbstractAdmin
     {        
         $formMapper
             ->tab('Formulaire')  
-                ->with('Configuration du formulaire', array('description' => "Choisissez ici quels champs constituent un élement de votre base de donnée. 
+                ->with('Configuration du formulaire', array('description' => "
+                    <div class='iframe-container-aside'><iframe height='200' sandbox='allow-same-origin allow-scripts' src='https://video.colibris-outilslibres.org/videos/embed/2dd4dad3-63fa-4bb4-b48c-e518f8e56d36' frameborder='0' allowfullscreen></iframe></div>
+                    Choisissez ici quels champs constituent un élement de votre base de donnée. 
                     <li>Choisissez bien l'attribut <b>Nom (unique)</b>, avec une valeur compréhensible.</li>
                     <li>Certains champs sont obligatoires (categories, titre, adresse). </li>
                     <li>Le champ <b>Email principal</b> sera utilisé pour envoyer des emails à l'élément référencé, pour lui indiquer qu'il a bien été ajouté sur le site, qu'il a été supprimé etc.. C'est donc un champ conseillé si vous souhaitez mettre en place ce genre de communications.</li>"))

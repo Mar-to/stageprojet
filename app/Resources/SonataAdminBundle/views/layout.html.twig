@@ -68,6 +68,13 @@
             font-size: 13px;
             margin-left: 5px;
         }
+        .box-body .iframe-container { text-align: center; margin-top: -20px; }
+        .box-body .iframe-container-aside {    
+            float: left;
+            margin: -20px 20px 20px 0;
+        }
+        .text-and-iframe-container:before { display: table; content: " "; }
+        .text-and-iframe-container:after { clear: both; display: table; content: " ";}
     </style>
     
 
@@ -157,6 +164,9 @@
     <ul class="sidebar-menu">
         <li class="first treeview">            
             <a href="{{ path('biopen_bulk_actions_index') }}"><i class="fa fa-bullhorn"></i><span>Actions de masse</span></a>            
+        </li>
+        <li>
+            <a href="{{ path('biopen_core_help') }}"><i class="fa fa-question"></i><span>Aide</span></a>
         </li>
         {% if use_as_saas and is_root_project() %}
             <li>

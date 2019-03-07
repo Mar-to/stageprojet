@@ -25,3 +25,7 @@ biopen_user:
 biopen_core_api:
     resource: "@BiopenCoreBundle/Resources/config/routing-api.yml"
     prefix:   /api
+
+biopen_core_help:
+    path: /help
+    defaults: { _controller: BiopenCoreBundle:Core:help }

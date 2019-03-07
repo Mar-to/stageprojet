@@ -13,7 +13,7 @@ class ImportAdmin extends ImportAbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->with("Importer des données en dur, depuis un fichier CSV ou une API Json", ["description" => $this->getInstructions()])
+            ->with("Importer des données en dur, depuis un fichier CSV ou une API Json")
                 ->add('sourceName', 'text', array(
                     'required' => true,                  
                     'label' => 'Nom de la source des données'))
@@ -34,6 +34,8 @@ class ImportAdmin extends ImportAbstractAdmin
                     'multiple' => true,
                     'btn_add' => false,
                     'label' => 'Catégories à ajouter à chaque élément importé'), array('admin_code' => 'admin.option'))                
+            ->end()
+            ->with('Aide', ["description" => $this->getInstructions('05a0895f-7b11-4a96-a98b-43fef68840a1')])
             ->end()
         ;
     }

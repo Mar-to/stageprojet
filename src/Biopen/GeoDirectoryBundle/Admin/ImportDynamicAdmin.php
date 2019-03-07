@@ -22,10 +22,8 @@ class ImportDynamicAdmin extends ImportAbstractAdmin
 
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $formMapper
-            ->with("Import Dynamique, pour afficher des données gérées par quelqu'un d'autre", ['box_class' => 'box box-default', "description" => $this->getInstructions()])
-            ->end()
-            ->with('Configuration principale', ['class' => 'col-md-6'])
+        $formMapper            
+            ->with("Import Dynamique, pour afficher des données gérées par quelqu'un d'autre", ['class' => 'col-md-6'])
                 ->add('sourceName', 'text', array('required' => true, 'label' => 'Nom de la source '))
                 ->add('url', 'text', array('label' => "Url de l'api Json", 'required' => true))
                 ->add('refreshFrequencyInDays', null, array('required' => false, 'label' => "Fréquence de mise à jours des données en jours (laisser vide pour ne jamais mettre à jour automatiquement"))
@@ -44,6 +42,8 @@ class ImportDynamicAdmin extends ImportAbstractAdmin
                 ->add('needToHaveOptionsOtherThanTheOnesAddedToEachElements', null, array('required' => false, 'label' => 'Les éléments importés doivent contenir au moins une catégorie en dehors de celles ajoutées manuellement ci-dessus', 'label_attr' => ['title' => "Sans prendre en compte les catégories ajoutés via le champs \"Catégories à ajouter à chaque élément importé\", si les éléments importés n'ont pas de catégories, ils seront marqués comme \"Modération aucune catégorie renseignée\""]))
                 ->add('fieldToCheckElementHaveBeenUpdated', null, array('required' => false, 'label' => "Nom de l'attribut à comparer pour la mise à jour", 'label_attr' => ['title' => "Lorsqu'on met à jour une source, certains des éléments à importer existent déjà dans notre base de donnée. Vous pouvez renseigner ici un champs qui permettra de comparer si l'élément à été mis à jour au sein de la source depuis le dernier import. Exple de champ: updatedAt, date_maj etc... (laisser vide pour mettre à jour les éléments à chaque fois)"]))                
             ->end() 
+            ->with("Aide", ['box_class' => 'box box-default', "description" => $this->getInstructions('13154fa0-13c2-41f1-a4ad-e04c35c86e89')])
+            ->end()
             ->with('Historique', array('class' => 'col-sm-12'))
                 ->add('logs', 'hidden', array('attr' => ['class' => 'gogo-display-logs'], 'mapped' => false))
             ->end(); 

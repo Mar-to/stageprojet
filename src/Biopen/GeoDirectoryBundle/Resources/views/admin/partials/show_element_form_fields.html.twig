@@ -1,7 +1,7 @@
 {# put this hidden input otherwise the elementFomFieldJson is overwritten with blank string #}
 <input type="hidden" id="{{ form.vars.id }}" name="{{ form.vars.full_name }}" value="{{ form.vars.value }}" />
 
-<h3>Liste des champs disponibles via le formulaire</h3>
+<h3 style="margin-top: -30px">Liste des champs disponibles via le formulaire</h3>
 {% set fields = value|json_decode %}
 
 {% set filterFromType = {
@@ -133,11 +133,6 @@
     {% endfor %}
   </table>
 {% endif %}
-
-<h2 style="margin: 25px 0">
-  Contenu de la fiche détail
-  <span class="btn btn-primary" id="generate-body-template" onclick="generateBodyTemplate()">Générer automatiquement le contenu de la fiche détail</span>
-</h2>
 
 <style>
   td, th {
