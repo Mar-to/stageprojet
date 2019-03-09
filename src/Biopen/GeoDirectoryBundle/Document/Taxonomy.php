@@ -23,7 +23,9 @@ class Taxonomy
      * The list of all options flatten in an array
      * @MongoDB\Field(type="string")
      */
-    private $optionsJson;    
+    private $optionsJson; 
+
+    public $preventUpdate = false;   
 
     /**
      * Get id

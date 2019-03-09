@@ -26,13 +26,14 @@ class UpdateElementsJsonCommand extends GoGoAbstractCommand
         $count = $elements->count();
 
         $this->log('Generating json representation for ' . $count . ' elements...');
+        $elemntJsonService = $this->getContainer()->get('biopen.element_json_generator');
 
         $i = 0;
         foreach ($elements as $key => $element) 
         {
-           $element->updateJsonRepresentation();
+            $elemntJsonService->updateJsonRepresentation($element);
 
-            if ((++$i % 50) == 0) {
+            if ((++$i % 100) == 0) {
                 $em->flush();
                 $em->clear();
             }

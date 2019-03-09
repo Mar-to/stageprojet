@@ -25,11 +25,11 @@ use joshtronic\LoremIpsum;
 
 class ImportController extends Controller
 {    
-    public function generateRandom($nombre, $generateVote = false)
+    public function generateRandomAction($nombre, $generateVote = false)
     {
         $lastElementCreated = $this->get('biopen.random_creation_service')->generate($nombre, $generateVote);
 
-        return new Response('Elements générés');
+        return $this->render('@BiopenAdmin/pages/help.html.twig'); 
     } 
 
     public function availableOptionsAction()

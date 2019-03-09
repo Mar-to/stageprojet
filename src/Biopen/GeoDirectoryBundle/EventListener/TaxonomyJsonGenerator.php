@@ -17,7 +17,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use JMS\Serializer\SerializationContext;
 
-class JsonRepresentationGenerator
+class TaxonomyJsonGenerator
 {
 	protected $serializer;
 
@@ -34,53 +34,55 @@ class JsonRepresentationGenerator
 		$document = $args->getDocument();
 		$dm = $args->getDocumentManager();
 
-		if ($document instanceof Option || $document instanceof Category)
-		{
-			if (!$document->getIsFixture()) $this->updateTaxonomy($dm);
-		}
-		else if ($document instanceof Taxonomy)
-		{
+		if ($document instanceof Taxonomy)
+		{			
 			$this->updateTaxonomy($dm);
+      $dm->flush();
 		}
 	}
 
-	public function postUpdate(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $args)
-	{
-		$document = $args->getDocument();
-		$dm = $args->getDocumentManager();
+  public function postUpdate(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs)
+  {
+      $document = $eventArgs->getDocument();
+      $dm = $eventArgs->getDocumentManager();
 
-		if ($document instanceof Option || $document instanceof Category)
-		{
-			$this->updateTaxonomy($dm);
-		}
-		else if ($document instanceof Taxonomy)
-		{
-			$this->updateTaxonomy($dm);
-		}
-	}
+      if ($document instanceof  Option || $document instanceof  Category)
+      {
+        $this->updateTaxonomy($dm);
+        $dm->flush();
+      }
+  }
 
-	public function postRemove(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $args)
-	{
-		$document = $args->getDocument();
-		$dm = $args->getDocumentManager();
+  public function preFlush(\Doctrine\ODM\MongoDB\Event\preFlushEventArgs $eventArgs)
+  {
+      $dm = $eventArgs->getDocumentManager();
 
-		if ($document instanceof Option || $document instanceof Category)
-		{
-			$this->updateTaxonomy($dm);
-		}
-	}
+      foreach ($dm->getUnitOfWork()->getScheduledDocumentInsertions() as $document) {
+        if ($document instanceof Option || $document instanceof Category) {
+          $this->updateTaxonomy($dm);
+          return;
+        }
+      }
+
+      foreach ($dm->getUnitOfWork()->getScheduledDocumentDeletions() as $document) {
+        if ($document instanceof Option || $document instanceof Category) {
+          $this->updateTaxonomy($dm);
+          return;
+        }
+      }      
+  }
 
 	private function updateTaxonomy($dm)
-	{
-		$taxonomy = $dm->getRepository('BiopenGeoDirectoryBundle:Taxonomy')->findTaxonomy(); 
-		if (!$taxonomy) return;
+	{		
+    $taxonomy = $dm->getRepository('BiopenGeoDirectoryBundle:Taxonomy')->findTaxonomy();     
+		if (!$taxonomy || $taxonomy->preventUpdate) return;
+    $taxonomy->preventUpdate = true;
 		
-		$dm->refresh($taxonomy);	
-		$dm->flush();
 		$rootCategories = $dm->getRepository('BiopenGeoDirectoryBundle:Category')->findRootCategories();
 		$options = $dm->getRepository('BiopenGeoDirectoryBundle:Option')->findAll();
 
 		if (count($rootCategories) == 0) return;
+		
 		// Create hierachic taxonomy
 		$rootCategoriesSerialized = [];
 		foreach ($rootCategories as $key => $rootCategory)
@@ -98,8 +100,5 @@ class JsonRepresentationGenerator
 		}
 		$optionsJson = '[' . implode(", ", $optionsSerialized) . ']';
 		$taxonomy->setOptionsJson($optionsJson);	
-
-		$dm->persist($taxonomy);
-		$dm->flush();
 	}
 }

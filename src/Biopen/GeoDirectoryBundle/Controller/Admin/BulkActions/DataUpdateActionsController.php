@@ -21,7 +21,7 @@ class DataUpdateActionsController extends BulkActionsAbstractController
       {
          $gamificationService->updateGamification($user);
 
-         if ((++$i % 20) == 0) {
+         if ((++$i % 100) == 0) {
             $em->flush();
             $em->clear();
          }
@@ -32,12 +32,6 @@ class DataUpdateActionsController extends BulkActionsAbstractController
 
       $request->getSession()->getFlashBag()->add('success', count($users) . " utilisateurs ont été mis à jour");
       return $this->redirect($this->generateUrl('admin_biopen_core_user_list'));
-   }
-
-   public function updateJsonAction(Request $request) { return $this->elementsBulkAction('updateJson', $request); }
-   public function updateJson($element)
-   {
-      $element->updateJsonRepresentation(); 
    }   
 
    public function updateElementOptionsStringAction(Request $request) { return $this->elementsBulkAction('updateElementOptionsString', $request); }

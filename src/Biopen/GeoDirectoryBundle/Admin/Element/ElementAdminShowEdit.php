@@ -40,7 +40,7 @@ class ElementAdminShowEdit extends ElementAdminList
 	protected function configureShowFields(ShowMapper $show)
 	{    
     $needModeration = $this->subject->getModerationState() != 0;
-    $statusClass = $needModeration ? 'cold-md-6' : 'col-md-12';
+    $statusClass = $needModeration ? 'col-md-6' : 'col-md-12';
     if ($this->subject->isPending())
     {
       $show       

@@ -33,18 +33,25 @@ services:
       class: Biopen\GeoDirectoryBundle\Services\WebhookService
       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@router", "@request_stack", "@security.context" ]
 
-    biopen.json_generator:
-        class: Biopen\GeoDirectoryBundle\EventListener\JsonRepresentationGenerator
+    biopen.taxonomy_json_generator:
+        class: Biopen\GeoDirectoryBundle\EventListener\TaxonomyJsonGenerator
         arguments: [ '@jms_serializer' ]
         tags:
             - { name: doctrine_mongodb.odm.event_listener, event: postPersist }
+            - { name: doctrine_mongodb.odm.event_listener, event: preFlush }
             - { name: doctrine_mongodb.odm.event_listener, event: postUpdate }
-            - { name: doctrine_mongodb.odm.event_listener, event: postRemove }
+
+    biopen.element_json_generator:
+        class: Biopen\GeoDirectoryBundle\EventListener\ElementJsonGenerator
+        tags:
+            - { name: doctrine_mongodb.odm.event_listener, event: preFlush }  
 
     biopen.db_integrity:
         class: Biopen\GeoDirectoryBundle\EventListener\DatabaseIntegrityWatcher
+        arguments: ["@biopen.async"]
         tags:
             - { name: doctrine_mongodb.odm.event_listener, event: preRemove }
+            - { name: doctrine_mongodb.odm.event_listener, event: preFlush }
 
     biopen.csvtoarray:
         class: Biopen\GeoDirectoryBundle\Services\ConvertCsvToArrayService

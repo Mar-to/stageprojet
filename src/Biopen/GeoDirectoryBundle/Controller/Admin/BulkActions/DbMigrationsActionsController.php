@@ -21,7 +21,7 @@ class DbMigrationsActionsController extends BulkActionsAbstractController
       foreach ($users as $key => $user) 
       {
          $user->createToken(); 
-         if ((++$i % 20) == 0) {
+         if ((++$i % 100) == 0) {
             $em->flush();
             $em->clear();
          }

@@ -61,8 +61,6 @@ class WebhookService
             $post->setData($this->formatData($webhook->getFormat(), $data));
             $this->em->persist($post);
         }
-
-        $this->em->flush();
     }
 
     /**

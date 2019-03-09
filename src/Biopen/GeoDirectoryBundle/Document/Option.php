@@ -175,8 +175,9 @@ class Option
     private $isFixture = false;
 
     /**
+    * @Accessor(getter="getOrderedSubcategories")
     * @Exclude(if="object.getSubcategoriesCount() == 0")
-    * @MongoDB\ReferenceMany(targetDocument="Biopen\GeoDirectoryBundle\Document\Category", mappedBy="parent",cascade={"all"}, sort={"index"="ASC"})
+    * @MongoDB\ReferenceMany(targetDocument="Biopen\GeoDirectoryBundle\Document\Category", mappedBy="parent",cascade={"persist", "remove"}, sort={"index"="ASC"})
     */
     private $subcategories;
 
@@ -228,10 +229,33 @@ class Option
         return $result;
     }
 
+    public function getIdAndChildrenOptionIds()
+    {
+        return $this->recursivelyAddChilrenOptionIds($this);
+    }
+
+    private function recursivelyAddChilrenOptionIds($option)
+    {
+        $result = [$option->getId()];
+        foreach ($option->getSubcategories() as $categorie) {
+            foreach ($categorie->getOptions() as $childOption) {
+               $result = array_merge($result, $this->recursivelyAddChilrenOptionIds($childOption));
+            }           
+        }
+        return $result;
+    }
+
     public function getSubcategoriesCount()
     {
         if ($this->subcategories) return $this->subcategories->count();
         return 0;
+    }
+
+    public function getOrderedSubcategories()
+    {
+        $sortedCategories = is_array($this->subcategories) ? $this->subcategories : $this->subcategories->toArray();
+        usort( $sortedCategories , function ($a, $b) { return $a->getIndex() - $b->getIndex(); });
+        return $sortedCategories;
     }
     
     /**

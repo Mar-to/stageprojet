@@ -39,6 +39,8 @@ abstract class InteractType
 **/
 class ElementActionService
 {  
+   protected $preventAddingContribution = false;
+
    /**
    * Constructor
    */
@@ -69,7 +71,7 @@ class ElementActionService
       if($sendMail) $this->mailService->sendAutomatedMail('add', $element, $message);
       $element->updateTimestamp();
 
-      $this->webhookService->queue('add', $element);
+      // $this->webhookService->queue('add', $element);
    }
 
    public function edit($element, $sendMail = true, $message = null, $modifiedByOwner = false, $directModerationWithHash = false)
@@ -88,7 +90,7 @@ class ElementActionService
       if (!$modifiedByOwner) $this->resolveReports($element, $message);      
       $element->updateTimestamp();
 
-      $this->webhookService->queue('edit', $element);
+      // $this->webhookService->queue('edit', $element);
    }
 
    public function createPending($element, $editMode, $userEmail)
@@ -119,7 +121,7 @@ class ElementActionService
       $this->resolveReports($element, $message);      
       $element->updateTimestamp();
 
-      $this->webhookService->queue('delete', $element);
+      // $this->webhookService->queue('delete', $element);
    }
 
    public function restore($element, $sendMail = true, $message = null)
@@ -130,7 +132,7 @@ class ElementActionService
       if($sendMail) $this->mailService->sendAutomatedMail('add', $element, $message);
       $element->updateTimestamp();
 
-      $this->webhookService->queue('add', $element);
+      // $this->webhookService->queue('add', $element);
    }
 
    public function resolveReports($element, $message = '', $addContribution = false)
@@ -147,18 +149,39 @@ class ElementActionService
       else if ($addContribution)
          $this->addContribution($element, $message, InteractType::ModerationResolved, $element->getStatus());
 
-      $element->setModerationState(ModerationState::NotNeeded);
-      $element->setIsDuplicateNode(false);
+      // Dealing with potential duplicates
+      if ($element->getModerationState() == ModerationState::PotentialDuplicate) 
+      {
+         if ($element->getIsDuplicateNode()) {
+            $element->setIsDuplicateNode(false);
+            $element->clearPotentialDuplicates();
+         } else {
+            $potentialOwners = $this->em->getRepository('BiopenGeoDirectoryBundle:Element')->findPotentialDuplicateOwner($element);
+            foreach ($potentialOwners as $key => $owner) {
+               $this->em->persist($owner);
+               $owner->removePotentialDuplicate($element);
+            } 
+         }         
+      }   
 
-      $potentialOwners = $this->em->getRepository('BiopenGeoDirectoryBundle:Element')->findPotentialDuplicateOwner($element);
-      foreach ($potentialOwners as $key => $owner) {
-         $this->em->persist($owner);
-         $owner->removePotentialDuplicate($element);
-      }
-      $this->em->flush();      
+      $element->updateTimestamp();
+      $element->setModerationState(ModerationState::NotNeeded);            
+   }
+
+   public function setPreventAddingContribution($bool)
+   {
+      $this->preventAddingContribution = $bool;
+      return $this;
    }
 
    private function addContribution($element, $message, $interactType, $status, $directModerationWithHash = false)
+   {
+      if ($this->preventAddingContribution) return;
+      $contribution = $this->createContribution($message, $interactType, $status, $directModerationWithHash);
+      $element->addContribution($contribution);
+   }
+
+   public function createContribution($message, $interactType, $status, $directModerationWithHash = false)
    {
       $contribution = new UserInteractionContribution();
       $contribution->updateUserInformation($this->securityContext, null, $directModerationWithHash);
@@ -166,7 +189,6 @@ class ElementActionService
       $contribution->updateResolvedBy($this->securityContext, null, $directModerationWithHash);
       $contribution->setType($interactType);
       $contribution->setStatus($status);
-      $element->addContribution($contribution);
+      return $contribution;
    }
-
 }

@@ -24,7 +24,7 @@ class ModerationActionsController extends BulkActionsAbstractController
           $actionService->delete($element);
           $count++;
          }
-         if ((++$i % 20) == 0) {
+         if ((++$i % 100) == 0) {
             $em->flush();
             $em->clear();
          }

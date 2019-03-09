@@ -16,37 +16,19 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 /* check database integrity : for example when removing an option, need to remove all references to this options */
 class DatabaseIntegrityWatcher
 {
-	
+	protected $asyncService;
 
+	public function __construct($asyncService) 
+	{
+		$this->asyncService = $asyncService;
+	}
+	
+	// use post remove instead?
 	public function preRemove(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $args)
 	{
 		$document = $args->getDocument();
 		$dm = $args->getDocumentManager();
-		if ($document instanceof Option)
-		{
-			$option = $document;
-			$qb = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->createQueryBuilder();
-      $elements = $qb->field('optionValues.optionId')->in([$option->getId()])->getQuery()->execute();
-      if ($elements->count() > 0)
-      {
-	      $i = 0;
-	      foreach ($elements as $element) {      	
-	        $optionsValues = $element->getOptionValues()->toArray();               
-	        $optionValueToBeRemoved = array_filter($optionsValues, function($oV) use($option){ return $oV->getOptionId() == $option->getId(); });
-	        $optionValue = array_values($optionValueToBeRemoved)[0];
-	        $element->removeOptionValue($optionValue);
-
-	        if ((++$i % 50) == 0) {
-	          $dm->flush();
-	          $dm->clear();
-	        }
-	      }
-
-	      $dm->flush();
-	      $dm->clear();
-	    }
-		}
-		else if ($document instanceof Group)
+		if ($document instanceof Group)
 		{
 			$group = $document;
 			$qb = $dm->getRepository('BiopenCoreBundle:User')->createQueryBuilder();
@@ -65,5 +47,15 @@ class DatabaseIntegrityWatcher
 			$qb = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->createQueryBuilder();
       $elements = $qb->remove()->field('source')->references($import)->getQuery()->execute();
 		}
+	}
+
+	public function preFlush(\Doctrine\ODM\MongoDB\Event\PreFlushEventArgs $eventArgs) 
+	{
+		$dm = $eventArgs->getDocumentManager();
+		$optionsDeleted = array_filter($dm->getUnitOfWork()->getScheduledDocumentDeletions(), function($doc) { return $doc instanceof Option; });	
+		if (count($optionsDeleted) == 0) return;
+		
+		$optionsIdDeleted = array_map(function($option) { return $option->getId(); }, $optionsDeleted);
+		$this->asyncService->callCommand('app:elements:removeOptions', ['ids' => implode($optionsIdDeleted, ',')]);
 	}
 }

@@ -57,10 +57,10 @@ class UserInteractionContribution extends UserInteraction
         if ($this->getStatus()) $result .=', "status":'            . $this->getStatus();
         $result .=', "user":'             . json_encode($this->getUserDisplayName());
         $result .=', "userRole":'          . $this->getUserRole();
-        $result .=', "resolvedMessage" :' . json_encode($this->getResolvedMessage());
-        $result .=', "resolvedBy" :"'      . $this->getResolvedBy() . '"';
-        $result .=', "updatedAt" :"'       . $this->formatDate($this->getCreatedAt()) . '"';
-        $result .=', "createdAt" :"'       . $this->formatDate($this->getUpdatedAt()) . '"';
+        $result .=', "resolvedMessage":' . json_encode($this->getResolvedMessage());
+        $result .=', "resolvedBy":"'      . $this->getResolvedBy() . '"';
+        $result .=', "updatedAt":"'       . $this->formatDate($this->getCreatedAt()) . '"';
+        $result .=', "createdAt":"'       . $this->formatDate($this->getUpdatedAt()) . '"';
         $result .= "}";
         return $result;
     }

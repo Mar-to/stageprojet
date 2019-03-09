@@ -4,7 +4,7 @@ namespace Biopen\GeoDirectoryBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\AccessorOrder;
+use JMS\Serializer\Annotation\Accessor;
 
 /**
  * Category
@@ -145,8 +145,10 @@ class Category
     private $isRootCategory = false;
 
     /**
+    * @Accessor(getter="getOrderedOptions")
+    * Force ordering cause the RefeenceMany sort property does not work when the options order have been modified after been loaded in the original order
     * @Exclude(if="object.getOptionsCount() == 0")
-    * @MongoDB\ReferenceMany(targetDocument="Biopen\GeoDirectoryBundle\Document\Option", mappedBy="parent",cascade={"all"}, sort={"index"="ASC"})
+    * @MongoDB\ReferenceMany(targetDocument="Biopen\GeoDirectoryBundle\Document\Option", mappedBy="parent", cascade={"persist", "remove"}, sort={"index"="ASC"})
     */
     private $options; 
 
@@ -173,6 +175,13 @@ class Category
     {
         if ($this->options) return $this->options->count();
         return 0;
+    }
+
+    public function getOrderedOptions()
+    {
+        $sortedOptions = is_array($this->options) ? $this->options : $this->options->toArray();
+        usort( $sortedOptions , function ($a, $b) { return $a->getIndex() - $b->getIndex(); });
+        return $sortedOptions;
     }
     
     /**

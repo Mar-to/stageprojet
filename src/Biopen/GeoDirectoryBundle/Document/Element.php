@@ -61,7 +61,6 @@ class ElementImage extends EmbeddedImage
  * Element
  *
  * @MongoDB\Document(repositoryClass="Biopen\GeoDirectoryBundle\Repository\ElementRepository")
- * @MongoDB\HasLifecycleCallbacks 
  * @Vich\Uploadable
  * @MongoDB\Indexes({
  *   @MongoDB\Index(keys={"geo"="2d"}),
@@ -318,7 +317,7 @@ class Element
      */
     private $lockUntil = 0; 
 
-    private $preventJsonUpdate = false;   
+    private $preventJsonUpdate = false; 
 
     /**
      * Constructor
@@ -328,6 +327,31 @@ class Element
         if (!$this->getRandomHash()) $this->updateRandomHash();
         $this->potentialDuplicates = new \Doctrine\Common\Collections\ArrayCollection();
         $this->nonDuplicates = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    // automatically resolve moderation error
+    public function checkForModerationStillNeeded()
+    { 
+        if ($this->getModerationState() == ModerationState::NotNeeded) return;
+
+        $needed = true;
+
+        switch ($this->getModerationState()) {
+            case ModerationState::VotesConflicts:
+            case ModerationState::PendingForTooLong:
+                if (!$this->isPending()) $needed = false;
+                break;
+            case ModerationState::NoOptionProvided:
+                if (!$this->isDynamicImported() && $this->countOptionsValues() > 0)
+                    $needed = false;
+                break;
+            case ModerationState::GeolocError:
+                if ($this->getGeo()->getLatitude() != 0 && $this->getGeo()->getLongitude() != 0) 
+                    $needed = false;
+                break;
+        }
+
+        if (!$needed) $this->setModerationState(ModerationState::NotNeeded);
     }
 
     public function getShowUrlFromController($controller)
@@ -453,151 +477,6 @@ class Element
 
     public function isDynamicImported() { return $this->getSource() && $this->getSource()->isDynamicImport(); }
 
-    /** @MongoDB\PreFlush */
-    public function onPreFlush()
-    {
-        if (!$this->getPreventJsonUpdate()) {
-            $this->checkForModerationNeeded();
-            $this->updateJsonRepresentation();
-        }            
-    }
-
-    // automatically resolve moderation error
-    public function checkForModerationNeeded()
-    { 
-        if ($this->getModerationState() == ModerationState::NotNeeded) return;
-
-        $needed = true;
-
-        switch ($this->getModerationState()) {
-            case ModerationState::VotesConflicts:
-            case ModerationState::PendingForTooLong:
-                if (!$this->isPending()) $needed = false;
-                break;
-            case ModerationState::NoOptionProvided:
-                if (!$this->isDynamicImported() && $this->countOptionsValues() > 0)
-                    $needed = false;
-                break;
-            case ModerationState::GeolocError:
-                if ($this->getGeo()->getLatitude() != 0 && $this->getGeo()->getLongitude() != 0) 
-                    $needed = false;
-                break;
-        }
-
-        if (!$needed) $this->setModerationState(ModerationState::NotNeeded);
-    }
-
-
-    public function updateJsonRepresentation()
-    {
-        if (!$this->geo) { return; }
-
-        // -------------------- FULL JSON ----------------
-        
-        // BASIC FIELDS
-        $baseJson = json_encode($this);
-        $baseJson = substr($baseJson , 0, -1); // remove last '}'
-        if ($this->address)   $baseJson .= ', "address":'    . $this->address->toJson();         
-        if ($this->openHours) $baseJson .= ', "openHours": ' . $this->openHours->toJson(); 
-        
-        // CREATED AT, UPDATED AT
-        $baseJson .= ', "createdAt":"'    . date_format($this->createdAt,"d/m/Y à H:i") . '"';
-        $updatedAt = $this->updatedAt ? $this->updatedAt : $this->createdAt;
-        $updatedAtFormated = gettype($updatedAt) == "integer" ? date("d/m/Y à H:i", $updatedAt) : date_format($updatedAt,"d/m/Y à H:i");
-        $baseJson .= ', "updatedAt":"'    . $updatedAtFormated . '"';
-
-        // OPTIONS VALUES (= TAXONOMY)
-        $sortedOptionsValues = $this->getSortedOptionsValues();
-        $optValuesLength = count($sortedOptionsValues);
-        // Options values ids
-        $baseJson .= ', "categories": [';
-        if ($sortedOptionsValues)
-        {            
-            for ($i=0; $i < $optValuesLength; $i++) { 
-                $baseJson .= $sortedOptionsValues[$i]->getOptionId() . ',';
-            }
-        }
-        $baseJson = rtrim($baseJson, ',');
-        $baseJson .= '],';
-        // Options values with descriptionO      
-        $optionDescriptionsJson = [];
-        if ($sortedOptionsValues)
-        {            
-            for ($i=0; $i < $optValuesLength; $i++) {
-                if ($sortedOptionsValues[$i]->getDescription()) $optionDescriptionsJson[] =  $sortedOptionsValues[$i]->toJson();
-            }
-        }
-        if (count($optionDescriptionsJson)) $baseJson .= '"categoriesDescriptions": [' . implode(",", $optionDescriptionsJson) . '],';
-
-        // CUSTOM DATA
-        if ($this->getData())
-            foreach ($this->getData() as $key => $value) {
-                $baseJson .= '"'. $key .'": ' . json_encode($value) . ',';
-            }
-        
-        // SPECIFIC DATA
-        $baseJson .= $this->encodeArrayObjectToJson("stamps", $this->stamps);
-        $baseJson .= $this->encodeArrayObjectToJson("images", $this->images);
-        $baseJson = rtrim($baseJson, ',');         
-
-        // MODIFIED ELEMENT (for pending modification)
-        if ($this->getModifiedElement()) {
-            $baseJson .= ', "modifiedElement": ' . $this->getModifiedElement()->getJson(true, false);
-        }
-        $baseJson .= '}';
-
-        $this->setBaseJson($baseJson);
-
-
-        // -------------------- PRIVATE JSON -------------------------
-        $privateJson = '{';        
-        // status
-        $privateJson .= '"status": ' . $this->getStatus() . ',';
-        $privateJson .= '"moderationState": ' . $this->getModerationState() . ',';
-        // CUSTOM PRIVATE DATA
-        foreach ($this->getPrivateData() as $key => $value) {
-            $privateJson .= '"'. $key .'": ' . json_encode($value) . ',';
-        }
-        $privateJson = rtrim($privateJson, ',');
-        $privateJson .= '}';
-        $this->setPrivateJson($privateJson);
-
-
-        // ---------------- ADMIN JSON = REPORTS & CONTRIBUTIONS ---------------------
-        $adminJson = '{';
-        if ($this->status != ElementStatus::ModifiedPendingVersion)
-        {
-            $adminJson .= $this->encodeArrayObjectToJson('reports', $this->getUnresolvedReports());
-            $adminJson .= $this->encodeArrayObjectToJson('contributions', $this->getContributionsAndResolvedReports());
-            if ($this->isPending()) {
-                $adminJson .= $this->encodeArrayObjectToJson('votes', $this->getVotesArray());
-                if ($this->getCurrContribution()) $adminJson .= '"pendingContribution":' . $this->getCurrContribution()->toJson();
-            }
-            $adminJson = rtrim($adminJson, ',');
-        }
-        $adminJson .= '}';
-        $this->setAdminJson($adminJson);    
-
-
-        // -------------------- COMPACT JSON ----------------
-        $compactJson = '["'.$this->id . '",' . json_encode($this->name) . ',';
-        $compactJson.= $this->geo->getLatitude() .','. $this->geo->getLongitude() .', [';
-        if ($sortedOptionsValues)
-        {
-            for ($i=0; $i < $optValuesLength; $i++) { 
-                $value = $sortedOptionsValues[$i];
-                $compactJson .= $value->getOptionId();
-                $compactJson .= ',';
-            }
-            $compactJson = rtrim($compactJson, ',');
-        }
-        $compactJson .= ']';
-        if ($this->status <= 0 || $this->moderationState != 0) $compactJson .= ','. $this->status;
-        if ($this->moderationState != 0) $compactJson .= ','. $this->moderationState;
-        $compactJson .= ']';
-        $this->setCompactJson($compactJson);
-    }
-
     public function getJson($includePrivateJson, $includeAdminJson)
     {
         $result = $this->baseJson;
@@ -606,22 +485,7 @@ class Element
         if ($includeAdminJson && $this->adminJson && $this->adminJson != '{}')
            $result = substr($result , 0, -1) . ',' . substr($this->adminJson,1);
         return $result;
-    }
-
-    private function encodeArrayObjectToJson($propertyName, $array)
-    {
-        if (!$array) return "";
-        $array = is_array($array) ? $array : $array->toArray();
-        if (count($array) == 0) return '';
-        $result = '"'. $propertyName .'": [';
-        foreach ($array as $key => $value) {
-            $result .= $value->toJson();
-            $result .= ',';
-        }
-        $result = rtrim($result, ',');
-        $result .= '],';
-        return $result;
-    }
+    }    
 
     public function isPending()
     {

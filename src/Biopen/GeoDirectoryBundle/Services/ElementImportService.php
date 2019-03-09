@@ -329,7 +329,14 @@ class ElementImportService
 		else
 			$status = ElementStatus::AddedByAdmin;
 
-		$this->elementActionService->import($element, false, null, $status);		
+		if (!$updateExisting) { // create import contribution if first time imported
+			$this->elementActionService->import($element, false, null, $status);		
+		} else {
+			// no need for a contribution each time we update the element
+			$element->setStatus($status);
+			$element->updateTimestamp();
+		}
+		
 		$this->em->persist($element);
 		
 		if ($updateExisting) $this->countElementUpdated++;
