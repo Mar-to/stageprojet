@@ -29,7 +29,7 @@ protected $currElementChangeset;
 
           // if we want to update only some specific part of the Json object, user currElementChangeset and below method attrChanged
           // $this->currElementChangeset = array_keys($uow->getDocumentChangeSet($element)); 
-          $this->updateJsonRepresentation($element);          
+          $this->updateJsonRepresentation($element); 
         }        
       }
     }

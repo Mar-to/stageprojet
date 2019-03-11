@@ -18,6 +18,7 @@ use Symfony\Component\Security\Core\SecurityContext;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Biopen\GeoDirectoryBundle\Document\UserInteractionContribution;
 use Biopen\CoreBundle\Services\MailService;
+use Biopen\GeoDirectoryBundle\Services\UserInteractionService;
 
 abstract class ValidationType
 {
@@ -33,12 +34,12 @@ class ElementPendingService
    /**
    * Constructor
    */
-   public function __construct(DocumentManager $documentManager, SecurityContext $securityContext, MailService $mailService, WebhookService $webhookService)
+   public function __construct(DocumentManager $documentManager, SecurityContext $securityContext, MailService $mailService, UserInteractionService $interactionService)
    {
       $this->em = $documentManager;
       $this->securityContext = $securityContext;
       $this->mailService = $mailService;
-      $this->webhookService = $webhookService;
+      $this->interactionService = $interactionService;
    }
 
    // When element in added or modified by non admin, we go throw this function
@@ -50,9 +51,7 @@ class ElementPendingService
       // we want to make it pending again. So we resolve the previous contribution 
       if ($element->isPending() && $element->getCurrContribution()) $element->getCurrContribution()->setStatus(ElementStatus::ModifiedByOwner);
       
-      $contribution = new UserInteractionContribution();
-      $contribution->updateUserInformation($this->securityContext, $userEmail);
-      $contribution->setType($editMode ? 1 : 0);
+      $contribution = $this->interactionService->createContribution(null, $editMode ? 1 : 0, null, false, $userEmail);
       $element->addContribution($contribution);
 
       $element->setStatus($editMode ? ElementStatus::PendingModification : ElementStatus::PendingAdd);  
@@ -169,5 +168,4 @@ class ElementPendingService
          $element->getCurrContribution()->setStatus($isAccepted ? ElementStatus::CollaborativeValidate : ElementStatus::CollaborativeRefused);
       }
    }
-
 }

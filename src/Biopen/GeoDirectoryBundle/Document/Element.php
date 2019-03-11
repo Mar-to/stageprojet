@@ -93,7 +93,7 @@ class Element
      *
      * Users can report some problem related to the Element (no more existing, wrong informations...)
      *
-     * @MongoDB\ReferenceMany(targetDocument="Biopen\GeoDirectoryBundle\Document\UserInteractionReport", cascade={"all"})
+     * @MongoDB\ReferenceMany(targetDocument="Biopen\GeoDirectoryBundle\Document\UserInteractionReport", cascade={"persist", "delete"})
      */
     private $reports;
 
@@ -102,7 +102,7 @@ class Element
      *
      * Hisotry of users contributions (add, edit, by whom, how many votes etc...)
      *
-     * @MongoDB\ReferenceMany(targetDocument="Biopen\GeoDirectoryBundle\Document\UserInteractionContribution", cascade={"all"})
+     * @MongoDB\ReferenceMany(targetDocument="Biopen\GeoDirectoryBundle\Document\UserInteractionContribution", cascade={"persist", "delete"})
      */
     private $contributions;
 
@@ -112,7 +112,7 @@ class Element
      * When a user propose a modification to an element, the modified element in saved in this attributes,
      * so we keep recording both versions (the old one and the new one) and so we can display the diff
      *
-     * @MongoDB\ReferenceOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Element", cascade={"all"})
+     * @MongoDB\ReferenceOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Element", cascade={"persist", "delete"})
      */
     private $modifiedElement;
 
@@ -921,7 +921,7 @@ class Element
      */
     public function getSourceKey()
     {
-        return $this->sourceKey;
+        return $this->sourceKey;    
     }
 
     /**
@@ -931,7 +931,7 @@ class Element
      */
     public function addContribution(\Biopen\GeoDirectoryBundle\Document\UserInteractionContribution $contribution)
     {
-        $contribution->setElement($this);        
+        $contribution->addElement($this);       
         $this->contributions[] = $contribution;
     }
 
@@ -942,6 +942,7 @@ class Element
      */
     public function removeContribution(\Biopen\GeoDirectoryBundle\Document\UserInteractionContribution $contribution)
     {
+        $contribution->removeElement($this);
         $this->contributions->removeElement($contribution);
     }
 

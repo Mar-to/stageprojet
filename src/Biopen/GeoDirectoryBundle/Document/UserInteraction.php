@@ -4,6 +4,7 @@ namespace Biopen\GeoDirectoryBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Biopen\CoreBundle\Services\User;  
 
 abstract class InteractionType
 {
@@ -24,6 +25,15 @@ abstract class UserRoles
     const Loggued = 2;  
     const Admin = 3; 
     const AnonymousWithHash = 4; 
+}
+
+abstract class WebhookStatus
+{
+    const Pending = 'pending';
+    const Completed = 'completed';
+    const Cancelled = 'cancelled'; // if an interaction is pending, and a new interaction takes places, we cancelled all the preivous ones
+    const PartiallyFailed = 'partially_failed'; // Some of the webhooks could not been dispatched
+    const Failed = 'failed'; // All the webhooks failed to be dispatched
 }
 
 /** @MongoDB\Document */
@@ -60,11 +70,20 @@ class UserInteraction
     /**
      * @var \stdClass
      *
-     * The element related to this interaction
-     *
+     * DEPRECIATED Since  March 2019
+     * Now interaction can be linked to many elements, see "elements" attribute    
      * @MongoDB\ReferenceOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Element")
      */
     protected $element;
+
+    /**
+     * @var \stdClass
+     *
+     * Elements related to this interaction
+     *
+     * @MongoDB\ReferenceMany(targetDocument="Biopen\GeoDirectoryBundle\Document\Element")
+     */
+    protected $elements;
 
     /**
      * @var string
@@ -96,24 +115,36 @@ class UserInteraction
      * @var date $updatedAt
      *
      * @MongoDB\Field(type="date")
-     * @Gedmo\Timestampable
      */
-    protected $updatedAt;    
+    protected $updatedAt;  
 
     /**
-     * Get id
-     *
-     * @return id $id
+     * @var bool
+     * Whether or not all the webhook posts have been sent properly
+     * @MongoDB\Field(type="string")
+     * @MongoDB\Index
      */
-    public function getId()
+    protected $webhookDispatchStatus;
+
+    /**
+     * @MongoDB\EmbedMany(targetDocument="Biopen\GeoDirectoryBundle\Document\WebhookPost")
+     */
+    protected $webhookPosts; 
+
+    public function __construct()
     {
-        return $this->id;
+        $this->elements = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     public function getTimestamp()
     {
         $date = in_array($this->type, [InteractionType::Report,InteractionType::Vote]) ? $this->createdAt : $this->updatedAt;
         return $date == null ? 0 : $date->getTimestamp();
+    }
+
+    public function updateTimestamp()
+    {
+        $this->setUpdatedAt(new \DateTime());
     }
 
     public function isAdminContribution()
@@ -155,11 +186,12 @@ class UserInteraction
             else if ($directModerationWithHash)  $this->setResolvedBy('Anonymous with hash');
             else                                 $this->setResolvedBy('Anonymous');
         }
+        $this->updateTimestamp();
     }
 
     public function isMadeBy($user, $userEmail)
     {
-        if ($user)
+        if ($user instanceof User)
             return $this->getUserEmail() == $user->getEmail();
         else
             return ($userEmail && $this->getUserEmail() == $userEmail);
@@ -188,6 +220,21 @@ class UserInteraction
     {
         if (!$this->getCreatedAt()) return "";
         return date_format($this->getCreatedAt(),"d/m/Y à H:i");
+    }
+
+
+
+
+    // ------------------------ GETTER AND SETTERS ----------------------------
+
+    /**
+     * Get id
+     *
+     * @return id $id
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**
@@ -364,5 +411,98 @@ class UserInteraction
     public function getResolvedMessage()
     {
         return $this->resolvedMessage;
+    }    
+    
+    /**
+     * Add element
+     *
+     * @param Biopen\GeoDirectoryBundle\Document\Element $element
+     */
+    public function addElement(\Biopen\GeoDirectoryBundle\Document\Element $element)
+    {
+        $this->elements[] = $element;
+    }
+
+    /**
+     * Remove element
+     *
+     * @param Biopen\GeoDirectoryBundle\Document\Element $element
+     */
+    public function removeElement(\Biopen\GeoDirectoryBundle\Document\Element $element)
+    {
+        $this->elements->removeElement($element);
+    }
+
+    /**
+     * Get elements
+     *
+     * @return \Doctrine\Common\Collections\Collection $elements
+     */
+    public function getElements()
+    {
+        return $this->elements;
+    }
+
+    /**
+     * Get elements
+     *
+     * @return \Doctrine\Common\Collections\Collection $elements
+     */
+    public function setElements($elements)
+    {
+        return $this->elements = $elements;
+    }
+
+    /**
+     * Add webhookPost
+     *
+     * @param Biopen\GeoDirectoryBundle\Document\WebhookPost $webhookPost
+     */
+    public function addWebhookPost(\Biopen\GeoDirectoryBundle\Document\WebhookPost $webhookPost)
+    {
+        $this->webhookPosts[] = $webhookPost;
+        $this->webhookDispatchStatus = WebhookStatus::Pending;
+    }
+
+    /**
+     * Remove webhookPost
+     *
+     * @param Biopen\GeoDirectoryBundle\Document\WebhookPost $webhookPost
+     */
+    public function removeWebhookPost(\Biopen\GeoDirectoryBundle\Document\WebhookPost $webhookPost)
+    {
+        $this->webhookPosts->removeElement($webhookPost);
+    }
+
+    /**
+     * Get webhookPosts
+     *
+     * @return \Doctrine\Common\Collections\Collection $webhookPosts
+     */
+    public function getWebhookPosts()
+    {
+        return $this->webhookPosts;
+    }
+
+    /**
+     * Set webhookDispatchStatus
+     *
+     * @param string $webhookDispatchStatus
+     * @return $this
+     */
+    public function setWebhookDispatchStatus($webhookDispatchStatus)
+    {
+        $this->webhookDispatchStatus = $webhookDispatchStatus;
+        return $this;
+    }
+
+    /**
+     * Get webhookDispatchStatus
+     *
+     * @return string $webhookDispatchStatus
+     */
+    public function getWebhookDispatchStatus()
+    {
+        return $this->webhookDispatchStatus;
     }
 }

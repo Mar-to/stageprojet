@@ -80,6 +80,10 @@
 				le {{ value.createdAt|date("d/m/Y à H:i")}}
 			</div>
 		{% endif %}
+
+		{% if value.webhookDispatchStatus %}
+			<span class="label label-default">{{ value.webhookDispatchStatus|capitalize }}</span>
+		{% endif %}
 	</div>
 
 	  {% if value.votes|length > 0 %}

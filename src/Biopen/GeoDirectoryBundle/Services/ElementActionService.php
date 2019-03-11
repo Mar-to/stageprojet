@@ -17,11 +17,14 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Security\Core\SecurityContext;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Biopen\GeoDirectoryBundle\Document\ModerationState;
+use Biopen\GeoDirectoryBundle\Document\WebhookStatus;
 use Biopen\GeoDirectoryBundle\Document\UserInteractionContribution;
 use Biopen\GeoDirectoryBundle\Services\ElementPendingService;
 use Biopen\GeoDirectoryBundle\Services\ValidationType;
 use Biopen\CoreBundle\Services\MailService;  
+use Biopen\GeoDirectoryBundle\Services\UserInteractionService;
 
+// strange bug importing this class does not work, so redeclare it here
 abstract class InteractType
 {
     const Deleted = -1;   
@@ -40,17 +43,16 @@ abstract class InteractType
 class ElementActionService
 {  
    protected $preventAddingContribution = false;
-
    /**
    * Constructor
    */
-   public function __construct(DocumentManager $documentManager, SecurityContext $securityContext, MailService $mailService, ElementPendingService $elementPendingService, WebhookService $webhookService)
+   public function __construct(DocumentManager $documentManager, SecurityContext $securityContext, MailService $mailService, ElementPendingService $elementPendingService, UserInteractionService $interactionService)
    {
       $this->em = $documentManager;
       $this->securityContext = $securityContext;
       $this->mailService = $mailService;
       $this->elementPendingService = $elementPendingService;
-      $this->webhookService = $webhookService;
+      $this->interactionService = $interactionService;
    }
 
    public function import($element, $sendMail = false, $message = null, $status = null)
@@ -60,8 +62,6 @@ class ElementActionService
       $element->setStatus($status); 
       if ($sendMail) $this->mailService->sendAutomatedMail('add', $element, $message);
       $element->updateTimestamp();
-      
-      // $this->webhookService->queue('add', $element);
    }
 
    public function add($element, $sendMail = true, $message = null)
@@ -70,8 +70,6 @@ class ElementActionService
       $element->setStatus(ElementStatus::AddedByAdmin); 
       if($sendMail) $this->mailService->sendAutomatedMail('add', $element, $message);
       $element->updateTimestamp();
-
-      // $this->webhookService->queue('add', $element);
    }
 
    public function edit($element, $sendMail = true, $message = null, $modifiedByOwner = false, $directModerationWithHash = false)
@@ -89,8 +87,6 @@ class ElementActionService
       $element->setStatus($status); 
       if (!$modifiedByOwner) $this->resolveReports($element, $message);      
       $element->updateTimestamp();
-
-      // $this->webhookService->queue('edit', $element);
    }
 
    public function createPending($element, $editMode, $userEmail)
@@ -120,8 +116,6 @@ class ElementActionService
       $element->setStatus($newStatus); 
       $this->resolveReports($element, $message);      
       $element->updateTimestamp();
-
-      // $this->webhookService->queue('delete', $element);
    }
 
    public function restore($element, $sendMail = true, $message = null)
@@ -131,8 +125,6 @@ class ElementActionService
       $this->resolveReports($element, $message);
       if($sendMail) $this->mailService->sendAutomatedMail('add', $element, $message);
       $element->updateTimestamp();
-
-      // $this->webhookService->queue('add', $element);
    }
 
    public function resolveReports($element, $message = '', $addContribution = false)
@@ -177,18 +169,10 @@ class ElementActionService
    private function addContribution($element, $message, $interactType, $status, $directModerationWithHash = false)
    {
       if ($this->preventAddingContribution) return;
-      $contribution = $this->createContribution($message, $interactType, $status, $directModerationWithHash);
+      foreach ($element->getContributions() as $contribution) { 
+         if ($contribution->getWebhookDispatchStatus() == WebhookStatus::Pending) $contribution->setWebhookDispatchStatus(WebhookStatus::Cancelled);
+      }
+      $contribution = $this->interactionService->createContribution($message, $interactType, $status, $directModerationWithHash);
       $element->addContribution($contribution);
-   }
-
-   public function createContribution($message, $interactType, $status, $directModerationWithHash = false)
-   {
-      $contribution = new UserInteractionContribution();
-      $contribution->updateUserInformation($this->securityContext, null, $directModerationWithHash);
-      $contribution->setResolvedMessage($message);
-      $contribution->updateResolvedBy($this->securityContext, null, $directModerationWithHash);
-      $contribution->setType($interactType);
-      $contribution->setStatus($status);
-      return $contribution;
    }
 }

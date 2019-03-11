@@ -67,7 +67,8 @@ class ElementAdminList extends ElementAdminFilters
                'editable'=>true,
                'template' => '@BiopenAdmin/partials/list_choice_moderation.html.twig'
                ])
-         ->add('contributions', null, array('template' => '@BiopenAdmin/partials/list_votes.html.twig', 'label' => 'Votes'))
+         // use fake attribute createdAt, we then access full object inside template
+         ->add('createdAt', null, array('template' => '@BiopenAdmin/partials/list_votes.html.twig', 'label' => 'Votes'))
          
          ->add('_action', 'actions', array(
              'actions' => array(

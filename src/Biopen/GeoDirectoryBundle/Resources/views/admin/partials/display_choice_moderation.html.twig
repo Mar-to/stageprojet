@@ -8,7 +8,7 @@
         '4': "doublon"
         }
       %} 
-      {% for report in object.reports %}
+      {% for report in object.getUnresolvedReports() %}
           <span class="label label-danger" style="margin-left: 5px">{{ reportValues[report.value] }}</span>
       {% endfor %}
     {% endif %}

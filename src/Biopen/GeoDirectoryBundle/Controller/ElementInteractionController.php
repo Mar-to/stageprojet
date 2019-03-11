@@ -38,7 +38,7 @@ class ElementInteractionController extends Controller
         $em = $this->get('doctrine_mongodb')->getManager(); 
 
         $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));           
-
+        
         $resultMessage = $this->get('biopen.element_vote_service')
                          ->voteForElement($element, $request->get('value'), $request->get('comment'), $request->get('userEmail'));
      

@@ -51,6 +51,8 @@ class CoreController extends GoGoController
 
     public function helpAction() 
     {          
+        $this->get('biopen.webhook_service')->processPosts();
+
         return $this->render('@BiopenAdmin/pages/help.html.twig'); 
     }
      

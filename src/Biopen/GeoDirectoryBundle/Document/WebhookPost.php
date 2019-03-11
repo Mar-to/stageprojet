@@ -5,31 +5,30 @@ namespace Biopen\GeoDirectoryBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Gedmo\Mapping\Annotation as Gedmo;
 
-/**
- * @MongoDB\Document(repositoryClass="Biopen\GeoDirectoryBundle\Repository\WebhookPostRepository")
- */
+abstract class PostStatus
+{
+    const Dispatched = 'dispatched';
+    const Failed = 'failed';
+}
+
+/** @MongoDB\EmbeddedDocument */
 class WebhookPost
 {
-    /** @MongoDB\Id(strategy="INCREMENT") */
-    private $id;
-
-    /** @MongoDB\Field(type="string") */
-    public $url;
-
-    /** @MongoDB\Field(type="hash") */
-    public $data;
-
-    /**
-     * @MongoDB\Field(type="date")
-     * @Gedmo\Timestampable(on="create")
-     */
-    public $createdAt;
+    /** @MongoDB\ReferenceOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Webhook") */
+    public $webhook;
 
     /** @MongoDB\Field(type="int") */
     public $numAttempts;
 
     /** @MongoDB\Field(type="date") */
-    public $latestAttemptAt;
+    public $nextAttemptAt;
+
+    /** @MongoDB\Field(type="string") */
+    public $status;
+
+    // non persisted attributes
+    private $data;
+    private $url;
 
     function __construct()
     {
@@ -39,60 +38,6 @@ class WebhookPost
     function __toString()
     {
         return (string) $this->getId();
-    }
-
-    /**
-     * Get id
-     *
-     * @return int $id
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set url
-     *
-     * @param string $url
-     * @return $this
-     */
-    public function setUrl($url)
-    {
-        $this->url = $url;
-        return $this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return string $url
-     */
-    public function getUrl()
-    {
-        return $this->url;
-    }
-
-    /**
-     * Set data
-     *
-     * @param array $data
-     * @return $this
-     */
-    public function setData($data)
-    {
-        $this->data = $data;
-        return $this;
-    }
-
-    /**
-     * Get data
-     *
-     * @return array $data
-     */
-    public function getData()
-    {
-        return $this->data;
     }
 
     /**
@@ -116,7 +61,7 @@ class WebhookPost
     public function incrementNumAttempts()
     {
         $this->numAttempts++;
-        return $this;
+        return $this->numAttempts;
     }
 
     /**
@@ -152,24 +97,135 @@ class WebhookPost
     }
 
     /**
-     * Set latest attempt date
+     * Set webhook
      *
-     * @param \DateTime $latestAttemptAt
+     * @param Biopen\GeoDirectoryBundle\Document\Webhook $webhook
      * @return $this
      */
-    public function setLatestAttemptAt($latestAttemptAt)
+    public function setWebhook(\Biopen\GeoDirectoryBundle\Document\Webhook $webhook)
     {
-        $this->latestAttemptAt = $latestAttemptAt;
+        $this->webhook = $webhook;
         return $this;
     }
 
     /**
-     * Get latest attempt date
+     * Get webhook
      *
-     * @return \DateTime $latestAttemptAt
+     * @return Biopen\GeoDirectoryBundle\Document\Webhook $webhook
      */
-    public function getLatestAttemptAt()
+    public function getWebhook()
     {
-        return $this->latestAttemptAt;
+        return $this->webhook;
+    }
+
+    /**
+     * Set dispatched
+     *
+     * @param bool $dispatched
+     * @return $this
+     */
+    public function setDispatched($dispatched)
+    {
+        $this->dispatched = $dispatched;
+        return $this;
+    }
+
+    /**
+     * Get dispatched
+     *
+     * @return bool $dispatched
+     */
+    public function getDispatched()
+    {
+        return $this->dispatched;
+    }
+    public function isDispatched() { return $this->getDispatched(); }
+
+    /**
+     * Set nextAttemptAt
+     *
+     * @param date $nextAttemptAt
+     * @return $this
+     */
+    public function setNextAttemptAt($nextAttemptAt)
+    {
+        $this->nextAttemptAt = $nextAttemptAt;
+        return $this;
+    }
+
+    /**
+     * Get nextAttemptAt
+     *
+     * @return date $nextAttemptAt
+     */
+    public function getNextAttemptAt()
+    {
+        return $this->nextAttemptAt;
+    }
+
+    /**
+     * Set data
+     *
+     * @param string $data
+     * @return $this
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
+        return $this;
+    }
+
+    /**
+     * Get data
+     *
+     * @return string $data
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
+     * Set url
+     *
+     * @param string $url
+     * @return $this
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
+        return $this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return string $url
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * Set status
+     *
+     * @param string $status
+     * @return $this
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return string $status
+     */
+    public function getStatus()
+    {
+        return $this->status;
     }
 }

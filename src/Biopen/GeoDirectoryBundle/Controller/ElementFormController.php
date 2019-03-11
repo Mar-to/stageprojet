@@ -250,7 +250,7 @@ class ElementFormController extends GoGoController
 			  }
 			  else // non direct moderation
 			  {            
-			     $elementActionService->createPending($element, $editMode, $userEmail);
+			    $elementActionService->createPending($element, $editMode, $userEmail);
 			  }  
 			}    
 
