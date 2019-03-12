@@ -12,8 +12,6 @@ use Biopen\GeoDirectoryBundle\Document\Coordinates;
 use Biopen\GeoDirectoryBundle\Document\Option;
 use Biopen\GeoDirectoryBundle\Document\OptionValue;
 use Biopen\GeoDirectoryBundle\Document\UserInteractionContribution;
-use Biopen\GeoDirectoryBundle\Document\InteractionType;
-use Biopen\GeoDirectoryBundle\Document\UserRoles;
 use Biopen\GeoDirectoryBundle\Document\PostalAddress;
 use Biopen\GeoDirectoryBundle\Document\ElementUrl;
 use Biopen\GeoDirectoryBundle\Document\ElementImage;
@@ -27,7 +25,7 @@ class ElementImportService
 	private $mappingTableIds = [];
 	private $converter;
 	private $geocoder;
-	private $elementActionService;
+	private $interactionService;
 
 	protected $createMissingOptions;
 	protected $optionIdsToAddToEachElement = [];
@@ -48,16 +46,17 @@ class ElementImportService
 	/**
     * Constructor
     */
-  public function __construct(DocumentManager $documentManager, $converter, $geocoder, $elementActionService)
+  public function __construct(DocumentManager $documentManager, $converter, $geocoder, $interactionService)
   {
 		$this->em = $documentManager;
 		$this->converter = $converter;
 		$this->geocoder = $geocoder->using('google_maps');
-		$this->elementActionService = $elementActionService;
+		$this->interactionService = $interactionService;
 		$this->currentRow = [];
   }
 
-  public function startImport($import) {
+  public function startImport($import) 
+  {
   	$import->setCurrState(ImportState::Downloading);
   	$import->setCurrMessage("Téléchargement des données en cours... Veuillez patienter...");
   	$this->em->persist($import);
@@ -256,7 +255,8 @@ class ElementImportService
 
 	private function createElementFromArray($row, $import)
 	{
-		$updateExisting = false;
+		$updateExisting = false; // if we create a new element or update an existing one
+		$realUpdate = false; // if we are sure that the external has been edited with 'FieldToCheckElementHaveBeenUpdated'
 		if ($row['id'])
 		{
 			if (in_array($row['id'], $import->getIdsToIgnore())) return; 
@@ -277,15 +277,20 @@ class ElementImportService
 		{
 			$updatedAtField = $import->getFieldToCheckElementHaveBeenUpdated();
 			// if updated date hasn't change, nothing to do
-			if ($updatedAtField && (array_key_exists($updatedAtField, $row) && $row[$updatedAtField] == $element->getCustomProperty($updatedAtField))) {				
-				$element->setPreventJsonUpdate(true);				
-				if ($element->getStatus() == ElementStatus::DynamicImportTemp) $element->setStatus(ElementStatus::DynamicImport);
-				$this->em->persist($element);
-				$this->countElementNothingToDo++;
-				return;
+			if ($updatedAtField && array_key_exists($updatedAtField, $row)) {
+				if ($row[$updatedAtField] == $element->getCustomProperty($updatedAtField)) {				
+					$element->setPreventJsonUpdate(true);				
+					if ($element->getStatus() == ElementStatus::DynamicImportTemp) $element->setStatus(ElementStatus::DynamicImport);
+					$this->em->persist($element);
+					$this->countElementNothingToDo++;
+					return;
+				} else {
+					$realUpdate = true;
+				}
 			}
 			$updateExisting = true;
-			$element->setModerationState(ModerationState::NotNeeded); // restting the modearation state so it will be calculated again
+			// resetting "geolocc" and "no options" modearation state so it will be calculated again
+			if ($element->getModerationState() < 0) $element->setModerationState(ModerationState::NotNeeded); 
 		}
 		else
 		{
@@ -324,18 +329,28 @@ class ElementImportService
 		$this->createImages($element, $row);
 		$this->saveCustomFields($element, $row);
 
-		if ($import->isDynamicImport()) // keep the same status for the one who were deleted
+		if ($import->isDynamicImport()) { // keep the same status for the one who were deleted
 			$status = (!$element->getStatus() || $element->getStatus() == ElementStatus::DynamicImportTemp) ? ElementStatus::DynamicImport : $element->getStatus();
+			$element->setIsExternal(true);
+		}
 		else
 			$status = ElementStatus::AddedByAdmin;
 
-		if (!$updateExisting) { // create import contribution if first time imported
-			$this->elementActionService->import($element, false, null, $status);		
-		} else {
-			// no need for a contribution each time we update the element
-			$element->setStatus($status);
-			$element->updateTimestamp();
+		// create import contribution if first time imported
+		if (!$updateExisting) 
+		{ 
+			$contribution = $this->interactionService->createContribution(null, 0, $status);	
+			$element->addContribution($contribution);
+      // $this->mailService->sendAutomatedMail('add', $element, $message);
+		} 
+		// create edit contribution if real update
+		else if ($realUpdate) {
+			$contribution = $this->interactionService->createContribution(null, 1, $status);	
+			$element->addContribution($contribution);
 		}
+
+		$element->setStatus($status);
+		$element->updateTimestamp();
 		
 		$this->em->persist($element);
 		
@@ -451,7 +466,7 @@ class ElementImportService
 				if ($optionExists)
 					// we add option id and parent options if not already added (because import works only with the lower level of options)
 					foreach ($this->mappingTableIds[$optionNameSlug]['idAndParentsId'] as $key => $optionId) 
-						if (!in_array($optionId, $optionsIdAdded)) $optionsIdAdded[] = $this->AddOptionValue($element, $optionId);									
+						if (!in_array($optionId, $optionsIdAdded)) $optionsIdAdded[] = $this->addOptionValue($element, $optionId);									
 			}			
 		}
 
@@ -462,13 +477,13 @@ class ElementImportService
 
 		// Manually add some options to each element imported		
 		foreach ($this->optionIdsToAddToEachElement as $optionId) {
-			if (!in_array($optionId, $optionsIdAdded)) $optionsIdAdded[] = $this->AddOptionValue($element, $optionId);						
+			if (!in_array($optionId, $optionsIdAdded)) $optionsIdAdded[] = $this->addOptionValue($element, $optionId);						
 		}
 
 		if (count($element->getOptionValues()) == 0) $element->setModerationState(ModerationState::NoOptionProvided); 		
 	}
 
-	private function AddOptionValue($element, $id)
+	private function addOptionValue($element, $id)
 	{
 		$optionValue = new OptionValue();
 		$optionValue->setOptionId($id);		

@@ -121,7 +121,7 @@ class ElementAdminList extends ElementAdminFilters
          'ask_confirmation' => false,
          'modal' => [
            ['type' => 'text',  'label' => "Détail de la modification, raison de la suppression... ce texte remplacera {{ customMessage }} dans les mails automatiques", 'id' => 'comment-' . $id ],
-           ['type' => 'checkbox',  'label' => 'Ne pas envoyer de mail',  'id' => 'dont-send-mail-' . $id],
+           ['type' => 'checkbox',  'checked' => true, 'label' => 'Ne pas envoyer de mail',  'id' => 'dont-send-mail-' . $id],
          ]
       );
   }

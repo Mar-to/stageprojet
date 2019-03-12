@@ -311,6 +311,12 @@ class Element
     private $userOwnerEmail;
 
     /**
+    * Shorcut to know if this element is managed by a dynamic source
+    * @MongoDB\Field(type="bool") 
+    */ 
+    private $isExternal;
+
+    /**
      * When actions are made by many person (like moderation, duplicates check...) we lock the elements currently proceed by someone
      * so noone else make action on the same element 
      * @MongoDB\Field(type="int")
@@ -475,7 +481,7 @@ class Element
         return $duplicates;
     }  
 
-    public function isDynamicImported() { return $this->getSource() && $this->getSource()->isDynamicImport(); }
+    public function isDynamicImported() { return $this->isExternal; }
 
     public function getJson($includePrivateJson, $includeAdminJson)
     {
@@ -931,7 +937,7 @@ class Element
      */
     public function addContribution(\Biopen\GeoDirectoryBundle\Document\UserInteractionContribution $contribution)
     {
-        $contribution->addElement($this);       
+        $contribution->setElement($this);       
         $this->contributions[] = $contribution;
     }
 
@@ -1412,4 +1418,26 @@ class Element
     }
 
     public function getPreventJsonUpdate() { return $this->preventJsonUpdate || false;}
+
+    /**
+     * Set isExternal
+     *
+     * @param bool $isExternal
+     * @return $this
+     */
+    public function setIsExternal($isExternal)
+    {
+        $this->isExternal = $isExternal;
+        return $this;
+    }
+
+    /**
+     * Get isExternal
+     *
+     * @return bool $isExternal
+     */
+    public function getIsExternal()
+    {
+        return $this->isExternal;
+    }
 }

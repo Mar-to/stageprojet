@@ -14,7 +14,6 @@
 namespace Biopen\GeoDirectoryBundle\Repository;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
-use Biopen\GeoDirectoryBundle\Document\WebhookStatus;
 use Biopen\GeoDirectoryBundle\Document\ModerationState;
 
 /**

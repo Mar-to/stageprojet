@@ -1,5 +1,3 @@
-
-
 {% set contributionType = {
 	'-1': "Suppression",
 	0: "Ajout",
@@ -49,8 +47,6 @@
 	}
 %} 
 
- 
-
 {% if value and (not value.isResolved or showResolved|default(false))%}
 	<div class="panel-heading {{ value.votes|length > 0 ? 'body-content' : ''}}" role="tab" id="heading{{value.id}}" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{value.id}}" aria-expanded="true" aria-controls="collapse{{value.id}}">
 		{% if value.isAdminContribution %}
@@ -81,9 +77,9 @@
 			</div>
 		{% endif %}
 
-		{% if value.webhookDispatchStatus %}
-			<span class="label label-default">{{ value.webhookDispatchStatus|capitalize }}</span>
-		{% endif %}
+		{% for post in value.webhookPosts %}
+			<span class="label label-default">{{ post.numAttempts }}</span>
+		{% endfor %}
 	</div>
 
 	  {% if value.votes|length > 0 %}

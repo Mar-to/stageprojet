@@ -17,7 +17,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Security\Core\SecurityContext;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Biopen\GeoDirectoryBundle\Document\ModerationState;
-use Biopen\GeoDirectoryBundle\Document\WebhookStatus;
 use Biopen\GeoDirectoryBundle\Document\UserInteractionContribution;
 use Biopen\GeoDirectoryBundle\Services\ElementPendingService;
 use Biopen\GeoDirectoryBundle\Services\ValidationType;
@@ -53,15 +52,6 @@ class ElementActionService
       $this->mailService = $mailService;
       $this->elementPendingService = $elementPendingService;
       $this->interactionService = $interactionService;
-   }
-
-   public function import($element, $sendMail = false, $message = null, $status = null)
-   {
-      if ($status === null) $status = ElementStatus::AddedByAdmin;
-      $this->addContribution($element, $message, InteractType::Import, $status);
-      $element->setStatus($status); 
-      if ($sendMail) $this->mailService->sendAutomatedMail('add', $element, $message);
-      $element->updateTimestamp();
    }
 
    public function add($element, $sendMail = true, $message = null)
@@ -110,8 +100,9 @@ class ElementActionService
    public function delete($element, $sendMail = true, $message = null)
    {
       if($sendMail) $this->mailService->sendAutomatedMail('delete', $element, $message);
-
-      $this->addContribution($element, $message, InteractType::Deleted, ElementStatus::Deleted);
+      // do not add contribution for elements already deleted
+      if ($element->isVisible()) $this->addContribution($element, $message, InteractType::Deleted, ElementStatus::Deleted);
+      
       $newStatus = $element->isPotentialDuplicate() ? ElementStatus::Duplicate : ElementStatus::Deleted;
       $element->setStatus($newStatus); 
       $this->resolveReports($element, $message);      
@@ -169,9 +160,11 @@ class ElementActionService
    private function addContribution($element, $message, $interactType, $status, $directModerationWithHash = false)
    {
       if ($this->preventAddingContribution) return;
-      foreach ($element->getContributions() as $contribution) { 
-         if ($contribution->getWebhookDispatchStatus() == WebhookStatus::Pending) $contribution->setWebhookDispatchStatus(WebhookStatus::Cancelled);
-      }
+      // clear contributions with same type that have not been dispatched yet
+      if ($element->getContributions())
+         foreach ($element->getContributions() as $contribution) { 
+            if ($contribution->getType() == $interactType && $contribution->getWebhookPosts()) $contribution->clearWebhookPosts();
+         }
       $contribution = $this->interactionService->createContribution($message, $interactType, $status, $directModerationWithHash);
       $element->addContribution($contribution);
    }

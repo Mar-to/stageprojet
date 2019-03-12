@@ -16,16 +16,29 @@ class UpdateElementsJsonCommand extends GoGoAbstractCommand
     {
        $this
         ->setName('app:elements:updateJson')
+        ->addArgument('ids', InputArgument::REQUIRED, 'ids to update')
         ->setDescription('Calculate again all the element json representation');
     }
 
     protected function gogoExecute($em, InputInterface $input, OutputInterface $output)
     {
-      try {
-        $elements = $em->getRepository('BiopenGeoDirectoryBundle:Element')->findVisibles(); 
+      try {  
+        
+        if ($input->getArgument('ids') == "all")
+        {
+            $elements = $em->getRepository('BiopenGeoDirectoryBundle:Element')->findAllElements(); 
+        }            
+        else 
+        {
+            $qb = $em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+            $qb->field('id')->in(explode(',',$input->getArgument('ids')));
+            $elements = $qb->getQuery()->execute();            
+        }
+
         $count = $elements->count();
 
         $this->log('Generating json representation for ' . $count . ' elements...');
+        $this->log($input->getArgument('ids'));
         $elemntJsonService = $this->getContainer()->get('biopen.element_json_generator');
 
         $i = 0;

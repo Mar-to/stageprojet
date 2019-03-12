@@ -14,7 +14,7 @@ abstract class PostStatus
 /** @MongoDB\EmbeddedDocument */
 class WebhookPost
 {
-    /** @MongoDB\ReferenceOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Webhook") */
+    /** @MongoDB\ReferenceOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Webhook", cascade={"persist"}) */
     public $webhook;
 
     /** @MongoDB\Field(type="int") */

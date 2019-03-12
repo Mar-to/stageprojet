@@ -41,7 +41,7 @@ class ConfigurationListener
                  
                 $qb->getQuery()->execute();
 
-                $this->asyncService->callCommand('app:elements:updateJson', []);
+                $this->asyncService->callCommand('app:elements:updateJson', ['ids' => 'all']);
             }
         }
     }

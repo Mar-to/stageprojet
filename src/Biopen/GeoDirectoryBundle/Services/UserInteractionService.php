@@ -6,9 +6,15 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Security\Core\SecurityContext;
 use Biopen\GeoDirectoryBundle\Document\Webhook;
 use Biopen\GeoDirectoryBundle\Document\WebhookPost;
-use Biopen\GeoDirectoryBundle\Document\WebhookStatus;
 use Biopen\GeoDirectoryBundle\Document\UserInteractionContribution;
 use Biopen\GeoDirectoryBundle\Document\InteractionType;
+use Biopen\GeoDirectoryBundle\Document\ElementStatus;
+
+abstract class ValidationType
+{
+   const Collaborative = 1;
+   const Admin = 2;            
+}
 
 /**
 * Service used to handle to resolution of pending Elements
@@ -39,6 +45,8 @@ class UserInteractionService
         $contribution->setStatus($status);
       }
       
+      // Create webhook posts to be dispatched
+      // for Pending contributions, we will wait for the status to be set (i.e. contribution is resolved) before dipatching those events
       if ($interactType != InteractionType::ModerationResolved)
       {
          foreach ($this->webhooks as $webhook) {
@@ -49,5 +57,25 @@ class UserInteractionService
          }
       }
       return $contribution;
+   }
+
+   public function resolveContribution($element, $isAccepted, $validationType, $message)
+   {
+      $contribution = $element->getCurrContribution();
+      if (!$isAccepted) $contribution->clearWebhookPosts();
+      
+      if ($validationType == ValidationType::Admin)
+      {
+         $contribution->setResolvedMessage($message);
+         $contribution->updateResolvedby($this->securityContext);
+         $contribution->setStatus($isAccepted ? ElementStatus::AdminValidate : ElementStatus::AdminRefused);
+      }
+      else
+      {
+         $text = $isAccepted ? 'Cette contribution a été approuvée le processus de modération collaborative' : 'Cette contribution a été refusée par le processus de modération collaborative';
+         $contribution->setResolvedMessage($text);
+         $contribution->setResolvedby("Collaborative process");
+         $contribution->setStatus($isAccepted ? ElementStatus::CollaborativeValidate : ElementStatus::CollaborativeRefused);
+      }
    }
 }

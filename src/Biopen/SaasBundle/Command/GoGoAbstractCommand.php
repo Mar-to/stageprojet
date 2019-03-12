@@ -35,7 +35,7 @@ class GoGoAbstractCommand extends ContainerAwareCommand
          if ($input->getArgument('dbname')) $this->odm->getConfiguration()->setDefaultDB($input->getArgument('dbname'));
          
          // create dummy user, as some code called from command will maybe need the current user informations
-         $token = new AnonymousToken('admin', 'admin', ['ROLE_ADMIN']);      
+         $token = new AnonymousToken('admin', 'GoGo Gadget au Bot', ['ROLE_ADMIN']);      
          $this->getContainer()->get('security.token_storage')->setToken($token);
 
          $this->gogoExecute($this->odm, $input, $output);

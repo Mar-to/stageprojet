@@ -1,15 +1,26 @@
 <?php
 
 namespace Biopen\GeoDirectoryBundle\Controller\Admin;
-
+use Biopen\GeoDirectoryBundle\Document\UserInteraction;
 use Sonata\AdminBundle\Controller\CRUDController as Controller;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Biopen\GeoDirectoryBundle\Document\OptionValue;
-use Biopen\GeoDirectoryBundle\Services\ValidationType;
-use Biopen\GeoDirectoryBundle\Services\InteractType;
+use Biopen\GeoDirectoryBundle\Document\ValidationType;
+
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
+use Biopen\GeoDirectoryBundle\Document\Import;
 use Biopen\GeoDirectoryBundle\Document\ModerationState;
+
+abstract class InteractType
+{
+    const Deleted = -1;   
+    const Add = 0;
+    const Edit = 1;
+    const Import = 4; 
+    const Restored = 5;  
+    const ModerationResolved = 6;   
+}
 
 class ElementAdminBulkController extends Controller
 {
@@ -37,55 +48,60 @@ class ElementAdminBulkController extends Controller
         $request = $this->get('request')->request;
         $modelManager = $this->admin->getModelManager();
 
-        $limit = 3000; 
+        $qb = clone $selectedModelQuery;
+        $elementIds = array_keys($qb->select('id')->hydrate(false)->getQuery()->execute()->toArray());
+        $elementIdsString = '"' . implode(',',$elementIds) . '"';
+        $queryArray = $selectedModelQuery->getQuery()->getQuery()['query'];
+        // if query is "get all elements", no need to specify all ids
+        if ($queryArray == ['status' => ['$ne' => -5]]) $elementIdsString = "all";
 
         $selectedModels = $selectedModelQuery->execute();
         $nbreModelsToProceed = $selectedModels->count();
         $isBulk = $nbreModelsToProceed > 2; // treat as bulk only if upper than X element to proceed  
-        $selectedModels->limit($limit);
-
-        $elementActionService = $this->container->get('biopen.element_action_service');
-        if ($isBulk) $elementActionService->setPreventAddingContribution(true);
 
         $sendMail = !($request->has('dont-send-mail-' . $actionName) && $request->get('dont-send-mail-' . $actionName));            
         $comment = $request->get('comment-' . $actionName);
         $dm = $modelManager->getDocumentManager($selectedModels->getNext());
         if ($sendMail) $mailService = $this->container->get('biopen.mail_service');
 
-        try {            
-            if ($isBulk) // proceed all elements at once
+        try { 
+            // BULK - PROCEED ALL ELEMENTS AT ONCE
+            if ($isBulk && in_array($actionName, ['softDelete', 'restore', 'resolveReports'])) 
             {                
-                // ITERATE EACH ELEMENT WITHOUT DB OPERATIONS
-                $elementIds = [];
-                foreach ($selectedModels as $element) {
-                    $mappingType = array('softDelete' => 'delete', 'restore' => 'add');
-                    if ($sendMail && isset($mappingType[$actionName])) $mailService->sendAutomatedMail($mappingType[$actionName], $element, $comment);
-                    if ($actionName == 'resolveReports') {
-                        foreach($element->getUnresolvedReports() as $report) $mailService->sendAutomatedMail('report', $element, $comment, $report);
-                    }                    
-                    $element->setPreventJsonUpdate(true);
-                    $elementIds[] = $element->getId();
+                $interactionService = $this->container->get('biopen.user_interaction_service');
+
+                // SEND EMAIL - ITERATE EACH ELEMENT WITHOUT DB OPERATIONS
+                if ($nbreModelsToProceed < 5000) {
+                    foreach ($selectedModels as $element) {
+                        $mappingType = array('softDelete' => 'delete', 'restore' => 'add');
+                        if ($sendMail && isset($mappingType[$actionName])) $mailService->sendAutomatedMail($mappingType[$actionName], $element, $comment);
+                        if ($actionName == 'resolveReports') {
+                            foreach($element->getUnresolvedReports() as $report) $mailService->sendAutomatedMail('report', $element, $comment, $report);
+                        }                    
+                        $element->setPreventJsonUpdate(true);
+                    }
                 }
+                else if ($sendMail || $actionName == 'resolveReports')
+                    $this->addFlash('sonata_flash_error', "Les emails n'ont pas été envoyés, trop d'éléments à traiter d'un coup");
 
                 // CREATE CONTRIBUTION
                 $contrib = null; 
                 switch ($actionName) {
-                    case 'softDelete': $contrib = $elementActionService->createContribution($comment, InteractType::Deleted, ElementStatus::Deleted); break;
-                    case 'restore': $contrib = $elementActionService->createContribution($comment, InteractType::Restored, ElementStatus::AddedByAdmin);  break;
-                    case 'resolveReports': $contrib = $elementActionService->createContribution($comment, InteractType::ModerationResolved, ElementStatus::AdminValidate); break;
-                }
-                if ($contrib) {     
-                    // Clear previous interaction pending to be dispatched                   
-                    $query = $dm->createQueryBuilder('BiopenGeoDirectoryBundle:UserInteractionContribution')
-                       ->updateMany()
-                       ->field('webhookDispatchStatus')->equals('pending')
-                       ->field('elements.id')->in($elementIds)
-                       ->field('webhookDispatchStatus')->set('cancelled')
-                       ->getQuery()->execute();
-                    
-                    $contrib->setElements($selectedModels->toArray());
-                    $dm->persist($contrib); 
-                }     
+                    case 'softDelete': $contrib = $interactionService->createContribution($comment, InteractType::Deleted, ElementStatus::Deleted); break;
+                    case 'restore': $contrib = $interactionService->createContribution($comment, InteractType::Restored, ElementStatus::AddedByAdmin);  break;
+                    case 'resolveReports': $contrib = $interactionService->createContribution($comment, InteractType::ModerationResolved, ElementStatus::AdminValidate); break;
+                }    
+                
+                // Clear previous interaction with same type pending to be dispatched (prevent dispatching multiple edit event)                   
+                $query = $dm->createQueryBuilder('BiopenGeoDirectoryBundle:UserInteractionContribution')
+                   ->updateMany()
+                   ->field('type')->equals($contrib->getType())
+                   ->field('elements.id')->in($elementIds)
+                   ->field('webhookPosts')->unsetField()->exists(true)
+                   ->getQuery()->execute();
+                
+                $contrib->setElementIds($elementIds);
+                $dm->persist($contrib);    
 
                 // UPDATE EACH ELEMENT AT ONCE
                 $mappingStatus = array('softDelete' => ElementStatus::Deleted, 'restore' => ElementStatus::AddedByAdmin);                    
@@ -115,9 +131,14 @@ class ElementAdminBulkController extends Controller
                 }   
 
                 $dm->flush(); 
+               
+                // update element json asyncronously
+                $this->container->get('biopen.async')->callCommand('app:elements:updateJson', ["ids" => $elementIdsString]);
             }
-            else // Proceed each element one by one
+            // PROCEED EACH ELEMENT ONE BY ONE
+            else 
             {           
+                $elementActionService = $this->container->get('biopen.element_action_service');
                 $i = 0;
                 foreach ($selectedModels as $selectedModel) 
                 {
@@ -125,8 +146,8 @@ class ElementAdminBulkController extends Controller
                         case 'softDelete': $elementActionService->delete($selectedModel, $sendMail, $comment); break;
                         case 'restore': $elementActionService->restore($selectedModel, $sendMail, $comment);  break;
                         case 'resolveReports': $elementActionService->resolveReports($selectedModel, $comment, true); break;
-                        case 'validation': $elementActionService->resolve($selectedModel, true, ValidationType::Admin, $comment); break;
-                        case 'refusal': $elementActionService->resolve($selectedModel, false, ValidationType::Admin, $comment); break;
+                        case 'validation': $elementActionService->resolve($selectedModel, true, 2, $comment); break;
+                        case 'refusal': $elementActionService->resolve($selectedModel, false, 2, $comment); break;
                     }               
                     
                     if ((++$i % 100) == 0) {
@@ -143,27 +164,43 @@ class ElementAdminBulkController extends Controller
             return new RedirectResponse($this->admin->generateUrl('list', array('filter' => $this->admin->getFilterParameters())));
         }      
         
-        $this->addFlash('sonata_flash_success', 'Les '. min([$nbreModelsToProceed,$limit]) .' élements ont bien été traités');
-        if ($nbreModelsToProceed >= $limit) $this->addFlash('sonata_flash_info', "Trop d'éléments à traiter ! Seulement " . $limit . " ont été traités");
+        $this->addFlash('sonata_flash_success', 'Les '. $nbreModelsToProceed .' élements ont bien été traités');
+        // if ($nbreModelsToProceed >= $limit) $this->addFlash('sonata_flash_info', "Trop d'éléments à traiter ! Seulement " . $limit . " ont été traités");
 
         return new RedirectResponse($this->admin->generateUrl('list', array('filter' => $this->admin->getFilterParameters())));
     }
 
     // BATCH HARD DELETE
     public function batchActionDelete(ProxyQueryInterface $selectedModelQuery)
-    {
-        $selectedModels = $selectedModelQuery->execute();
-        $em = $this->get('doctrine_mongodb')->getManager();
-
-        foreach ($selectedModels as $element) {
-            $element->setPreventJsonUpdate(true);   
-            $import = $element->getSource();          
-            if ($import && $element->getOldId()) {                
-                $import->addIdToIgnore($element->getOldId());                
-                $em->persist($import); 
-            }          
-        }
+    {       
+        $em = $this->get('doctrine_mongodb')->getManager();       
         
+        // Add contributions - Get elements visible, no need to add a contirbution if element where already soft deleted for example
+        $elementIds = array_keys($selectedModelQuery->select('id')->field('status')->gte(-1)->hydrate(false)->getQuery()->execute()->toArray());
+        if (count($elementIds)) {
+            $interactionService = $this->container->get('biopen.user_interaction_service');
+            $contribution = $interactionService->createContribution(null, InteractType::Deleted, ElementStatus::Deleted);
+            $contribution->setElementIds($elementIds); 
+            $em->persist($contribution);
+        }
+
+        // Add element id to ignore to sources
+        $elementsIdsGroupedBySource = $selectedModelQuery
+            ->map('function() { if (this.source) emit(this.source.$id, this._id); }')
+            ->reduce('function(k, vals) {            
+                return vals.join(",");
+            }')->getQuery()->execute()->toArray();
+
+        foreach ($elementsIdsGroupedBySource as $value) {
+            $elementIdsForCurrSource = explode(',', $value['value']);
+            $qb = $em->createQueryBuilder(Import::class);
+            $qb->updateOne()
+               ->field('id')->equals($value['_id'])
+               ->field('idsToIgnore')->addToSet($qb->expr()->each($elementIdsForCurrSource))
+               ->getQuery()->execute();
+        } 
+
+        // Perform remove
         $selectedModelQuery->remove()->getQuery()->execute();
         $em->flush();
         

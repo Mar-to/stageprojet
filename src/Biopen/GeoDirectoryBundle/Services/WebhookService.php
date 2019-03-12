@@ -10,6 +10,7 @@ use Biopen\GeoDirectoryBundle\Document\WebhookAction;
 use Biopen\GeoDirectoryBundle\Document\WebhookFormat;
 use Biopen\GeoDirectoryBundle\Document\WebhookPost;
 use Biopen\GeoDirectoryBundle\Document\Element;
+use Biopen\GeoDirectoryBundle\Document\InteractionType;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
@@ -36,70 +37,55 @@ class WebhookService
          $this->config = $this->em->getRepository(Configuration::class)->findConfiguration();
     }
 
-    public function queue($actionType, Element $element)
-    {
-        $webhooks = $this->em->getRepository(Webhook::class)->findAll();
-
-        $user = $this->securityContext->getToken()->getUser();
-        $userDisplayName = is_string($user) ? $user : $user->getDisplayName();
-
-        foreach( $webhooks as $webhook ) {
-            $post = new WebhookPost();
-            $post->setUrl($webhook->getUrl());
-            $post->setData();
-            $this->em->persist($post);
-        }
-    }
-
     /**
      * @param WebhookPost[] $webhookPosts
      */
-    public function processPosts()
+    public function processPosts($limit = 5)
     {
-        $contribution = $this->em->createQueryBuilder(UserInteractionContribution::class)
+        $contributions = $this->em->createQueryBuilder(UserInteractionContribution::class)
         ->field('status')->exists(true)
-        ->field('webhookDispatchStatus')->in(['pending', 'partially_failed'])
         ->field('webhookPosts.nextAttemptAt')->lte(new \DateTime())        
-        ->getQuery()->getSingleResult();
+        ->limit($limit)
+        ->getQuery()->execute();
 
-        if (!$contribution) return;
+        if (!$contributions || $contributions->count() == 0) return 0;
 
         $client = new Client();
+        $contributionsToProceed = [];
         $postsToProceed = [];
 
-        $element = $contribution->getElements()->first();
+        // PREPARE EACH POST (calculate data, url...)
+        foreach ($contributions as $contribution) 
+        {          
+            $data = $this->calculateData($contribution);
+            foreach($contribution->getWebhookPosts() as $webhookPost) 
+            {
+                if (!$webhookPost->getStatus()) 
+                {
+                    $webhook = $webhookPost->getWebhook();
+                    $webhookPost->setUrl($webhook->getUrl());                   
+                    $jsonData = json_encode($this->formatData($webhook->getFormat(), $data));
+                    $webhookPost->setData($jsonData);
+                    $postsToProceed[] = $webhookPost;
+                    $contributionsToProceed[] = $contribution;
+                }                    
+            }  
+        }      
 
-        $mappingType = ['-1' => 'delete', 0 => 'add', 1 => 'edit', 4 => 'add', 5 => 'add'];
-        $data = [
-            'action' => $mappingType[$contribution->getType()],
-            'user' => $contribution->getUserDisplayName(),
-            'link' => str_replace('%23', '#', $this->router->generate('biopen_directory_showElement', array('id'=>$element->getId()), true)),
-            'data' => json_decode($element->getBaseJson(), true)
-        ];
-        $data['text'] = $this->getNotificationText($data);
-
-        foreach($contribution->getWebhookPosts() as $webhookPost) {
-            if (!$webhookPost->getStatus()) {
-                $webhook = $webhookPost->getWebhook();
-                $webhookPost->setUrl($webhook->getUrl());                   
-                $jsonData = json_encode($this->formatData($webhook->getFormat(), $data));
-                $webhookPost->setData($jsonData);
-                $postsToProceed[] = $webhookPost;
-            }                    
-        }        
-
+        // CREATE POST REQUESTS
         $requests = function() use($client, $postsToProceed) {
             foreach($postsToProceed as $post) yield new \GuzzleHttp\Psr7\Request('POST', $post->getUrl() , [], $post->getData() );
         };        
 
+        // SEND REQUEST CONCURRENTLY AND HANDLE RESULTS
         $pool = new Pool($client, $requests(), [
             'concurrency' => 5,
-            'fulfilled' => function (Response $response, $index) use ($postsToProceed) {
+            'fulfilled' => function (Response $response, $index) use ($postsToProceed, $contributionsToProceed) {
                 $post = $postsToProceed[$index];
-                $post->setDispatched(true);
-                $post->setNextAttemptAt(new \DateTime('3000-01-01'));
+                $contribution = $contributionsToProceed[$index];
+                $contribution->removeWebhookPost($post);
             },
-            'rejected' => function ($reason, $index) use ($postsToProceed, $contribution) {
+            'rejected' => function ($reason, $index) use ($postsToProceed, $contributionsToProceed) {
                 $post = $postsToProceed[$index];
                 $attemps = $post->incrementNumAttempts();
                 if ($attemps < 6) {
@@ -111,13 +97,6 @@ class WebhookService
                 } else {                    
                     $post->setStatus('failed');
                     $post->setNextAttemptAt(new \DateTime('3000-01-01'));
-                    $webhooks = $contribution->getWebhookPosts()->toArray();
-                    $failedCount = count(array_filter($webhooks, function($post) { return $post->getStatus() == 'failed'; }));
-
-                    if ($failedCount == count($webhooks)) 
-                        $contribution->setWebhookDispatchStatus('failed');
-                    else
-                        $contribution->setWebhookDispatchStatus('partially_failed');
                 }                
             },
         ]);
@@ -127,29 +106,67 @@ class WebhookService
         // Force the pool of requests to complete.
         $promise->wait();
 
-        // the Element lodaded through UserInteraction association is no fully loaded and there is problems while saving this element 
-        // detach opration does not work, so we load it again properly
-        $this->em->refresh($element);
-        $element->setPreventJsonUpdate(true);
-
         $this->em->flush();
 
-        return( count($postsToProceed) );
+        return count($postsToProceed);
     }
 
-    private function getNotificationText($data)
+    private function calculateData($contribution)
+    {
+        // STANDRD CONTIRBUTION
+        if ($contribution->getElement()) 
+        {
+            $element = $contribution->getElement();
+            dump($element);
+            $this->em->refresh($element);
+            $element->setPreventJsonUpdate(true);
+            $link = str_replace('%23', '#', $this->router->generate('biopen_directory_showElement', array('id'=>$element->getId()), true));
+            $data = json_decode($element->getBaseJson(), true);
+        }
+        // BATCH CONTRIBUTION
+        else
+        {
+            $link = "";
+            $data = ['ids' => $contribution->getElementIds()];
+        }
+
+        $mappingType = [InteractionType::Deleted => 'delete', InteractionType::Add => 'add',     InteractionType::Edit => 'edit', 
+                        InteractionType::Import => 'add',     InteractionType::Restored => 'add'];
+        $result = [
+            'action' => $mappingType[$contribution->getType()],
+            'user' => $contribution->getUserDisplayName(),
+            'link' => $link,
+            'data' => $data
+        ];
+        $result['text'] = $contribution->getElement() ? $this->getNotificationText($result) : $this->getBatchNotificationText($result);
+        return $result;
+    }
+
+    private function getNotificationText($result)
     {
         $element = $this->config->getElementDisplayName();
-        switch($data['action']) {
+        switch($result['action']) {
             case 'add':
-                return "**AJOUT** Acteur **{$data['data']['name']}** ajouté par {$data['user']}\n{$data['link']}";
+                return "**AJOUT** {$element} **{$result['data']['name']}** ajouté par {$result['user']}\n[Lien vers la fiche]({$result['link']})";
             case 'edit':
-                return "**MODIFICATION** Acteur **{$data['data']['name']}** mis à jour par *{$data['user']}*\n{$data['link']}";
+                return "**MODIFICATION** {$element} **{$result['data']['name']}** mis à jour par *{$result['user']}*\n[Lien vers la fiche]({$result['link']})";
             case 'delete':
-                return "**SUPPRESSION** Acteur **{$data['data']['name']}** supprimé par *{$data['user']}*";
+                return "**SUPPRESSION** {$element} **{$result['data']['name']}** supprimé par *{$result['user']}*";
             default:
-                throw new InvalidArgumentException(sprintf('The webhook action "%s" is invalid.', $data['action']));
+                throw new InvalidArgumentException(sprintf('The webhook action "%s" is invalid.', $result['action']));
         }
+    }
+
+    protected $transTitle = [ 'add' => 'AJOUT', 'edit' => 'MODIFICATION', 'delete' => 'SUPPRESSION'];
+    protected $transText = [ 'add' => 'ajoutés', 'edit' => 'mis à jour', 'delete' => 'supprimés'];
+
+    private function getBatchNotificationText($result)
+    {
+        $elements = $this->config->getElementDisplayNamePlural();
+        $title = $this->transTitle[$result['action']];
+        $text = $this->transText[$result['action']];
+        $count = count($result['data']['ids']);
+        return "**{$title}** {$count} {$elements} {$text} par {$result['user']}";
     }
 
     private function getBotIcon()

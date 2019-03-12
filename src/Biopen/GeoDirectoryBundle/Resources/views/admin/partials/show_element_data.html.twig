@@ -8,7 +8,7 @@
         <td>
           {% if data is iterable %}
             {% for subkey, subdata in data %}
-              {{ subkey }} : {{ subdata }}<br/>
+              {{ subkey }} : {{ subdata is iterable ? subdata|join(',') : subdata }}<br/>
             {% endfor %}
           {% else %}
             {{ data }}

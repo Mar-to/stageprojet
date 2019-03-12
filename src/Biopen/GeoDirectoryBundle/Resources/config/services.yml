@@ -67,8 +67,7 @@ services:
           - "@doctrine.odm.mongoDB.document_manager"
           - "@biopen.csvtoarray"
           - '@bazinga_geocoder.geocoder'
-          - "@biopen.element_action_service"
-          - "@biopen.element_duplicates_service"
+          - "@biopen.user_interaction_service"
 
     biopen.gogocartojs_service:
        class: Biopen\GeoDirectoryBundle\Services\GoGoCartoJsService

@@ -27,15 +27,6 @@ abstract class UserRoles
     const AnonymousWithHash = 4; 
 }
 
-abstract class WebhookStatus
-{
-    const Pending = 'pending';
-    const Completed = 'completed';
-    const Cancelled = 'cancelled'; // if an interaction is pending, and a new interaction takes places, we cancelled all the preivous ones
-    const PartiallyFailed = 'partially_failed'; // Some of the webhooks could not been dispatched
-    const Failed = 'failed'; // All the webhooks failed to be dispatched
-}
-
 /** @MongoDB\Document */
 class UserInteraction
 {
@@ -70,20 +61,10 @@ class UserInteraction
     /**
      * @var \stdClass
      *
-     * DEPRECIATED Since  March 2019
-     * Now interaction can be linked to many elements, see "elements" attribute    
+     * Elements related to this interaction
      * @MongoDB\ReferenceOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Element")
      */
     protected $element;
-
-    /**
-     * @var \stdClass
-     *
-     * Elements related to this interaction
-     *
-     * @MongoDB\ReferenceMany(targetDocument="Biopen\GeoDirectoryBundle\Document\Element")
-     */
-    protected $elements;
 
     /**
      * @var string
@@ -119,22 +100,10 @@ class UserInteraction
     protected $updatedAt;  
 
     /**
-     * @var bool
-     * Whether or not all the webhook posts have been sent properly
-     * @MongoDB\Field(type="string")
-     * @MongoDB\Index
-     */
-    protected $webhookDispatchStatus;
-
-    /**
      * @MongoDB\EmbedMany(targetDocument="Biopen\GeoDirectoryBundle\Document\WebhookPost")
      */
     protected $webhookPosts; 
 
-    public function __construct()
-    {
-        $this->elements = new \Doctrine\Common\Collections\ArrayCollection();
-    }
 
     public function getTimestamp()
     {
@@ -412,46 +381,6 @@ class UserInteraction
     {
         return $this->resolvedMessage;
     }    
-    
-    /**
-     * Add element
-     *
-     * @param Biopen\GeoDirectoryBundle\Document\Element $element
-     */
-    public function addElement(\Biopen\GeoDirectoryBundle\Document\Element $element)
-    {
-        $this->elements[] = $element;
-    }
-
-    /**
-     * Remove element
-     *
-     * @param Biopen\GeoDirectoryBundle\Document\Element $element
-     */
-    public function removeElement(\Biopen\GeoDirectoryBundle\Document\Element $element)
-    {
-        $this->elements->removeElement($element);
-    }
-
-    /**
-     * Get elements
-     *
-     * @return \Doctrine\Common\Collections\Collection $elements
-     */
-    public function getElements()
-    {
-        return $this->elements;
-    }
-
-    /**
-     * Get elements
-     *
-     * @return \Doctrine\Common\Collections\Collection $elements
-     */
-    public function setElements($elements)
-    {
-        return $this->elements = $elements;
-    }
 
     /**
      * Add webhookPost
@@ -461,7 +390,6 @@ class UserInteraction
     public function addWebhookPost(\Biopen\GeoDirectoryBundle\Document\WebhookPost $webhookPost)
     {
         $this->webhookPosts[] = $webhookPost;
-        $this->webhookDispatchStatus = WebhookStatus::Pending;
     }
 
     /**
@@ -484,25 +412,9 @@ class UserInteraction
         return $this->webhookPosts;
     }
 
-    /**
-     * Set webhookDispatchStatus
-     *
-     * @param string $webhookDispatchStatus
-     * @return $this
-     */
-    public function setWebhookDispatchStatus($webhookDispatchStatus)
+    public function clearWebhookPosts()
     {
-        $this->webhookDispatchStatus = $webhookDispatchStatus;
+        $this->webhookPosts = [];
         return $this;
-    }
-
-    /**
-     * Get webhookDispatchStatus
-     *
-     * @return string $webhookDispatchStatus
-     */
-    public function getWebhookDispatchStatus()
-    {
-        return $this->webhookDispatchStatus;
     }
 }

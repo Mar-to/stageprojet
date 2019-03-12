@@ -18,6 +18,13 @@ class UserInteractionContribution extends UserInteraction
 
     /**
      * @var \stdClass
+     * @MongoDB\Field(type="collection")
+     * EFor batch contributions, we stored all elements ids concerned
+     */
+    protected $elementIds;
+
+    /**
+     * @var \stdClass
      *
      * When user propose a new element, or a modification, the element status became "pending", and other
      * users can vote to validate or not the add/modification
@@ -115,5 +122,33 @@ class UserInteractionContribution extends UserInteraction
     public function getVotes()
     {
         return $this->votes;
+    }
+
+    /**
+     * Set elementIds
+     *
+     * @param collection $elementIds
+     * @return $this
+     */
+    public function setElementIds($elementIds)
+    {
+        $this->elementIds = $elementIds;
+        return $this;
+    }
+
+    /**
+     * Get elementIds
+     *
+     * @return collection $elementIds
+     */
+    public function getElementIds()
+    {
+        return $this->elementIds;
+    }
+
+    public function addElementId($id)
+    {
+        $this->elementIds[] = $id;
+        return $this;
     }
 }

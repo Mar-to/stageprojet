@@ -22,7 +22,7 @@ class WebhooksPostCommand extends GoGoAbstractCommand
         /** @var WebhookService $webhookService */
         $webhookService = $this->getContainer()->get('biopen.webhook_service');
 
-        $numPosts = $webhookService->processPosts(1);
+        $numPosts = $webhookService->processPosts(10);
 
         $this->log('Nombre webhooks traités : ' . $numPosts);
     }
