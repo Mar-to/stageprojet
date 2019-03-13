@@ -7,14 +7,8 @@ use Symfony\Component\Security\Core\SecurityContext;
 use Biopen\GeoDirectoryBundle\Document\Webhook;
 use Biopen\GeoDirectoryBundle\Document\WebhookPost;
 use Biopen\GeoDirectoryBundle\Document\UserInteractionContribution;
-use Biopen\GeoDirectoryBundle\Document\InteractionType;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 
-abstract class ValidationType
-{
-   const Collaborative = 1;
-   const Admin = 2;            
-}
 
 /**
 * Service used to handle to resolution of pending Elements
@@ -47,7 +41,7 @@ class UserInteractionService
       
       // Create webhook posts to be dispatched
       // for Pending contributions, we will wait for the status to be set (i.e. contribution is resolved) before dipatching those events
-      if ($interactType != InteractionType::ModerationResolved)
+      if ($interactType != 6) // 6 = InteractionType::ModerationResolved
       {
          foreach ($this->webhooks as $webhook) {
             $post = new WebhookPost();
@@ -64,7 +58,7 @@ class UserInteractionService
       $contribution = $element->getCurrContribution();
       if (!$isAccepted) $contribution->clearWebhookPosts();
       
-      if ($validationType == ValidationType::Admin)
+      if ($validationType == 2) // 2 = ValidationType::Admin
       {
          $contribution->setResolvedMessage($message);
          $contribution->updateResolvedby($this->securityContext);
