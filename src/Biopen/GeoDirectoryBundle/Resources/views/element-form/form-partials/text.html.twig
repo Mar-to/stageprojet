@@ -14,7 +14,9 @@
       {% set icon = 'gogo-icon-number' %}
     {% elseif field.type == "email" %}
       {% set icon = 'gogo-icon-mail' %}
-      {% elseif field.type == "textarea" %}
+    {% elseif field.type == "image" %}
+      {% set icon = 'far fa-image' %}
+    {% elseif field.type == "textarea" %}
       {% set icon = 'gogo-icon-description' %}
     {% endif %}
   {% endif %}
@@ -24,7 +26,7 @@
   {% if not errorMsg %}
     {% if field.subtype is defined and field.subtype == "email" %}
       {% set errorMsg = "Veuillez renseigner une adresse email valide" %}
-    {% elseif field.subtype is defined and field.subtype == "url" %}
+    {% elseif field.subtype is defined and field.subtype == "url" or field.type == 'image' %}
       {% set errorMsg = "Veuillez renseigner une url du type http://..." %}
     {% elseif field.type == "number" %}
       {% set errorMsg = "Ceci n'est pas un nombre !" %}
@@ -44,7 +46,7 @@
   {% set fieldName = field.type == "email" ? 'email' : field.name %}
   {# TYPE #}
   {% set inputType = field.subtype is defined ? field.subtype : field.type == "number" ? "number" : "text" %}
-
+  {% set inputType = field.type == "email" ? 'url' : inputType %}
   {# VALUE #}
 
   {% set inputValue = elementValue %}
