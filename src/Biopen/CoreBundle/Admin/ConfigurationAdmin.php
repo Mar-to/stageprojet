@@ -49,7 +49,7 @@ class ConfigurationAdmin extends AbstractAdmin
             ->end()
             ->with('Fonctions principales', array('class' => 'col-md-6'))
                 ->add('activateHomePage', null, array('label' => "Activer la page d'accueil", 'required' => false))
-                ->add('activatePartnersPage', null, array('label' => 'Activer la page type "Partneraires"', 'required' => false))
+                ->add('activatePartnersPage', null, array('label' => 'Activer la page type "Parteraires"', 'required' => false))
                 ->add('partnerPageTitle', null, array('label' => 'Titre de la page "Partenaires"', 'required' => false))
                 ->add('activateAbouts', null, array('label' => 'Activer les popups type "A propos"', 'required' => false))
                 ->add('aboutHeaderTitle', null, array('label' => 'Titre de la section "A propos"', 'required' => false))
