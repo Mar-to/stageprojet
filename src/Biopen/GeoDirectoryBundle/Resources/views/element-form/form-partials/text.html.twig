@@ -78,7 +78,7 @@
   {% endif %}
 
   {# LABEL #}
-  <label for="input-{{ field.name }}" data-error="{{ errorMsg|default('') }}" class="gogo-form-label">{{ field.label }}{% if field.required|default(false) %}<span class="mandatory-asterisk"></span>{% endif %}</label>
+  <label for="input-{{ field.name }}" data-error="{{ errorMsg|default('') }}" class="gogo-form-label"><span class="to-html">{{ field.label|raw }}</span>{% if field.required|default(false) %}<span class="mandatory-asterisk"></span>{% endif %}</label>
 
   {% if field.type == "date" %}
   <script>

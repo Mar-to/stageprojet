@@ -1,4 +1,4 @@
-<div class="categories-info neutral-color">{{ field.label }}</div>
+<div class="categories-info neutral-color to-html">{{ field.label|raw }}</div>
 {% for mainCategory in mainCategories %}    
   {% include '@BiopenGeoDirectory/element-form/form-partials/taxonomy-field.html.twig' with { 'category' : mainCategory } %} 
 {% endfor %}

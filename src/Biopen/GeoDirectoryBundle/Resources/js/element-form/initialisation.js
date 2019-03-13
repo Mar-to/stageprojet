@@ -11,6 +11,8 @@ jQuery(document).ready(function()
 {	
   $('select').material_select();
 
+  $('.to-html').each(function() { $(this).html($(this).text()); });
+
   // TIMEPICKERS
   $('.timepicker').each(function(e) {
     var start_time;

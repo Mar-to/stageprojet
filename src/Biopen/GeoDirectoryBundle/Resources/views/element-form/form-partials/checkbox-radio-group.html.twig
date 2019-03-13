@@ -5,7 +5,7 @@
   
   {% set errorMsg = fields.errorMsg|default('Veuillez choisir au moins une option') %}
   <div class="label-container">
-    {% if field.label %}<label class="checkbox-radio-group-label">{{ field.label }}{% if field.required|default(false) %}<span class="mandatory-asterisk"></span>{% endif %}<span class="error">{{ errorMsg }}</span></label>{% endif %}    
+    {% if field.label %}<label class="checkbox-radio-group-label to"><span class="to-html">{{ field.label|raw }}</span>{% if field.required|default(false) %}<span class="mandatory-asterisk"></span>{% endif %}<span class="error">{{ errorMsg }}</span></label>{% endif %}    
   </div>
 
   {% for option in field.values %}
@@ -13,7 +13,7 @@
     {% set optionId = field.name ~ '-' ~ option.value %}
     <input name="data[{{ field.name }}][]" type="{{ optionType }}" id="{{ optionId }}" value="{{option.value}}" class="{{ optionClass }}"
             {% if option.value in elementValue or not elementValue and option.selected is defined %}checked="checked"{% endif %}/>
-    <label for="{{ optionId }}">{{ option.label }}</label>
+    <label for="{{ optionId }}">{{ option.label|raw }}</label>
   </div>
   {% endfor %}
 </div>

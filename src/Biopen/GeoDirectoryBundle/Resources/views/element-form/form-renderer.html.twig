@@ -15,10 +15,10 @@
        {% include '@BiopenGeoDirectory/element-form/form-partials/select.html.twig' %}
     {# HEADER #}
     {% elseif field.type == "header" %}
-      <h2>{{ field.label }}</h2>
+      <h2 class="to-html">{{ field.label|raw }}</h2>
     {# PARAGRAPH #}
     {% elseif field.type == "paragraph" %}
-      <p>{{ field.label }}</p>
+      <p class="to-html">{{ field.label|raw }}</p>
     {# CHEKCBOX / RADIO #}
     {% elseif field.type == "checkbox" %}
       {% include '@BiopenGeoDirectory/element-form/form-partials/checkbox.html.twig' %}

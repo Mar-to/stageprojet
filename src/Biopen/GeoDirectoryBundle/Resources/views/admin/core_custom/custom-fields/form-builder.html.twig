@@ -7,7 +7,8 @@
 {% include '@BiopenAdmin/core_custom/custom-fields/icon-picker.html.twig' with { 'preventInput': true } %}
 
 {% set formData = form.vars.sonata_admin.admin.subject.elementFormFieldsJson|default('[]') %}
-<script>
+<script> 
+
   if (!formBuilderInitialized) {
     formBuilderInitialized = true;
     jQuery(function($) {
@@ -34,7 +35,7 @@
         image: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + ' type="text"/>' }; },
       };
 
-      var iconAttr = { label: 'Icone', placeholder: 'Pick a fontawesome icon'  }
+      var iconAttr = { label: 'Icone', placeholder: 'Choisissez une icone'  }
       var errorMsgAttrs = { label: "Msg. Erreur", placeholder: "Oups ce texte est un peu long ! // Veuillez renseigner une adresse email valide // ..." }
       var typeUserAttrs = {
         text: { 
@@ -104,6 +105,10 @@
         typeUserAttrs: typeUserAttrs
       });
 
+      $(document).ready(function() {
+        setTimeout(function() { $('.form-field:not(.paragraph-field) .fld-label').each(function() { $(this).text($(this).html()) }); }, 0);
+      }); 
+
       setInterval(function() {
         // prevent adding two contat email attributes
         $('.input-control[data-type=email]').toggle($('.email-field').length == 0);
@@ -148,7 +153,9 @@
         $(this).find('input[name="roles[]"]').prop('checked', $(this).is(':checked'));
       });    
     });
-  }        
+  }    
+
+     
 </script>
 
 <style>  

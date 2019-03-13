@@ -2,5 +2,5 @@
   <input type="checkbox" name="data[{{ field.name }}]" id="{{ field.name }}" 
           {% if field.required|default(false) %}class="required"{% endif %}
           {% if elementValue or not elementValue and field.values[0].selected is defined %}checked="checked"{% endif %}/>
-  <label for="{{ field.name }}" >{{ field.label }}</label>
+  <label for="{{ field.name }}" class="to-html">{{ field.label|raw }}</label>
 </div>

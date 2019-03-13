@@ -3,7 +3,7 @@
   <i class="material-icons gogo-icon-marker-symbol prefix"></i> 
   {{ form_widget(form.fullAddress, {'id': 'input-address', 'value': element.getFormatedAddress(),
                   'attr': {'class': 'validate required'  }}) }}
-  <label for="input-address" class="gogo-form-label">Adresse complète</label>
+  <label for="input-address" class="gogo-form-label to-html">{{ field.label|raw }}</label>
   <div class="btn-geolocalize btn btn-secondary waves-effect waves-light">Localiser</div>
   {% if config.elementFormGeocodingHelp %}
     <div class="btn-geolocalize-help btn btn-neutral waves-effect waves-light" onclick="$('.geolocalize-help-text').toggle();">Aide ?</div>   
