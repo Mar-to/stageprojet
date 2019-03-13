@@ -46,10 +46,12 @@ class AsyncService
         return $this->runProcess($commandline);
     }
 
-    public function callCommand($commandName, $arguments = [])
+    public function callCommand($commandName, $arguments = [], $dbname = null)
     {
-        $saasHelper = new SaasHelper();
-        $dbname = $saasHelper->getCurrentProjectCode();
+        if ($dbname === null) {
+            $saasHelper = new SaasHelper();
+            $dbname = $saasHelper->getCurrentProjectCode();
+        }
         
         $commandline = $this->phpPath . ' ' . $this->consolePath . ' ' . $commandName;
         foreach ($arguments as $key => $arg) {

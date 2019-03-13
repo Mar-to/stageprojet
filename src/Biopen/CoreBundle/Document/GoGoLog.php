@@ -19,7 +19,7 @@ abstract class GoGoLogLevel
  *
  * @MongoDB\InheritanceType("SINGLE_COLLECTION")
  * @MongoDB\DiscriminatorField("type")
- * @MongoDB\DiscriminatorMap({"standard"="GoGoLog", "import"="GoGoLogImport"})
+ * @MongoDB\DiscriminatorMap({"standard"="GoGoLog", "import"="GoGoLogImport", "update"="GoGoLogUpdate"})
  * @MongoDB\DefaultDiscriminatorValue("standard")
  */
 class GoGoLog
@@ -74,6 +74,8 @@ class GoGoLog
         $this->message = $message;
         $this->data = $data;
     }
+
+    public function displayTimestamp() { return true; }
 
     public function displayMessage() 
     {

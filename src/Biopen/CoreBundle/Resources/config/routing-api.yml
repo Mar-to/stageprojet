@@ -32,3 +32,9 @@ biopen_api_log_hide_all:
     defaults: { _controller: BiopenCoreBundle:API:hideAllLogs }
     requirements:
         methods: GET
+
+biopen_api_message_hide_all:
+    path:     /messages/hide-all
+    defaults: { _controller: BiopenCoreBundle:API:hideAllMessages }
+    requirements:
+        methods: GET

@@ -121,7 +121,21 @@ class APIController extends GoGoController
   {
     $odm = $this->get('doctrine_mongodb')->getManager();
     $qb = $odm->createQueryBuilder('BiopenCoreBundle:GoGoLog');
-    $qb->updateMany()->field('hidden')->equals(false)->field('hidden')->set(true)->getQuery()->execute(); 
+    $qb->updateMany()
+       ->field('type')->notEqual('update')
+       ->field('hidden')->equals(false)
+       ->field('hidden')->set(true)->getQuery()->execute(); 
+    return $this->redirectToRoute('sonata_admin_dashboard');
+  }
+
+  public function hideAllMessagesAction()
+  {
+    $odm = $this->get('doctrine_mongodb')->getManager();
+    $qb = $odm->createQueryBuilder('BiopenCoreBundle:GoGoLogUpdate');
+    $qb->updateMany()
+       ->field('type')->equals('update')
+       ->field('hidden')->equals(false)
+       ->field('hidden')->set(true)->getQuery()->execute(); 
     return $this->redirectToRoute('sonata_admin_dashboard');
   }
 }

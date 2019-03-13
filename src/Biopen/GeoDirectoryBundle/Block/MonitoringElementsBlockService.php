@@ -54,8 +54,13 @@ class MonitoringElementsBlockService extends AbstractBlockService
 	    $activeUsersCount = $this->em->createQueryBuilder('BiopenCoreBundle:User')->field('enabled')->equals(true)->count()->getQuery()->execute();
 	    $activeUsersNewsletterCount = $this->em->createQueryBuilder('BiopenCoreBundle:User')->field('enabled')->equals(true)
 	    																				->field('newsletterFrequency')->gt(NewsletterFrequencyOptions::Never)->count()->getQuery()->execute();
-	    $errors = $this->em->getRepository('BiopenCoreBundle:GoGoLog')->findBy(['type' => 'error', 'hidden' => false]);
+	    
+	    $errors = $this->em->getRepository('BiopenCoreBundle:GoGoLog')->findBy(['level' => 'error', 'hidden' => false]);
       usort( $errors, function ($a, $b) { return $b->getCreatedAt()->getTimestamp() - $a->getCreatedAt()->getTimestamp(); });
+
+      $messages = $this->em->getRepository('BiopenCoreBundle:GoGoLog')->findBy(['type' => 'update', 'hidden' => false]);
+      usort( $errors, function ($a, $b) { return $b->getCreatedAt()->getTimestamp() - $a->getCreatedAt()->getTimestamp(); });
+
 	    // merge settings
 	    $settings = $blockContext->getSettings();
 
@@ -69,7 +74,8 @@ class MonitoringElementsBlockService extends AbstractBlockService
 	        'visibleNonImportedCount' => $visibleNonImportedElements,
 	        'activeUsersCount' => $activeUsersCount,
 	        'activeUsersNewsletterCount' => $activeUsersNewsletterCount,
-	        'errors' => $errors
+	        'errors' => $errors,
+	        'messages' => $messages
 	    ), $response);
 	}
 }

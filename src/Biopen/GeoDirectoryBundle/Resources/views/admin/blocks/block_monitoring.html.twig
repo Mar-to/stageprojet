@@ -1,8 +1,26 @@
 {% extends sonata_block.templates.block_base %}
 
 {% block block %}
+		{% if messages|length %}
+		<div class="sonata-block-logs box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Du nouveau sur GoGoCarto !</h3>
+        </div>
+
+        <div class="box-body" style="max-height: 500px; overflow: auto">
+        	{% include '@BiopenAdmin/core_custom/custom-fields/display-logs.html.twig' with { logs: messages, dismissLog: true } %}  
+        </div>
+
+        {% if messages|length > 4 %}
+          <div class="box-footer">
+             <a href="{{ path('biopen_api_message_hide_all') }}" class="btn btn-default btn-block"><i class="fa fa-list"></i> Supprimer tous les messages</a>
+          </div>
+        {% endif %}
+    </div>
+		{% endif %}
+
 		{% if errors|length %}
-		<div class="sonata-block-log-errors box box-danger">
+		<div class="sonata-block-logs box box-danger">
         <div class="box-header with-border">
             <h3 class="box-title">Des erreurs ont eu lieu récemment</h3>
         </div>
