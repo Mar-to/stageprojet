@@ -15,7 +15,7 @@ class CategoryRepository extends DocumentRepository
    public function findRootCategories()
    {
       $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Category');
-      $qb->field('isRootCategory')->equals(true);
+      $qb->field('isRootCategory')->equals(true)->sort('index', 'asc');
       return $qb->getQuery()->execute();
    }
 }
