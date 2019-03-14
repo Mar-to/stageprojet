@@ -278,7 +278,7 @@ class ElementImportService
 			$updatedAtField = $import->getFieldToCheckElementHaveBeenUpdated();
 			// if updated date hasn't change, nothing to do
 			if ($updatedAtField && array_key_exists($updatedAtField, $row)) {
-				if ($row[$updatedAtField] == $element->getCustomProperty($updatedAtField)) {				
+				if ($row[$updatedAtField] && $row[$updatedAtField] == $element->getCustomProperty($updatedAtField)) {				
 					$element->setPreventJsonUpdate(true);				
 					if ($element->getStatus() == ElementStatus::DynamicImportTemp) $element->setStatus(ElementStatus::DynamicImport);
 					$this->em->persist($element);
