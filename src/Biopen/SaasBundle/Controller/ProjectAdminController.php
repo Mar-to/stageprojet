@@ -25,54 +25,24 @@ class ProjectAdminController extends Controller
         $id = $request->get($this->admin->getIdParameter());
         $object = $this->admin->getObject($id);
 
-        if (!$object) {
-            throw $this->createNotFoundException(sprintf('unable to find the object with id : %s', $id));
-        }
-
+        if (!$object) throw $this->createNotFoundException(sprintf('unable to find the object with id : %s', $id));
         $this->admin->checkAccess('delete', $object);
 
         $preResponse = $this->preDelete($request, $object);
-        if ($preResponse !== null) {
-            return $preResponse;
-        }
+        if ($preResponse !== null) return $preResponse;
 
         if ($this->getRestMethod() == 'DELETE') {
             // check the csrf token
             $this->validateCsrfToken('sonata.delete');
-
             $objectName = $this->admin->toString($object);
 
             try {
                 $this->admin->delete($object);
                 $this->dropDatabase($object);
-
-                if ($this->isXmlHttpRequest()) {
-                    return $this->renderJson(array('result' => 'ok'), 200, array());
-                }
-
-                $this->addFlash(
-                    'sonata_flash_success',
-                    $this->trans(
-                        'flash_delete_success',
-                        array('%name%' => $this->escapeHtml($objectName)),
-                        'SonataAdminBundle'
-                    )
-                );
+                $this->addFlash('sonata_flash_success',$this->trans('flash_delete_success',array('%name%' => $this->escapeHtml($objectName)),'SonataAdminBundle'));
             } catch (ModelManagerException $e) {
                 $this->handleModelManagerException($e);
-
-                if ($this->isXmlHttpRequest()) {
-                    return $this->renderJson(array('result' => 'error'), 200, array());
-                }
-
-                $this->addFlash(
-                    'sonata_flash_error',
-                    $this->trans(
-                        'flash_delete_error',
-                        array('%name%' => $this->escapeHtml($objectName)),
-                        'SonataAdminBundle'
-                    )
-                );
+                $this->addFlash('sonata_flash_error',  $this->trans('flash_delete_error',array('%name%' => $this->escapeHtml($objectName)),'SonataAdminBundle'));
             }
 
             return $this->redirectTo($object);
