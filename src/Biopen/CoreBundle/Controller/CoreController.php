@@ -45,14 +45,11 @@ class CoreController extends GoGoController
 
         $listPartners = $repository->findAllOrderedByPosition();
 
-        return $this->render('@BiopenCoreBundle/partners.html.twig', array('listPartners' => $listPartners));
-        
+        return $this->render('@BiopenCoreBundle/partners.html.twig', array('listPartners' => $listPartners));        
     }   
 
     public function helpAction() 
     {          
-        $this->get('biopen.webhook_service')->processPosts();
-
         return $this->render('@BiopenAdmin/pages/help.html.twig'); 
     }
      
