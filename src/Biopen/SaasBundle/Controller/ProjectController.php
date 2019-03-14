@@ -18,6 +18,7 @@ use Biopen\CoreBundle\DataFixtures\MongoDB\LoadConfiguration;
 use Biopen\GeoDirectoryBundle\Document\Taxonomy;
 use Biopen\GeoDirectoryBundle\Document\Category;
 use Biopen\GeoDirectoryBundle\Document\Option;
+use Symfony\Component\Process\Process;
 
 class ProjectController extends AbstractSaasController
 {
@@ -207,5 +208,35 @@ class ProjectController extends AbstractSaasController
                 $response
             );
         } catch (AccountStatusException $ex) { }
+    }
+
+    // The project is being deleted by the owner
+    public function deleteCurrProjectAction() 
+    {
+        $saasHelper = new SaasHelper();
+        $dbname = $saasHelper->getCurrentProjectCode();
+        $commandline = 'mongo ' . $dbname .' --eval "db.dropDatabase()"';
+        $process = new Process($commandline);
+        $process->start();
+        $url = $this->generateUrl('biopen_project_delete_saas_record', ['dbName' => $dbname], true);
+        $url = str_replace($dbname . '.', '', $url);
+        return $this->redirect($url);         
+    }
+
+    public function deleteSaasRecordAction($dbName) 
+    {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $command = "mongo --eval 'db.getMongo().getDBNames().indexOf(\"{$dbName}\")'";
+        $process = new Process($command);
+        $process->run();
+        $isDbEmpty = substr($process->getOutput(),-3) == "-1\n";
+        // As it is a public API, only allow delete if the db is empty
+        if ($isDbEmpty) {
+            $project = $dm->getRepository(Project::class)->findOneByDomainName($dbName);
+            $dm->remove($project);
+            $dm->flush();
+        }
+        
+        return $this->redirectToRoute('biopen_homepage');
     }
 }
