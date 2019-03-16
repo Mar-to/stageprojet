@@ -57,7 +57,7 @@ class ConfigurationAdmin extends AbstractAdmin
             ->with('Nom des entités référencées sur l\'annuaire', array('class' => 'col-md-6'))
                 ->add('elementDisplayName', null, array('label' => "Nom"))
                 ->add('elementDisplayNameDefinite', null, array('label' => 'Nom avec article défini'))  
-                ->add('elementDisplayNameIndefinite', null, array('label' => 'Nom avec artcile indéfini'))  
+                ->add('elementDisplayNameIndefinite', null, array('label' => 'Nom avec article indéfini'))  
                 ->add('elementDisplayNamePlural', null, array('label' => 'Nom pluriel '))  
             ->end()    
         ;
