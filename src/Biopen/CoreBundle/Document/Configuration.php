@@ -10,6 +10,7 @@ use Biopen\CoreBundle\Document\Configuration\ConfigurationMenu;
 use Biopen\CoreBundle\Document\Configuration\ConfigurationInfobar;
 use Biopen\CoreBundle\Document\Configuration\ConfigurationApi;
 use Biopen\CoreBundle\Document\Configuration\ConfigurationHome;
+use Biopen\CoreBundle\Document\Configuration\ConfigurationMarker;
 use OzdemirBurak\Iris\Color\Hex;
 use OzdemirBurak\Iris\Color\Rgba;
 
@@ -212,6 +213,9 @@ class Configuration implements \JsonSerializable
 
     /** @MongoDB\EmbedOne(targetDocument="Biopen\CoreBundle\Document\Configuration\ConfigurationInfobar") */
     protected $infobar;
+
+    /** @MongoDB\EmbedOne(targetDocument="Biopen\CoreBundle\Document\Configuration\ConfigurationMarker") */
+    protected $marker;
 
     /** @MongoDB\ReferenceOne(targetDocument="Biopen\CoreBundle\Document\TileLayer") */
     protected $defaultTileLayer;    
@@ -458,6 +462,7 @@ class Configuration implements \JsonSerializable
         $this->infobar = new ConfigurationInfobar();
         $this->api = new ConfigurationApi();
         $this->home = new ConfigurationHome();
+        $this->marker = new ConfigurationMarker();
     }
 
     public function jsonSerialize()
@@ -2952,5 +2957,28 @@ class Configuration implements \JsonSerializable
     public function getContentBackgroundElementBodyColor()
     {
         return $this->contentBackgroundElementBodyColor;
+    }
+
+    /**
+     * Set marker
+     *
+     * @param Biopen\CoreBundle\Document\Configuration\ConfigurationMarker $marker
+     * @return $this
+     */
+    public function setMarker(\Biopen\CoreBundle\Document\Configuration\ConfigurationMarker $marker)
+    {
+        $this->marker = $marker;
+        return $this;
+    }
+
+    /**
+     * Get marker
+     *
+     * @return Biopen\CoreBundle\Document\Configuration\ConfigurationMarker $marker
+     */
+    public function getMarker()
+    {
+        if(!$this->marker) $this->marker = new ConfigurationMarker();
+        return $this->marker;
     }
 }

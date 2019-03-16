@@ -70,6 +70,76 @@ class GoGoCartoJsService
           "showCheckboxForMainFilterPane" => $config->getMenu()->getShowCheckboxForMainFilterPane(),
           "showCheckboxForSubFilterPane" => $config->getMenu()->getShowCheckboxForSubFilterPane()  
       ],
+      "infobar" =>
+      [
+          "width" => $config->getInfobar()->getWidth(),
+          "headerTemplate" => [
+              "content" => $config->getInfobar()->getHeaderTemplate(),
+              "isMarkdown" => $config->getInfobar()->getHeaderTemplateUseMarkdown()
+          ],
+          "bodyTemplate" => [
+              "content" => $config->getInfobar()->getBodyTemplate(),
+              "isMarkdown" => $config->getInfobar()->getBodyTemplateUseMarkdown()
+          ]
+      ],
+      "map" =>
+      [
+          "defaultBounds" => $config->getDefaultBounds(),
+          "defaultTileLayer" => $config->getDefaultTileLayer()->getName(),
+          "tileLayers"  => $tileLayers  ,
+          "saveViewportInCookies" => $config->getSaveViewportInCookies()  ,
+          "saveTileLayerInCookies" => $config->getSaveTileLayerInCookies()  ,
+      ],
+      "marker" =>
+      [
+          "displayPopup" => $config->getMarker()->getDisplayPopup(),
+          "popupAlwaysVisible" => $config->getMarker()->getPopupAlwaysVisible(),
+          "popupTemplate" => [
+              "content" => $config->getMarker()->getPopupTemplate(),
+              "isMarkdown" => $config->getMarker()->getPopupTemplateUseMarkdown()
+          ]
+      ],
+      "theme" => $config->getTheme(),
+      "colors" =>
+      [               
+          "text" => $config->getTextColor() ,
+          "primary" => $config->getPrimaryColor() ,
+
+          // Optional colors
+          "secondary" => $config->getDefaultSecondaryColor() ,
+          "background" => $config->getDefaultBackgroundColor() ,    
+          "searchBar" => $config->getDefaultSearchBarColor() ,
+          "disabled" => $config->getDefaultDisableColor(),
+          "pending" => $config->getDefaultPendingColor() ,
+          "contentBackground" => $config->getDefaultContentBackgroundColor() ,
+          "textDark" => $config->getDefaultTextDarkColor() ,
+          "textDarkSoft" => $config->getDefaultTextDarkSoftColor() ,
+          "textLight" => $config->getDefaultTextLightColor() ,   
+          "textLightSoft" => $config->getDefaultTextLightSoftColor() ,       
+          "interactiveSection" => $config->getDefaultInteractiveSectionColor(),
+          "contentBackgroundElementBody" => $config->getDefaultContentBackgroundElementBodyColor(), // by default calculated from contentBackground
+
+          // Non implemented colors
+          // infoBarHeader => undefined, // by default auto colored with main option color, except for transiscope theme
+          // infoBarMenu => undefined,   // by default auto colored with main option color, except for transiscope theme
+          
+          
+          // menuOptionHover => undefined, // by default calculated from contentBackground
+          // lineBorder => undefined, // by default calculated from contentBackground
+          
+          // mapControlsBgd => undefined,
+          // mapControls => undefined,  
+          // mapListBtn => undefined,
+          
+      ],
+      "fonts" => [
+          "mainFont" => $config->getMainFont() ,
+          "titleFont" => $config->getTitleFont() ,
+      ],
+      "images" =>
+      [
+          "buttonOpenMenu" =>  $config->getFavicon() ? $config->getFavicon()->getImageUrl() : ($config->getLogo() ? $config->getLogo()->getImageUrl() : null)   
+      ],
       "features" =>
       [
           "listMode" => $this->getConfigFrom($config->getListModeFeature()) ,
@@ -113,67 +183,6 @@ class GoGoCartoJsService
                       "id" => $config->getCustomPopupId()
                   ] ] 
               ),          
-      ],
-      "infobar" =>
-      [
-          "width" => $config->getInfobar()->getWidth(),
-          "headerTemplate" => [
-              "content" => $config->getInfobar()->getHeaderTemplate(),
-              "isMarkdown" => $config->getInfobar()->getHeaderTemplateUseMarkdown()
-          ],
-          "bodyTemplate" => [
-              "content" => $config->getInfobar()->getBodyTemplate(),
-              "isMarkdown" => $config->getInfobar()->getBodyTemplateUseMarkdown()
-          ]
-      ],
-      "map" =>
-      [
-          "defaultBounds" => $config->getDefaultBounds(),
-          "defaultTileLayer" => $config->getDefaultTileLayer()->getName(),
-          "tileLayers"  => $tileLayers  ,
-          "saveViewportInCookies" => $config->getSaveViewportInCookies()  ,
-          "saveTileLayerInCookies" => $config->getSaveTileLayerInCookies()  ,
-      ],
-      "theme" => $config->getTheme(),
-      "colors" =>
-      [               
-          "text" => $config->getTextColor() ,
-          "primary" => $config->getPrimaryColor() ,
-
-          // Optional colors
-          "secondary" => $config->getDefaultSecondaryColor() ,
-          "background" => $config->getDefaultBackgroundColor() ,    
-          "searchBar" => $config->getDefaultSearchBarColor() ,
-          "disabled" => $config->getDefaultDisableColor(),
-          "pending" => $config->getDefaultPendingColor() ,
-          "contentBackground" => $config->getDefaultContentBackgroundColor() ,
-          "textDark" => $config->getDefaultTextDarkColor() ,
-          "textDarkSoft" => $config->getDefaultTextDarkSoftColor() ,
-          "textLight" => $config->getDefaultTextLightColor() ,   
-          "textLightSoft" => $config->getDefaultTextLightSoftColor() ,       
-          "interactiveSection" => $config->getDefaultInteractiveSectionColor(),
-          "contentBackgroundElementBody" => $config->getDefaultContentBackgroundElementBodyColor(), // by default calculated from contentBackground
-
-          // Non implemented colors
-          // infoBarHeader => undefined, // by default auto colored with main option color, except for transiscope theme
-          // infoBarMenu => undefined,   // by default auto colored with main option color, except for transiscope theme
-          
-          
-          // menuOptionHover => undefined, // by default calculated from contentBackground
-          // lineBorder => undefined, // by default calculated from contentBackground
-          
-          // mapControlsBgd => undefined,
-          // mapControls => undefined,  
-          // mapListBtn => undefined,
-          
-      ],
-      "fonts" => [
-          "mainFont" => $config->getMainFont() ,
-          "titleFont" => $config->getTitleFont() ,
-      ],
-      "images" =>
-      [
-          "buttonOpenMenu" =>  $config->getFavicon() ? $config->getFavicon()->getImageUrl() : ($config->getLogo() ? $config->getLogo()->getImageUrl() : null)   
       ],  
       "data" =>
       [

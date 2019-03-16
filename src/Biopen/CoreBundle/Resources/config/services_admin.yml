@@ -52,6 +52,12 @@ services:
         arguments: [~, Biopen\CoreBundle\Document\TileLayer, 'PixSortableBehaviorBundle:SortableAdmin']
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Fonds de Carte }
+
+    admin.marker_config:
+        class: Biopen\CoreBundle\Admin\ConfigurationMarkerAdmin
+        arguments: [~, Biopen\CoreBundle\Document\Configuration, 'BiopenCoreBundle:ConfigurationAdmin']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Marqueur / Popup }
     
     admin.contributions_config:
         class: Biopen\CoreBundle\Admin\ConfigurationContributionsAdmin
