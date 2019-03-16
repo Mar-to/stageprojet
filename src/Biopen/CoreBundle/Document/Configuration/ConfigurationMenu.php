@@ -22,6 +22,12 @@ class ConfigurationMenu
     /** @MongoDB\Field(type="bool") */
     public $showCheckboxForSubFilterPane = true;
 
+    /** @MongoDB\Field(type="bool") */
+    public $displayNumberOfElementForEachCategory = false;
+
+    /** @MongoDB\Field(type="bool") */
+    public $displayNumberOfElementRoundResults = false;
+
     /**
      * Set width
      *
@@ -130,5 +136,49 @@ class ConfigurationMenu
     public function getShowCheckboxForSubFilterPane()
     {
         return $this->showCheckboxForSubFilterPane;
+    }
+
+    /**
+     * Set displayNumberOfElementForEachCategory
+     *
+     * @param bool $displayNumberOfElementForEachCategory
+     * @return $this
+     */
+    public function setDisplayNumberOfElementForEachCategory($displayNumberOfElementForEachCategory)
+    {
+        $this->displayNumberOfElementForEachCategory = $displayNumberOfElementForEachCategory;
+        return $this;
+    }
+
+    /**
+     * Get displayNumberOfElementForEachCategory
+     *
+     * @return bool $displayNumberOfElementForEachCategory
+     */
+    public function getDisplayNumberOfElementForEachCategory()
+    {
+        return $this->displayNumberOfElementForEachCategory;
+    }
+
+    /**
+     * Set displayNumberOfElementRoundResults
+     *
+     * @param bool $displayNumberOfElementRoundResults
+     * @return $this
+     */
+    public function setDisplayNumberOfElementRoundResults($displayNumberOfElementRoundResults)
+    {
+        $this->displayNumberOfElementRoundResults = $displayNumberOfElementRoundResults;
+        return $this;
+    }
+
+    /**
+     * Get displayNumberOfElementRoundResults
+     *
+     * @return bool $displayNumberOfElementRoundResults
+     */
+    public function getDisplayNumberOfElementRoundResults()
+    {
+        return $this->displayNumberOfElementRoundResults;
     }
 }

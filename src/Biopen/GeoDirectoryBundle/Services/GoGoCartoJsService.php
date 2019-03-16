@@ -68,7 +68,9 @@ class GoGoCartoJsService
           "smallWidthStyle" => $config->getMenu()->getSmallWidthStyle(),
           "showOnePanePerMainOption" => $config->getMenu()->getShowOnePanePerMainOption(),
           "showCheckboxForMainFilterPane" => $config->getMenu()->getShowCheckboxForMainFilterPane(),
-          "showCheckboxForSubFilterPane" => $config->getMenu()->getShowCheckboxForSubFilterPane()  
+          "showCheckboxForSubFilterPane" => $config->getMenu()->getShowCheckboxForSubFilterPane(),
+          "displayNumberOfElementForEachCategory" => $config->getMenu()->getDisplayNumberOfElementForEachCategory(),
+          "displayNumberOfElementRoundResults" => $config->getMenu()->getDisplayNumberOfElementRoundResults()
       ],
       "infobar" =>
       [

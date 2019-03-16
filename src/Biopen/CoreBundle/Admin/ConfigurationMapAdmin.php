@@ -102,7 +102,9 @@ class ConfigurationMapAdmin extends AbstractAdmin
                     ->add('menu.smallWidthStyle', 'checkbox', array('label' => "Utiliser un style compréssé", 'label_attr' => ['title' => "Diminue un peu la taille de la police et les marges. Pratique lorsque le nom des catégories sont longues que l'on veut gagner en largeur"], 'required' => false))
                     ->add('menu.showOnePanePerMainOption', 'checkbox', array('label' => "Afficher un sous menu pour chaque catégorie principale", 'required' => false))
                     ->add('menu.showCheckboxForMainFilterPane', 'checkbox', array('label' => "Afficher les checkbox dans la panneau principal", 'required' => false))
-                    ->add('menu.showCheckboxForSubFilterPane', 'checkbox', array('label' => "Afficher les checkbox dans les sous peanneux",  'label_attr' => ['title' => "Valable uniquement si \"afficher un sous menu pour chaque catégorie principale\" est coché"], 'required' => false))
+                    ->add('menu.showCheckboxForSubFilterPane', 'checkbox', array('label' => "Afficher les checkbox dans les sous panneaux",  'label_attr' => ['title' => "Valable uniquement si \"afficher un sous menu pour chaque catégorie principale\" est coché"], 'required' => false))
+                    ->add('menu.displayNumberOfElementForEachCategory', 'checkbox', array('label' => "Pour chaque catégorie, afficher le nombre d'élément ayant cette catégorie", 'required' => false))
+                    ->add('menu.displayNumberOfElementRoundResults', 'checkbox', array('label' => "Arrondir les résultat (afficher 300+ au lieu de 326)",  'label_attr' => ['title' => "Valable uniquement si \"afficher le nombre d'éléments par catégorie\" est coché"], 'required' => false))
                 ->end()
             ->end()
         ;           
