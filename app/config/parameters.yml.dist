@@ -13,7 +13,7 @@ parameters:
     # EMAIL SERVER
     mailer_transport: smtp
     mailer_host: 127.0.0.1 
-    mailer_user: ~
+    mailer_user: user@localhost.fr
     mailer_password: ~
     
     # CONTACT EMAIL (displayed on error messages)
