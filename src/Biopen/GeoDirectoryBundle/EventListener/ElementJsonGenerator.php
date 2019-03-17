@@ -138,9 +138,6 @@ class ElementJsonGenerator
     $compactFields = $this->getConfig($dm)->getMarker()->getFieldsUsedByTemplate();
     $compactData = [];
     foreach ($compactFields as $field) $compactData[] = $element->getProperty($field);
-    dump($compactFields);
-    dump($compactData);
-    dump(json_encode($compactData));
 
     $compactJson = '["'.$element->id . '",' . json_encode($compactData) . ',';
     $compactJson.= $element->getGeo()->getLatitude() .','. $element->getGeo()->getLongitude() .', [';
@@ -157,7 +154,6 @@ class ElementJsonGenerator
     if ($element->getStatus() <= 0 || $element->getModerationState() != 0) $compactJson .= ','. $element->getStatus();
     if ($element->getModerationState() != 0) $compactJson .= ','. $element->getModerationState();
     $compactJson .= ']';
-    dump($compactJson);
     $element->setCompactJson($compactJson);
   }
 
