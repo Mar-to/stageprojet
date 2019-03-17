@@ -17,10 +17,10 @@ class GoGoMainCommand extends ContainerAwareCommand
 {
    // List of the command to execute periodically, with the period in hours
    public $scheduledCommands = [
-      "app:elements:checkvote" => 24,
-      "app:elements:checkExternalSourceToUpdate" => 24,
-      "app:users:sendNewsletter" => 1,
-      "app:webhooks:post" => 1
+      "app:elements:checkvote" => "24H",
+      "app:elements:checkExternalSourceToUpdate" => "24H",
+      "app:users:sendNewsletter" => "1H",
+      "app:webhooks:post" => "5M" // 5 minuutes
    ];
 
    protected function configure()
@@ -53,7 +53,7 @@ class GoGoMainCommand extends ContainerAwareCommand
          // Updating next execution time  
          $dateNow = new \DateTime();
          $dateNow->setTimestamp(time());
-         $interval = new \DateInterval('PT' . $this->scheduledCommands[$commandToExecute->getCommandName()] .'H');
+         $interval = new \DateInterval('PT' . $this->scheduledCommands[$commandToExecute->getCommandName()]);
          $commandToExecute->setNextExecutionAt($dateNow->add($interval));
          $odm->persist($commandToExecute);
          $odm->flush();
