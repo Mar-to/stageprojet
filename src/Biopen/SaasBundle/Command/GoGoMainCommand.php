@@ -58,7 +58,7 @@ class GoGoMainCommand extends ContainerAwareCommand
          $odm->persist($commandToExecute);
          $odm->flush();
 
-         $logger->info('---- Running command ' . $commandToExecute->getCommandName() . 'for project : ' . $commandToExecute->getProject()->getName());
+         $logger->info('---- Running command ' . $commandToExecute->getCommandName() . ' for project : ' . $commandToExecute->getProject()->getName());
 
          $command = $this->getApplication()->find($commandToExecute->getCommandNAme());
 

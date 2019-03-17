@@ -170,7 +170,7 @@ class ElementImportService
 			}
 			catch (\Exception $e) { 
 				$this->countElementErrors++;
-				$this->elementIdsErrors[] = "" . $row['id'];
+				if (!is_array($row['id'])) $this->elementIdsErrors[] = "" . $row['id'];
 
 				if (!array_key_exists($e->getMessage(), $this->errorsCount)) $this->errorsCount[$e->getMessage()] = 1;
 				else $this->errorsCount[$e->getMessage()]++;
@@ -197,7 +197,7 @@ class ElementImportService
 		$countElemenDeleted = 0;
 		if ($import->isDynamicImport()) 
     {  
-      if (count($this->elementIdsErrors) > 0)
+      if ($this->countElementErrors > 0)
       {
       	// If there was an error whil retrieving an already existing element
       	// we set back the status to DynamicImport otherwise it will be deleted just after
