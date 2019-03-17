@@ -91,6 +91,16 @@ app:elements:generate 200
 Now initialize your project with following route
 http://localhost/GoGoCarto/web/app_dev.php/project/initialize
 
+Updating your install
+---------------------
+
+Each time you update GoGoCarto code, please run the following commands (first one is most important)
+```
+php bin/console db:migrate
+gulp build
+php bin/console cache:clear
+```
+
 Production
 ----------
 
