@@ -117,7 +117,6 @@ class WebhookService
         if ($contribution->getElement()) 
         {
             $element = $contribution->getElement();
-            dump($element);
             $this->em->refresh($element);
             $element->setPreventJsonUpdate(true);
             $link = str_replace('%23', '#', $this->router->generate('biopen_directory_showElement', array('id'=>$element->getId()), true));
@@ -175,7 +174,7 @@ class WebhookService
         $img = $this->config->getFavicon() ? $this->config->getFavicon() : $this->config->getLogo();
 
         return $img
-            ? $img->getImageUrl('128x128', 'png')
+            ? $img->getImageUrl()
             : str_replace('app_dev.php/', '', $this->baseUrl . '/assets/img/default-icon.png');
     }
 
