@@ -392,7 +392,7 @@ class ElementImportService
 		$customFields = array_diff($customFields, ['lat', 'long', 'lon', 'lng', 'title', 'nom', 'categories', 'address']);
 		$customData = [];		
     foreach ($customFields as $customField) {
-			$customData[$customField] = $raw_data[$customField];
+			if ($customField && is_string($customField)) $customData[$customField] = $raw_data[$customField];
 		}		
 
     $element->setCustomData($customData, $this->privateDataProps);

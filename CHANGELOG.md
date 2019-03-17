@@ -9,6 +9,7 @@ v2.3
 * FEATURE: Webhooks availables !
 * BUG: Fix form builder labels and unique name edit
 * FEATURE: Form Image Field available (with url, not uploading)
+* BUG: Import CSV with empty header column
 
 
 v2.2
