@@ -20,7 +20,7 @@ use JMS\Serializer\SerializationContext;
 class TaxonomyJsonGenerator
 {
 	protected $serializer;
-
+  protected $needUpdateTaxonomyOnNextFlush = false;
 	/**
 	* Constructor
 	*/
@@ -36,52 +36,60 @@ class TaxonomyJsonGenerator
 
 		if ($document instanceof Taxonomy)
 		{			
-			$this->updateTaxonomy($dm);
-      $dm->flush();
+      $this->updateTaxonomy($dm);
 		}
 	}
 
   public function postUpdate(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs)
   {
-      $document = $eventArgs->getDocument();
-      $dm = $eventArgs->getDocumentManager();
+    $document = $eventArgs->getDocument();
+    $dm = $eventArgs->getDocumentManager();
 
-      if ($document instanceof  Option || $document instanceof  Category)
-      {
-        $this->updateTaxonomy($dm);
-        $dm->flush();
-      }
+    if ($document instanceof Option || $document instanceof  Category)
+    {
+      $this->updateTaxonomy($dm);      
+    }
   }
 
   public function preFlush(\Doctrine\ODM\MongoDB\Event\preFlushEventArgs $eventArgs)
   {
-      $dm = $eventArgs->getDocumentManager();
+    $dm = $eventArgs->getDocumentManager();
 
-      foreach ($dm->getUnitOfWork()->getScheduledDocumentInsertions() as $document) {
-        if ($document instanceof Option || $document instanceof Category) {
-          $this->updateTaxonomy($dm);
-          return;
-        }
+    foreach ($dm->getUnitOfWork()->getScheduledDocumentInsertions() as $document) {
+      if ($document instanceof Option || $document instanceof Category) {
+        $this->needUpdateTaxonomyOnNextFlush = true;      
+        return;
       }
+    }
 
-      foreach ($dm->getUnitOfWork()->getScheduledDocumentDeletions() as $document) {
-        if ($document instanceof Option || $document instanceof Category) {
-          $this->updateTaxonomy($dm);
-          return;
-        }
-      }      
+    foreach ($dm->getUnitOfWork()->getScheduledDocumentDeletions() as $document) {
+      if ($document instanceof Option || $document instanceof Category) {
+        $this->needUpdateTaxonomyOnNextFlush = true;
+        return;
+      }
+    }      
+  }
+
+  public function postFlush(\Doctrine\ODM\MongoDB\Event\PostFlushEventArgs $eventArgs)
+  {
+    $dm = $eventArgs->getDocumentManager();
+    if ($this->needUpdateTaxonomyOnNextFlush) 
+    { 
+      $this->needUpdateTaxonomyOnNextFlush = false;
+      $this->updateTaxonomy($dm);      
+    }
   }
 
 	private function updateTaxonomy($dm)
 	{		
     $taxonomy = $dm->getRepository('BiopenGeoDirectoryBundle:Taxonomy')->findTaxonomy();     
-		if (!$taxonomy || $taxonomy->preventUpdate) return;
+		if (!$taxonomy || $taxonomy->preventUpdate) return false;
     $taxonomy->preventUpdate = true;
 		
 		$rootCategories = $dm->getRepository('BiopenGeoDirectoryBundle:Category')->findRootCategories();
 		$options = $dm->getRepository('BiopenGeoDirectoryBundle:Option')->findAll();
 
-		if (count($rootCategories) == 0) return;
+		if (count($rootCategories) == 0) return false;
 		
 		// Create hierachic taxonomy
 		$rootCategoriesSerialized = [];
@@ -100,5 +108,6 @@ class TaxonomyJsonGenerator
 		}
 		$optionsJson = '[' . implode(", ", $optionsSerialized) . ']';
 		$taxonomy->setOptionsJson($optionsJson);	
+    $dm->flush(); 
 	}
 }

@@ -42,6 +42,7 @@ services:
         arguments: [ '@jms_serializer' ]
         tags:
             - { name: doctrine_mongodb.odm.event_listener, event: postPersist }
+            - { name: doctrine_mongodb.odm.event_listener, event: postFlush }
             - { name: doctrine_mongodb.odm.event_listener, event: preFlush }
             - { name: doctrine_mongodb.odm.event_listener, event: postUpdate }
 
