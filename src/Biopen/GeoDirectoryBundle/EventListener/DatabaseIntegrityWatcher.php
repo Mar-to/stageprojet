@@ -11,6 +11,7 @@ use Biopen\GeoDirectoryBundle\Document\Element;
 use Application\Sonata\UserBundle\Document\Group;
 use Biopen\GeoDirectoryBundle\Document\Option;
 use Biopen\GeoDirectoryBundle\Document\ImportDynamic;
+use Biopen\GeoDirectoryBundle\Document\Webhook;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 /* check database integrity : for example when removing an option, need to remove all references to this options */
@@ -47,6 +48,23 @@ class DatabaseIntegrityWatcher
 			$qb = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->createQueryBuilder();
       $elements = $qb->remove()->field('source')->references($import)->getQuery()->execute();
 		}
+		else if ($document instanceof Webhook)
+		{
+			$webhook = $document;
+      $contributions = $dm->createQueryBuilder('BiopenGeoDirectoryBundle:UserInteractionContribution')
+      ->field('webhookPosts.webhook.$id')->equals($webhook->getId())        
+      ->getQuery()->execute();
+      
+      foreach($contributions as $contrib)
+      {
+          $contrib->getElement()->setPreventJsonUpdate(true);
+          foreach($contrib->getWebhookPosts() as $post)
+          {
+              if ($post->getWebhook()->getId() == $webhook->getId()) $contrib->removeWebhookPost($post);
+          }
+      }
+		}
+
 	}
 
 	public function preFlush(\Doctrine\ODM\MongoDB\Event\PreFlushEventArgs $eventArgs) 
