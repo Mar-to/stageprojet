@@ -70,11 +70,7 @@ class APIController extends GoGoController
       {
         $boxes = [];
         $bounds = explode( ';' , $request->get('bounds'));
-        foreach ($bounds as $key => $bound) 
-        {
-          $boxes[] = explode( ',' , $bound);
-        }
-
+        foreach ($bounds as $key => $bound) $boxes[] = explode( ',' , $bound);
         $elementsFromDB = $elementRepo->findWhithinBoxes($boxes, $request, $fullRepresentation, $isAdmin);          
       } 
       else
@@ -100,9 +96,16 @@ class APIController extends GoGoController
     else
     {
       $responseJson = '{
-        "data" :      '. $elementsJson . ', 
-        "ontology" : "'. $ontology .'"
-      }';
+        "data":'     . $elementsJson . ', 
+        "ontology":"'. $ontology .'"';
+
+      if (!$fullRepresentation) 
+      {
+        $mapping = ['id', $config->getMarker()->getFieldsUsedByTemplate(), 'latitude', 'longitude', 'status', 'moderationState'];
+        $responseJson .= ', "mapping":' . json_encode($mapping);
+      }
+      
+      $responseJson .= '}';
     }
 
     // TODO count how much a user is using the API

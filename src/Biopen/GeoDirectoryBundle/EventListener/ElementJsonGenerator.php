@@ -8,7 +8,14 @@ use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 
 class ElementJsonGenerator
 {
-protected $currElementChangeset;
+  protected $currElementChangeset;
+  protected $config = null;
+
+  public function getConfig($dm) 
+  {
+    if (!$this->config) $this->config = $dm->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+    return $this->config;
+  }
 
   public function preFlush(\Doctrine\ODM\MongoDB\Event\PreFlushEventArgs $eventArgs)
   {  
@@ -29,15 +36,16 @@ protected $currElementChangeset;
 
           // if we want to update only some specific part of the Json object, user currElementChangeset and below method attrChanged
           // $this->currElementChangeset = array_keys($uow->getDocumentChangeSet($element)); 
-          $this->updateJsonRepresentation($element); 
+          $this->updateJsonRepresentation($element, $dm); 
         }        
       }
     }
   }
 
-  public function updateJsonRepresentation($element)
+  public function updateJsonRepresentation($element, $dm)
   {
     if (!$element->getGeo()) { return; }
+    $config = $this->getConfig($dm);
 
     // -------------------- FULL JSON ----------------
     
@@ -126,7 +134,15 @@ protected $currElementChangeset;
     $element->setAdminJson($adminJson);
 
     // -------------------- COMPACT JSON ----------------
-    $compactJson = '["'.$element->id . '",' . json_encode($element->name) . ',';
+    // [id, customData, latitude, longitude, status, moderationState]
+    $compactFields = $this->getConfig($dm)->getMarker()->getFieldsUsedByTemplate();
+    $compactData = [];
+    foreach ($compactFields as $field) $compactData[] = $element->getProperty($field);
+    dump($compactFields);
+    dump($compactData);
+    dump(json_encode($compactData));
+
+    $compactJson = '["'.$element->id . '",' . json_encode($compactData) . ',';
     $compactJson.= $element->getGeo()->getLatitude() .','. $element->getGeo()->getLongitude() .', [';
     if ($sortedOptionsValues)
     {
@@ -141,6 +157,7 @@ protected $currElementChangeset;
     if ($element->getStatus() <= 0 || $element->getModerationState() != 0) $compactJson .= ','. $element->getStatus();
     if ($element->getModerationState() != 0) $compactJson .= ','. $element->getModerationState();
     $compactJson .= ']';
+    dump($compactJson);
     $element->setCompactJson($compactJson);
   }
 

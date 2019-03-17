@@ -604,6 +604,15 @@ class Element
         $this->setPrivateData($privateData);
     }
 
+    public function getProperty($key)
+    {
+        if (property_exists($this,$key)) {
+            $method = 'get' . ucfirst($key);
+            return $this->$method();
+        }
+        else return $this->getCustomProperty($key);
+    }
+
     public function getCustomProperty($key)
     {
         return array_key_exists($key, $this->data) ? $this->data[$key] : (array_key_exists($key, $this->privateData) ? $this->privateData[$key] : null);

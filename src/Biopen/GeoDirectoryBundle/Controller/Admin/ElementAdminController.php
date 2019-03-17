@@ -102,7 +102,8 @@ class ElementAdminController extends ElementAdminBulkController
 
                     if ($request->get('submit_update_json'))
                     {
-                        $this->container->get('biopen.element_json_generator')->updateJsonRepresentation($object);
+                        $dm = $this->container->get('doctrine_mongodb')->getManager();
+                        $this->container->get('biopen.element_json_generator')->updateJsonRepresentation($object, $dm);
                     }
                     elseif ($object->isPending() && ($request->get('submit_accept') || $request->get('submit_refuse')))
                     {                        

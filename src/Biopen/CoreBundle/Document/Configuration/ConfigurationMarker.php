@@ -16,9 +16,27 @@ class ConfigurationMarker
     /** @MongoDB\Field(type="string") */
     public $popupTemplate = "{{ name }}";
 
-     /** @MongoDB\Field(type="bool") */
-    public $popupTemplateUseMarkDown = true;
+    /** @MongoDB\Field(type="bool") */
+    public $popupTemplateUseMarkDown = false;
 
+    /** @MongoDB\Field(type="hash") */
+    public $fieldsUsedByTemplate = ['name'];
+
+    // Those fields we be used in element compact Json
+    public function updateFieldsUsedByTemplate()
+    {
+        $matches = [];
+        preg_match_all('/({{\s*[\w_|]*\s*}})/',$this->popupTemplate, $matches);
+        $newFields = array_map(function($match) { 
+            return explode('|', preg_replace('/[{}\s]/', '', $match))[0];
+        }, $matches[0]);
+        $oldFields = $this->fieldsUsedByTemplate;
+
+        // if new fields different from old fields (order si not important)
+        if (count(array_diff(array_merge($newFields, $oldFields), array_intersect($newFields, $oldFields))) != 0) {
+            $this->setFieldsUsedByTemplate($newFields);
+        }        
+    }
 
     /**
      * Set displayPopup
@@ -73,6 +91,7 @@ class ConfigurationMarker
     public function setPopupTemplate($popupTemplate)
     {
         $this->popupTemplate = $popupTemplate;
+        $this->updateFieldsUsedByTemplate();        
         return $this;
     }
 
@@ -106,5 +125,27 @@ class ConfigurationMarker
     public function getPopupTemplateUseMarkDown()
     {
         return $this->popupTemplateUseMarkDown;
+    }
+
+    /**
+     * Set fieldsUsedByTemplate
+     *
+     * @param hash $fieldsUsedByTemplate
+     * @return $this
+     */
+    public function setFieldsUsedByTemplate($fieldsUsedByTemplate)
+    {
+        $this->fieldsUsedByTemplate = $fieldsUsedByTemplate;
+        return $this;
+    }
+
+    /**
+     * Get fieldsUsedByTemplate
+     *
+     * @return hash $fieldsUsedByTemplate
+     */
+    public function getFieldsUsedByTemplate()
+    {
+        return $this->displayPopup ? $this->fieldsUsedByTemplate : [];
     }
 }

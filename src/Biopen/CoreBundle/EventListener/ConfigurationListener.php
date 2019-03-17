@@ -2,6 +2,7 @@
 namespace Biopen\CoreBundle\EventListener;
 
 use Biopen\CoreBundle\Document\Configuration\ConfigurationApi;
+use Biopen\CoreBundle\Document\Configuration\ConfigurationMarker;
 
 class ConfigurationListener
 {
@@ -19,7 +20,8 @@ class ConfigurationListener
         // Change the database to fit the private property config
         // There is two attribute in element : data & privateData
         // If an custom field is private, it will be stored in privateData instead of data
-        if ($document instanceof ConfigurationApi) {
+        if ($document instanceof ConfigurationApi) 
+        {
             $uow = $dm->getUnitOfWork();
             $uow->computeChangeSets();
             $changeset = $uow->getDocumentChangeSet($document); 
@@ -42,6 +44,15 @@ class ConfigurationListener
                 $qb->getQuery()->execute();
 
                 $this->asyncService->callCommand('app:elements:updateJson', ['ids' => 'all']);
+            }
+        }
+        if ($document instanceof ConfigurationMarker) 
+        {
+            $uow = $dm->getUnitOfWork();
+            $uow->computeChangeSets();
+            $changeset = $uow->getDocumentChangeSet($document); 
+            if (array_key_exists("fieldsUsedByTemplate", $changeset)) {
+               $this->asyncService->callCommand('app:elements:updateJson', ['ids' => 'all']);
             }
         }
     }
