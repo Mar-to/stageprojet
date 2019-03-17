@@ -1,7 +1,7 @@
 {
     "name": "GoGoCarto",
     "description": "Collaborative geo directory",
-    "license": "GPL-3",
+    "license": "AGPL-3",
     "type": "project",
     "autoload": {
         "psr-4": {
