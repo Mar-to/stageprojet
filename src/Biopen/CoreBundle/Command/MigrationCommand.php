@@ -82,6 +82,8 @@ class MigrationCommand extends GoGoAbstractCommand
     ];
 
     public $messages = [
-        "Un champ <b>Image (url)</b> est maintenant disponible dans la confiugration du formulaire !"
+        "Un champ <b>Image (url)</b> est maintenant disponible dans la confiugration du formulaire !",
+        "Vous pouvez désormais customizer la popup qui s'affiche au survol d'un marqueur. Allez dans Personnalisation -> Marqueur / Popup",
+        "Nouvelle option pour le menu (Personnalisation -> La Carte -> onglet Menu) : afficher à côté de chaque catégories le nombre d'élements disponible pour cette catégorie"
     ];
 }
