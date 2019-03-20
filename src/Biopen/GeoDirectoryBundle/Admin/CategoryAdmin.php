@@ -67,7 +67,8 @@ class CategoryAdmin extends AbstractAdmin
          ->add('displayInForm', null, array('required' => false, 'label' => "Dans le formulaire", 'label_attr' => ['title'=>"Ni le groupe ni les catégories ne seront affichés dans le formulaire"])) 
       ->end() 
 		->with('Catégories contenues dans ce groupe', array('class' => 'col-xs-12 sub-options-container'))	
-			->add('options', 'sonata_type_collection', array('by_reference' => false, 'type_options' => array('delete' => false), 'label_attr'=> ['style'=> 'display:none']), array(
+			->add('isFixture', 'text', ['attr' => ['class' => 'gogo-sort-options'], 'label_attr' => ['style' => 'display:none']])
+      ->add('options', 'sonata_type_collection', array('by_reference' => false, 'type_options' => array('delete' => false), 'label_attr'=> ['style'=> 'display:none']), array(
                 'edit' => 'inline',
                 'inline' => 'table',
                 'label' => '',

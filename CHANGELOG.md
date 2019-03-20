@@ -1,6 +1,7 @@
 v2.3
 ====
 
+* FEATURE: Sort sub options by alphabetical order
 * FEATURE: In the map categories menu, display next to each categorie how many elements are available for this category
 * FEATURE: Edit marker popup template
 * FEATURE: Ability to destroy my project

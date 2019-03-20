@@ -1,0 +1,34 @@
+<script>
+  function sortOptions() {
+    var inputs = $('#sort-options-btn').closest('.sonata-ba-collapsed-fields').find('.form-group:last-child').find('tr td:first-child input');
+    var values = [];
+    inputs.each(function() {
+      values.push({id: this.id, name: $(this).val()});
+    });
+    values.sort(dynamicSort("name"));
+    for (var i = 0; i < values.length; i++) {
+      value = values[i];
+      $('#' + value.id).closest('tr').find('td:nth-child(2) input').val(i);
+    }
+    console.log(values);
+  }
+
+  function dynamicSort(property) {
+    var sortOrder = 1;
+
+    if(property[0] === "-") {
+        sortOrder = -1;
+        property = property.substr(1);
+    }
+
+    return function (a,b) {
+        if(sortOrder == -1){
+            return b[property].localeCompare(a[property]);
+        }else{
+            return a[property].localeCompare(b[property]);
+        }        
+    }
+  }
+</script>
+
+<span class="btn btn-sm btn-default" id="sort-options-btn" onClick="sortOptions()">Ranger les catégories par ordre alphabétique</span>

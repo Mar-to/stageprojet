@@ -35,6 +35,8 @@
       {% include '@BiopenAdmin/core_custom/custom-fields/display-array.html.twig' %} 
     {% elseif attr_class == "gogo-display-logs" %}
       {% include '@BiopenAdmin/core_custom/custom-fields/display-logs.html.twig' %}
+    {% elseif attr_class == "gogo-sort-options" %}
+      {% include '@BiopenAdmin/core_custom/custom-fields/sort-options.html.twig' %}
     {% else %}      
       {% set attr = attr|merge({'class': attr_class ~ ' form-control'}) %}
       {{ parent() }}
