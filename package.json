@@ -31,6 +31,6 @@
     "watchify": "^3.8.0"
   },
   "dependencies": {
-    "gogocarto-js": "^1.4.0"
+    "gogocarto-js": "^1.4.1"
   }
 }
