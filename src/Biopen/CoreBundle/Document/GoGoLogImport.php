@@ -13,7 +13,7 @@ class GoGoLogImport extends GoGoLog
 {
     public function displayMessage() 
     {
-        $result = "<strong>Total: " . $this->getDataProp('elementsCount') . "</strong> ";
+        $result = $this->getMessage() . ", mais avec pas mal de problèmes ! <strong>Total: " . $this->getDataProp('elementsCount') . "</strong> ";
 
         if ($this->getDataProp('elementsCreatedCount') > 0) $result .= " - " . $this->getDataProp('elementsCreatedCount') . " élément.s importé.s";
         if ($this->getDataProp('elementsUpdatedCount') > 0) $result .= " - " . $this->getDataProp('elementsUpdatedCount') . " élement.s mis à jour";
