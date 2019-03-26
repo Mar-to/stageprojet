@@ -57,6 +57,15 @@ class ElementImportService
 
   public function startImport($import) 
   {
+		$this->optionIdsToAddToEachElement = [];
+		$this->countElementCreated = 0;
+		$this->countElementUpdated = 0;
+		$this->countElementNothingToDo = 0;
+		$this->countElementErrors = 0;
+		$this->elementIdsErrors = [];
+		$this->errorsMessages = [];
+		$this->errorsCount = [];
+
   	$import->setCurrState(ImportState::Downloading);
   	$import->setCurrMessage("Téléchargement des données en cours... Veuillez patienter...");
   	$this->em->persist($import);
