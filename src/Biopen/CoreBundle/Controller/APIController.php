@@ -38,10 +38,11 @@ class APIController extends GoGoController
     $em = $this->get('doctrine_mongodb')->getManager();
     $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
     $img = $config->getFavicon() ? $config->getFavicon() : $config->getLogo();
-    
+    $imageData = null;
+
     if ($img) {
       $imgUrl = $img->getImageUrl('512x512', 'png');
-      $imageData = InterventionImage::make($img->calculateFilePath('512x512', 'png'));
+      if (!$img->isExternalFile()) $imageData = InterventionImage::make($img->calculateFilePath('512x512', 'png'));
     } else {
       $imgUrl = $this->getRequest()->getUriForPath('/assets/img/default-icon.png');      
       if ($this->container->get('kernel')->getEnvironment() == 'dev') {
@@ -49,6 +50,12 @@ class APIController extends GoGoController
       }
       $imageData = InterventionImage::make($imgUrl);
     }
+
+    $icon = [ "src" => $imgUrl ];
+    if ($imageData) {
+      $icon['sizes'] = $imageData->height().'x'.$imageData->width();
+      $icon['mime'] = $imageData->mime();
+    } 
 
     $responseArray = array(
       "name" => $config->getAppName(),
@@ -58,13 +65,7 @@ class APIController extends GoGoController
       "display" => "standalone",
       "theme_color" => $config->getPrimaryColor(),
       "background_color" => $config->getBackgroundColor(),
-      "icons" => [
-        [
-          "src" => $imgUrl,
-          "sizes" => $imageData->height().'x'.$imageData->width(),
-          "type" => $imageData->mime()
-        ]
-      ]
+      "icons" => [ $icon ]
     );
     $response = new Response(json_encode($responseArray));  
     $response->headers->set('Content-Type', 'application/json');
