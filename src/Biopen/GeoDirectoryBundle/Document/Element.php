@@ -608,6 +608,7 @@ class Element
     {
         if (property_exists($this,$key)) {
             $method = 'get' . ucfirst($key);
+            if ($key == 'images') $method = 'getImagesUrls';
             return $this->$method();
         }
         else return $this->getCustomProperty($key);
@@ -1218,6 +1219,13 @@ class Element
         return $this->images;
     }
 
+    public function getImagesUrls()
+    {
+        $result = [];
+        foreach ($this->images as $image) $result[] = $image->getImageUrl();
+        return $result;
+    }
+    
     /**
      * Add potentialDuplicate
      *

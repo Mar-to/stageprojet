@@ -1,3 +1,8 @@
+v2.3.1
+======
+
+* BUG: Fix using images in marker popup template
+
 v2.3
 ====
 

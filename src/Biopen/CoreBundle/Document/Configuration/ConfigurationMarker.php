@@ -28,7 +28,9 @@ class ConfigurationMarker
         $matches = [];
         preg_match_all('/({{\s*[\w_|]*\s*}})/',$this->popupTemplate, $matches);
         $newFields = array_map(function($match) { 
-            return explode('|', preg_replace('/[{}\s]/', '', $match))[0];
+            $fieldName = explode('|', preg_replace('/[{}\s]/', '', $match))[0];
+            if ($fieldName == "image") $fieldName = "images";
+            return $fieldName;
         }, $matches[0]);
         $oldFields = $this->fieldsUsedByTemplate;
 
