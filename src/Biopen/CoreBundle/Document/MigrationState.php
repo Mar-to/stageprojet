@@ -21,6 +21,11 @@ class MigrationState
     /**
      * @MongoDB\Field(type="int")
      */
+    private $commandsIndex = 0;
+
+    /**
+     * @MongoDB\Field(type="int")
+     */
     private $messagesIndex = 0;
 
     /**
@@ -75,5 +80,28 @@ class MigrationState
     public function getMessagesIndex()
     {
         return $this->messagesIndex;
+    }
+
+    /**
+     * Set commandsIndex
+     *
+     * @param int $commandsIndex
+     * @return $this
+     */
+    public function setCommandsIndex($commandsIndex)
+    {
+        $this->commandsIndex = $commandsIndex;
+        return $this;
+    }
+
+    /**
+     * Get commandsIndex
+     *
+     * @return int $commandsIndex
+     */
+    public function getCommandsIndex()
+    {
+        if (!$this->commandsIndex) $this->commandsIndex = 0;
+        return $this->commandsIndex;
     }
 }

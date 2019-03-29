@@ -17,6 +17,7 @@ class LoadMigrationState implements FixtureInterface
     $migrationState = new MigrationState();
     $migrationCommand = new MigrationCommand();
     $migrationState->setMigrationIndex(count($migrationCommand->migrations));
+    $migrationState->setCommandsIndex(count($migrationCommand->commands));
     $migrationState->setMessagesIndex(count($migrationCommand->messages));
     $manager->persist($migrationState);
     $manager->flush();

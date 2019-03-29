@@ -48,6 +48,18 @@ class MigrationCommand extends GoGoAbstractCommand
         }
 
         $asyncService = $this->getContainer()->get('biopen.async');
+        if (count($this->commands) > $migrationState->getCommandsIndex()) {
+            $commandsToRun = array_slice($this->commands, $migrationState->getCommandsIndex());
+            foreach($dbs as $db) {
+                foreach($commandsToRun as $command) {            
+                    $asyncService->callCommand($command, [], $db);
+                }                    
+            }
+            $this->log(count($commandsToRun) . " commands to run");
+        } else {
+            $this->log("No commands to run");
+        }
+
         if (count($this->messages) > $migrationState->getMessagesIndex()) {
             $messagesToAdd = array_slice($this->messages, $migrationState->getMessagesIndex());
             foreach($dbs as $db) {
@@ -62,6 +74,7 @@ class MigrationCommand extends GoGoAbstractCommand
         }
 
         $migrationState->setMigrationIndex(count($this->migrations));
+        $migrationState->setCommandsIndex(count($this->commands));
         $migrationState->setMessagesIndex(count($this->messages));
         $em->flush();        
     }
@@ -72,16 +85,22 @@ class MigrationCommand extends GoGoAbstractCommand
         return $process->start();
     }
     
-    // ---------------------------------------------------------------
-    // DO NOT REMOVE A SINGLE ELEMENT OF THIS ARRAY, ONLY ADD NEW ONES
-    // ---------------------------------------------------------------
+    // -----------------------------------------------------------------
+    // DO NOT REMOVE A SINGLE ELEMENT OF THOSE ARRAYS, ONLY ADD NEW ONES
+    // -----------------------------------------------------------------
     public $migrations = [
       // March 2019
       // "db.Category.renameCollection('CategoryGroup')",
       // "db.Option.renameCollection('Category')"
     ];
 
+    public $commands = [
+      // v2.3.1
+      "app:elements:updateJson all"
+    ];
+
     public $messages = [
+        // v2.3.0
         "Un champ <b>Image (url)</b> est maintenant disponible dans la confiugration du formulaire !",
         "Vous pouvez désormais customizer la popup qui s'affiche au survol d'un marqueur. Allez dans Personnalisation -> Marqueur / Popup",
         "Nouvelle option pour le menu (Personnalisation -> La Carte -> onglet Menu) : afficher à côté de chaque catégories le nombre d'élements disponible pour cette catégorie"
