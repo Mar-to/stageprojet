@@ -15,6 +15,30 @@ use Symfony\Component\Process\Process;
  */
 class MigrationCommand extends GoGoAbstractCommand
 {
+    // -----------------------------------------------------------------
+    // DO NOT REMOVE A SINGLE ELEMENT OF THOSE ARRAYS, ONLY ADD NEW ONES
+    // -----------------------------------------------------------------
+    public $migrations = [
+      // March 2019
+      // "db.Category.renameCollection('CategoryGroup')",
+      // "db.Option.renameCollection('Category')"
+    ];
+
+    public $commands = [
+      // v2.3.1
+      "app:elements:updateJson all"
+    ];
+
+    public $messages = [
+        // v2.3.0
+        "Un champ <b>Image (url)</b> est maintenant disponible dans la confiugration du formulaire !",
+        "Vous pouvez désormais customizer la popup qui s'affiche au survol d'un marqueur. Allez dans Personnalisation -> Marqueur / Popup",
+        "Nouvelle option pour le menu (Personnalisation -> La Carte -> onglet Menu) : afficher à côté de chaque catégories le nombre d'élements disponible pour cette catégorie",
+        // v2.3.1
+        "Vous pouvez maintenant renseigner la licence qui protège vos données dans Personnalisation -> Configuration Générale"
+    ];
+
+
     protected function gogoConfigure()
     {
         $this->setName('db:migrate')
@@ -84,25 +108,4 @@ class MigrationCommand extends GoGoAbstractCommand
         $process = new Process("mongo {$db} --eval \"{$command}\"");
         return $process->start();
     }
-    
-    // -----------------------------------------------------------------
-    // DO NOT REMOVE A SINGLE ELEMENT OF THOSE ARRAYS, ONLY ADD NEW ONES
-    // -----------------------------------------------------------------
-    public $migrations = [
-      // March 2019
-      // "db.Category.renameCollection('CategoryGroup')",
-      // "db.Option.renameCollection('Category')"
-    ];
-
-    public $commands = [
-      // v2.3.1
-      "app:elements:updateJson all"
-    ];
-
-    public $messages = [
-        // v2.3.0
-        "Un champ <b>Image (url)</b> est maintenant disponible dans la confiugration du formulaire !",
-        "Vous pouvez désormais customizer la popup qui s'affiche au survol d'un marqueur. Allez dans Personnalisation -> Marqueur / Popup",
-        "Nouvelle option pour le menu (Personnalisation -> La Carte -> onglet Menu) : afficher à côté de chaque catégories le nombre d'élements disponible pour cette catégorie"
-    ];
 }

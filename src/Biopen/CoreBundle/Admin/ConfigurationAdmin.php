@@ -36,10 +36,11 @@ class ConfigurationAdmin extends AbstractAdmin
         $apiProperties = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->findAllCustomProperties();
 
         $formMapper
-            ->with('Le site', array('class' => 'col-md-6', "description" => '<div class="iframe-container"><iframe height="190" sandbox="allow-same-origin allow-scripts" src="https://video.colibris-outilslibres.org/videos/embed/fc7d3784-7bd1-4f3a-b915-ab6daefdd52d" frameborder="0" allowfullscreen></iframe></div>'))
+            ->with('Le site', array('class' => 'col-md-6', "description" => '<div class="iframe-container"><iframe height="110" sandbox="allow-same-origin allow-scripts" src="https://video.colibris-outilslibres.org/videos/embed/fc7d3784-7bd1-4f3a-b915-ab6daefdd52d" frameborder="0" allowfullscreen></iframe></div>'))
                 ->add('appName', null, array('label' => 'Nom du site'))  
                 ->add('appBaseline', null, array('label' => 'Description du site (baseline)','required' => false))  
                 ->add('appTags', null, array('label' => 'Mot clés pour le référencement (séparés par une virgule)', 'required' => false))  
+                ->add('dataLicenseUrl', null, array('label' => 'Url de la licence qui protège vos données', 'required' => false))  
             ->end()
             ->with('Images générales', array('class' => 'col-md-6'))
                 ->add('logo', 'sonata_type_model', $imagesOptions)

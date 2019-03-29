@@ -96,16 +96,16 @@ class APIController extends GoGoController
     else
     {
       $responseJson = '{
-        "data":'     . $elementsJson . ', 
-        "ontology":"'. $ontology .'"';
+        "licence": "' . $config->getDataLicenseUrl() . '",
+        "ontology":"'. $ontology . '"';        
 
       if (!$fullRepresentation) 
       {
         $mapping = ['id', $config->getMarker()->getFieldsUsedByTemplate(), 'latitude', 'longitude', 'status', 'moderationState'];
         $responseJson .= ', "mapping":' . json_encode($mapping);
       }
-      
-      $responseJson .= '}';
+
+      $responseJson .= ', "data":' . $elementsJson . '}';
     }
 
     // TODO count how much a user is using the API

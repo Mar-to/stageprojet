@@ -1,6 +1,7 @@
 v2.3.1
 ======
 
+* FEATURE: Add license url for the data
 * BUG: Fix using images in marker popup template
 
 v2.3

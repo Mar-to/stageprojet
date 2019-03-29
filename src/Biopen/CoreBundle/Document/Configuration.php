@@ -47,6 +47,9 @@ class Configuration implements \JsonSerializable
     // For meta keywords header
     protected $appTags;
 
+    /** @MongoDB\Field(type="string") */
+    protected $dataLicenseUrl = "https://opendatacommons.org/licenses/odbl/summary/";
+
     // ----------------------------
     // --------- IMAGES -----------
     // ----------------------------
@@ -2980,5 +2983,27 @@ class Configuration implements \JsonSerializable
     {
         if(!$this->marker) $this->marker = new ConfigurationMarker();
         return $this->marker;
+    }
+
+    /**
+     * Set dataLicenseUrl
+     *
+     * @param string $dataLicenseUrl
+     * @return $this
+     */
+    public function setDataLicenseUrl($dataLicenseUrl)
+    {
+        $this->dataLicenseUrl = $dataLicenseUrl;
+        return $this;
+    }
+
+    /**
+     * Get dataLicenseUrl
+     *
+     * @return string $dataLicenseUrl
+     */
+    public function getDataLicenseUrl()
+    {
+        return $this->dataLicenseUrl;
     }
 }
