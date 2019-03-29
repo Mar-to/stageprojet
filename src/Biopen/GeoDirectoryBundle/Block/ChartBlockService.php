@@ -38,6 +38,7 @@ class ChartBlockService extends AbstractBlockService
 		'4' => 'Modifié par admin',
 		'5' => 'Modifié par propriétaire',
 		'6' => 'Modifié avec lien direct',
+		'7' => 'Import dynamique'
 	];
 
 	protected $statusColors = [
@@ -50,6 +51,7 @@ class ChartBlockService extends AbstractBlockService
 		'4' => '#7cb5ec',
 		'5' => '#7cb5ec',
 		'6' => '#7cb5ec',
+		'7' => '#7cb5ec',
 	];
 
 	public function __construct($templating, DocumentManager $documentManager, $configService)
