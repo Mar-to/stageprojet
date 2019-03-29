@@ -31,7 +31,7 @@ class ChartBlockService extends AbstractBlockService
 	protected $statusChoices = [
 		'-4'=>'Supprimé',
 		'-3'=>'Refusé (votes) ', 
-		'-2'=>'Réfusé (admin)',
+		'-2'=>'Refusé (admin)',
 		'1' => 'Validé (admin)',
 		'2' => 'Validé (votes)',
 		'3' => 'Ajouté par admin',

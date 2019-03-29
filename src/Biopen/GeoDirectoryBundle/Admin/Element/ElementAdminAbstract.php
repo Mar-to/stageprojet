@@ -23,7 +23,7 @@ class ElementAdminAbstract extends AbstractAdmin
     '-6'=>'Doublon supprimé',
 		'-4'=>'Supprimé', 
 		'-3'=>'Refusé (votes) ', 
-		'-2'=>'Réfusé (admin)', 
+		'-2'=>'Refusé (admin)', 
 		'-1'=>'En attente (modifs)', 
 		'0' => 'En attente (ajout)',
 		'1' => 'Validé (admin)',
