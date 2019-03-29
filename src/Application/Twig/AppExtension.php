@@ -9,6 +9,11 @@ use Biopen\SaasBundle\Helper\SaasHelper;
 
 class AppExtension extends AbstractExtension
 {
+    public function __construct($dm)
+    {
+        $this->dm = $dm;
+    }
+
     public function getFilters()
     {
         return array(
@@ -25,6 +30,8 @@ class AppExtension extends AbstractExtension
     {
         return array(
             new TwigFunction('is_root_project', array($this, 'isRootProject')),
+            new TwigFunction('new_msgs_count', array($this, 'getNewMessagesCount')),
+            new TwigFunction('errors_count', array($this, 'getErrorsCount')),
         );
     }
 
@@ -32,5 +39,15 @@ class AppExtension extends AbstractExtension
     {
         $sassHelper = new SaasHelper();
         return $sassHelper->isRootProject();
+    }
+
+    public function getNewMessagesCount()
+    {
+        return count($this->dm->getRepository('BiopenCoreBundle:GoGoLog')->findBy(['type' => 'update', 'hidden' => false])); 
+    }
+
+    public function getErrorsCount()
+    {
+        return count($this->dm->getRepository('BiopenCoreBundle:GoGoLog')->findBy(['level' => 'error', 'hidden' => false])); 
     }
 }

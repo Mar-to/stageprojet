@@ -54,8 +54,6 @@ sonata_formatter:
             extensions: [] # Twig formatter cannot have extensions
 
 sonata_admin:
-    title:                'GoGoCarto Administration'
-    # title_logo:           'assets/img/favicon.png'
     security:
         handler: sonata.admin.security.handler.role
     options:

@@ -1,6 +1,7 @@
 v2.3.1
 ======
 
+* FEATURE: Display number of messages and errors in admin top header
 * FEATURE: Add license url for the data
 * BUG: Fix using images in marker popup template
 

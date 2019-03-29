@@ -16,5 +16,6 @@ services:
     app.twig_extension:
         class: Application\Twig\AppExtension
         public: false
+        arguments: [ "@doctrine.odm.mongoDB.document_manager" ]
         tags:
             - { name: twig.extension }

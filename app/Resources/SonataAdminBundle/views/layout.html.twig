@@ -75,6 +75,11 @@
         }
         .text-and-iframe-container:before { display: table; content: " "; }
         .text-and-iframe-container:after { clear: both; display: table; content: " ";}
+
+        .main-header { display: flex; }
+        .main-header .logo { width: auto; }
+        .main-header .logo label:hover { cursor: pointer; }
+        .main-header .navbar { flex: auto; margin-left: 0; }
     </style>
     
 
@@ -142,6 +147,30 @@
     window.SONATA_CONFIG.CONFIRM_EXIT = false;
     </script>
 
+{% endblock %}
+
+{% block logo %}
+    {% spaceless %}
+        <a class="logo" href="{{ path('sonata_admin_dashboard') }}">
+            <img src="{{ asset('assets/img/default-icon.png') }}">
+            <span>GoGoCarto Administration</span>
+            {% set newMsgsCount = new_msgs_count() %}
+            {% if newMsgsCount > 0 %}
+                <label class="label label-info" style="margin-left: 6px">
+                    <i class="fa fa-bell" style="margin-right: 3px;"></i>
+                    {{ newMsgsCount }} {{ newMsgsCount == 1 ? ' message' : ' messages' }}
+                </label>
+            {% endif %}
+            {% set newErrorsCount = errors_count() %}
+            {% if newErrorsCount > 0 %}
+                <label class="label label-danger" style="margin-left: 6px">
+                    <i class="fa fa-warning" style="margin-right: 3px;"></i>
+                    {{ newErrorsCount }} {{ newErrorsCount == 1 ? 'erreur' : 'erreurs' }}
+                </label>
+            {% endif %}
+            
+        </a>
+    {% endspaceless %}
 {% endblock %}
 
 {% block sonata_sidebar_search %}
