@@ -24,7 +24,7 @@
   {# ERROR MESSAGE #}
   {% set errorMsg = fields.errorMsg|default(null) %}
   {% if not errorMsg %}
-    {% if field.subtype is defined and field.subtype == "email" %}
+    {% if field.subtype is defined and field.subtype == "email" or field.type == 'email' %}
       {% set errorMsg = "Veuillez renseigner une adresse email valide" %}
     {% elseif field.subtype is defined and field.subtype == "url" or field.type == 'image' %}
       {% set errorMsg = "Veuillez renseigner une url du type http://..." %}
@@ -44,15 +44,16 @@
   {# NAME #}
   {% set baseName = field.type == "title" ? "biopen_elementbundle_element" : "data" %}
   {% set fieldName = field.type == "email" ? 'email' : field.name %}
+  
   {# TYPE #}
   {% set inputType = field.subtype is defined ? field.subtype : field.type == "number" ? "number" : "text" %}
-  {% set inputType = field.type == "email" ? 'url' : inputType %}
+  {% set inputType = field.type == "email" ? 'email' : inputType %}
+  {% set inputType = field.type == "image" ? 'url' : inputType %}
+  
   {# VALUE #}
-
   {% set inputValue = elementValue %}
   {% if field.type == "title" %}{% set inputValue = element.name %}{% endif %}
   {% if field.type == "email" %}{% set inputValue = element.email %}{% endif %}
-
   {% if not inputValue and field.value is defined %}{% set inputValue = field.value %}{% endif %}
 
   {# ICON #}
