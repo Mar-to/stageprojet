@@ -3,6 +3,7 @@ composer install
 
 # Install and build assets
 php bin/console assets:install --symlink web
+npm install
 gulp build
 
 # Configure the MongoDB database
