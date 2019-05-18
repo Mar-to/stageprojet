@@ -101,9 +101,7 @@ class ProjectController extends AbstractSaasController
 
             $mains = array(
                 array('Catégorie 1'  , 'fa fa-recycle'     , '#98a100'),
-                array('Catégorie 2'  , 'fa fa-home'       , '#7e3200'),
-                array('Catégorie 3'  , 'fa fa-tree'       , '#7e34500'),
-                array('Catégorie 4'  , 'fa fa-trash'       , '#253200')        
+                array('Catégorie 2'  , 'fa fa-home'       , '#7e3200'),      
             );
 
             foreach ($mains as $key => $main) 
@@ -114,22 +112,6 @@ class ProjectController extends AbstractSaasController
                 $new_main->setColor($main[2]);
                 $new_main->setIsFixture(true);
                 $mainCategory->addOption($new_main);
-                
-                $subcategory = new Category();
-                $subcategory->setName('Subcat');
-                $subcategory->setPickingOptionText('Une sous catégrorie');
-                
-                foreach ($mains as $sub) 
-                {
-                    $new_sub = new Option();
-                    $new_sub->setName("Sub " . $sub[0]);
-                    $new_sub->setIcon($sub[1]);
-                    $new_sub->setColor($sub[2]);
-                    $new_sub->setIsFixture(true);
-                    $subcategory->addOption($new_sub);
-                }
-
-                $new_main->addSubcategory($subcategory);
             }
             
             $projectOdm->flush(); // flush before taxonomy creating otherwise strange bug creating option with only DBRef         
