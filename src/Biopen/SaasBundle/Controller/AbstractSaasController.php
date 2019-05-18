@@ -22,6 +22,6 @@ class AbstractSaasController extends Controller
 
     protected function generateUrlForProject($project, $route = 'biopen_homepage')
     {
-        return 'http://' . $project->getDomainName() . '.' . $this->container->getParameter('saas_base_url') . $this->generateUrl($route);
+        return 'http://' . $project->getDomainName() . '.' . $this->container->getParameter('base_url') . $this->generateUrl($route);
     }
 }

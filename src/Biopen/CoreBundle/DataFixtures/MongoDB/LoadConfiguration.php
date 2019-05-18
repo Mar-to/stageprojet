@@ -10,6 +10,7 @@ use Biopen\CoreBundle\Document\Configuration\ConfigurationUser;
 use Biopen\CoreBundle\Document\Configuration\ConfigurationInfobar;
 use Biopen\CoreBundle\Document\Configuration\ConfigurationMenu;
 use Biopen\CoreBundle\Document\Configuration\ConfigurationApi;
+use Biopen\CoreBundle\Document\Configuration\ConfigurationMarker;
 use Biopen\CoreBundle\Document\AutomatedMailConfiguration;
 use Biopen\CoreBundle\Document\FeatureConfiguration;
 use Biopen\CoreBundle\Document\InteractionConfiguration;
@@ -38,6 +39,7 @@ class LoadConfiguration implements FixtureInterface
                   elseif ($key == "api") $object = new ConfigurationApi();
                   elseif ($key == "menu") $object = new ConfigurationMenu();
                   elseif ($key == "home") $object = new ConfigurationHome();
+                  elseif ($key == "marker") $object = new ConfigurationMarker();
 
                   foreach ($value as $subkey => $subvalue) {
                      if ($subvalue && !in_array($subkey, ['id'])) {
