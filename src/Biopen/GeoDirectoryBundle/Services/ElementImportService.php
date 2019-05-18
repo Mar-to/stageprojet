@@ -235,8 +235,6 @@ class ElementImportService
 		$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element'); 
 		$elementsMissingTaxoCount = $qb->field('source')->references($import)->field('moderationState')->equals(ModerationState::NoOptionProvided)->count()->getQuery()->execute();  
 
-		$message = "Import de " . $import->getSourceName() . " terminé";
-
 		$logData = [
 			"elementsCount" => $totalCount,
 			"elementsCreatedCount" => $this->countElementCreated,
@@ -251,6 +249,10 @@ class ElementImportService
 
 		$totalErrors = $elementsMissingGeoCount + $elementsMissingTaxoCount + $this->countElementErrors;
 		$logLevel = $totalErrors > 0 ? ($totalErrors > ($size / 4) ? 'error' : 'warning') : 'success';
+
+		$message = "Import de " . $import->getSourceName() . " terminé";
+		if ($logLevel != 'success') $message .= ", mais avec des problèmes !"
+
 		$log = new GoGoLogImport($logLevel, $message, $logData);
 		$import->addLog($log);
 
