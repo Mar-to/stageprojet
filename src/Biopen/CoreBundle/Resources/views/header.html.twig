@@ -40,7 +40,7 @@
   			</div>	
       {% endif %}
 
-      {% if not config.addFeature.isOnlyAllowedForAdmin() or is_granted('ROLE_ADMIN') %}
+      {% if config.addFeature.active and (not config.addFeature.isOnlyAllowedForAdmin() or is_granted('ROLE_ADMIN')) %}
 			<div class="col menu-item">
 				<a href="{{ path('biopen_element_add') }}" {% if iframe %}target="_blank"{% endif %}>
           <span class="header-icon gogo-icon-user-plus"></span><span class="text">Ajouter {{ config.elementDisplayNameIndefinite }}</span>
