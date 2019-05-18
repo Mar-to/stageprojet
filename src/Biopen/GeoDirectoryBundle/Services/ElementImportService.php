@@ -251,7 +251,7 @@ class ElementImportService
 		$logLevel = $totalErrors > 0 ? ($totalErrors > ($size / 4) ? 'error' : 'warning') : 'success';
 
 		$message = "Import de " . $import->getSourceName() . " terminé";
-		if ($logLevel != 'success') $message .= ", mais avec des problèmes !"
+		if ($logLevel != 'success') $message .= ", mais avec des problèmes !";
 
 		$log = new GoGoLogImport($logLevel, $message, $logData);
 		$import->addLog($log);
