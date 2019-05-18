@@ -148,7 +148,7 @@ class GoGoCartoJsService
           "searchPlace" => $this->getConfigFrom($config->getSearchPlaceFeature()) ,
           "searchElements" => $this->getConfigFrom($config->getSearchElementsFeature(), 'biopen_api_elements_from_text') ,  
           "searchGeolocate" => $this->getConfigFrom($config->getSearchGeolocateFeature()) ,
-          "share" =>    $this->getConfigFrom($config->getShareFeature(),  'biopen_report_error_for_element') ,
+          "share" =>    $this->getConfigFrom($config->getShareFeature()) ,
           "report" =>   $this->getConfigFrom($config->getReportFeature(), 'biopen_report_error_for_element') ,
           "favorite" => $this->getConfigFrom($config->getFavoriteFeature()) ,
           "export" =>   $this->getConfigFrom($config->getExportIframeFeature()) ,
@@ -197,6 +197,7 @@ class GoGoCartoJsService
 
   private function getConfigFrom($feature, $route = null, $overwrite = [])
   { 
+    if (!$feature) return null;
     $result = [];
     $result['active'] = array_key_exists('active', $overwrite) ? $overwrite['active'] : $feature->getActive();
     $result['inIframe'] = $feature->getActiveInIframe();
