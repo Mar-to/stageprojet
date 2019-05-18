@@ -1,5 +1,13 @@
 @import 'partials/base';
 
+body.gogo-load-css
+{
+  height: auto;
+  min-height: 100%;
+  @include flexbox();
+  @include flex-direction(column);
+}
+
 .gogo-load-css
 {
 
@@ -20,16 +28,8 @@
 
   @import 'components/wysiwyg-content';
 
-  body
-  {
-    height: auto;
-    min-height: 100%;
-    @include flexbox();
-  }
-
   header
   {
-    position: fixed;
     width: 100%;
     top: 0;
     z-index: 1000;
@@ -37,13 +37,6 @@
 
   #page-container
   {
-    padding-top: 3rem;
-
-    @media only screen and (min-width : 701px)
-    {
-      padding-top: 3.5rem;
-    }
-
     &.with-sidebar {
       @media only screen and (min-width : 900px) and (max-width : 1400px) {
         padding-left: 215px;

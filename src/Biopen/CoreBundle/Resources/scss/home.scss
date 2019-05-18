@@ -52,8 +52,6 @@ body
   		bottom: 0;
   		line-height: 3.5rem;
       font-size: .9rem;
-      letter-spacing: 1px;
-      //border-bottom: 1px solid #4a4a4a;
       @media #{$medium-and-up} { font-size: 1.1rem; } 
 
       &:hover

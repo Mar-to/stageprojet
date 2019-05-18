@@ -4,6 +4,7 @@
 header 
 {	
 	color: white ;
+	@media only screen and (max-width : 701px) { margin-bottom: -1px; }
 	//@extend .z-depth-2;	
 
 	#menu
@@ -26,7 +27,6 @@ header
 		{
 	    display: inline-block;
 	    font-weight: bold;
-	    letter-spacing: -1px;
 	    font-size: 1.4rem;
 	    line-height: 3rem;
 	    margin-right: 0;
@@ -93,7 +93,6 @@ header
 		{
 			font-size: 1.5rem;
 	    display: inline-block;
-	    color: #c6cad0;
 	    padding-left: 1rem;
 	    line-height: 2.1rem;
 
@@ -117,14 +116,13 @@ header
 				display: none;
 				line-height: 2.5rem;
 		    position: absolute;
-		    border-top: 1px solid #a9b2c1;
 		    padding: .5rem 0;
 		    left: 0;
 		    right: 0;
 		    top: 3rem;
 		    padding-bottom: 1rem;
 		    text-align: center;
-		    background-color: #3d4b61;
+		    background-color: inherit;
 			}		
 	    
 
@@ -133,6 +131,7 @@ header
 				line-height: 3rem; 
 				float : right;
 				line-height: 3.5rem;
+				position: relative;
 			}
 
 			.nav-overlay
@@ -196,7 +195,6 @@ header
 				border-radius: 0; 
 				border: none;
 				background-color: transparent;
-	    	letter-spacing: .5px;
 
 	    	.header-icon
 	    	{
