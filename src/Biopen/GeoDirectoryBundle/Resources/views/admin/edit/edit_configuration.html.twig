@@ -1,0 +1,14 @@
+{% extends '@BiopenAdmin/core_custom/base_edit.html.twig' %}
+
+{% block actions %}
+{% endblock %}
+
+{% block sonata_form_actions %}  
+  {% if admin.hasroute('edit') and admin.isGranted('EDIT') %}
+      <button class="btn btn-success" type="submit" name="btn_update_and_edit"><i class="fa fa-save" aria-hidden="true"></i> Mettre à jour</button>
+  {% endif %}
+{% endblock %}
+
+
+
+

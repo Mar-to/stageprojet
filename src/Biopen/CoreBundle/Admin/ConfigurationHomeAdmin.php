@@ -7,13 +7,13 @@
  */
 namespace Biopen\CoreBundle\Admin;
 
-use Sonata\AdminBundle\Admin\AbstractAdmin;
+use Biopen\CoreBundle\Admin\ConfigurationAbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 
-class ConfigurationHomeAdmin extends AbstractAdmin
+class ConfigurationHomeAdmin extends ConfigurationAbstractAdmin
 {
     protected $baseRouteName = 'biopen_core_bundle_config_home_admin_classname';
 
