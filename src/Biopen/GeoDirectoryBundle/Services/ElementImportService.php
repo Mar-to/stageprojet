@@ -1,7 +1,7 @@
 <?php
 
 namespace Biopen\GeoDirectoryBundle\Services;
- 
+
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -20,7 +20,7 @@ use Biopen\CoreBundle\Document\GoGoLogImport;
 use Biopen\CoreBundle\Document\GoGoLogLevel;
 
 class ElementImportService
-{   
+{
 	private $em;
 	private $mappingTableIds = [];
 	private $converter;
@@ -31,7 +31,7 @@ class ElementImportService
 	protected $optionIdsToAddToEachElement = [];
 	protected $parentCategoryIdToCreateMissingOptions;
 	protected $missingOptionDefaultAttributesForCreate;
-	
+
 	protected $coreFields = ['id', 'name', 'taxonomy', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source'];
 	protected $privateDataProps;
 
@@ -55,7 +55,7 @@ class ElementImportService
 		$this->currentRow = [];
   }
 
-  public function startImport($import) 
+  public function startImport($import)
   {
 		$this->optionIdsToAddToEachElement = [];
 		$this->countElementCreated = 0;
@@ -89,19 +89,19 @@ class ElementImportService
   {
   	$json = file_get_contents($import->getUrl());
     $data = json_decode($json, true);
-    if ($data === null) return null;		
+    if ($data === null) return null;
 
     // data can be stored inside a data attribute
     if (array_key_exists('data', $data)) $data = $data['data'];
 
     foreach ($data as $key => $row) {
-			if (array_key_exists('geo', $row)) 
+			if (array_key_exists('geo', $row))
 			{
 				$data[$key]['latitude']  = $row['geo']['latitude'];
 				$data[$key]['longitude'] = $row['geo']['longitude'];
 				unset($data[$key]['geo']);
 			}
-			if (array_key_exists('address', $row))  
+			if (array_key_exists('address', $row))
 			{
 				$address = $row['address'];
 
@@ -114,11 +114,11 @@ class ElementImportService
 				}
 				unset($data[$key]['address']);
 			}
-		}    
+		}
 
     if ($onlyGetData) return $data;
 
-    $elementImportedCount = $this->importData($data, $import);   
+    $elementImportedCount = $this->importData($data, $import);
 
     return $elementImportedCount;
   }
@@ -130,14 +130,14 @@ class ElementImportService
 		// Define the size of record, the frequency for persisting the data and the current index of records
 		$size = count($data); $batchSize = 100; $i = 0;
 
-		if ($import->isDynamicImport()) 
+		if ($import->isDynamicImport())
 		{
 			$import->setLastRefresh(time());
-	    $import->updateNextRefreshDate(); 	    
+	    $import->updateNextRefreshDate();
 		}
 
 		// initialize create missing options configuration
-		$this->createMissingOptions = $import->getCreateMissingOptions(); 
+		$this->createMissingOptions = $import->getCreateMissingOptions();
 		$parent = $import->getParentCategoryToCreateOptions() ?: $this->em->getRepository('BiopenGeoDirectoryBundle:Category')->findOneByIsRootCategory(true);
 		$this->parentCategoryIdToCreateMissingOptions = $parent->getId();
 		foreach ($import->getOptionsToAddToEachElement() as $option) {
@@ -147,7 +147,7 @@ class ElementImportService
 		$this->missingOptionDefaultAttributesForCreate = [
 			"useIconForMarker" => false,
 			"useColorForMarker" => false
-		];	
+		];
 
 		// Getting the private field of the custom data
 		$config = $this->em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
@@ -156,28 +156,28 @@ class ElementImportService
 		$data = $this->fixsOntology($data);
 		$data = $this->addMissingFieldsToData($data);
 
-		if ($import->isDynamicImport()) 
+		if ($import->isDynamicImport())
 		{
 			// before updating the source, we put all elements into DynamicImportTemp status
-			$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element'); 
-			$qb->updateMany() 
-				 ->field('source')->references($import) 
+			$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+			$qb->updateMany()
+				 ->field('source')->references($import)
 				 ->field('status')->gt(ElementStatus::Deleted) // leave the deleted one as they are, so we know we do not need to import them
 	       ->field('status')->set(ElementStatus::DynamicImportTemp)
-	       ->getQuery()->execute(); 
-	  }		
+	       ->getQuery()->execute();
+	  }
 
 	  $import->setCurrState(ImportState::InProgress);
 
 		// processing each data
-		foreach($data as $row) 
+		foreach($data as $row)
 		{
-			try { 				
+			try {
 				$import->setCurrMessage("Importation des données " . $i . '/' . $size . ' traitées');
-				$this->createElementFromArray($row, $import); 
+				$this->createElementFromArray($row, $import);
 				$i++;
 			}
-			catch (\Exception $e) { 
+			catch (\Exception $e) {
 				$this->countElementErrors++;
 				if (!is_array($row['id'])) $this->elementIdsErrors[] = "" . $row['id'];
 
@@ -193,10 +193,10 @@ class ElementImportService
 			   $this->em->flush();
 			   $this->em->clear();
 			   // After flush, we need to get again the import from the DB to avoid doctrine raising errors
-			   $import = $this->em->getRepository('BiopenGeoDirectoryBundle:Import')->find($import->getId());   
+			   $import = $this->em->getRepository('BiopenGeoDirectoryBundle:Import')->find($import->getId());
 			   $this->em->persist($import);
-			}			
-		}		
+			}
+		}
 
 		$this->em->flush();
 		$this->em->clear();
@@ -204,36 +204,36 @@ class ElementImportService
 		$this->em->persist($import);
 
 		$countElemenDeleted = 0;
-		if ($import->isDynamicImport()) 
-    {  
+		if ($import->isDynamicImport())
+    {
       if ($this->countElementErrors > 0)
       {
       	// If there was an error whil retrieving an already existing element
       	// we set back the status to DynamicImport otherwise it will be deleted just after
-	      $qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');       
-	      $result = $qb->updateMany() 
+	      $qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+	      $result = $qb->updateMany()
 	         ->field('source')->references($import)->field('oldId')->in($this->elementIdsErrors)
-	         ->field('status')->set(ElementStatus::DynamicImport) 
+	         ->field('status')->set(ElementStatus::DynamicImport)
 	         ->getQuery()->execute();
       }
-      
+
       // after updating the source, the element still in DynamicImportTemp are the one who are missing
       // from the new data received, so we need to delete them
-      $qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');       
-      $result = $qb->remove() 
-         ->field('source')->references($import) 
-         ->field('status')->equals(ElementStatus::DynamicImportTemp) 
+      $qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+      $result = $qb->remove()
+         ->field('source')->references($import)
+         ->field('status')->equals(ElementStatus::DynamicImportTemp)
          ->getQuery()->execute();
-      $countElemenDeleted = $result['n'];       
-    }  
+      $countElemenDeleted = $result['n'];
+    }
 
-		$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element'); 
-		$totalCount = $qb->field('status')->field('source')->references($import)->count()->getQuery()->execute();      
+		$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+		$totalCount = $qb->field('status')->field('source')->references($import)->count()->getQuery()->execute();
 
-		$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element'); 
-		$elementsMissingGeoCount = $qb->field('source')->references($import)->field('moderationState')->equals(ModerationState::GeolocError)->count()->getQuery()->execute();  
-		$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element'); 
-		$elementsMissingTaxoCount = $qb->field('source')->references($import)->field('moderationState')->equals(ModerationState::NoOptionProvided)->count()->getQuery()->execute();  
+		$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+		$elementsMissingGeoCount = $qb->field('source')->references($import)->field('moderationState')->equals(ModerationState::GeolocError)->count()->getQuery()->execute();
+		$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+		$elementsMissingTaxoCount = $qb->field('source')->references($import)->field('moderationState')->equals(ModerationState::NoOptionProvided)->count()->getQuery()->execute();
 
 		$logData = [
 			"elementsCount" => $totalCount,
@@ -259,8 +259,8 @@ class ElementImportService
 		$import->setCurrState($totalErrors > 0 ? ($totalErrors == $size ? ImportState::Failed : ImportState::Errors) : ImportState::Completed);
   	$import->setCurrMessage($log->displayMessage());
 
-		$this->em->flush();   
-		
+		$this->em->flush();
+
 		return $message;
 	}
 
@@ -270,7 +270,7 @@ class ElementImportService
 		$realUpdate = false; // if we are sure that the external has been edited with 'FieldToCheckElementHaveBeenUpdated'
 		if ($row['id'])
 		{
-			if (in_array($row['id'], $import->getIdsToIgnore())) return; 
+			if (in_array($row['id'], $import->getIdsToIgnore())) return;
 			$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 			$qb->field('source')->references($import);
 			$qb->field('oldId')->equals("" . $row['id']);
@@ -289,8 +289,8 @@ class ElementImportService
 			$updatedAtField = $import->getFieldToCheckElementHaveBeenUpdated();
 			// if updated date hasn't change, nothing to do
 			if ($updatedAtField && array_key_exists($updatedAtField, $row)) {
-				if ($row[$updatedAtField] && $row[$updatedAtField] == $element->getCustomProperty($updatedAtField)) {				
-					$element->setPreventJsonUpdate(true);				
+				if ($row[$updatedAtField] && $row[$updatedAtField] == $element->getCustomProperty($updatedAtField)) {
+					$element->setPreventJsonUpdate(true);
 					if ($element->getStatus() == ElementStatus::DynamicImportTemp) $element->setStatus(ElementStatus::DynamicImport);
 					$this->em->persist($element);
 					$this->countElementNothingToDo++;
@@ -301,16 +301,16 @@ class ElementImportService
 			}
 			$updateExisting = true;
 			// resetting "geolocc" and "no options" modearation state so it will be calculated again
-			if ($element->getModerationState() < 0) $element->setModerationState(ModerationState::NotNeeded); 
+			if ($element->getModerationState() < 0) $element->setModerationState(ModerationState::NotNeeded);
 		}
 		else
 		{
-			$element = new Element();			
+			$element = new Element();
 		}
 		$this->currentRow = $row;
-		
-		$element->setOldId($row['id']);	 	
-		$element->setName($row['name']);	 
+
+		$element->setOldId($row['id']);
+		$element->setName($row['name']);
 
 		$address = new PostalAddress($row['streetAddress'], $row['addressLocality'], $row['postalCode'], $row["addressCountry"]);
 		$element->setAddress($address);
@@ -320,7 +320,7 @@ class ElementImportService
 		$element->setSource($import);
 
 		if (array_key_exists('owner', $row)) $element->setUserOwnerEmail($row['owner']);
-		
+
 		$lat = $row['latitude']; $lng = $row['longitude'];
 		if (is_object($lat) || is_array($lat) || strlen($lat) == 0 || is_object($lng) || strlen($lng) == 0 || $lat == 'null' || $lat == null)
 		{
@@ -329,7 +329,7 @@ class ElementImportService
 			{
 		   	$result = $this->geocoder->geocode($address->getFormatedAddress())->first();
 		   	$lat = $result->getLatitude();
-		   	$lng = $result->getLongitude();	
+		   	$lng = $result->getLongitude();
 			}
 		}
 
@@ -348,23 +348,23 @@ class ElementImportService
 			$status = ElementStatus::AddedByAdmin;
 
 		// create import contribution if first time imported
-		if (!$updateExisting) 
-		{ 
-			$contribution = $this->interactionService->createContribution(null, 0, $status);	
+		if (!$updateExisting)
+		{
+			$contribution = $this->interactionService->createContribution(null, 0, $status);
 			$element->addContribution($contribution);
       // $this->mailService->sendAutomatedMail('add', $element, $message);
-		} 
+		}
 		// create edit contribution if real update
 		else if ($realUpdate) {
-			$contribution = $this->interactionService->createContribution(null, 1, $status);	
+			$contribution = $this->interactionService->createContribution(null, 1, $status);
 			$element->addContribution($contribution);
 		}
 
 		$element->setStatus($status);
 		$element->updateTimestamp();
-		
+
 		$this->em->persist($element);
-		
+
 		if ($updateExisting) $this->countElementUpdated++;
 		else $this->countElementCreated++;
 	}
@@ -374,7 +374,7 @@ class ElementImportService
     $keysTable = ['lat' => 'latitude', 'long' => 'longitude', 'lon' => 'longitude', 'lng' => 'longitude',
   								'title' => 'name', 'nom' => 'name', 'categories' => 'taxonomy', 'address' => 'streetAddress'];
 
-    foreach ($data as $key => $row) {  
+    foreach ($data as $key => $row) {
       foreach ($keysTable as $search => $replace) {
         if (isset($row[$search]) && !isset($row[$replace])) {
           $data[$key][$replace] = $data[$key][$search];
@@ -386,8 +386,8 @@ class ElementImportService
     return $data;
   }
 
-	private function addMissingFieldsToData($data) 
-	{		
+	private function addMissingFieldsToData($data)
+	{
 		foreach ($data as $key => $row) {
 			$missingFields = array_diff($this->coreFields, array_keys($row));
 			foreach ($missingFields as $missingField) {
@@ -401,10 +401,10 @@ class ElementImportService
 	{
 		$customFields = array_diff(array_keys($raw_data), $this->coreFields);
 		$customFields = array_diff($customFields, ['lat', 'long', 'lon', 'lng', 'title', 'nom', 'categories', 'address']);
-		$customData = [];		
+		$customData = [];
     foreach ($customFields as $customField) {
 			if ($customField && is_string($customField)) $customData[$customField] = $raw_data[$customField];
-		}		
+		}
 
     $element->setCustomData($customData, $this->privateDataProps);
 	}
@@ -414,9 +414,9 @@ class ElementImportService
 		if ($options === null) $options = $this->em->getRepository('BiopenGeoDirectoryBundle:Option')->findAll();
 
 		foreach($options as $option)
-		{			
+		{
 			$ids = [
-				'id' => $option->getId(), 
+				'id' => $option->getId(),
 				'idAndParentsId' => $option->getIdAndParentOptionIds()
 			];
 			$this->mappingTableIds[$this->slugify($option->getNameWithParent())] = $ids;
@@ -436,7 +436,7 @@ class ElementImportService
 		{
 			$keys = array_keys($row);
 			$image_keys = array_filter($keys, function($key) { return $this->startsWith($key, 'image'); });
-			$images = array_map(function($key) use ($row) { return $row[$key]; }, $image_keys);			
+			$images = array_map(function($key) use ($row) { return $row[$key]; }, $image_keys);
 		}
 
 		if (count($images) == 0) return;
@@ -448,8 +448,8 @@ class ElementImportService
 				$elementImage = new ElementImage();
 				$elementImage->setExternalImageUrl($imageUrl);
 				$element->addImage($elementImage);
-			}					
-		}		
+			}
+		}
 	}
 
 	function startsWith($haystack, $needle)
@@ -462,7 +462,7 @@ class ElementImportService
 	{
 		$element->resetOptionsValues();
 		$optionsIdAdded = [];
-		$options = is_array($row['taxonomy']) ? $row['taxonomy'] : explode(',', $row['taxonomy']);	
+		$options = is_array($row['taxonomy']) ? $row['taxonomy'] : explode(',', $row['taxonomy']);
 
 		foreach($options as $optionName)
 		{
@@ -471,14 +471,14 @@ class ElementImportService
 				$optionNameSlug = $this->slugify($optionName);
 				$optionExists = array_key_exists($optionNameSlug, $this->mappingTableIds);
 
-				// create option if does not exist					
+				// create option if does not exist
 				if (!$optionExists && $this->createMissingOptions) { $this->createOption($optionName); $optionExists = true; }
 
 				if ($optionExists)
 					// we add option id and parent options if not already added (because import works only with the lower level of options)
-					foreach ($this->mappingTableIds[$optionNameSlug]['idAndParentsId'] as $key => $optionId) 
-						if (!in_array($optionId, $optionsIdAdded)) $optionsIdAdded[] = $this->addOptionValue($element, $optionId);									
-			}			
+					foreach ($this->mappingTableIds[$optionNameSlug]['idAndParentsId'] as $key => $optionId)
+						if (!in_array($optionId, $optionsIdAdded)) $optionsIdAdded[] = $this->addOptionValue($element, $optionId);
+			}
 		}
 
 		if ($import->getNeedToHaveOptionsOtherThanTheOnesAddedToEachElements()) {
@@ -486,19 +486,19 @@ class ElementImportService
 			if (count($element->getOptionValues()) == 0) $element->setModerationState(ModerationState::NoOptionProvided);
 		}
 
-		// Manually add some options to each element imported		
+		// Manually add some options to each element imported
 		foreach ($this->optionIdsToAddToEachElement as $optionId) {
-			if (!in_array($optionId, $optionsIdAdded)) $optionsIdAdded[] = $this->addOptionValue($element, $optionId);						
+			if (!in_array($optionId, $optionsIdAdded)) $optionsIdAdded[] = $this->addOptionValue($element, $optionId);
 		}
 
-		if (count($element->getOptionValues()) == 0) $element->setModerationState(ModerationState::NoOptionProvided); 		
+		if (count($element->getOptionValues()) == 0) $element->setModerationState(ModerationState::NoOptionProvided);
 	}
 
 	private function addOptionValue($element, $id)
 	{
 		$optionValue = new OptionValue();
-		$optionValue->setOptionId($id);		
-	  $optionValue->setIndex(0); 
+		$optionValue->setOptionId($id);
+	  $optionValue->setIndex(0);
 	  $element->addOptionValue($optionValue);
 	  return $id;
 	}
@@ -519,6 +519,7 @@ class ElementImportService
 
 	private function slugify($text)
 	{
+	  if (!is_string($text)) return;
 	  // replace non letter or digits by -
 	  $text = str_replace('é', 'e', $text);
 	  $text = str_replace('è', 'e', $text);
@@ -529,17 +530,17 @@ class ElementImportService
 	  $text = str_replace('â', 'a', $text);
 	  $text = str_replace('î', 'i', $text);
 	  $text = preg_replace('~[^\pL\d]+~u', '-', $text);
-	  
-	  $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text); // transliterate	  
-	  $text = preg_replace('~[^-\w]+~', '', $text); // remove unwanted characters	  
-	  $text = trim($text, '-'); // trim	  
-	  $text = rtrim($text, 's'); // remove final "s" for plural	  
-	  $text = preg_replace('~-+~', '-', $text); // remove duplicate -	  
+
+	  $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text); // transliterate
+	  $text = preg_replace('~[^-\w]+~', '', $text); // remove unwanted characters
+	  $text = trim($text, '-'); // trim
+	  $text = rtrim($text, 's'); // remove final "s" for plural
+	  $text = preg_replace('~-+~', '-', $text); // remove duplicate -
 	  $text = strtolower($text); // lowercase
 
 	  if (empty($text)) return '';
 	  return $text;
 	}
 
-	
+
 }

@@ -1,7 +1,7 @@
 {% extends "@BiopenCoreBundle/page-layout.html.twig" %}
 
 {% set pageName = 'partners' %}
-{% set navTitle = {{ config.partnerPageTitle }} %}
+{% set navTitle = config.partnerPageTitle %}
 
 {% block title %}{{ config.partnerPageTitle }}{% endblock %}
 
@@ -10,7 +10,7 @@
 
 <section>
 
-<h1>{{ config.partnerPageTitle }}</h1>    
+<h1>{{ config.partnerPageTitle }}</h1>
 
 {% for partner in listPartners %}
 
@@ -28,7 +28,7 @@
         {% set mailto = partner.websiteUrl|split('mailto') %}
         {% set isMail = (mailto|length > 1) %}
         <a class="partner-url" href="{{ partner.websiteUrl }}" {% if not isMail %}target="_blank"{% endif %}>{{ partner.websiteUrl | replace({'https://': "", 'http://': "", 'mailto:':""}) }}</a>
-        
+
       {% endif %}
     </div>
   </div>
@@ -36,5 +36,5 @@
 {% endfor %}
 
 </section>
-   
+
 {% endblock %}
