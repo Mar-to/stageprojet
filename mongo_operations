@@ -30,7 +30,7 @@ db.User.find({'facebookUid': { $ne: null}}).count()
 
 db.Element.aggregate(
     {"$group" : { "_id": "$name", uniqueIds: { $addToSet: "$_id" },"count": { "$sum": 1 } } },
-    {"$match": { "_id" :{ "$ne" : null } , "count" : {"$gt": 1} } }, 
+    {"$match": { "_id" :{ "$ne" : null } , "count" : {"$gt": 1} } },
     {"$project": {"name" : "$_id", "_id" : 0, "uniqueIds" : "$uniqueIds", "status": "$status"} }
 )
 
@@ -65,7 +65,7 @@ db.Element.aggregate([
   {"$project": {"name" : 1, "contribs": "$contribs"} }
 ])
 
-# create script.js with : 
+# create script.js with :
 db.Element.find({'moderationState':-2}).forEach(function(x){
   x.fetch();
   print(x.contributions.userMail+",");
@@ -74,7 +74,7 @@ db.Element.find({'moderationState':-2}).forEach(function(x){
 db.User.find({'email': { $ne: '' }},{'mail':1, '_id':0}).forEach(function(x){
   print(x.email+",");
 });
-# then run 
+# then run
 mongo gogocarto_default script.js > export.csv
 # and copy it to your machine
 scp admin@colibris_prod:/home/admin/export.csv local-export-copy.csv
@@ -107,3 +107,6 @@ db.Element.find({ 'data.openhours_more_infos': null })
 db.GoGoLog.updateMany( { } , { $rename: { 'type': 'level' } } )
 
 db.Configuration.updateMany( { } , { $set: { 'defautTileLayer': DBRef("TileLayer", 7, "gogocarto_default") }})
+
+// Reset duplicates
+db.Element.updateMany({moderationState: 4}, {$set: {moderationState: 0, isDuplicateNode: false}, $unset: { potentialDuplicates: 1} })

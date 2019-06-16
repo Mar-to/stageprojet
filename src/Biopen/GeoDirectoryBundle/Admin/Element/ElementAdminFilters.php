@@ -18,7 +18,7 @@ use Biopen\GeoDirectoryBundle\Document\ModerationState;
 
 class ElementAdminFilters extends ElementAdminAbstract
 {
-  public function buildDatagrid() 
+  public function buildDatagrid()
   {
     $this->persistFilters = true;
     parent::buildDatagrid();
@@ -28,14 +28,14 @@ class ElementAdminFilters extends ElementAdminAbstract
   {
     $datagridMapper
       ->add('name')
-      ->add('status', 'doctrine_mongo_choice', array(), 
-        'choice', 
+      ->add('status', 'doctrine_mongo_choice', array(),
+        'choice',
         array(
-            'choices' => $this->statusChoices, 
-           'expanded' => false,    
+            'choices' => $this->statusChoices,
+           'expanded' => false,
            'multiple' => false
           )
-        )     
+        )
       ->add('valide', 'doctrine_mongo_callback', array(
                 'label' => 'Validés',
                 'callback' => function($queryBuilder, $alias, $field, $value) {
@@ -48,7 +48,7 @@ class ElementAdminFilters extends ElementAdminAbstract
             ))
       ->add('pending', 'doctrine_mongo_callback', array(
                 'label' => 'En attente',
-                'callback' => function($queryBuilder, $alias, $field, $value) 
+                'callback' => function($queryBuilder, $alias, $field, $value)
                 {
                     if (!$value || !$value['value']) { return; }
                     $queryBuilder->field('status')->in(array(ElementStatus::PendingModification,ElementStatus::PendingAdd));
@@ -58,23 +58,23 @@ class ElementAdminFilters extends ElementAdminAbstract
             ))
       ->add('moderationNeeded', 'doctrine_mongo_callback', array(
             'label' => 'Modération Nécessaire',
-                'callback' => function($queryBuilder, $alias, $field, $value) 
+                'callback' => function($queryBuilder, $alias, $field, $value)
                 {
                     if (!$value || !$value['value']) { return; }
-                    $queryBuilder->field('moderationState')->notIn([ModerationState::NotNeeded, ModerationState::PendingForTooLong]);
+                    $queryBuilder->field('moderationState')->notIn([ModerationState::NotNeeded]);
                     $queryBuilder->field('status')->gte(ElementStatus::PendingModification);
                     return true;
                 },
                 'field_type' => 'checkbox'
             ))
-      ->add('moderationState', 'doctrine_mongo_choice', array('label' => 'Type de Modération'), 
-          'choice', 
-          array(              
-              'choices' => $this->moderationChoices, 
-             'expanded' => false,    
+      ->add('moderationState', 'doctrine_mongo_choice', array('label' => 'Type de Modération'),
+          'choice',
+          array(
+              'choices' => $this->moderationChoices,
+             'expanded' => false,
              'multiple' => false
             )
-          )   
+          )
       // ->add('reportsIn', 'doctrine_mongo_callback', array(
       //          'label' => "Type d'erreurs signalées",
       //          'callback' => function($queryBuilder, $alias, $field, $value) {
@@ -84,15 +84,15 @@ class ElementAdminFilters extends ElementAdminAbstract
       //               $queryBuilder->where("function() { return (this.reports.filter( function(r) { return (r.value != 4); }).length > 0); }");
       //               return true;
       //           },
-      //           'field_type' => 'choice',                
+      //           'field_type' => 'choice',
       //           'field_options' =>
-      //            array(             
-      //                'choices' => $this->reportsValuesChoice, 
-      //                'expanded' => false,    
+      //            array(
+      //                'choices' => $this->reportsValuesChoice,
+      //                'expanded' => false,
       //                'multiple' => true
       //               )
       //          )
-      //       )    
+      //       )
       ->add('optionValuesAll', 'doctrine_mongo_callback', array(
                'label' => 'Catégories (contient toutes)',
                'callback' => function($queryBuilder, $alias, $field, $value) {
@@ -100,15 +100,15 @@ class ElementAdminFilters extends ElementAdminAbstract
                     $queryBuilder->field('optionValues.optionId')->all($value['value']);
                     return true;
                 },
-                'field_type' => 'choice',                
+                'field_type' => 'choice',
                 'field_options' =>
-                 array(             
-                     'choices' => $this->optionsChoices, 
-                     'expanded' => false,    
+                 array(
+                     'choices' => $this->optionsChoices,
+                     'expanded' => false,
                      'multiple' => true
                     )
                )
-            ) 
+            )
       ->add('optionValuesIn', 'doctrine_mongo_callback', array(
                'label' => 'Catégories (contient une parmis)',
                'callback' => function($queryBuilder, $alias, $field, $value) {
@@ -116,15 +116,15 @@ class ElementAdminFilters extends ElementAdminAbstract
                     $queryBuilder->field('optionValues.optionId')->in($value['value']);
                     return true;
                 },
-                'field_type' => 'choice',                
+                'field_type' => 'choice',
                 'field_options' =>
-                 array(             
-                     'choices' => $this->optionsChoices, 
-                     'expanded' => false,    
+                 array(
+                     'choices' => $this->optionsChoices,
+                     'expanded' => false,
                      'multiple' => true
                     )
                )
-            ) 
+            )
       ->add('optionValuesNotIn', 'doctrine_mongo_callback', array(
                'label' => 'Catégories (ne contient pas)',
                'callback' => function($queryBuilder, $alias, $field, $value) {
@@ -132,18 +132,18 @@ class ElementAdminFilters extends ElementAdminAbstract
                     $queryBuilder->field('optionValues.optionId')->notIn($value['value']);
                     return true;
                 },
-                'field_type' => 'choice',                
+                'field_type' => 'choice',
                 'field_options' =>
-                 array(             
-                     'choices' => $this->optionsChoices, 
-                     'expanded' => false,    
+                 array(
+                     'choices' => $this->optionsChoices,
+                     'expanded' => false,
                      'multiple' => true
                     )
                )
-            ) 
+            )
       ->add('postalCode', 'doctrine_mongo_callback', array(
                 'label' => 'Code Postal',
-                'callback' => function($queryBuilder, $alias, $field, $value) 
+                'callback' => function($queryBuilder, $alias, $field, $value)
                 {
                     if (!$value || !$value['value']) { return; }
                     $queryBuilder->field('address.postalCode')->equals($value['value']);
@@ -152,7 +152,7 @@ class ElementAdminFilters extends ElementAdminAbstract
             ))
       ->add('departementCode', 'doctrine_mongo_callback', array(
                 'label' => 'Numéro de département',
-                'callback' => function($queryBuilder, $alias, $field, $value) 
+                'callback' => function($queryBuilder, $alias, $field, $value)
                 {
                     if (!$value || !$value['value']) { return; }
                     $queryBuilder->field('address.postalCode')->equals(new \MongoRegex('/^'. $value['value'] .'/'));
