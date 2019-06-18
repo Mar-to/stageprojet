@@ -11,33 +11,33 @@ class ElementJsonGenerator
   protected $currElementChangeset;
   protected $config = null;
 
-  public function getConfig($dm) 
+  public function getConfig($dm)
   {
     if (!$this->config) $this->config = $dm->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
     return $this->config;
   }
 
   public function preFlush(\Doctrine\ODM\MongoDB\Event\PreFlushEventArgs $eventArgs)
-  {  
+  {
     $dm = $eventArgs->getDocumentManager();
-    $documentManaged = $dm->getUnitOfWork()->getIdentityMap();  
+    $documentManaged = $dm->getUnitOfWork()->getIdentityMap();
 
-    if (array_key_exists("Biopen\GeoDirectoryBundle\Document\Element", $documentManaged)) 
-    {   
+    if (array_key_exists("Biopen\GeoDirectoryBundle\Document\Element", $documentManaged))
+    {
       // dump("on pre flush, number of doc managed" . count($documentManaged["Biopen\GeoDirectoryBundle\Document\Element"]));
       // $uow = $dm->getUnitOfWork();
       // $uow->computeChangeSets();
 
-      foreach ($documentManaged["Biopen\GeoDirectoryBundle\Document\Element"] as $key => $element) 
-      {      
+      foreach ($documentManaged["Biopen\GeoDirectoryBundle\Document\Element"] as $key => $element)
+      {
         if (!$element->getPreventJsonUpdate()) {
           $element->setPreventJsonUpdate(true); // ensure perofming serialization only once
           $element->checkForModerationStillNeeded();
 
           // if we want to update only some specific part of the Json object, user currElementChangeset and below method attrChanged
-          // $this->currElementChangeset = array_keys($uow->getDocumentChangeSet($element)); 
-          $this->updateJsonRepresentation($element, $dm); 
-        }        
+          // $this->currElementChangeset = array_keys($uow->getDocumentChangeSet($element));
+          $this->updateJsonRepresentation($element, $dm);
+        }
       }
     }
   }
@@ -48,13 +48,13 @@ class ElementJsonGenerator
     $config = $this->getConfig($dm);
 
     // -------------------- FULL JSON ----------------
-    
+
     // BASIC FIELDS
     $baseJson = json_encode($element);
     $baseJson = substr($baseJson , 0, -1); // remove last '}'
-    if ($element->getAddress())   $baseJson .= ', "address":'    . $element->getAddress()->toJson();         
-    if ($element->getOpenHours()) $baseJson .= ', "openHours": ' . $element->getOpenHours()->toJson(); 
-    
+    if ($element->getAddress())   $baseJson .= ', "address":'    . $element->getAddress()->toJson();
+    if ($element->getOpenHours()) $baseJson .= ', "openHours": ' . $element->getOpenHours()->toJson();
+
     // CREATED AT, UPDATED AT
     $baseJson .= ', "createdAt":"'    . date_format($element->getCreatedAt(),"d/m/Y à H:i") . '"';
     $updatedAt = $element->getUpdatedAt() ? $element->getUpdatedAt() : $element->getCreatedAt();
@@ -67,17 +67,17 @@ class ElementJsonGenerator
     // Options values ids
     $baseJson .= ', "categories": [';
     if ($sortedOptionsValues)
-    {            
-        for ($i=0; $i < $optValuesLength; $i++) { 
+    {
+        for ($i=0; $i < $optValuesLength; $i++) {
             $baseJson .= $sortedOptionsValues[$i]->getOptionId() . ',';
         }
     }
     $baseJson = rtrim($baseJson, ',');
     $baseJson .= '],';
-    // Options values with descriptionO      
+    // Options values with descriptionO
     $optionDescriptionsJson = [];
     if ($sortedOptionsValues)
-    {            
+    {
         for ($i=0; $i < $optValuesLength; $i++) {
             if ($sortedOptionsValues[$i]->getDescription()) $optionDescriptionsJson[] =  $sortedOptionsValues[$i]->toJson();
         }
@@ -89,11 +89,11 @@ class ElementJsonGenerator
         foreach ($element->getData() as $key => $value) {
             $baseJson .= '"'. $key .'": ' . json_encode($value) . ',';
         }
-    
+
     // SPECIFIC DATA
     $baseJson .= $this->encodeArrayObjectToJson("stamps", $element->getStamps());
     $baseJson .= $this->encodeArrayObjectToJson("images", $element->getImages());
-    $baseJson = rtrim($baseJson, ',');         
+    $baseJson = rtrim($baseJson, ',');
 
     // MODIFIED ELEMENT (for pending modification)
     if ($element->getModifiedElement()) {
@@ -105,9 +105,9 @@ class ElementJsonGenerator
 
 
     // -------------------- PRIVATE JSON -------------------------
-    $privateJson = '{';        
+    $privateJson = '{';
     // status
-    $privateJson .= '"status": ' . $element->getStatus() . ',';
+    $privateJson .= '"status": ' . strval($element->getStatus()) . ',';
     $privateJson .= '"moderationState": ' . $element->getModerationState() . ',';
     // CUSTOM PRIVATE DATA
     foreach ($element->getPrivateData() as $key => $value) {
@@ -143,7 +143,7 @@ class ElementJsonGenerator
     $compactJson.= $element->getGeo()->getLatitude() .','. $element->getGeo()->getLongitude() .', [';
     if ($sortedOptionsValues)
     {
-        for ($i=0; $i < $optValuesLength; $i++) { 
+        for ($i=0; $i < $optValuesLength; $i++) {
             $value = $sortedOptionsValues[$i];
             $compactJson .= $value->getOptionId();
             $compactJson .= ',';
@@ -151,7 +151,7 @@ class ElementJsonGenerator
         $compactJson = rtrim($compactJson, ',');
     }
     $compactJson .= ']';
-    if ($element->getStatus() <= 0 || $element->getModerationState() != 0) $compactJson .= ','. $element->getStatus();
+    if ($element->getStatus() <= 0 || $element->getModerationState() != 0) $compactJson .= ','. strval($element->getStatus());
     if ($element->getModerationState() != 0) $compactJson .= ','. $element->getModerationState();
     $compactJson .= ']';
     $element->setCompactJson($compactJson);
