@@ -9,7 +9,7 @@
  * @license    MIT License
  * @Last Modified time: 2018-06-17 16:46:33
  */
- 
+
 
 namespace Biopen\GeoDirectoryBundle\Repository;
 use Doctrine\ODM\MongoDB\DocumentRepository;
@@ -28,22 +28,22 @@ class ElementRepository extends DocumentRepository
   {
     $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 
-    // convert kilometre in degrees    
+    // convert kilometre in degrees
     $radius = $distance / 110;
     $status = $includeDeleted ? ElementStatus::Duplicate : ElementStatus::PendingModification;
 
-    $qb->addOr($qb->expr()->text($element->getName()));
-    if ($element->getEmail()) $qb->addOr($qb->expr()->field('email')->equals($element->getEmail()));  
+    $qb->addOr($qb->expr()->text($element->getName())->language('fr'));
+    if ($element->getEmail()) $qb->addOr($qb->expr()->field('email')->equals($element->getEmail()));
 
-    $qb->limit($maxResults) 
+    $qb->limit($maxResults)
        ->field('status')->gt($status)
-       ->field('geo')->withinCenter((float) $element->getGeo()->getLatitude(), (float) $element->getGeo()->getLongitude(), $radius); 
+       ->field('geo')->withinCenter((float) $element->getGeo()->getLatitude(), (float) $element->getGeo()->getLongitude(), $radius);
 
     if ($element->getId()) $qb->field('id')->notIn($element->getNonDuplicatesIds());
-    if (!$includeDeleted) $qb->field('moderationState')->notEqual(ModerationState::PotentialDuplicate);   
-    
+    if (!$includeDeleted) $qb->field('moderationState')->notEqual(ModerationState::PotentialDuplicate);
+
     return $qb->sortMeta('score', 'textScore')
-              ->hydrate($hydrate)->getQuery()->execute()->toArray();    
+              ->hydrate($hydrate)->getQuery()->execute()->toArray();
   }
 
   public function findWhithinBoxes($bounds, $request, $getFullRepresentation, $isAdmin = false)
@@ -51,18 +51,18 @@ class ElementRepository extends DocumentRepository
     $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 
     $status = ($request->get('pendings') === "false") ? ElementStatus::AdminValidate : ElementStatus::PendingModification;
-    $this->filterVisibles($qb, $status);    
+    $this->filterVisibles($qb, $status);
 
     // get elements within box
-    foreach ($bounds as $key => $bound) 
-      if (count($bound) == 4)        
+    foreach ($bounds as $key => $bound)
+      if (count($bound) == 4)
         $qb->addOr($qb->expr()->field('geo')->withinBox((float) $bound[1], (float) $bound[0], (float) $bound[3], (float) $bound[2]));
-    
+
     if ($request) $this->filterWithRequest($qb, $request);
     $this->selectJson($qb, $getFullRepresentation, $isAdmin);
 
-    // execute request   
-    $results = $this->queryToArray($qb); 
+    // execute request
+    $results = $this->queryToArray($qb);
 
     return $results;
   }
@@ -84,12 +84,12 @@ class ElementRepository extends DocumentRepository
     $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 
     $qb->text($text)->sortMeta('score', 'textScore');
-    
+
     $this->filterVisibles($qb);
 
     $this->selectJson($qb, $fullRepresentation, $isAdmin);
-                
-    return $this->queryToArray($qb);    
+
+    return $this->queryToArray($qb);
   }
 
   public function findPendings($getCount = false)
@@ -98,7 +98,7 @@ class ElementRepository extends DocumentRepository
 
     $qb->field('status')->in(array(ElementStatus::PendingAdd,ElementStatus::PendingModification));
     if ($getCount) $qb->count();
-    
+
     return $qb->getQuery()->execute();
   }
 
@@ -141,18 +141,18 @@ class ElementRepository extends DocumentRepository
     $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 
     $qb = $this->filterVisibles($qb);
-    $qb->field('moderationState')->equals(ModerationState::NotNeeded); 
+    $qb->field('moderationState')->equals(ModerationState::NotNeeded);
 
     if ($request) $this->filterWithRequest($qb, $request);
-    $this->selectJson($qb, $getFullRepresentation, $isAdmin);  
-    
+    $this->selectJson($qb, $getFullRepresentation, $isAdmin);
+
     return $this->queryToArray($qb);
-  }  
+  }
 
   public function findAllElements($limit = null, $skip = null, $getCount = false)
   {
     $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
-    
+
     if ($limit) $qb->limit($limit);
     if ($skip) $qb->skip($skip);
     if ($getCount) $qb->count();
@@ -167,16 +167,16 @@ class ElementRepository extends DocumentRepository
 
   private function filterWithRequest($qb, $request)
   {
-    $categoriesIds = $request->get('categories');    
+    $categoriesIds = $request->get('categories');
     if ($categoriesIds) {
       if (!is_array($categoriesIds)) $categoriesIds = explode(',' , $categoriesIds);
       $categoriesIds = array_map(function($el) { return (float) $el; }, $categoriesIds);
       $qb->field('optionValues.optionId')->in($categoriesIds);
     }
 
-    if ($request->get('excludeExternal')) $qb->field('status')->notEqual(ElementStatus::DynamicImport); 
+    if ($request->get('excludeExternal')) $qb->field('status')->notEqual(ElementStatus::DynamicImport);
 
-    $stampsIds = $request->get('stampsIds');    
+    $stampsIds = $request->get('stampsIds');
     if ($stampsIds) {
       if (!is_array($stampsIds)) $stampsIds = explode(',' , $stampsIds);
       $qb->field('stamps.id')->in($stampsIds);
@@ -198,21 +198,21 @@ class ElementRepository extends DocumentRepository
   private function selectJson($qb, $getFullRepresentation, $isAdmin)
   {
     // get json representation
-    if ($getFullRepresentation == 'true') 
+    if ($getFullRepresentation == 'true')
     {
       $qb->select(['baseJson', 'privateJson']);
       if ($isAdmin) $qb->select('adminJson');
     }
     else
     {
-      $qb->select('compactJson');   
-    } 
+      $qb->select('compactJson');
+    }
   }
 
   public function findElementsOwnedBy($userEmail)
   {
     $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
-    
+
     $qb->field('userOwnerEmail')->equals($userEmail);
     $qb->field('status')->notEqual(ElementStatus::ModifiedPendingVersion);
     $qb->sort('updatedAt', 'DESC');
@@ -277,15 +277,15 @@ class ElementRepository extends DocumentRepository
 
   public function findAllCustomProperties($onlyPublic = false)
   {
-    $dataProperties = $onlyPublic ? $this->findPublicCustomProperties() : $this->findDataCustomProperties();        
+    $dataProperties = $onlyPublic ? $this->findPublicCustomProperties() : $this->findDataCustomProperties();
     $allProperties = [];
     foreach ($dataProperties as $prop) {
         $allProperties[$prop] = $prop;
     }
 
-    $config = $this->getDocumentManager()->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();          
+    $config = $this->getDocumentManager()->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
     foreach ($config->getElementFormFields() as $key => $field) {
-      if (property_exists($field, 'name') && !in_array($field->type, ['separator', 'address', 'title', 'email', 'taxonomy', 'openhours', 'header'])) 
+      if (property_exists($field, 'name') && !in_array($field->type, ['separator', 'address', 'title', 'email', 'taxonomy', 'openhours', 'header']))
         $allProperties[$field->name] = $field->name;
     }
     return $allProperties;
@@ -303,13 +303,13 @@ class ElementRepository extends DocumentRepository
           ->field('count')
           ->sum(1)
       ;
-    $queryResult = $builder->execute(); 
+    $queryResult = $builder->execute();
     $result = [];
     foreach ($queryResult as $key => $value) {
       $result[$value['_id']['$id']] = $value['count'];
     }
     return $result;
-  }  
+  }
 }
 
 
