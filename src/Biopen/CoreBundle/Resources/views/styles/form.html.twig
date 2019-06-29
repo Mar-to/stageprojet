@@ -1,7 +1,7 @@
 <style>
   {# Main #}
-  #element-form-title { background-color: {{ contentBgd }}; }  
-  .gogo-load-css #page-content.element-form section { background-color: {{ contentBgd }}; }  
+  #element-form-title { background-color: {{ contentBgd }}; }
+  .gogo-load-css #page-content.element-form section { background-color: {{ contentBgd }}; }
 
   {# Taxonomy field #}
   .gogo-load-css .option-field .option-field-delete i:hover { color: {{ primary }} !important; }
@@ -30,12 +30,12 @@
     border: 2px solid {{ primary }};
     background-color: {{ primary }};
   }
-  .gogo-load-css .main-options-container label.main-option-radio-label:before 
+  .gogo-load-css .main-options-container label.main-option-radio-label:before
   {
     border: 2px solid {{ textSoft }};
-  }  
+  }
 
-  {# Input #}  
+  {# Input #}
   .gogo-load-css input:focus:not(.invalid):not([readonly]):not([type=submit]), .gogo-load-css textarea:focus:not(.invalid):not([readonly]) {
     border-color: {{ textSoft }} !important;
     box-shadow: 0 1px 0 0 {{ textSoft }} !important;
@@ -49,14 +49,16 @@
     box-shadow: none !important;
   }
 
+  .gogo-load-css [type=radio]:not(:checked)+label:before { border-color: {{ disable }}; }
+
   {% set placeholderFocusColor = disable ~ '!important' %}
   .gogo-load-css input::-webkit-input-placeholder { color: {{ placeholderFocusColor }}; }
   .gogo-load-css input::-moz-placeholder { color: {{ placeholderFocusColor }}; }
   .gogo-load-css input:-ms-input-placeholder { color: {{ placeholderFocusColor }}; }
   .gogo-load-css input:-moz-placeholder { color: {{ placeholderFocusColor }}; }
 
-  {# Input Label #}  
-  .gogo-load-css #page-content.element-form label { color: {{ textSoft }}; } 
+  {# Input Label #}
+  .gogo-load-css #page-content.element-form label { color: {{ textSoft }}; }
   .gogo-load-css label.gogo-form-label { color: {{ disable }} !important }
   .gogo-load-css input:focus:not(.invalid) + label.gogo-form-label, .gogo-load-css textarea:focus:not(.invalid) + label.gogo-form-label { color: {{ text }} !important; }
   .gogo-load-css input.invalid + label.gogo-form-label, .gogo-load-css textarea.invalid + label.gogo-form-label { color: {{ error }} !important; }
@@ -66,10 +68,10 @@
 
   .gogo-load-css label.gogo-form-label.active {
     color: {{ textSoft }} !important;
-  }  
+  }
 
-  {# Input Icon #}  
-  .gogo-load-css .input-field i.prefix { color: {{ disable }}; }    
+  {# Input Icon #}
+  .gogo-load-css .input-field i.prefix { color: {{ disable }}; }
   .gogo-load-css .input-field i.prefix.active { color: {{ text }}; }
   .gogo-load-css .input-field i.prefix.valid { color: {{ textSoft }}; }
   .gogo-load-css .input-field i.prefix.invalid { color: {{ error }}; }
@@ -113,8 +115,8 @@
   .gogo-load-css .open-hours-container.impair { background-color: {{ contentBgdSoft }}; }
 
   {# Error #}
-  label .error, .input-field.error .prefix, 
-  .gogo-load-css #input-address-field.error:after, #input-address-field.error #input-address:after, h1.error, h2.error, label.error 
+  label .error, .input-field.error .prefix,
+  .gogo-load-css #input-address-field.error:after, #input-address-field.error #input-address:after, h1.error, h2.error, label.error
    { color: {{ error }} !important; }
    .mandatory-asterisk:after { color: {{ secondary }}; }
   .input-field.error.select-input.invalid-required input {

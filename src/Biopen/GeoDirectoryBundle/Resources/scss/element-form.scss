@@ -3,15 +3,15 @@
 @import 'vendors/timepicki';
 @import 'vendors/bootstrap-datepicker3';
 
-.gogo-load-css 
+.gogo-load-css
 {
   @import "components/element-form/category-field";
 
   label { color: inherit; }
 
-  label.gogo-form-label { 
+  label.gogo-form-label {
 
-    &.active { 
+    &.active {
       font-weight: bold;
       .more { display: none; }
     }
@@ -43,7 +43,7 @@
   }
   .mandatory-asterisk:after {
     content: "*";
-    margin-left: 5px;    
+    margin-left: 5px;
     position: absolute;
     top: 1px;
     font-size: .9rem;
@@ -57,17 +57,36 @@
     margin-left: 3rem;
     width: calc(100% - 3rem);
   }
-  
+
+  .field-checkbox-group, .field-checkbox-group { margin-top: 10px; }
   .checkbox-radio-group {
     margin-bottom: 25px;
     .checkbox-radio-group-label { font-weight: bold; font-size: .9rem; position: relative; }
     .label-container { margin-bottom: 15px; }
-    
+
+    .checkbox-container {
+      label { padding-left: 42px; }
+      label:after, label:before { left: 2px; }
+    }
+
     &.invalid-required {
       label .error { display: inline-block; }
     }
-  }  
-  .checkbox-container { margin-bottom: 10px; }
+  }
+  .checkbox-container {
+    margin-bottom: 10px;
+    margin-top: 15px;
+
+    [type=checkbox]+label:before {
+      top: 1px;
+      left: 5px;
+    }
+    [type=checkbox]:checked+label:before {
+      left: 2px;
+      top: -4px;
+    }
+
+  }
 
   .character-counter { margin-top: -10px; }
   textarea ~ .character-counter { margin-top: -15px; }
@@ -133,7 +152,7 @@
       font-size: .8rem;
       font-style: normal;
     }
-  }    
+  }
 
   @media #{$small-only} {
     h2 { text-align: left}
@@ -180,7 +199,7 @@
     margin-bottom: .5rem;
     font-style: italic;
     text-align: center;
-  }      
+  }
 
   // ---------------------------------------
   //             MAP
@@ -226,7 +245,7 @@
 
   .btn-geolocalize, .btn-geolocalize-help
   {
-    margin-top: .5rem;  
+    margin-top: .5rem;
     @media screen and (min-width: 600px) { float: right; width: auto; margin-top: 1rem;  }
     width: 60%;
     font-size: .9rem;
@@ -237,8 +256,8 @@
 
   .btn-geolocalize-help {
     margin-right: 5px;
-    @media screen and (max-width: 600px){ 
-      width: calc(39% - 15px); 
+    @media screen and (max-width: 600px){
+      width: calc(39% - 15px);
       margin-right: 0;
       margin-left: 10px;
     }
@@ -276,7 +295,7 @@
     }
   }
 
-  #section_vos_infos 
+  #section_vos_infos
   {
     margin-bottom: 0;
   }
@@ -305,7 +324,7 @@
   .second-line-slot {
       display: none !important;
       @include transition(all 1s);
-      opacity: 0; 
+      opacity: 0;
       height: 0;
   }
 
@@ -349,7 +368,7 @@
   .redo-time-slot-button { line-height: 3rem; }
 }
 
-    
+
 
 
 
