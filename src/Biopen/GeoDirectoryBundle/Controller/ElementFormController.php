@@ -143,7 +143,7 @@ class ElementFormController extends GoGoController
 											  || (!$editMode && in_array('ROLE_DIRECTMODERATION_ADD', $userRoles))
 											  || ($editMode && in_array('ROLE_DIRECTMODERATION_EDIT_OWN_CONTRIB', $userRoles) && $element->hasValidContributionMadeBy($userEmail))
 											  || $isUserOwnerOfValidElement
-											  || $isEditingWithHash;
+											  || ($isEditingWithHash && $element->getStatus() > ElementStatus::PendingAdd);
 
 		$editingOwnPendingContrib = $element->isPending() && $element->getCurrContribution() && $element->getCurrContribution()->getUserEmail() == $userEmail;
 
