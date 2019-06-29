@@ -22,12 +22,15 @@ class ConfigurationMarker
     /** @MongoDB\Field(type="hash") */
     public $fieldsUsedByTemplate = ['name'];
 
+    /** @MongoDB\Field(type="bool") */
+    public $useClusters = true;
+
     // Those fields we be used in element compact Json
     public function updateFieldsUsedByTemplate()
     {
         $matches = [];
         preg_match_all('/({{\s*[\w_|]*\s*}})/',$this->popupTemplate, $matches);
-        $newFields = array_map(function($match) { 
+        $newFields = array_map(function($match) {
             $fieldName = explode('|', preg_replace('/[{}\s]/', '', $match))[0];
             if ($fieldName == "image") $fieldName = "images";
             return $fieldName;
@@ -37,7 +40,7 @@ class ConfigurationMarker
         // if new fields different from old fields (order si not important)
         if (count(array_diff(array_merge($newFields, $oldFields), array_intersect($newFields, $oldFields))) != 0) {
             $this->setFieldsUsedByTemplate($newFields);
-        }        
+        }
     }
 
     /**
@@ -93,7 +96,7 @@ class ConfigurationMarker
     public function setPopupTemplate($popupTemplate)
     {
         $this->popupTemplate = $popupTemplate;
-        $this->updateFieldsUsedByTemplate();        
+        $this->updateFieldsUsedByTemplate();
         return $this;
     }
 
@@ -149,5 +152,27 @@ class ConfigurationMarker
     public function getFieldsUsedByTemplate()
     {
         return $this->displayPopup ? $this->fieldsUsedByTemplate : [];
+    }
+
+    /**
+     * Set useClusters
+     *
+     * @param bool $useClusters
+     * @return $this
+     */
+    public function setUseClusters($useClusters)
+    {
+        $this->useClusters = $useClusters;
+        return $this;
+    }
+
+    /**
+     * Get useClusters
+     *
+     * @return bool $useClusters
+     */
+    public function getUseClusters()
+    {
+        return $this->useClusters;
     }
 }

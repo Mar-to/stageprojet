@@ -1,7 +1,7 @@
 <?php
 
 namespace Biopen\GeoDirectoryBundle\Services;
- 
+
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Security\Core\SecurityContext;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -17,19 +17,19 @@ class GoGoCartoJsService
     $this->base_protocol = $base_protocol;
   }
 
-  public function getConfig() 
+  public function getConfig()
   {
     $taxonomyRep = $this->odm->getRepository('BiopenGeoDirectoryBundle:Taxonomy');
     $elementsRep = $this->odm->getRepository('BiopenGeoDirectoryBundle:Element');
 
     $tileLayers = $this->odm->getRepository('BiopenCoreBundle:TileLayer')->findAll();
-    
+
     $taxonomyJson = $taxonomyRep->findTaxonomyJson();
 
     $config = $this->odm->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
 
     $user = $this->securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED') ? $this->securityContext->getToken()->getUser() : null;
-    
+
     $roles = $user ? $user->getRoles() : [];
     $userGogocartoRole = in_array('ROLE_ADMIN', $roles) ? 'admin' : (in_array('ROLE_USER', $roles) ? 'user' : 'anonymous');
     $userGogocartoRole = [$userGogocartoRole];
@@ -45,13 +45,13 @@ class GoGoCartoJsService
             foreach ($result as $obj) $elementIds[] = $obj['_id'];
             $stamp->setElementIds($elementIds);
         }
-    }     
+    }
 
     return [
       "security" =>
       [
           "userRoles" => $userGogocartoRole,
-          "userEmail" => $userEmail ,                
+          "userEmail" => $userEmail ,
           "loginAction" => '$("#popup-login").openModal();'
       ],
       "text" =>
@@ -91,6 +91,7 @@ class GoGoCartoJsService
           "tileLayers"  => $tileLayers  ,
           "saveViewportInCookies" => $config->getSaveViewportInCookies()  ,
           "saveTileLayerInCookies" => $config->getSaveTileLayerInCookies()  ,
+          "useClusters" => $config->getMarker()->getUseClusters()
       ],
       "marker" =>
       [
@@ -103,36 +104,36 @@ class GoGoCartoJsService
       ],
       "theme" => $config->getTheme(),
       "colors" =>
-      [               
+      [
           "text" => $config->getTextColor() ,
           "primary" => $config->getPrimaryColor() ,
 
           // Optional colors
           "secondary" => $config->getDefaultSecondaryColor() ,
-          "background" => $config->getDefaultBackgroundColor() ,    
+          "background" => $config->getDefaultBackgroundColor() ,
           "searchBar" => $config->getDefaultSearchBarColor() ,
           "disabled" => $config->getDefaultDisableColor(),
           "pending" => $config->getDefaultPendingColor() ,
           "contentBackground" => $config->getDefaultContentBackgroundColor() ,
           "textDark" => $config->getDefaultTextDarkColor() ,
           "textDarkSoft" => $config->getDefaultTextDarkSoftColor() ,
-          "textLight" => $config->getDefaultTextLightColor() ,   
-          "textLightSoft" => $config->getDefaultTextLightSoftColor() ,       
+          "textLight" => $config->getDefaultTextLightColor() ,
+          "textLightSoft" => $config->getDefaultTextLightSoftColor() ,
           "interactiveSection" => $config->getDefaultInteractiveSectionColor(),
           "contentBackgroundElementBody" => $config->getDefaultContentBackgroundElementBodyColor(), // by default calculated from contentBackground
 
           // Non implemented colors
           // infoBarHeader => undefined, // by default auto colored with main option color, except for transiscope theme
           // infoBarMenu => undefined,   // by default auto colored with main option color, except for transiscope theme
-          
-          
+
+
           // menuOptionHover => undefined, // by default calculated from contentBackground
           // lineBorder => undefined, // by default calculated from contentBackground
-          
+
           // mapControlsBgd => undefined,
-          // mapControls => undefined,  
+          // mapControls => undefined,
           // mapListBtn => undefined,
-          
+
       ],
       "fonts" => [
           "mainFont" => $config->getMainFont() ,
@@ -140,13 +141,13 @@ class GoGoCartoJsService
       ],
       "images" =>
       [
-          "buttonOpenMenu" =>  $config->getFavicon() ? $config->getFavicon()->getImageUrl() : ($config->getLogo() ? $config->getLogo()->getImageUrl() : null)   
+          "buttonOpenMenu" =>  $config->getFavicon() ? $config->getFavicon()->getImageUrl() : ($config->getLogo() ? $config->getLogo()->getImageUrl() : null)
       ],
       "features" =>
       [
           "listMode" => $this->getConfigFrom($config->getListModeFeature()) ,
           "searchPlace" => $this->getConfigFrom($config->getSearchPlaceFeature()) ,
-          "searchElements" => $this->getConfigFrom($config->getSearchElementsFeature(), 'biopen_api_elements_from_text') ,  
+          "searchElements" => $this->getConfigFrom($config->getSearchElementsFeature(), 'biopen_api_elements_from_text') ,
           "searchGeolocate" => $this->getConfigFrom($config->getSearchGeolocateFeature()) ,
           "share" =>    $this->getConfigFrom($config->getShareFeature()) ,
           "report" =>   $this->getConfigFrom($config->getReportFeature(), 'biopen_report_error_for_element') ,
@@ -158,34 +159,34 @@ class GoGoCartoJsService
           "elementHistory" => $this->getConfigFrom($config->getDirectModerationFeature()) ,
           "directions" => $this->getConfigFrom($config->getDirectionsFeature()) ,
           "layers" => $this->getConfigFrom($config->getLayersFeature()) ,
-          "mapdefaultview" => $this->getConfigFrom($config->getMapDefaultViewFeature()) ,          
+          "mapdefaultview" => $this->getConfigFrom($config->getMapDefaultViewFeature()) ,
 
           // overwrite roles so even if edit is just allowed to user or admin, an anonymous will see
           // the edit button in the element info menu
           "edit" =>     $this->getConfigFrom(
-                          $config->getEditFeature(), 
+                          $config->getEditFeature(),
                           'biopen_element_edit',
                           $config->getEditFeature()->isOnlyAllowedForAdmin() ? [] : ["roles" => ['anonymous', 'user', 'admin']]
                      ) ,
           "delete" =>   $this->getConfigFrom($config->getDeleteFeature(), 'biopen_delete_element') ,
 
-          "vote" =>     $this->getConfigFrom($config->getCollaborativeModerationFeature(), 'biopen_vote_for_element') , 
-          "sendMail" => $this->getConfigFrom($config->getSendMailFeature(), 'biopen_element_send_mail') , 
+          "vote" =>     $this->getConfigFrom($config->getCollaborativeModerationFeature(), 'biopen_vote_for_element') ,
+          "sendMail" => $this->getConfigFrom($config->getSendMailFeature(), 'biopen_element_send_mail') ,
           "stamp" => $this->getConfigFrom(
-                  $config->getStampFeature(), 
+                  $config->getStampFeature(),
                   'biopen_element_stamp',
-                  [ "options" => [ "allowedStamps" => $allowedStamps ] ] 
-              ) ,  
+                  [ "options" => [ "allowedStamps" => $allowedStamps ] ]
+              ) ,
           "customPopup" => $this->getConfigFrom(
-                  $config->getCustomPopupFeature(), 
+                  $config->getCustomPopupFeature(),
                   null,
-                  [ "options" => [ 
+                  [ "options" => [
                       "text" => $config->getCustomPopupText(),
                       "showOnlyOnce" => $config->getCustomPopupShowOnlyOnce(),
                       "id" => $config->getCustomPopupId()
-                  ] ] 
-              ),          
-      ],  
+                  ] ]
+              ),
+      ],
       "data" =>
       [
           "taxonomy" => json_decode($taxonomyJson),
@@ -196,12 +197,12 @@ class GoGoCartoJsService
   }
 
   private function getConfigFrom($feature, $route = null, $overwrite = [])
-  { 
+  {
     if (!$feature) return null;
     $result = [];
     $result['active'] = array_key_exists('active', $overwrite) ? $overwrite['active'] : $feature->getActive();
     $result['inIframe'] = $feature->getActiveInIframe();
-    
+
     if ($route == 'biopen_element_edit')
       $url = str_replace('fake', '', $this->getAbsolutePath('biopen_element_edit', ['id'=>'fake']));
     elseif ($route)
@@ -212,11 +213,11 @@ class GoGoCartoJsService
 
     $result['roles'] = array_key_exists('roles', $overwrite) ? $overwrite['roles'] : $feature->getAllowedRoles();
     if (array_key_exists('options', $overwrite)) $result['options'] = $overwrite['options'];
-    
+
     return $result;
   }
 
-  private function getAbsolutePath($route, $params = []) 
+  private function getAbsolutePath($route, $params = [])
   {
     return $this->base_protocol . ':' . $this->router->generate($route, $params, UrlGeneratorInterface::NETWORK_PATH);
   }
