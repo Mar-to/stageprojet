@@ -80,7 +80,11 @@ class ElementImportService
 
 		// Getting php array of data from CSV
 		$data = $this->converter->convert($fileName, ',');
-		if (!$data) return "Cannot open the CSV file";
+		if (!$data) {
+			$import->setCurrMessage("Impossible d'ouvrir le fichier CSV. Vérifiez que le fichier utilise des virgules comme séparateur");
+			$this->em->flush();
+			return "Cannot open the CSV file";
+		}
 
 		return $this->importData($data, $import);
   }
