@@ -2,6 +2,7 @@
 
 namespace Biopen\GeoDirectoryBundle\Controller\Admin;
 use Biopen\GeoDirectoryBundle\Document\UserInteraction;
+use Biopen\GeoDirectoryBundle\Document\UserInteractionContribution;
 use Sonata\AdminBundle\Controller\CRUDController as Controller;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -14,12 +15,12 @@ use Biopen\GeoDirectoryBundle\Document\ModerationState;
 
 abstract class InteractType
 {
-    const Deleted = -1;   
+    const Deleted = -1;
     const Add = 0;
     const Edit = 1;
-    const Import = 4; 
-    const Restored = 5;  
-    const ModerationResolved = 6;   
+    const Import = 4;
+    const Restored = 5;
+    const ModerationResolved = 6;
 }
 
 class ElementAdminBulkController extends Controller
@@ -57,17 +58,17 @@ class ElementAdminBulkController extends Controller
 
         $selectedModels = $selectedModelQuery->execute();
         $nbreModelsToProceed = $selectedModels->count();
-        $isBulk = $nbreModelsToProceed > 2; // treat as bulk only if upper than X element to proceed  
+        $isBulk = $nbreModelsToProceed > 2; // treat as bulk only if upper than X element to proceed
 
-        $sendMail = !($request->has('dont-send-mail-' . $actionName) && $request->get('dont-send-mail-' . $actionName));            
+        $sendMail = !($request->has('dont-send-mail-' . $actionName) && $request->get('dont-send-mail-' . $actionName));
         $comment = $request->get('comment-' . $actionName);
         $dm = $modelManager->getDocumentManager($selectedModels->getNext());
         if ($sendMail) $mailService = $this->container->get('biopen.mail_service');
 
-        try { 
+        try {
             // BULK - PROCEED ALL ELEMENTS AT ONCE
-            if ($isBulk && in_array($actionName, ['softDelete', 'restore', 'resolveReports'])) 
-            {                
+            if ($isBulk && in_array($actionName, ['softDelete', 'restore', 'resolveReports']))
+            {
                 $interactionService = $this->container->get('biopen.user_interaction_service');
 
                 // SEND EMAIL - ITERATE EACH ELEMENT WITHOUT DB OPERATIONS
@@ -77,7 +78,7 @@ class ElementAdminBulkController extends Controller
                         if ($sendMail && isset($mappingType[$actionName])) $mailService->sendAutomatedMail($mappingType[$actionName], $element, $comment);
                         if ($actionName == 'resolveReports') {
                             foreach($element->getUnresolvedReports() as $report) $mailService->sendAutomatedMail('report', $element, $comment, $report);
-                        }                    
+                        }
                         $element->setPreventJsonUpdate(true);
                     }
                 }
@@ -85,26 +86,26 @@ class ElementAdminBulkController extends Controller
                     $this->addFlash('sonata_flash_error', "Les emails n'ont pas été envoyés, trop d'éléments à traiter d'un coup");
 
                 // CREATE CONTRIBUTION
-                $contrib = null; 
+                $contrib = null;
                 switch ($actionName) {
                     case 'softDelete': $contrib = $interactionService->createContribution($comment, InteractType::Deleted, ElementStatus::Deleted); break;
                     case 'restore': $contrib = $interactionService->createContribution($comment, InteractType::Restored, ElementStatus::AddedByAdmin);  break;
                     case 'resolveReports': $contrib = $interactionService->createContribution($comment, InteractType::ModerationResolved, ElementStatus::AdminValidate); break;
-                }    
-                
-                // Clear previous interaction with same type pending to be dispatched (prevent dispatching multiple edit event)                   
+                }
+
+                // Clear previous interaction with same type pending to be dispatched (prevent dispatching multiple edit event)
                 $query = $dm->createQueryBuilder('BiopenGeoDirectoryBundle:UserInteractionContribution')
                    ->updateMany()
                    ->field('type')->equals($contrib->getType())
                    ->field('elements.id')->in($elementIds)
                    ->field('webhookPosts')->unsetField()->exists(true)
                    ->getQuery()->execute();
-                
+
                 $contrib->setElementIds($elementIds);
-                $dm->persist($contrib);    
+                $dm->persist($contrib);
 
                 // UPDATE EACH ELEMENT AT ONCE
-                $mappingStatus = array('softDelete' => ElementStatus::Deleted, 'restore' => ElementStatus::AddedByAdmin);                    
+                $mappingStatus = array('softDelete' => ElementStatus::Deleted, 'restore' => ElementStatus::AddedByAdmin);
                 $qb = $selectedModelQuery->updateMany()
                     ->field('updatedAt')->set(new \DateTime());
                 // Push contribution
@@ -112,9 +113,9 @@ class ElementAdminBulkController extends Controller
                 // Update status
                 if (isset($mappingStatus[$actionName])) $qb = $qb->field('status')->set($mappingStatus[$actionName]);
                 // Reset Moderation
-                if ($actionName == 'resolveReports') $qb = $qb->field('moderationState')->set(ModerationState::NotNeeded);  
-                
-                $qb->getQuery()->execute(); 
+                if ($actionName == 'resolveReports') $qb = $qb->field('moderationState')->set(ModerationState::NotNeeded);
+
+                $qb->getQuery()->execute();
 
                 // BATCH RESOLVE REPORTS
                 if ($actionName == 'resolveReports')
@@ -128,19 +129,19 @@ class ElementAdminBulkController extends Controller
                        ->field('resolvedBy')->set($this->container->get('security.context')->getToken()->getUser()->getEmail())
                        ->field('updatedAt')->set(new \DateTime())
                        ->getQuery()->execute();
-                }   
+                }
 
-                $dm->flush(); 
-               
+                $dm->flush();
+
                 // update element json asyncronously
                 $this->container->get('biopen.async')->callCommand('app:elements:updateJson', ["ids" => $elementIdsString]);
             }
             // PROCEED EACH ELEMENT ONE BY ONE
-            else 
-            {           
+            else
+            {
                 $elementActionService = $this->container->get('biopen.element_action_service');
                 $i = 0;
-                foreach ($selectedModels as $selectedModel) 
+                foreach ($selectedModels as $selectedModel)
                 {
                     switch ($actionName) {
                         case 'softDelete': $elementActionService->delete($selectedModel, $sendMail, $comment); break;
@@ -148,8 +149,8 @@ class ElementAdminBulkController extends Controller
                         case 'resolveReports': $elementActionService->resolveReports($selectedModel, $comment, true); break;
                         case 'validation': $elementActionService->resolve($selectedModel, true, 2, $comment); break;
                         case 'refusal': $elementActionService->resolve($selectedModel, false, 2, $comment); break;
-                    }               
-                    
+                    }
+
                     if ((++$i % 100) == 0) {
                         $dm->flush();
                         $dm->clear();
@@ -162,8 +163,8 @@ class ElementAdminBulkController extends Controller
         } catch (\Exception $e) {
             $this->addFlash('sonata_flash_error', 'Une erreur est survenue :' . $e->getMessage());
             return new RedirectResponse($this->admin->generateUrl('list', array('filter' => $this->admin->getFilterParameters())));
-        }      
-        
+        }
+
         $this->addFlash('sonata_flash_success', 'Les '. $nbreModelsToProceed .' élements ont bien été traités');
         // if ($nbreModelsToProceed >= $limit) $this->addFlash('sonata_flash_info', "Trop d'éléments à traiter ! Seulement " . $limit . " ont été traités");
 
@@ -172,22 +173,22 @@ class ElementAdminBulkController extends Controller
 
     // BATCH HARD DELETE
     public function batchActionDelete(ProxyQueryInterface $selectedModelQuery)
-    {       
-        $em = $this->get('doctrine_mongodb')->getManager();       
-        
+    {
+        $em = $this->get('doctrine_mongodb')->getManager();
+
         // Add contributions - Get elements visible, no need to add a contirbution if element where already soft deleted for example
         $elementIds = array_keys($selectedModelQuery->select('id')->field('status')->gte(-1)->hydrate(false)->getQuery()->execute()->toArray());
         if (count($elementIds)) {
             $interactionService = $this->container->get('biopen.user_interaction_service');
             $contribution = $interactionService->createContribution(null, InteractType::Deleted, ElementStatus::Deleted);
-            $contribution->setElementIds($elementIds); 
+            $contribution->setElementIds($elementIds);
             $em->persist($contribution);
         }
 
         // Add element id to ignore to sources
         $elementsIdsGroupedBySource = $selectedModelQuery
             ->map('function() { if (this.source) emit(this.source.$id, this._id); }')
-            ->reduce('function(k, vals) {            
+            ->reduce('function(k, vals) {
                 return vals.join(",");
             }')->getQuery()->execute()->toArray();
 
@@ -198,30 +199,31 @@ class ElementAdminBulkController extends Controller
                ->field('id')->equals($value['_id'])
                ->field('idsToIgnore')->addToSet($qb->expr()->each($elementIdsForCurrSource))
                ->getQuery()->execute();
-        } 
+        }
 
         // Perform remove
         $selectedModelQuery->remove()->getQuery()->execute();
+        $em->createQueryBuilder(UserInteractionContribution::class)->field('element.id')->in($elementIds)->remove()->getQuery()->execute();
         $em->flush();
-        
+
         return new RedirectResponse($this->admin->generateUrl('list', array('filter' => $this->admin->getFilterParameters())));
     }
 
     // BATCH SEND EMAILS
-    public function batchActionSendMail(ProxyQueryInterface $selectedModelQuery) 
-    {        
+    public function batchActionSendMail(ProxyQueryInterface $selectedModelQuery)
+    {
         $selectedModels = $selectedModelQuery->execute();
         $nbreModelsToProceed = $selectedModels->count();
         $selectedModels->limit(5000);
 
-        $request = $this->get('request')->request;        
+        $request = $this->get('request')->request;
 
         $mails = [];
         $mailsSent = 0;
         $elementWithoutEmail = 0;
-            
+
         try {
-            foreach ($selectedModels as $element) 
+            foreach ($selectedModels as $element)
             {
                 $mail = $request->get('send-to-element') ? $element->getEmail() : null;
                 $mailContrib = null;
@@ -231,10 +233,10 @@ class ElementAdminBulkController extends Controller
                     $mailContrib = $contrib ? $contrib->getUserEmail() : null;
                     if ($mailContrib == "no email") $mailContrib = null;
                 }
-                
+
                 if ($mail) $mails[] = $mail;
                 if ($mailContrib) $mails[] = $mailContrib;
-                if (!$mail && !$mailContrib) $elementWithoutEmail++;                
+                if (!$mail && !$mailContrib) $elementWithoutEmail++;
             }
         } catch (\Exception $e) {
             $this->addFlash('sonata_flash_error', 'ERROR : ' . $e->getMessage());
@@ -251,10 +253,10 @@ class ElementAdminBulkController extends Controller
             $result = $mailService->sendMail(null, $request->get('mail-subject'), $request->get('mail-content'), $request->get('from'), $mails);
             if ($result['success'])
                 $this->addFlash('sonata_flash_success', count($mails) . ' mails ont bien été envoyés');
-            else 
+            else
                 $this->addFlash('sonata_flash_error',$result['message']);
-        } 
-        
+        }
+
         if ($elementWithoutEmail > 0)
             $this->addFlash('sonata_flash_error', $elementWithoutEmail . " mails n'ont pas pu être envoyé car aucune adresse n'était renseignée");
 
@@ -267,7 +269,7 @@ class ElementAdminBulkController extends Controller
     }
 
     // BATCH EDIT OPTIONS
-    public function batchActionEditOptions(ProxyQueryInterface $selectedModelQuery) 
+    public function batchActionEditOptions(ProxyQueryInterface $selectedModelQuery)
     {
         $this->admin->checkAccess('edit');
 
@@ -275,22 +277,22 @@ class ElementAdminBulkController extends Controller
         $modelManager = $this->admin->getModelManager();
 
         $selectedModels = $selectedModelQuery->execute();
-        $nbreModelsToProceed = $selectedModels->count(); 
+        $nbreModelsToProceed = $selectedModels->count();
 
-        $limit = 2000;       
-        $selectedModels->limit($limit);  
+        $limit = 2000;
+        $selectedModels->limit($limit);
 
         $optionstoRemoveIds = $request->get('optionsToRemove');
         $optionstoAddIds = $request->get('optionsToAdd');
 
-        $dm = $modelManager->getDocumentManager($selectedModels->getNext());    
+        $dm = $modelManager->getDocumentManager($selectedModels->getNext());
 
         try {
             $i = 0;
             foreach ($selectedModels as $selectedModel) {
                 $optionsValues = $selectedModel->getOptionValues()->toArray();
                 if ($optionstoRemoveIds && count($optionstoRemoveIds) > 0)
-                {        
+                {
                     $optionsToRemove = $dm->createQueryBuilder('BiopenGeoDirectoryBundle:Option')->field('id')->in($optionstoRemoveIds)
                                                        ->getQuery()->execute()->toArray();
                     $optionstoRemoveIds = array_map(function($opt) { return $opt->getIdAndChildrenOptionIds(); }, $optionsToRemove);
@@ -309,7 +311,7 @@ class ElementAdminBulkController extends Controller
                     $optionstoAddIds = array_map(function($opt) { return $opt->getIdAndParentOptionIds(); }, $optionsToAdd);
                     $optionstoAddIds = array_unique($this->flatten($optionstoAddIds));
 
-                    $optionValuesIds = array_map( function($x) { return $x->getOptionId(); }, $optionsValues);          
+                    $optionValuesIds = array_map( function($x) { return $x->getOptionId(); }, $optionsValues);
 
                     foreach ($optionstoAddIds as $key => $optionId) {
                         if (!in_array($optionId, $optionValuesIds))
@@ -318,24 +320,24 @@ class ElementAdminBulkController extends Controller
                             $optionValue->setOptionId($optionId);
                             $selectedModel->addOptionValue($optionValue);
                         }
-                    }  
-                }         
-                if ((++$i % 100) == 0) { $dm->flush(); $dm->clear(); } 
+                    }
+                }
+                if ((++$i % 100) == 0) { $dm->flush(); $dm->clear(); }
             }
             $dm->flush();
             $dm->clear();
-            
+
         } catch (\Exception $e) {
             $this->addFlash('sonata_flash_error', 'Une erreur est survenue :' . $e->getMessage());
             return new RedirectResponse($this->admin->generateUrl('list', array('filter' => $this->admin->getFilterParameters())));
-        }      
-        
+        }
+
         $this->addFlash('sonata_flash_success', 'Les catégories des '. min([$nbreModelsToProceed,$limit]) .' élements ont bien été mis à jour');
         if ($nbreModelsToProceed >= $limit) $this->addFlash('sonata_flash_info', "Trop d'éléments à traiter ! Seulement " . $limit . " ont été traités");
         return new RedirectResponse( $this->admin->generateUrl('list', array('filter' => $this->admin->getFilterParameters())));
     }
 
-    private function flatten(array $array) 
+    private function flatten(array $array)
     {
         $return = array();
         array_walk_recursive($array, function($a) use (&$return) { $return[] = $a; });

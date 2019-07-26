@@ -224,11 +224,15 @@ class ElementImportService
       // after updating the source, the element still in DynamicImportTemp are the one who are missing
       // from the new data received, so we need to delete them
       $qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
-      $result = $qb->remove()
+      $deleteQuery = $qb
          ->field('source')->references($import)
-         ->field('status')->equals(ElementStatus::DynamicImportTemp)
-         ->getQuery()->execute();
-      $countElemenDeleted = $result['n'];
+         ->field('status')->equals(ElementStatus::DynamicImportTemp);
+
+      $deletedElementIds = array_keys($deleteQuery->select('id')->hydrate(false)->getQuery()->execute()->toArray());
+      $qb = $this->em->createQueryBuilder(UserInteractionContribution::class);
+      $qb->field('element.id')->in($deletedElementIds)->remove()->getQuery()->execute();
+
+      $countElemenDeleted = $deleteQuery->remove()->getQuery()->execute()['n'];
     }
 
 		$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
