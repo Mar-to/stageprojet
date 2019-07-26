@@ -5,7 +5,7 @@
 * @Last Modified time: 2017-11-08 15:59:54
 */
 
-body 
+body
 {
 	height: 100% !important;
 }
@@ -13,6 +13,7 @@ body
 #page-container.directory
 {
 	@include flexbox();
+	height: 5px;
 	width: 100%;
 }
 
@@ -20,11 +21,11 @@ body
 {
 	width: 100%;
 	margin: 0;
-	max-width: 100%;	
+	max-width: 100%;
 	@include flexbox();
   @include flex-flow(column);
 
-	section 
+	section
 	{
 		padding: 0;
 		margin: 0;
@@ -40,7 +41,7 @@ body
 		    padding: .5rem;
 		    text-align: center;
 		    margin-bottom: 0;
-		    
+
 		    background-color: #4a7874;
 		    color: #fff;
 
@@ -66,7 +67,7 @@ body
 
 			    &:hover { color: $primary-color; cursor: pointer;}
 		    }
-		    
+
 		}
 	}
 }
