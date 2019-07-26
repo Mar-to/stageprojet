@@ -16,11 +16,11 @@ Requirements
 ------------
 
 1. Php (Sur Linux : php7.2-curl)
-2. [Composer](https://getcomposer.org/download/) 
+2. [Composer](https://getcomposer.org/download/)
 3. [Nodejs](https://nodejs.org/en/download/)
 4. [Git](https://git-scm.com/)
 5. Web Server (Apache, Ngninx, [Wamp server](http://www.wampserver.com/) ...)
-6. MongoDB (http://php.net/manual/fr/mongodb.installation.php)
+6. MongoDB (http://php.net/manual/fr/mongodb.installation.php) -> !!Version 3.4 or below!!!
 
 The project is using php5. **If you want to use php7**, you will need to install the [MongoPhpAdapter](https://github.com/alcaeus/mongo-php-adapter)
 To do so, please run :
@@ -40,8 +40,8 @@ git clone https://github.com/pixelhumain/GoGoCarto
 cd GoGoCarto/
 ```
 
-### Installing dependencies 
-Php dependency (symfony, bundles...) 
+### Installing dependencies
+Php dependency (symfony, bundles...)
 ```
 composer install
 ```
