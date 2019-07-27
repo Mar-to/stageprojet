@@ -50,35 +50,47 @@ class ElementImportMappingService
   public function collectOntology($data, $import)
   {
     $ontologyMapping = $import->getOntologyMapping();
-
+    $allNewFields = [];
     foreach($data as $row)
     {
       foreach ($row as $key => $value) {
+        if (!in_array($key, $allNewFields)) $allNewFields[] = $key;
         if (!array_key_exists($key, $ontologyMapping)) {
           $value = in_array($key, $this->coreFields) ? $key : "";
           $ontologyMapping[$key] = $value;
         }
       }
     }
+    // delete no more used fields
+    foreach($ontologyMapping as $field => $mappedField) {
+      if (!in_array($field, $allNewFields)) unset($ontologyMapping[$field]);
+    }
+
     $import->setOntologyMapping($ontologyMapping);
   }
 
   public function collectTaxonomy($data, $import)
   {
     $taxonomyMapping = $import->getTaxonomyMapping();
+    $allNewCategories = [];
     $this->createOptionsMappingTable();
 
     foreach($data as $row)
     {
-      $taxonomy = $row['categories'];
-      $taxonomy = is_array($taxonomy) ? $taxonomy : explode(',', $taxonomy);
-      foreach($taxonomy as $category) {
+      $categories = $row['categories'];
+      $categories = is_array($categories) ? $categories : explode(',', $categories);
+      foreach($categories as $category) {
+        if (!in_array($category, $allNewCategories)) $allNewCategories[] = $category;
         if ($category && !array_key_exists($category, $taxonomyMapping)) {
           $categorySlug = $this->slugify($category);
           $value = array_key_exists($categorySlug, $this->mappingTableIds) ? $this->mappingTableIds[$categorySlug]['id'] : '';
           $taxonomyMapping[$category] = $value;
         }
       }
+    }
+    // delete no more used categories
+    foreach($taxonomyMapping as $category => $mappedCategory) {
+      if (!in_array($category, $allNewCategories)) unset($taxonomyMapping[$category]);
     }
     $import->setTaxonomyMapping($taxonomyMapping);
   }
