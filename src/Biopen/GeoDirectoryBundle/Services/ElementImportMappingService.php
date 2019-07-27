@@ -22,6 +22,8 @@ use Biopen\CoreBundle\Document\GoGoLogLevel;
 class ElementImportMappingService
 {
   protected $import;
+  protected $createMissingOptions;
+  protected $parentCategoryIdToCreateMissingOptions;
   protected $em;
   protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source'];
 
@@ -33,15 +35,18 @@ class ElementImportMappingService
   public function transform($data, $import)
   {
     $this->import = $import;
+    $this->createMissingOptions = $import->getCreateMissingOptions();
+    $parent = $import->getParentCategoryToCreateOptions() ?: $this->em->getRepository('BiopenGeoDirectoryBundle:Category')->findOneByIsRootCategory(true);
+    $this->parentCategoryIdToCreateMissingOptions = $parent->getId();
+
     $this->collectOntology($data, $import);
     $data = $this->mapOntology($data);
     // remove empty row, i.e. without name
     $data = array_filter($data, function($row) { return array_key_exists('name', $row); });
     $data = $this->addMissingFieldsToData($data);
-    dump($data);
+
     $this->collectTaxonomy($data, $import);
     $data = $this->mapTaxonomy($data);
-    dump($data);
     $this->em->persist($import);
     $this->em->flush();
     return $data;
@@ -81,10 +86,21 @@ class ElementImportMappingService
       $categories = is_array($categories) ? $categories : explode(',', $categories);
       foreach($categories as $category) {
         if (!in_array($category, $allNewCategories)) $allNewCategories[] = $category;
-        if ($category && !array_key_exists($category, $taxonomyMapping)) {
+        if ($category && !array_key_exists($category, $taxonomyMapping))
+        {
           $categorySlug = $this->slugify($category);
           $value = array_key_exists($categorySlug, $this->mappingTableIds) ? $this->mappingTableIds[$categorySlug]['id'] : '';
+
+          // create option if does not exist
+          if ($value == '' && $this->createMissingOptions) $value = $this->createOption($category);
+
           $taxonomyMapping[$category] = $value;
+        }
+        // create options for previously imported non mapped options
+        if (array_key_exists($category, $taxonomyMapping)
+            && (!$taxonomyMapping[$category] || $taxonomyMapping[$category] == '/')
+            && $this->createMissingOptions) {
+          $taxonomyMapping[$category] = $this->createOption($category);
         }
       }
     }
@@ -154,26 +170,6 @@ class ElementImportMappingService
     }
   }
 
-  public function automapTaxonomy()
-  {
-    foreach($options as $optionName)
-    {
-      if ($optionName)
-      {
-        $optionNameSlug = $this->slugify($optionName);
-        $optionExists = array_key_exists($optionNameSlug, $this->mappingTableIds);
-
-        // create option if does not exist
-        if (!$optionExists && $this->createMissingOptions) { $this->createOption($optionName); $optionExists = true; }
-
-        if ($optionExists)
-          // we add option id and parent options if not already added (because import works only with the lower level of options)
-          foreach ($this->mappingTableIds[$optionNameSlug]['idAndParentsId'] as $key => $optionId)
-            if (!in_array($optionId, $optionsIdAdded)) $optionsIdAdded[] = $this->addOptionValue($element, $optionId);
-      }
-    }
-  }
-
   private function createOption($name)
   {
     $option = new Option();
@@ -184,6 +180,7 @@ class ElementImportMappingService
     $option->setUseColorForMarker(false);
     $this->em->persist($option);
     $this->createOptionsMappingTable([$option]);
+    return $option->getId();
   }
 
   private function slugify($text)

@@ -19,9 +19,7 @@ class ElementImportOneService
 	private $geocoder;
 	private $interactionService;
 
-	protected $createMissingOptions;
 	protected $optionIdsToAddToEachElement = [];
-	protected $parentCategoryIdToCreateMissingOptions;
 
 	protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source'];
 	protected $privateDataProps;
@@ -39,10 +37,6 @@ class ElementImportOneService
 
   public function initialize($import)
   {
-    // initialize create missing options configuration
-    $this->createMissingOptions = $import->getCreateMissingOptions();
-    $parent = $import->getParentCategoryToCreateOptions() ?: $this->em->getRepository('BiopenGeoDirectoryBundle:Category')->findOneByIsRootCategory(true);
-    $this->parentCategoryIdToCreateMissingOptions = $parent->getId();
     $this->optionIdsToAddToEachElement = [];
     foreach ($import->getOptionsToAddToEachElement() as $option) {
       $this->optionIdsToAddToEachElement[] = $option->getId();
@@ -225,7 +219,7 @@ class ElementImportOneService
 
 	private function addOptionValue($element, $id)
 	{
-		if (!$id) return;
+		if (!$id || $id == "0" || $id == 0) return;
 		$optionValue = new OptionValue();
 		$optionValue->setOptionId($id);
 	  $optionValue->setIndex(0);
