@@ -54,48 +54,56 @@ class MigrationCommand extends GoGoAbstractCommand
             $em->persist($migrationState);
         }
 
-        // Collecting the Database to be updated
-        $dbs = ['gogocarto_default'];
-        $dbNames = $em->createQueryBuilder('BiopenSaasBundle:Project')->select('domainName')->hydrate(false)->getQuery()->execute()->toArray();            
-        foreach ($dbNames as $object) { $dbs[] = $object['domainName']; }
+        try {
+            // Collecting the Database to be updated
+            $dbs = ['gogocarto_default'];
+            $dbNames = $em->createQueryBuilder('BiopenSaasBundle:Project')->select('domainName')->hydrate(false)->getQuery()->execute()->toArray();            
+            foreach ($dbNames as $object) { $dbs[] = $object['domainName']; }
 
-        if (count($this->migrations) > $migrationState->getMigrationIndex()) {
-            $migrationsToRun = array_slice($this->migrations, $migrationState->getMigrationIndex());
-            foreach($dbs as $db) {
-                foreach($migrationsToRun as $migration) {
-                    $this->runCommand($db, $migration);
-                }                    
+            if (count($this->migrations) > $migrationState->getMigrationIndex()) {
+                $migrationsToRun = array_slice($this->migrations, $migrationState->getMigrationIndex());
+                foreach($dbs as $db) {
+                    foreach($migrationsToRun as $migration) {
+                        $this->runCommand($db, $migration);
+                    }                    
+                }
+                $this->log(count($migrationsToRun) . " migrations performed");
+            } else {
+                $this->log("No Migrations to perform");
             }
-            $this->log(count($migrationsToRun) . " migrations performed");
-        } else {
-            $this->log("No Migrations to perform");
-        }
 
-        $asyncService = $this->getContainer()->get('biopen.async');
-        if (count($this->commands) > $migrationState->getCommandsIndex()) {
-            $commandsToRun = array_slice($this->commands, $migrationState->getCommandsIndex());
-            foreach($dbs as $db) {
-                foreach($commandsToRun as $command) {            
-                    $asyncService->callCommand($command, [], $db);
-                }                    
+            $asyncService = $this->getContainer()->get('biopen.async');
+            // run them syncronously otherwise all the command will be run at once
+            $asyncService->setRunSynchronously(true);
+            if (count($this->commands) > $migrationState->getCommandsIndex()) {
+                $commandsToRun = array_slice($this->commands, $migrationState->getCommandsIndex());
+                foreach($dbs as $db) {
+                    foreach($commandsToRun as $command) {            
+                        $asyncService->callCommand($command, [], $db);
+                    }                    
+                }
+                $this->log(count($commandsToRun) . " commands to run");
+            } else {
+                $this->log("No commands to run");
             }
-            $this->log(count($commandsToRun) . " commands to run");
-        } else {
-            $this->log("No commands to run");
-        }
 
-        if (count($this->messages) > $migrationState->getMessagesIndex()) {
-            $messagesToAdd = array_slice($this->messages, $migrationState->getMessagesIndex());
-            foreach($dbs as $db) {
-                foreach($messagesToAdd as $message) {
-                    // create a GoGoLogUpdate                    
-                    $asyncService->callCommand('gogolog:add:message', ['"' . $message . '"'], $db);
-                }                    
+            if (count($this->messages) > $migrationState->getMessagesIndex()) {
+                $messagesToAdd = array_slice($this->messages, $migrationState->getMessagesIndex());
+                foreach($dbs as $db) {
+                    foreach($messagesToAdd as $message) {
+                        // create a GoGoLogUpdate                    
+                        $asyncService->callCommand('gogolog:add:message', ['"' . $message . '"'], $db);
+                    }                    
+                }
+                $this->log(count($messagesToAdd) . " messages added to admin dashboard");
+            } else {
+                $this->log("No Messages to add to dashboard");
             }
-            $this->log(count($messagesToAdd) . " messages added to admin dashboard");
-        } else {
-            $this->log("No Messages to add to dashboard");
         }
+        catch (\Exception $e) {   
+            $message = $e->getMessage() . '</br>' . $e->getFile() . ' LINE ' . $e->getLine();      
+            $this->error("Error performing migrations: " . $message);
+        }      
 
         $migrationState->setMigrationIndex(count($this->migrations));
         $migrationState->setCommandsIndex(count($this->commands));
@@ -106,6 +114,6 @@ class MigrationCommand extends GoGoAbstractCommand
     private function runCommand($db, $command)
     {
         $process = new Process("mongo {$db} --eval \"{$command}\"");
-        return $process->start();
+        return $process->run();
     }
 }

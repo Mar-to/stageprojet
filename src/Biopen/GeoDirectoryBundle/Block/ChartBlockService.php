@@ -279,7 +279,7 @@ class ChartBlockService extends AbstractBlockService
 		  ->match()
 		  		->field('type')->in($types)
 		  		->field('userRole')->notEqual('3') // not by an admin
-		  		->field('status')->notIn([-5, null]) // -5 = pending modification, null = not resolved
+		  		->field('status')->notIn([-5, null, 7, 8]) // -5 = pending modification, null = not resolved, 7 & 8 = dynamic import
         ->group()
             ->field('_id')
             ->expression('$status')

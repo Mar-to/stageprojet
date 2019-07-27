@@ -9,14 +9,21 @@ file that was distributed with this source code.
 
 #}
 
-{% if admin.isGranted('VIEW', object) and admin.hasRoute('refresh') and object.id != "" %}
-    <a href="{{ admin.generateObjectUrl('refresh', object) }}" class="btn {{ class|default('btn-sm btn-primary') }} view_link">
-        {% if object.lastRefresh %}
-          <i class="fa fa-refresh" aria-hidden="true"></i>
-          Synchroniser
-        {% else %}
-          <i class="fa fa-download" aria-hidden="true"></i>
-          Charger les données
-        {% endif %}
-    </a>
+{% if admin.isGranted('VIEW', object) and object.id != "" %}
+    {% if object.ontologyMapping|length == 0 %}
+      <a href="{{ admin.generateObjectUrl('collect', object) }}" class="btn {{ class|default('btn-sm btn-primary') }} view_link">
+        <i class="fa fa-eye" aria-hidden="true"></i>
+        Lire les données
+      </a>
+    {% else %}
+      <a href="{{ admin.generateObjectUrl('refresh', object) }}" class="btn {{ class|default('btn-sm btn-primary') }} view_link">
+          {% if object.lastRefresh %}
+            <i class="fa fa-refresh" aria-hidden="true"></i>
+            Synchroniser
+          {% else %}
+            <i class="fa fa-download" aria-hidden="true"></i>
+            Importer les données
+          {% endif %}
+      </a>
+    {% endif %}
 {% endif %}

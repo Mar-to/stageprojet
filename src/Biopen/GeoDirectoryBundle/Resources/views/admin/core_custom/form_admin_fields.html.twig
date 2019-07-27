@@ -37,6 +37,10 @@
       {% include '@BiopenAdmin/core_custom/custom-fields/display-logs.html.twig' %}
     {% elseif attr_class == "gogo-sort-options" %}
       {% include '@BiopenAdmin/core_custom/custom-fields/sort-options.html.twig' %}
+    {% elseif attr_class == "gogo-mapping-taxonomy" %}
+      {% include '@BiopenAdmin/core_custom/custom-fields/mapping-taxonomy.html.twig' %}
+    {% elseif attr_class == "gogo-mapping-ontology" %}
+      {% include '@BiopenAdmin/core_custom/custom-fields/mapping-ontology.html.twig' %}
     {% else %}      
       {% set attr = attr|merge({'class': attr_class ~ ' form-control'}) %}
       {{ parent() }}

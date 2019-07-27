@@ -58,17 +58,23 @@ services:
             - { name: doctrine_mongodb.odm.event_listener, event: preRemove }
             - { name: doctrine_mongodb.odm.event_listener, event: preFlush }
 
-    biopen.csvtoarray:
-        class: Biopen\GeoDirectoryBundle\Services\ConvertCsvToArrayService
-
     biopen.element_import:
-       public: true
        class: Biopen\GeoDirectoryBundle\Services\ElementImportService
        arguments: 
           - "@doctrine.odm.mongoDB.document_manager"
-          - "@biopen.csvtoarray"
+          - '@biopen.element_import_one'
+          - "@biopen.element_import_mapping"
+
+    biopen.element_import_one:
+       class: Biopen\GeoDirectoryBundle\Services\ElementImportOneService
+       arguments: 
+          - "@doctrine.odm.mongoDB.document_manager"
           - '@bazinga_geocoder.geocoder'
           - "@biopen.user_interaction_service"
+
+    biopen.element_import_mapping:
+       class: Biopen\GeoDirectoryBundle\Services\ElementImportMappingService
+       arguments: []
 
     biopen.gogocartojs_service:
        class: Biopen\GeoDirectoryBundle\Services\GoGoCartoJsService

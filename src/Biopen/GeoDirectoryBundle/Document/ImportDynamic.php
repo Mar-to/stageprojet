@@ -32,7 +32,6 @@ class ImportDynamic extends Import
      */
     private $nextRefresh = null;
 
-    
 
     public function isDynamicImport() { return true; }
 

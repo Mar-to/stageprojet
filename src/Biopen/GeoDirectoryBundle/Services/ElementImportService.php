@@ -3,37 +3,16 @@
 namespace Biopen\GeoDirectoryBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Biopen\GeoDirectoryBundle\Document\Element;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
-use Biopen\GeoDirectoryBundle\Document\ModerationState;
-use Biopen\GeoDirectoryBundle\Document\Coordinates;
-use Biopen\GeoDirectoryBundle\Document\Option;
-use Biopen\GeoDirectoryBundle\Document\OptionValue;
 use Biopen\GeoDirectoryBundle\Document\UserInteractionContribution;
-use Biopen\GeoDirectoryBundle\Document\PostalAddress;
-use Biopen\GeoDirectoryBundle\Document\ElementUrl;
-use Biopen\GeoDirectoryBundle\Document\ElementImage;
 use Biopen\GeoDirectoryBundle\Document\ImportState;
 use Biopen\CoreBundle\Document\GoGoLogImport;
-use Biopen\CoreBundle\Document\GoGoLogLevel;
+use Biopen\GeoDirectoryBundle\Document\ModerationState;
 
 class ElementImportService
 {
 	private $em;
-	private $mappingTableIds = [];
-	private $converter;
-	private $geocoder;
-	private $interactionService;
-
-	protected $createMissingOptions;
-	protected $optionIdsToAddToEachElement = [];
-	protected $parentCategoryIdToCreateMissingOptions;
-	protected $missingOptionDefaultAttributesForCreate;
-
-	protected $coreFields = ['id', 'name', 'taxonomy', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source'];
-	protected $privateDataProps;
 
 	protected $countElementCreated = 0;
 	protected $countElementUpdated = 0;
@@ -46,18 +25,15 @@ class ElementImportService
 	/**
     * Constructor
     */
-  public function __construct(DocumentManager $documentManager, $converter, $geocoder, $interactionService)
+  public function __construct(DocumentManager $documentManager, $importOneService, $mappingService)
   {
 		$this->em = $documentManager;
-		$this->converter = $converter;
-		$this->geocoder = $geocoder->using('google_maps');
-		$this->interactionService = $interactionService;
-		$this->currentRow = [];
+		$this->importOneService = $importOneService;
+		$this->mappingService = $mappingService;
   }
 
   public function startImport($import)
   {
-		$this->optionIdsToAddToEachElement = [];
 		$this->countElementCreated = 0;
 		$this->countElementUpdated = 0;
 		$this->countElementNothingToDo = 0;
@@ -74,20 +50,38 @@ class ElementImportService
   	else return $this->importCsv($import);
   }
 
-  public function importCsv($import)
+  public function importCsv($import, $onlyGetData = false)
   {
   	$fileName = $import->getFilePath();
 
 		// Getting php array of data from CSV
-		$data = $this->converter->convert($fileName, ',');
+		$header = NULL;
+		$delimiter = ',';
+    $data = array();
+
+    if (($handle = fopen($fileName, 'r')) !== FALSE) {
+      while (($row = fgetcsv($handle, 0, $delimiter)) !== FALSE) {
+        if(!$header) {
+          $header = $row;
+        } else {
+          if (count($header) != count ($row)) dump($row);
+          else $data[] = array_combine($header, $row);
+        }
+      }
+      fclose($handle);
+    }
+
 		if (!$data) {
 			$import->setCurrMessage("Impossible d'ouvrir le fichier CSV. Vérifiez que le fichier utilise des virgules comme séparateur");
 			$this->em->flush();
 			return "Cannot open the CSV file";
 		}
 
+		if ($onlyGetData) return $data;
+
 		return $this->importData($data, $import);
   }
+
 
   public function importJson($import, $onlyGetData = false)
   {
@@ -127,38 +121,34 @@ class ElementImportService
     return $elementImportedCount;
   }
 
+  // read the data and extract ontology and categories. After this operation, the user will be able
+  // create a mapping table for ontology and taxonomy
+  public function collectData($import)
+  {
+		$data = $import->getUrl() ?$this->importJson($import, true) : $this->importCsv($import, true);
+  	$this->mappingService->collectData($data, $import);
+  	$this->em->persist($import);
+  	$this->em->flush();
+  }
+
 	public function importData($data, $import)
 	{
-		$this->createOptionsMappingTable();
 		if (!$data) return 0;
 		// Define the size of record, the frequency for persisting the data and the current index of records
 		$size = count($data); $batchSize = 100; $i = 0;
+
+		// still collect data on each import because the list of fields and categories might change
+		$this->mappingService->collectData($data, $import);
+		// do the mapping
+		$data = $this->mappingService->transform($data, $import);
+    // remove empty row, i.e. without name
+    $data = array_filter($data, function($row) { return $row['name']; });
 
 		if ($import->isDynamicImport())
 		{
 			$import->setLastRefresh(time());
 	    $import->updateNextRefreshDate();
 		}
-
-		// initialize create missing options configuration
-		$this->createMissingOptions = $import->getCreateMissingOptions();
-		$parent = $import->getParentCategoryToCreateOptions() ?: $this->em->getRepository('BiopenGeoDirectoryBundle:Category')->findOneByIsRootCategory(true);
-		$this->parentCategoryIdToCreateMissingOptions = $parent->getId();
-		foreach ($import->getOptionsToAddToEachElement() as $option) {
-			$this->optionIdsToAddToEachElement[] = $option->getId();
-		}
-
-		$this->missingOptionDefaultAttributesForCreate = [
-			"useIconForMarker" => false,
-			"useColorForMarker" => false
-		];
-
-		// Getting the private field of the custom data
-		$config = $this->em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
-    $this->privateDataProps = $config->getApi()->getPublicApiPrivateProperties();
-
-		$data = $this->fixsOntology($data);
-		$data = $this->addMissingFieldsToData($data);
 
 		if ($import->isDynamicImport())
 		{
@@ -173,12 +163,14 @@ class ElementImportService
 
 	  $import->setCurrState(ImportState::InProgress);
 
+	  $this->importOneService->initialize($import);
+
 		// processing each data
 		foreach($data as $row)
 		{
 			try {
 				$import->setCurrMessage("Importation des données " . $i . '/' . $size . ' traitées');
-				$this->createElementFromArray($row, $import);
+				$this->importOneService->createElementFromArray($row, $import);
 				$i++;
 			}
 			catch (\Exception $e) {
@@ -271,284 +263,4 @@ class ElementImportService
 
 		return $message;
 	}
-
-	private function createElementFromArray($row, $import)
-	{
-		$updateExisting = false; // if we create a new element or update an existing one
-		$realUpdate = false; // if we are sure that the external has been edited with 'FieldToCheckElementHaveBeenUpdated'
-		if ($row['id'])
-		{
-			if (in_array($row['id'], $import->getIdsToIgnore())) return;
-			$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
-			$qb->field('source')->references($import);
-			$qb->field('oldId')->equals("" . $row['id']);
-			$element = $qb->getQuery()->getSingleResult();
-		} else {
-			$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
-			$qb->field('source')->references($import);
-			$qb->field('name')->equals($row['name']);
-			$qb->field('geo.latitude')->equals((float) number_format((float)$row['latitude'], 5));
-			$qb->field('geo.longitude')->equals((float) number_format((float)$row['longitude'], 5));
-			$element = $qb->getQuery()->getSingleResult();
-		}
-
-		if ($element) // if element with this Id already exists
-		{
-			$updatedAtField = $import->getFieldToCheckElementHaveBeenUpdated();
-			// if updated date hasn't change, nothing to do
-			if ($updatedAtField && array_key_exists($updatedAtField, $row)) {
-				if ($row[$updatedAtField] && $row[$updatedAtField] == $element->getCustomProperty($updatedAtField)) {
-					$element->setPreventJsonUpdate(true);
-					if ($element->getStatus() == ElementStatus::DynamicImportTemp) $element->setStatus(ElementStatus::DynamicImport);
-					$this->em->persist($element);
-					$this->countElementNothingToDo++;
-					return;
-				} else {
-					$realUpdate = true;
-				}
-			}
-			$updateExisting = true;
-			// resetting "geolocc" and "no options" modearation state so it will be calculated again
-			if ($element->getModerationState() < 0) $element->setModerationState(ModerationState::NotNeeded);
-		}
-		else
-		{
-			$element = new Element();
-		}
-		$this->currentRow = $row;
-
-		$element->setOldId($row['id']);
-		$element->setName($row['name']);
-
-		$address = new PostalAddress($row['streetAddress'], $row['addressLocality'], $row['postalCode'], $row["addressCountry"]);
-		$element->setAddress($address);
-
-		$defaultSourceName = $import ? $import->getSourceName() : 'Inconnu';
-		$element->setSourceKey( (strlen($row['source']) > 0 && $row['source'] != 'Inconnu') ? $row['source'] : $defaultSourceName);
-		$element->setSource($import);
-
-		if (array_key_exists('owner', $row)) $element->setUserOwnerEmail($row['owner']);
-
-		$lat = $row['latitude']; $lng = $row['longitude'];
-		if (is_object($lat) || is_array($lat) || strlen($lat) == 0 || is_object($lng) || strlen($lng) == 0 || $lat == 'null' || $lat == null)
-		{
-			$lat = 0; $lng = 0;
-			if ($import->getGeocodeIfNecessary())
-			{
-		   	$result = $this->geocoder->geocode($address->getFormatedAddress())->first();
-		   	$lat = $result->getLatitude();
-		   	$lng = $result->getLongitude();
-			}
-		}
-
-		if ($lat == 0 || $lng == 0) $element->setModerationState(ModerationState::GeolocError);
-		$element->setGeo(new Coordinates((float)$lat, (float)$lng));
-
-		$this->createCategories($element, $row, $import);
-		$this->createImages($element, $row);
-		$this->saveCustomFields($element, $row);
-
-		if ($import->isDynamicImport()) { // keep the same status for the one who were deleted
-			$status = (!$element->getStatus() || $element->getStatus() == ElementStatus::DynamicImportTemp) ? ElementStatus::DynamicImport : $element->getStatus();
-			$element->setIsExternal(true);
-		}
-		else
-			$status = ElementStatus::AddedByAdmin;
-
-		// create import contribution if first time imported
-		if (!$updateExisting)
-		{
-			$contribution = $this->interactionService->createContribution(null, 0, $status);
-			$element->addContribution($contribution);
-      // $this->mailService->sendAutomatedMail('add', $element, $message);
-		}
-		// create edit contribution if real update
-		else if ($realUpdate) {
-			$contribution = $this->interactionService->createContribution(null, 1, $status);
-			$element->addContribution($contribution);
-		}
-
-		$element->setStatus($status);
-		$element->updateTimestamp();
-
-		$this->em->persist($element);
-
-		if ($updateExisting) $this->countElementUpdated++;
-		else $this->countElementCreated++;
-	}
-
-	private function fixsOntology($data)
-  {
-    $keysTable = ['lat' => 'latitude', 'long' => 'longitude', 'lon' => 'longitude', 'lng' => 'longitude',
-  								'title' => 'name', 'nom' => 'name', 'categories' => 'taxonomy', 'address' => 'streetAddress'];
-
-    foreach ($data as $key => $row) {
-      foreach ($keysTable as $search => $replace) {
-        if (isset($row[$search]) && !isset($row[$replace])) {
-          $data[$key][$replace] = $data[$key][$search];
-          unset($data[$key][$search]);
-        }
-      }
-    }
-
-    return $data;
-  }
-
-	private function addMissingFieldsToData($data)
-	{
-		foreach ($data as $key => $row) {
-			$missingFields = array_diff($this->coreFields, array_keys($row));
-			foreach ($missingFields as $missingField) {
-				$data[$key][$missingField] = "";
-			}
-		}
-		return $data;
-	}
-
-	private function saveCustomFields($element, $raw_data)
-	{
-		$customFields = array_diff(array_keys($raw_data), $this->coreFields);
-		$customFields = array_diff($customFields, ['lat', 'long', 'lon', 'lng', 'title', 'nom', 'categories', 'address']);
-		$customData = [];
-    foreach ($customFields as $customField) {
-			if ($customField && is_string($customField)) $customData[$customField] = $raw_data[$customField];
-		}
-
-    $element->setCustomData($customData, $this->privateDataProps);
-	}
-
-	private function createOptionsMappingTable($options = null)
-	{
-		if ($options === null) $options = $this->em->getRepository('BiopenGeoDirectoryBundle:Option')->findAll();
-
-		foreach($options as $option)
-		{
-			$ids = [
-				'id' => $option->getId(),
-				'idAndParentsId' => $option->getIdAndParentOptionIds()
-			];
-			$this->mappingTableIds[$this->slugify($option->getNameWithParent())] = $ids;
-			$this->mappingTableIds[$this->slugify($option->getName())] = $ids;
-			$this->mappingTableIds[strval($option->getId())] = $ids;
-			if ($option->getCustomId()) $this->mappingTableIds[$this->slugify($option->getCustomId())] = $ids;
-		}
-	}
-
-	private function createImages($element, $row)
-	{
-		$element->resetImages();
-		$images_raw = $row['images'];
-		if (is_string($images_raw) && strlen($images_raw) > 0) $images = explode(',', $row['images']);
-		else if (is_array($images_raw)) $images = $images_raw;
-		else
-		{
-			$keys = array_keys($row);
-			$image_keys = array_filter($keys, function($key) { return $this->startsWith($key, 'image'); });
-			$images = array_map(function($key) use ($row) { return $row[$key]; }, $image_keys);
-		}
-
-		if (count($images) == 0) return;
-
-		foreach($images as $imageUrl)
-		{
-			if (is_string($imageUrl) && strlen($imageUrl) > 5)
-			{
-				$elementImage = new ElementImage();
-				$elementImage->setExternalImageUrl($imageUrl);
-				$element->addImage($elementImage);
-			}
-		}
-	}
-
-	function startsWith($haystack, $needle)
-	{
-	     $length = strlen($needle);
-	     return (substr($haystack, 0, $length) === $needle);
-	}
-
-	private function createCategories($element, $row, $import)
-	{
-		$element->resetOptionsValues();
-		$optionsIdAdded = [];
-		$options = is_array($row['taxonomy']) ? $row['taxonomy'] : explode(',', $row['taxonomy']);
-
-		foreach($options as $optionName)
-		{
-			if ($optionName)
-			{
-				$optionNameSlug = $this->slugify($optionName);
-				$optionExists = array_key_exists($optionNameSlug, $this->mappingTableIds);
-
-				// create option if does not exist
-				if (!$optionExists && $this->createMissingOptions) { $this->createOption($optionName); $optionExists = true; }
-
-				if ($optionExists)
-					// we add option id and parent options if not already added (because import works only with the lower level of options)
-					foreach ($this->mappingTableIds[$optionNameSlug]['idAndParentsId'] as $key => $optionId)
-						if (!in_array($optionId, $optionsIdAdded)) $optionsIdAdded[] = $this->addOptionValue($element, $optionId);
-			}
-		}
-
-		if ($import->getNeedToHaveOptionsOtherThanTheOnesAddedToEachElements()) {
-			// checking option number before adding optionIdsToAddToEachElement
-			if (count($element->getOptionValues()) == 0) $element->setModerationState(ModerationState::NoOptionProvided);
-		}
-
-		// Manually add some options to each element imported
-		foreach ($this->optionIdsToAddToEachElement as $optionId) {
-			if (!in_array($optionId, $optionsIdAdded)) $optionsIdAdded[] = $this->addOptionValue($element, $optionId);
-		}
-
-		if (count($element->getOptionValues()) == 0) $element->setModerationState(ModerationState::NoOptionProvided);
-	}
-
-	private function addOptionValue($element, $id)
-	{
-		$optionValue = new OptionValue();
-		$optionValue->setOptionId($id);
-	  $optionValue->setIndex(0);
-	  $element->addOptionValue($optionValue);
-	  return $id;
-	}
-
-	private function createOption($name)
-	{
-		$option = new Option();
-		$option->setName($name);
-		$parent = $this->em->getRepository('BiopenGeoDirectoryBundle:Category')->find($this->parentCategoryIdToCreateMissingOptions);
-		$option->setParent($parent);
-		$option->setUseIconForMarker($this->missingOptionDefaultAttributesForCreate["useIconForMarker"]);
-		$option->setUseColorForMarker($this->missingOptionDefaultAttributesForCreate["useColorForMarker"]);
-		$this->em->persist($option);
-		// $this->em->flush();
-		// dump("new option", $option);
-		$this->createOptionsMappingTable([$option]);
-	}
-
-	private function slugify($text)
-	{
-	  if (!is_string($text)) return;
-	  // replace non letter or digits by -
-	  $text = str_replace('é', 'e', $text);
-	  $text = str_replace('è', 'e', $text);
-	  $text = str_replace('ê', 'e', $text);
-	  $text = str_replace('ô', 'o', $text);
-	  $text = str_replace('ç', 'c', $text);
-	  $text = str_replace('à', 'a', $text);
-	  $text = str_replace('â', 'a', $text);
-	  $text = str_replace('î', 'i', $text);
-	  $text = preg_replace('~[^\pL\d]+~u', '-', $text);
-
-	  $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text); // transliterate
-	  $text = preg_replace('~[^-\w]+~', '', $text); // remove unwanted characters
-	  $text = trim($text, '-'); // trim
-	  $text = rtrim($text, 's'); // remove final "s" for plural
-	  $text = preg_replace('~-+~', '-', $text); // remove duplicate -
-	  $text = strtolower($text); // lowercase
-
-	  if (empty($text)) return '';
-	  return $text;
-	}
-
-
 }

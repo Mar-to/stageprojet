@@ -1,0 +1,99 @@
+<input type="hidden" id="{{ form.vars.id }}" name="{{ form.vars.full_name }}"/>
+
+{% set object = form.vars.sonata_admin.admin.subject %}
+{% set mapping = object.ontologyMapping %}
+<table class="table">
+  <thead>
+    <tr>
+      <th>Attribute d'origine</th>
+      <th style="width:20px"></th>
+      <th>à transformer en</th>
+    </tr>
+  </thead>
+  <tbody class="table-striped">
+    {% for originName, mappedName in mapping %}
+      <tr>
+        <td class="original">{{originName}}</td>
+        <td><i class="arrow-icon fa fa-arrow-circle-right"></i></td>
+        <td class="mapped"><input type="text" name="ontology[{{originName}}]" class="form-control property-selector" value={{mappedName}} /></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+
+</table>
+
+<style>
+  .arrow-icon { font-size: 18px; }
+  .arrow-icon:hover { cursor: pointer; }
+  td { vertical-align: middle !important; }
+</style>
+
+<script>
+  jQuery(document).ready(function() {
+    // on arrow click, use the original name
+    $('.arrow-icon').click(function() {
+      $(this).parent().parent().find('.property-selector:not(.select2-container)').val($(this).parent().siblings('.original').text()).trigger('change');
+    });
+
+    var formProperties = JSON.parse('{{ form.vars.attr["data-form-props"]|raw }}');
+    var dataProperties = JSON.parse('{{ form.vars.attr["data-props"]|raw }}');
+    var coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source']
+    var formData = [], allProperties = [], otherData = []; var importedData = [];
+    formData.push({id: 'id', text: 'Identifiant unique'});
+    formData.push({id: 'name', text: 'Titre de la fiche'});
+    formData.push({id: 'categories', text: 'Liste des catégories (en tableau ou séparées par des virgules)'});
+    formData.push({id: 'streetAddress', text: 'Adresse: rue'});
+    formData.push({id: 'addressLocality', text: 'Adresse: ville'});
+    formData.push({id: 'postalCode', text: 'Adresse: code postal'});
+    formData.push({id: 'addressCountry', text: 'Adresse: pays'});
+    formData.push({id: 'latitude', text: 'Latitude'});
+    formData.push({id: 'longitude', text: 'Longitude'});
+
+    allProperties = $.map(formData, function(el) { return el.id });
+
+    for(var i = 0; i < formProperties.length; i++) {
+      var prop = formProperties[i];
+      allProperties.push(prop);
+      formData.push({id: prop, text: prop});
+    }
+    for(var i = 0; i < dataProperties.length; i++) {
+      var prop = dataProperties[i];
+      if (allProperties.indexOf(prop) == -1) {
+        allProperties.push(prop);
+        otherData.push({id: prop, text: prop});
+      }
+    }
+
+    {% for originName, mappedName in mapping %}
+      var originName = '{{ originName }}';
+      if (originName && allProperties.indexOf(originName) == -1 && coreFields.indexOf(originName) == -1)
+      {
+        importedData.push({id: originName, text:  originName});
+        allProperties.push(originName);
+      }
+      var mappedName = '{{ mappedName }}';
+      if (mappedName && allProperties.indexOf(mappedName) == -1 && coreFields.indexOf(originName) == -1)
+      {
+        otherData.push({id: mappedName, text: mappedName});
+        allProperties.push(mappedName);
+      }
+    {% endfor %}
+
+    console.log(allProperties, otherData);
+
+    options = [{ text: "Attributs du formulaire", children: formData}];
+    if (otherData.length > 0) options.push({text: "Autres attributs", children: otherData});
+    options.push({ text: "Attributs importés", children: importedData});
+
+    $(".property-selector").select2({
+        createSearchChoice:function(term, data) {
+            if ($(data).filter(function() {
+                return this.text.localeCompare(term)===0;
+            }).length===0)
+            {return {id:term, text:term};}
+        },
+        data: options
+    });
+
+  });
+</script>

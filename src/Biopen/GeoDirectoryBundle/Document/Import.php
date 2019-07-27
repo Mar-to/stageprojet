@@ -106,7 +106,18 @@ class Import extends AbstractFile
      * 
      * @MongoDB\Field(type="collection") 
      */ 
-    private $idsToIgnore = [];    
+    private $idsToIgnore = []; 
+
+    
+    /**
+     * @MongoDB\Field(type="hash")
+     */
+    private $ontologyMapping = []; 
+
+    /**
+     * @MongoDB\Field(type="hash")
+     */
+    private $taxonomyMapping = []; 
 
     
     public function __construct() {
@@ -412,5 +423,49 @@ class Import extends AbstractFile
     public function getFieldToCheckElementHaveBeenUpdated()
     {
         return $this->fieldToCheckElementHaveBeenUpdated;
+    }
+
+    /**
+     * Set ontologyMapping
+     *
+     * @param hash $ontologyMapping
+     * @return $this
+     */
+    public function setOntologyMapping($ontologyMapping)
+    {
+        $this->ontologyMapping = $ontologyMapping;
+        return $this;
+    }
+
+    /**
+     * Get ontologyMapping
+     *
+     * @return hash $ontologyMapping
+     */
+    public function getOntologyMapping()
+    {
+        return $this->ontologyMapping;
+    }
+
+    /**
+     * Set taxonomyMapping
+     *
+     * @param hash $taxonomyMapping
+     * @return $this
+     */
+    public function setTaxonomyMapping($taxonomyMapping)
+    {
+        $this->taxonomyMapping = $taxonomyMapping;
+        return $this;
+    }
+
+    /**
+     * Get taxonomyMapping
+     *
+     * @return hash $taxonomyMapping
+     */
+    public function getTaxonomyMapping()
+    {
+        return $this->taxonomyMapping;
     }
 }

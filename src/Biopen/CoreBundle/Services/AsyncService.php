@@ -20,6 +20,13 @@ class AsyncService
      */
     protected $phpPath;
 
+    protected $runSynchronously = false;
+
+    public function setRunSynchronously($bool)
+    {
+        $this->runSynchronously = $bool;
+    }
+
     /**
      * AsyncService constructor.
      * @param string $consolePath
@@ -90,6 +97,14 @@ class AsyncService
     {
         $process = new Process($commandline);
         $process->start();
+
+        if ($this->runSynchronously) 
+        {
+            while ($process->isRunning()) {
+            // waiting for process to finish
+            }
+            return $process->getOutput();
+        }        
 
         return $process->getPid();
     }

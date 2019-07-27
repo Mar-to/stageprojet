@@ -280,15 +280,23 @@ class ElementRepository extends DocumentRepository
     $dataProperties = $onlyPublic ? $this->findPublicCustomProperties() : $this->findDataCustomProperties();
     $allProperties = [];
     foreach ($dataProperties as $prop) {
-        $allProperties[$prop] = $prop;
+        $allProperties[] = $prop;
     }
 
-    $config = $this->getDocumentManager()->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+    $formProperties = $this->findFormProperties();
+    return array_merge($allProperties, $formProperties);
+  }
+
+  public function findFormProperties()
+  {
+    $formProperties = [];
+    $propTypeToIgnore = ['separator', 'header', 'address', 'title', 'email', 'taxonomy', 'openhours'];
+    $config = $this->getDocumentManager()->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();          
     foreach ($config->getElementFormFields() as $key => $field) {
-      if (property_exists($field, 'name') && !in_array($field->type, ['separator', 'address', 'title', 'email', 'taxonomy', 'openhours', 'header']))
-        $allProperties[$field->name] = $field->name;
+      if (property_exists($field, 'name') && !in_array($field->type, $propTypeToIgnore)) 
+        $formProperties[] = $field->name;
     }
-    return $allProperties;
+    return $formProperties;
   }
 
   public function findDeletedElementsByImportIdCount()
