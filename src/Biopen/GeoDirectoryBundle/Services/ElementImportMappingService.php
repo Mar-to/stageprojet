@@ -26,6 +26,16 @@ class ElementImportMappingService
   protected $parentCategoryIdToCreateMissingOptions;
   protected $em;
   protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source'];
+  protected $mappedCoreFields = [
+    'title' => 'name',
+    'taxonomy' => 'categories',
+    'address' => 'streetAddress',
+    'city' => 'addressLocatily',
+    'postcode' => 'postalCode',
+    'country' => 'addressCountry',
+    'lat' => 'latitude',
+    'long' => 'longitude', 'lng' => 'longitude'
+  ];
 
   public function __construct(DocumentManager $documentManager)
   {
@@ -41,12 +51,17 @@ class ElementImportMappingService
 
     $this->collectOntology($data, $import);
     $data = $this->mapOntology($data);
+
     // remove empty row, i.e. without name
     $data = array_filter($data, function($row) { return array_key_exists('name', $row); });
-    $data = $this->addMissingFieldsToData($data);
+    // $data = $this->addMissingFieldsToData($data);
 
-    $this->collectTaxonomy($data, $import);
-    $data = $this->mapTaxonomy($data);
+    if ($import->isCategoriesFieldMapped())
+    {
+      $this->collectTaxonomy($data, $import);
+      $data = $this->mapTaxonomy($data);
+    }
+
     $this->em->persist($import);
     $this->em->flush();
     return $data;
@@ -62,6 +77,7 @@ class ElementImportMappingService
         if (!in_array($key, $allNewFields)) $allNewFields[] = $key;
         if (!array_key_exists($key, $ontologyMapping)) {
           $value = in_array($key, $this->coreFields) ? $key : "";
+          if (!$value && in_array($this->mappedCoreFields[$key], $this->coreFields)) $value = $this->mappedCoreFields[$key];
           $ontologyMapping[$key] = $value;
         }
       }

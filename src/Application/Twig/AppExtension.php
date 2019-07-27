@@ -17,13 +17,19 @@ class AppExtension extends AbstractExtension
     public function getFilters()
     {
         return array(
-            new TwigFilter('json_decode', array($this, 'jsonDecode')),            
+            new TwigFilter('json_decode', array($this, 'jsonDecode')),
+            new TwigFilter('values', array($this, 'values')),
         );
     }
 
     public function jsonDecode($value)
     {
         return json_decode($value);
+    }
+
+    public function values($value)
+    {
+        return array_values($value);
     }
 
     public function getFunctions()
@@ -43,11 +49,11 @@ class AppExtension extends AbstractExtension
 
     public function getNewMessagesCount()
     {
-        return count($this->dm->getRepository('BiopenCoreBundle:GoGoLog')->findBy(['type' => 'update', 'hidden' => false])); 
+        return count($this->dm->getRepository('BiopenCoreBundle:GoGoLog')->findBy(['type' => 'update', 'hidden' => false]));
     }
 
     public function getErrorsCount()
     {
-        return count($this->dm->getRepository('BiopenCoreBundle:GoGoLog')->findBy(['level' => 'error', 'hidden' => false])); 
+        return count($this->dm->getRepository('BiopenCoreBundle:GoGoLog')->findBy(['level' => 'error', 'hidden' => false]));
     }
 }

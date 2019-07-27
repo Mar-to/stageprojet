@@ -2,25 +2,30 @@
 
 {% set object = form.vars.sonata_admin.admin.subject %}
 {% set mapping = object.taxonomyMapping %}
-<table class="table">
-  <thead>
-    <tr>
-      <th>Catégorie d'origine</th>
-      <th style="width:20px"></th>
-      <th>à transformer en</th>
-    </tr>
-  </thead>
-  <tbody class="table-striped">
-    {% for originName, mappedName in mapping %}
+{% if object.isCategoriesFieldMapped %}
+  <table class="table">
+    <thead>
       <tr>
-        <td class="original">{{originName}}</td>
-        <td><i class="fa fa-arrow-circle-right"></i></td>
-        <td class="mapped"><input type="text" name="taxonomy[{{originName}}]" class="form-control category-selector" value={{mappedName}} /></td>
+        <th>Catégories lues depuis le fichier d'origine</th>
+        <th style="width:20px"></th>
+        <th>Catégories du site</th>
       </tr>
-    {% endfor %}
-  </tbody>
+    </thead>
+    <tbody class="table-striped">
+      {% for originName, mappedName in mapping %}
+        <tr>
+          <td class="original">{{originName}}</td>
+          <td><i class="fa fa-arrow-circle-right"></i></td>
+          <td class="mapped"><input type="text" name="taxonomy[{{originName}}]" class="form-control category-selector" value={{mappedName}} /></td>
+        </tr>
+      {% endfor %}
+    </tbody>
 
-</table>
+  </table>
+{% else %}
+  <div class="alert alert-info">Veuillez d'abords sélectionner le champs correspondant aux catégories dans l'onglet 'Table de correspondance des champs' puis cliquer sur 'Sauvegarder'</div>
+{% endif %}
+
 
 <script>
   jQuery(document).ready(function() {

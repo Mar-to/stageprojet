@@ -8,17 +8,17 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Biopen\CoreBundle\Document\AbstractFile;
 
 abstract class ImportState
-{       
-    const Started = "started";     
+{
+    const Started = "started";
     const Downloading = "downloading";
-    const InProgress = "in_progress";    
-    const Completed = "completed";  
-    const Errors = "errors";   
+    const InProgress = "in_progress";
+    const Completed = "completed";
+    const Errors = "errors";
     const Failed = "failed";
 }
 
-/** 
-* @MongoDB\Document 
+/**
+* @MongoDB\Document
 * @Vich\Uploadable
 * Import data into GoGoCarto. the data can imported through a static file, or via API url
 * The Import can be made once for all (static import) or dynamically every X days (ImportDynamic)
@@ -33,18 +33,18 @@ class Import extends AbstractFile
 
     /**
      * @var int
-     * @MongoDB\Id(strategy="INCREMENT") 
+     * @MongoDB\Id(strategy="INCREMENT")
      */
     private $id;
 
     /**
-     * @var string   
+     * @var string
      * @MongoDB\Field(type="string")
      */
     public $sourceName;
 
     /**
-     * @var string   
+     * @var string
      * Url of API to get the data
      * @MongoDB\Field(type="string")
      */
@@ -71,7 +71,7 @@ class Import extends AbstractFile
     private $needToHaveOptionsOtherThanTheOnesAddedToEachElements = false;
 
     /**
-     * @var string   
+     * @var string
      * @MongoDB\Field(type="string")
      */
     public $fieldToCheckElementHaveBeenUpdated;
@@ -79,7 +79,7 @@ class Import extends AbstractFile
     /**
      * @MongoDB\Field(type="bool")
      */
-    private $geocodeIfNecessary = false;  
+    private $geocodeIfNecessary = false;
 
     /**
     * @MongoDB\ReferenceMany(targetDocument="Biopen\CoreBundle\Document\GoGoLog", cascade={"all"})
@@ -88,7 +88,7 @@ class Import extends AbstractFile
 
     /**
      * State of the import when processing. Type of ImportState
-     * When processing import, this variable is being updated in realtime, so the client can follow 
+     * When processing import, this variable is being updated in realtime, so the client can follow
      * the state of the import also in realtime
      * @MongoDB\Field(type="string")
      */
@@ -100,26 +100,26 @@ class Import extends AbstractFile
      */
     private $currMessage;
 
-    /** 
-     * After importing some Data, if the user hard delete some elements, their ids will be remembered 
-     * so next time we do not import them again 
-     * 
-     * @MongoDB\Field(type="collection") 
-     */ 
-    private $idsToIgnore = []; 
-
-    
     /**
-     * @MongoDB\Field(type="hash")
+     * After importing some Data, if the user hard delete some elements, their ids will be remembered
+     * so next time we do not import them again
+     *
+     * @MongoDB\Field(type="collection")
      */
-    private $ontologyMapping = []; 
+    private $idsToIgnore = [];
+
 
     /**
      * @MongoDB\Field(type="hash")
      */
-    private $taxonomyMapping = []; 
+    private $ontologyMapping = [];
 
-    
+    /**
+     * @MongoDB\Field(type="hash")
+     */
+    private $taxonomyMapping = [];
+
+
     public function __construct() {
         $this->logs = new \Doctrine\Common\Collections\ArrayCollection();;
     }
@@ -128,10 +128,15 @@ class Import extends AbstractFile
 
     public function isDynamicImport() { return false; }
 
-    public function addIdToIgnore($id)  
-    { 
-        $this->idsToIgnore[] = $id; 
-    } 
+    public function addIdToIgnore($id)
+    {
+        $this->idsToIgnore[] = $id;
+    }
+
+    public function isCategoriesFieldMapped()
+    {
+        return in_array('categories', array_values($this->getOntologyMapping()));
+    }
 
     /**
      * Get id
@@ -185,7 +190,7 @@ class Import extends AbstractFile
     public function getUrl()
     {
         return $this->url;
-    }    
+    }
 
     /**
      * Set createMissingOptions
@@ -309,7 +314,7 @@ class Import extends AbstractFile
      * @return \Doctrine\Common\Collections\Collection $logs
      */
     public function getLogs()
-    {        
+    {
         $logs = is_array($this->logs) ? $this->logs : $this->logs->toArray();
         usort( $logs, function ($a, $b) { return $b->getCreatedAt()->getTimestamp() - $a->getCreatedAt()->getTimestamp(); });
         return $logs;
@@ -359,27 +364,27 @@ class Import extends AbstractFile
         return $this->currMessage;
     }
 
-    /** 
-     * Set idsToIgnore 
-     * 
-     * @param collection $idsToIgnore 
-     * @return $this 
-     */ 
-    public function setIdsToIgnore($idsToIgnore) 
-    { 
-        $this->idsToIgnore = $idsToIgnore; 
-        return $this; 
-    } 
- 
-    /** 
-     * Get idsToIgnore 
-     * 
-     * @return collection $idsToIgnore 
-     */ 
-    public function getIdsToIgnore() 
-    { 
-        return $this->idsToIgnore; 
-    } 
+    /**
+     * Set idsToIgnore
+     *
+     * @param collection $idsToIgnore
+     * @return $this
+     */
+    public function setIdsToIgnore($idsToIgnore)
+    {
+        $this->idsToIgnore = $idsToIgnore;
+        return $this;
+    }
+
+    /**
+     * Get idsToIgnore
+     *
+     * @return collection $idsToIgnore
+     */
+    public function getIdsToIgnore()
+    {
+        return $this->idsToIgnore;
+    }
 
     /**
      * Set needToHaveOptionsOtherThanTheOnesAddedToEachElements

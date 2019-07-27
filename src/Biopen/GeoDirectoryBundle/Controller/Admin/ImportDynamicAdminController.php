@@ -128,4 +128,77 @@ class ImportDynamicAdminController extends Controller
       'object' => $object,
     ), null);
   }
+
+
+    /**
+    * Overwrite Sonata CRud Controller
+    */
+    public function createAction()
+    {
+      $request = $this->getRequest();
+      // the key used to lookup the template
+      $templateKey = 'edit';
+      $this->admin->checkAccess('create');
+      $class = new \ReflectionClass($this->admin->hasActiveSubClass() ? $this->admin->getActiveSubClass() : $this->admin->getClass());
+
+      $object = $this->admin->getNewInstance();
+
+      $this->admin->setSubject($object);
+
+      $form = $this->admin->getForm();
+      $form->setData($object);
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted()) {
+          //TODO: remove this check for 4.0
+          if (method_exists($this->admin, 'preValidate')) {
+              $this->admin->preValidate($object);
+          }
+          $isFormValid = $form->isValid();
+
+          // persist if the form was valid and if in preview mode the preview was approved
+          if ($isFormValid && (!$this->isInPreviewMode($request) || $this->isPreviewApproved($request))) {
+              try {
+                  $object = $this->admin->create($object);
+
+                  $this->addFlash('sonata_flash_success', "Import créé avec succès. Vous pouvez maintenant cliquez sur 'Lire les Données' pour charger la liste des champs des éléments à importer");
+
+                  $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]) . "#tab_2";
+                  return $this->redirect($url);
+              } catch (ModelManagerException $e) {
+                  $this->handleModelManagerException($e);
+                  $isFormValid = false;
+              }
+          }
+
+          // show an error message if the form failed validation
+          if (!$isFormValid) {
+              if (!$this->isXmlHttpRequest()) {
+                  $this->addFlash(
+                      'sonata_flash_error',
+                      $this->trans(
+                          'flash_create_error',
+                          array('%name%' => $this->escapeHtml($this->admin->toString($object))),
+                          'SonataAdminBundle'
+                      )
+                  );
+              }
+          } elseif ($this->isPreviewRequested()) {
+              // pick the preview template if the form was valid and preview was requested
+              $templateKey = 'preview';
+              $this->admin->getShow();
+          }
+      }
+
+      $view = $form->createView();
+
+      // set the theme for the current Admin Form
+      $this->get('twig')->getExtension('form')->renderer->setTheme($view, $this->admin->getFormTheme());
+
+      return $this->render($this->admin->getTemplate($templateKey), array(
+          'action' => 'create',
+          'form' => $view,
+          'object' => $object,
+      ), null);
+    }
 }

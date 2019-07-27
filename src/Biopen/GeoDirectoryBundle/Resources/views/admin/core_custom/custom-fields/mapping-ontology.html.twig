@@ -2,25 +2,30 @@
 
 {% set object = form.vars.sonata_admin.admin.subject %}
 {% set mapping = object.ontologyMapping %}
-<table class="table">
-  <thead>
-    <tr>
-      <th>Attribut d'origine</th>
-      <th style="width:20px"></th>
-      <th>à transformer en</th>
-    </tr>
-  </thead>
-  <tbody class="table-striped">
-    {% for originName, mappedName in mapping %}
-      <tr>
-        <td class="original">{{originName}}</td>
-        <td><i class="arrow-icon fa fa-arrow-circle-right"></i></td>
-        <td class="mapped"><input type="text" name="ontology[{{originName}}]" class="form-control property-selector" value={{mappedName}} /></td>
-      </tr>
-    {% endfor %}
-  </tbody>
 
-</table>
+{% if mapping|length == 0 %}
+  <div class="alert alert-info">Veuillez cliquer sur le boutton "Lire les données" afin de charger les attributs des données à importer</div>
+{% else %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Attribut d'origine</th>
+        <th style="width:20px"></th>
+        <th>à transformer en</th>
+      </tr>
+    </thead>
+    <tbody class="table-striped">
+      {% for originName, mappedName in mapping %}
+        <tr>
+          <td class="original">{{originName}}</td>
+          <td><i class="arrow-icon fa fa-arrow-circle-right"></i></td>
+          <td class="mapped"><input type="text" name="ontology[{{originName}}]" class="form-control property-selector" value={{mappedName}} /></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+
+  </table>
+{% endif %}
 
 <style>
   .arrow-icon { font-size: 18px; }
