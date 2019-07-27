@@ -126,9 +126,7 @@ class ElementImportService
   public function collectData($import)
   {
 		$data = $import->getUrl() ?$this->importJson($import, true) : $this->importCsv($import, true);
-  	$this->mappingService->collectData($data, $import);
-  	$this->em->persist($import);
-  	$this->em->flush();
+  	$this->mappingService->transform($data, $import);
   }
 
 	public function importData($data, $import)
@@ -137,12 +135,8 @@ class ElementImportService
 		// Define the size of record, the frequency for persisting the data and the current index of records
 		$size = count($data); $batchSize = 100; $i = 0;
 
-		// still collect data on each import because the list of fields and categories might change
-		$this->mappingService->collectData($data, $import);
 		// do the mapping
 		$data = $this->mappingService->transform($data, $import);
-    // remove empty row, i.e. without name
-    $data = array_filter($data, function($row) { return $row['name']; });
 
 		if ($import->isDynamicImport())
 		{

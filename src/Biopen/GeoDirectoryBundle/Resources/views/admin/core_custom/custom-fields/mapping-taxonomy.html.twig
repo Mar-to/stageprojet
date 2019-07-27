@@ -1,11 +1,11 @@
 <input type="hidden" id="{{ form.vars.id }}" name="{{ form.vars.full_name }}"/>
 
 {% set object = form.vars.sonata_admin.admin.subject %}
-{% set mapping = object.ontologyMapping %}
+{% set mapping = object.taxonomyMapping %}
 <table class="table">
   <thead>
     <tr>
-      <th>Attribute d'origine</th>
+      <th>Catégorie d'origine</th>
       <th style="width:20px"></th>
       <th>à transformer en</th>
     </tr>
@@ -14,10 +14,28 @@
     {% for originName, mappedName in mapping %}
       <tr>
         <td class="original">{{originName}}</td>
-        <td><i class="arrow-icon fa fa-arrow-circle-right"></i></td>
-        <td class="mapped"><input type="text" name="ontology[{{originName}}]" class="form-control property-selector" value={{mappedName}} /></td>
+        <td><i class="fa fa-arrow-circle-right"></i></td>
+        <td class="mapped"><input type="text" name="taxonomy[{{originName}}]" class="form-control category-selector" value={{mappedName}} /></td>
       </tr>
     {% endfor %}
   </tbody>
 
 </table>
+
+<script>
+  jQuery(document).ready(function() {
+
+    var optionsList = JSON.parse('{{ form.vars.attr["data-options"]|raw }}');
+    var formData = []
+
+    for(var key in optionsList) {
+      var option = optionsList[key];
+      formData.push({id: option['_id'], text: option.name});
+    }
+
+    $(".category-selector").select2({
+        data: formData
+    });
+
+  });
+</script>

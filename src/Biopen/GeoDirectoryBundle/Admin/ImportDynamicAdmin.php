@@ -26,6 +26,9 @@ class ImportDynamicAdmin extends ImportAbstractAdmin
         $repo = $dm->getRepository('BiopenGeoDirectoryBundle:Element');
         $formProperties = json_encode($repo->findFormProperties());
         $elementProperties = json_encode($repo->findDataCustomProperties());
+        $optionsList = $dm->getRepository('BiopenGeoDirectoryBundle:Option')->createQueryBuilder()
+                      ->select('name')->hydrate(false)->getQuery()->execute()->toArray();
+        $optionsList = json_encode($optionsList);
 
         $formMapper
             ->tab('Général')
@@ -59,7 +62,7 @@ class ImportDynamicAdmin extends ImportAbstractAdmin
             ->end()
             ->tab('Table de correspondance des catégories')
                 ->with('Faites correspondre les catégories')
-                    ->add('taxonomyMapping', 'hidden', array('attr' => ['class' => 'gogo-mapping-taxonomy']))
+                    ->add('taxonomyMapping', 'hidden', array('attr' => ['class' => 'gogo-mapping-taxonomy', 'data-options' => $optionsList]))
                 ->end()
             ->end()
             ->tab('Aide')

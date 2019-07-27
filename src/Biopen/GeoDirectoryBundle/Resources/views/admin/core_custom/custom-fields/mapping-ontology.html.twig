@@ -5,7 +5,7 @@
 <table class="table">
   <thead>
     <tr>
-      <th>Attribute d'origine</th>
+      <th>Attribut d'origine</th>
       <th style="width:20px"></th>
       <th>à transformer en</th>
     </tr>
@@ -78,8 +78,6 @@
         allProperties.push(mappedName);
       }
     {% endfor %}
-
-    console.log(allProperties, otherData);
 
     options = [{ text: "Attributs du formulaire", children: formData}];
     if (otherData.length > 0) options.push({text: "Autres attributs", children: otherData});

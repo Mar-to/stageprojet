@@ -49,7 +49,7 @@ services:
     biopen.element_json_generator:
         class: Biopen\GeoDirectoryBundle\EventListener\ElementJsonGenerator
         tags:
-            - { name: doctrine_mongodb.odm.event_listener, event: preFlush }  
+            - { name: doctrine_mongodb.odm.event_listener, event: preFlush }
 
     biopen.db_integrity:
         class: Biopen\GeoDirectoryBundle\EventListener\DatabaseIntegrityWatcher
@@ -60,21 +60,21 @@ services:
 
     biopen.element_import:
        class: Biopen\GeoDirectoryBundle\Services\ElementImportService
-       arguments: 
+       arguments:
           - "@doctrine.odm.mongoDB.document_manager"
           - '@biopen.element_import_one'
           - "@biopen.element_import_mapping"
 
     biopen.element_import_one:
        class: Biopen\GeoDirectoryBundle\Services\ElementImportOneService
-       arguments: 
+       arguments:
           - "@doctrine.odm.mongoDB.document_manager"
           - '@bazinga_geocoder.geocoder'
           - "@biopen.user_interaction_service"
 
     biopen.element_import_mapping:
        class: Biopen\GeoDirectoryBundle\Services\ElementImportMappingService
-       arguments: []
+       arguments: ["@doctrine.odm.mongoDB.document_manager"]
 
     biopen.gogocartojs_service:
        class: Biopen\GeoDirectoryBundle\Services\GoGoCartoJsService

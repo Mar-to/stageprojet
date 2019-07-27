@@ -10,7 +10,7 @@
 		"address":{"streetAddress":"5 rue Georges Jacquet Grenoble"},
 		"createdAt":"21/12/2018 à 18:26",
 		"updatedAt":"17/03/2019 à 13:38",
-		"categories": [89],
+		"categories": ["vert", "tandem", "Totoé"],
 		"abstract": "Ateliers bricole",
 		"openHoursString": "",
 		"openHours": null,

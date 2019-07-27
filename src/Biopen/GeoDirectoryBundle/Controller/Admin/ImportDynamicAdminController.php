@@ -29,9 +29,9 @@ class ImportDynamicAdminController extends Controller
     $em->persist($object);
     $em->flush();
 
-    $this->get('biopen.async')->callCommand('app:elements:importSource', [$object->getId()]);
+    // $this->get('biopen.async')->callCommand('app:elements:importSource', [$object->getId()]);
 
-    // $result = $this->get('biopen.element_import')->importJson($object);
+    $result = $this->get('biopen.element_import')->importJson($object);
 
     $redirectionUrl = $this->admin->generateUrl('edit', ['id' => $object->getId()]);
     $stateUrl = $this->generateUrl('biopen_import_state', ['id' => $object->getId()]);
@@ -74,8 +74,8 @@ class ImportDynamicAdminController extends Controller
         try {
 
           // ----- CUSTOM -------
-
           $object->setOntologyMapping($request->get('ontology'));
+          $object->setTaxonomyMapping($request->get('taxonomy'));
 
           // ---- END CUSTOM ------
 

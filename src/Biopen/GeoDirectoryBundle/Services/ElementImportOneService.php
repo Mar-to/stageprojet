@@ -206,6 +206,10 @@ class ElementImportOneService
 		$optionsIdAdded = [];
 		$options = $row['categories'];
 
+		foreach ($options as $optionId) {
+			$this->addOptionValue($element, $optionId);
+		}
+
 		if ($import->getNeedToHaveOptionsOtherThanTheOnesAddedToEachElements()) {
 			// checking option number before adding optionIdsToAddToEachElement
 			if (count($element->getOptionValues()) == 0) $element->setModerationState(ModerationState::NoOptionProvided);
@@ -221,6 +225,7 @@ class ElementImportOneService
 
 	private function addOptionValue($element, $id)
 	{
+		if (!$id) return;
 		$optionValue = new OptionValue();
 		$optionValue->setOptionId($id);
 	  $optionValue->setIndex(0);

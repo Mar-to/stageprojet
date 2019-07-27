@@ -22,27 +22,65 @@ use Biopen\CoreBundle\Document\GoGoLogLevel;
 class ElementImportMappingService
 {
   protected $import;
+  protected $em;
   protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source'];
 
-  public function collectData($data, $import)
+  public function __construct(DocumentManager $documentManager)
   {
-    $mapping = $import->getOntologyMapping();
-    foreach($data as $row)
-      foreach ($row as $key => $value) {
-        if (!array_key_exists($key, $mapping)) {
-          $value = in_array($key, $this->coreFields) ? $key : "";
-          $mapping[$key] = $value;
-        }
-      }
-    $import->setOntologyMapping($mapping);
+    $this->em = $documentManager;
   }
 
   public function transform($data, $import)
   {
     $this->import = $import;
+    $this->collectOntology($data, $import);
     $data = $this->mapOntology($data);
+    // remove empty row, i.e. without name
+    $data = array_filter($data, function($row) { return array_key_exists('name', $row); });
     $data = $this->addMissingFieldsToData($data);
+    dump($data);
+    $this->collectTaxonomy($data, $import);
+    $data = $this->mapTaxonomy($data);
+    dump($data);
+    $this->em->persist($import);
+    $this->em->flush();
     return $data;
+  }
+
+  public function collectOntology($data, $import)
+  {
+    $ontologyMapping = $import->getOntologyMapping();
+
+    foreach($data as $row)
+    {
+      foreach ($row as $key => $value) {
+        if (!array_key_exists($key, $ontologyMapping)) {
+          $value = in_array($key, $this->coreFields) ? $key : "";
+          $ontologyMapping[$key] = $value;
+        }
+      }
+    }
+    $import->setOntologyMapping($ontologyMapping);
+  }
+
+  public function collectTaxonomy($data, $import)
+  {
+    $taxonomyMapping = $import->getTaxonomyMapping();
+    $this->createOptionsMappingTable();
+
+    foreach($data as $row)
+    {
+      $taxonomy = $row['categories'];
+      $taxonomy = is_array($taxonomy) ? $taxonomy : explode(',', $taxonomy);
+      foreach($taxonomy as $category) {
+        if ($category && !array_key_exists($category, $taxonomyMapping)) {
+          $categorySlug = $this->slugify($category);
+          $value = array_key_exists($categorySlug, $this->mappingTableIds) ? $this->mappingTableIds[$categorySlug]['id'] : '';
+          $taxonomyMapping[$category] = $value;
+        }
+      }
+    }
+    $import->setTaxonomyMapping($taxonomyMapping);
   }
 
   private function mapOntology($data)
@@ -51,13 +89,15 @@ class ElementImportMappingService
 
     foreach ($data as $key => $row) {
       foreach ($mapping as $search => $replace) {
-        if ($replace != '/' && isset($row[$search]) && !isset($row[$replace])) {
+        if ($replace == '/' || $replace == '') {
+          unset($data[$key][$search]);
+        }
+        else if (isset($row[$search]) && !isset($row[$replace])) {
           $data[$key][$replace] = $data[$key][$search];
           unset($data[$key][$search]);
         }
       }
     }
-
     return $data;
   }
 
@@ -72,14 +112,17 @@ class ElementImportMappingService
     return $data;
   }
 
-  private function mapcategories($data)
+  private function mapTaxonomy($data)
   {
-    $mapping = $this->import->getcategoriesMapping();
+    $mapping = $this->import->getTaxonomyMapping();
     foreach ($data as $key => $row)
     {
       if (is_string($row['categories'])) $row['categories'] = explode(',', $row['categories']);
-      $row['categories'] = array_map(function($el) use ($mapping) { return $mapping[$el]; }, $row['categories']);
+      $data[$key]['categories'] = array_map(function($el) use ($mapping) {
+        return array_key_exists($el, $mapping) ? $mapping[$el] : '';
+      }, $row['categories']);
     }
+    return $data;
   }
 
   private function createOptionsMappingTable($options = null)
@@ -99,7 +142,7 @@ class ElementImportMappingService
     }
   }
 
-  public function autoMapcategories()
+  public function automapTaxonomy()
   {
     foreach($options as $optionName)
     {
@@ -133,6 +176,7 @@ class ElementImportMappingService
 
   private function slugify($text)
   {
+    if (!is_string($text)) return;
     // replace non letter or digits by -
     $text = str_replace('é', 'e', $text);
     $text = str_replace('è', 'e', $text);
