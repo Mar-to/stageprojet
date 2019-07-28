@@ -84,7 +84,8 @@
       }
     {% endfor %}
 
-    options = [{ text: "Attributs du formulaire", children: formData}];
+    options = [{ id: "/", text: ""}]
+    options.push({ text: "Attributs du formulaire", children: formData});
     if (otherData.length > 0) options.push({text: "Autres attributs", children: otherData});
     options.push({ text: "Attributs importés", children: importedData});
 

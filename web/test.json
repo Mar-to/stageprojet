@@ -5,7 +5,7 @@
 		"id":"Rhm",
 		"newfields": "balam",
 		"name":"Entropie",
-		"geo":{"latitude":45.18679,"longitude":5.70548},
+		"coord":{"latitude":45.18679,"longitude":5.70548},
 		"sourceKey":"CapOuPasCap",
 		"address":{"streetAddress":"5 rue Georges Jacquet Grenoble"},
 		"createdAt":"21/12/2018 à 18:26",

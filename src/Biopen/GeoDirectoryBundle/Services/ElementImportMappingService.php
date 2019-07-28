@@ -25,6 +25,8 @@ class ElementImportMappingService
   protected $createMissingOptions;
   protected $parentCategoryIdToCreateMissingOptions;
   protected $em;
+  protected $ontologyMapping;
+  protected $allNewFields;
   protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source'];
   protected $mappedCoreFields = [
     'title' => 'name',
@@ -99,26 +101,41 @@ class ElementImportMappingService
 
   public function collectOntology($data, $import)
   {
-    $ontologyMapping = $import->getOntologyMapping();
-    $allNewFields = [];
+    $this->ontologyMapping = $import->getOntologyMapping();
+    $this->allNewFields = [];
     foreach($data as $row)
     {
       foreach ($row as $key => $value) {
-        if (!in_array($key, $allNewFields)) $allNewFields[] = $key;
-        if (!array_key_exists($key, $ontologyMapping)) {
-          $value = in_array($key, $this->coreFields) ? $key : "";
-          if (!$value && array_key_exists($key, $this->mappedCoreFields) && in_array($this->mappedCoreFields[$key], $this->coreFields))
-            $value = $this->mappedCoreFields[$key];
-          $ontologyMapping[$key] = $value;
+        $this->collectKey($key);
+        if ($this->isAssociativeArray($value)) {
+          foreach ($value as $subkey => $subvalue) { $this->collectKey($subkey, $key); }
         }
       }
     }
     // delete no more used fields
-    foreach($ontologyMapping as $field => $mappedField) {
-      if (!in_array($field, $allNewFields)) unset($ontologyMapping[$field]);
+    foreach($this->ontologyMapping as $field => $mappedField) {
+      if (!in_array($field, $this->allNewFields)) unset($this->ontologyMapping[$field]);
     }
 
-    $import->setOntologyMapping($ontologyMapping);
+    $import->setOntologyMapping($this->ontologyMapping);
+  }
+
+  private function collectKey($key, $parentKey = null) {
+    $keyName = $parentKey ? $parentKey . '/' . $key : $key;
+    if (!in_array($keyName, $this->allNewFields)) $this->allNewFields[] = $keyName;
+    if (!array_key_exists($keyName, $this->ontologyMapping)) {
+      $value = in_array($key, $this->coreFields) ? $key : "";
+      if (!$value && array_key_exists($key, $this->mappedCoreFields) && in_array($this->mappedCoreFields[$key], $this->coreFields))
+        $value = $this->mappedCoreFields[$key];
+      $this->ontologyMapping[$keyName] = $value;
+    }
+  }
+
+  private function isAssociativeArray($a) {
+    if (!is_array($a)) return false;
+    foreach(array_keys($a) as $key)
+      if (!is_int($key)) return TRUE;
+    return FALSE;
   }
 
   public function collectTaxonomy($data, $import)
@@ -164,12 +181,21 @@ class ElementImportMappingService
 
     foreach ($data as $key => $row) {
       foreach ($mapping as $search => $replace) {
+        $searchKeys = explode('/', $search);
+        if (count($searchKeys) == 2) { $searchkey = $searchKeys[0]; $subkey = $searchKeys[1]; }
+        else { $searchkey = $searchKeys[0]; $subkey = null; }
+
         if ($replace == '/' || $replace == '') {
           unset($data[$key][$search]);
         }
-        else if (isset($row[$search]) && !isset($row[$replace])) {
-          $data[$key][$replace] = $data[$key][$search];
-          unset($data[$key][$search]);
+        else if (isset($row[$searchkey]) && !isset($row[$replace])) {
+          if ($subkey) {
+            $data[$key][$replace] = $row[$searchkey][$subkey];
+            unset($data[$key][$searchkey][$subkey]);
+          } else {
+            $data[$key][$replace] = $row[$searchkey];
+            unset($data[$key][$searchkey]);
+          }
         }
       }
     }
