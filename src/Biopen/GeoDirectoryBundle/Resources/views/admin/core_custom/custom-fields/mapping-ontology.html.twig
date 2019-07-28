@@ -63,7 +63,7 @@
     }
     for(var i = 0; i < dataProperties.length; i++) {
       var prop = dataProperties[i];
-      if (allProperties.indexOf(prop) == -1) {
+      if (allProperties.indexOf(prop) == -1 && prop != '/') {
         allProperties.push(prop);
         otherData.push({id: prop, text: prop});
       }
@@ -71,13 +71,13 @@
 
     {% for originName, mappedName in mapping %}
       var originName = '{{ originName }}';
-      if (originName && allProperties.indexOf(originName) == -1 && coreFields.indexOf(originName) == -1)
+      if (originName && allProperties.indexOf(originName) == -1 && coreFields.indexOf(originName) == -1 && originName != '/')
       {
         importedData.push({id: originName, text:  originName});
         allProperties.push(originName);
       }
       var mappedName = '{{ mappedName }}';
-      if (mappedName && allProperties.indexOf(mappedName) == -1 && coreFields.indexOf(originName) == -1)
+      if (mappedName && allProperties.indexOf(mappedName) == -1 && coreFields.indexOf(mappedName) == -1 && mappedName != '/')
       {
         otherData.push({id: mappedName, text: mappedName});
         allProperties.push(mappedName);

@@ -14,7 +14,7 @@
   {% include '@BiopenAdmin/partials/list__action_refresh.html.twig' with {'class': 'btn-primary'} %}
   {% set class = object.ontologyMapping|length > 0 ? 'btn-default' : 'btn-primary' %}
   {% if object.id != "" %}
-    <a href="{{ admin.generateObjectUrl('collect', object) }}" class="btn {{ class }} view_link">
+    <a href="{{ admin.generateObjectUrl('collect', object) }}" class="btn {{ class }} view_link" title="Met à jour les tables de correspondance sans réellement importer les données">
         <i class="fa fa-eye" aria-hidden="true"></i>
         Lire les données
       </a>

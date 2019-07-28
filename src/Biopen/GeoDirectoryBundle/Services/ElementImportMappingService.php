@@ -54,13 +54,14 @@ class ElementImportMappingService
 
     // remove empty row, i.e. without name
     $data = array_filter($data, function($row) { return array_key_exists('name', $row); });
-    // $data = $this->addMissingFieldsToData($data);
 
     if ($import->isCategoriesFieldMapped())
     {
       $this->collectTaxonomy($data, $import);
       $data = $this->mapTaxonomy($data);
     }
+
+    $data = $this->addMissingFieldsToData($data);
 
     $this->em->persist($import);
     $this->em->flush();
@@ -77,7 +78,8 @@ class ElementImportMappingService
         if (!in_array($key, $allNewFields)) $allNewFields[] = $key;
         if (!array_key_exists($key, $ontologyMapping)) {
           $value = in_array($key, $this->coreFields) ? $key : "";
-          if (!$value && in_array($this->mappedCoreFields[$key], $this->coreFields)) $value = $this->mappedCoreFields[$key];
+          if (!$value && array_key_exists($key, $this->mappedCoreFields) && in_array($this->mappedCoreFields[$key], $this->coreFields))
+            $value = $this->mappedCoreFields[$key];
           $ontologyMapping[$key] = $value;
         }
       }
@@ -162,11 +164,18 @@ class ElementImportMappingService
     foreach ($data as $key => $row)
     {
       if (is_string($row['categories'])) $row['categories'] = explode(',', $row['categories']);
-      $data[$key]['categories'] = array_map(function($el) use ($mapping) {
-        return array_key_exists($el, $mapping) ? $mapping[$el] : '';
+      $categories = array_map(function($el) use ($mapping) {
+        return array_key_exists($el, $mapping) ? $this->mappingTableIds[$mapping[$el]]['idAndParentsId'] : [];
       }, $row['categories']);
+      $data[$key]['categories'] = array_unique($this->array_flatten($categories));
     }
     return $data;
+  }
+
+  private function array_flatten(array $array) {
+    $return = array();
+    array_walk_recursive($array, function($a) use (&$return) { $return[] = $a; });
+    return $return;
   }
 
   private function createOptionsMappingTable($options = null)
