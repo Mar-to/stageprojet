@@ -57,7 +57,23 @@ class ImportDynamicAdmin extends ImportAbstractAdmin
                         ->add('logs', 'hidden', array('attr' => ['class' => 'gogo-display-logs'], 'mapped' => false))
                     ->end();
                 }
-            $formMapper->end();
+        $formMapper->end();
+        $formMapper->tab('Modifier les données en exécutant du code')
+            ->with('Entrez du code qui sera exécuté à la reception des données, avant leur traitement par GoGoCarto', ["description" => "La variable <b>\$data</b> représente le tableau PHP créé à partir des données Csv ou Json. Quelques examples de transformations simple:
+<pre>&lt;?php</br>\$data = \$data['elements']</pre>
+<pre>&lt;?php</br>foreach(\$data as \$key => \$row) {
+    \$data[\$key]['source'] = \"MySource\";
+}</pre>
+<pre>&lt;?php</br>foreach(\$data as \$key => \$row) {
+    \$data[\$key]['latitude'] = \$row['geo']['latitude']);
+    \$data[\$key]['longitude'] = \$row['geo']['longitude']);
+}</pre>
+<pre>&lt;?php</br>foreach(\$data as \$key => \$row) {
+    \$data[\$key]['categories'] = array_map(function(\$cat) { return \$cat[0]; }, \$row['categories']);
+}</pre>"])
+                ->add('customCode', 'text', array('label' => 'Code PHP qui sera exécuté', 'attr' => ['class' => 'gogo-code-editor', 'format' => 'php', 'height' => '500'], 'required' => false))
+            ->end()
+        ->end();
 
         if ($this->getSubject()->getId())
         {

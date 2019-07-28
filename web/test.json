@@ -1,6 +1,6 @@
 {
-        "licence": "https://opendatacommons.org/licenses/odbl/summary/",
-        "ontology":"gogofull",
+  "licence": "https://opendatacommons.org/licenses/odbl/summary/",
+  "ontology":"gogofull",
 	"data":[{
 		"id":"Rhm",
 		"newfields": "balam",

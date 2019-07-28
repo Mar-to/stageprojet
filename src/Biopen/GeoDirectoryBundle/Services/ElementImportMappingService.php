@@ -49,6 +49,35 @@ class ElementImportMappingService
     $parent = $import->getParentCategoryToCreateOptions() ?: $this->em->getRepository('BiopenGeoDirectoryBundle:Category')->findOneByIsRootCategory(true);
     $this->parentCategoryIdToCreateMissingOptions = $parent->getId();
 
+    // elements is ofently stored nested in a data attribute
+    if (array_key_exists('data', $data)) $data = $data['data'];
+
+    // Fixs gogocarto ontology when importing
+    foreach ($data as $key => $row) {
+      if (array_key_exists('geo', $row))
+      {
+        $data[$key]['latitude']  = $row['geo']['latitude'];
+        $data[$key]['longitude'] = $row['geo']['longitude'];
+        unset($data[$key]['geo']);
+      }
+      if (array_key_exists('address', $row))
+      {
+        $address = $row['address'];
+
+        if (gettype($address) == "string") $data[$key]['streetAddress'] = $address;
+        else if ($address) {
+          if (array_key_exists('streetAddress', $address))   $data[$key]['streetAddress']   = $address['streetAddress'];
+          if (array_key_exists('addressLocality', $address)) $data[$key]['addressLocality'] = $address['addressLocality'];
+          if (array_key_exists('postalCode', $address))      $data[$key]['postalCode']      = $address['postalCode'];
+          if (array_key_exists('addressCountry', $address))  $data[$key]['addressCountry']  = $address['addressCountry'];
+        }
+        unset($data[$key]['address']);
+      }
+    }
+
+    // Execute custom code (the <?php is used to have proper code highliting in text editor, we remove it before executing)
+    eval(str_replace('<?php', '', $import->getCustomCode()));
+
     $this->collectOntology($data, $import);
     $data = $this->mapOntology($data);
 
@@ -163,11 +192,13 @@ class ElementImportMappingService
     $mapping = $this->import->getTaxonomyMapping();
     foreach ($data as $key => $row)
     {
-      if (is_string($row['categories'])) $row['categories'] = explode(',', $row['categories']);
-      $categories = array_map(function($el) use ($mapping) {
-        return array_key_exists($el, $mapping) ? $this->mappingTableIds[$mapping[$el]]['idAndParentsId'] : [];
-      }, $row['categories']);
-      $data[$key]['categories'] = array_unique($this->array_flatten($categories));
+      if (is_array($row['categories'])) {
+        if (is_string($row['categories'])) $row['categories'] = explode(',', $row['categories']);
+        $categories = array_map(function($el) use ($mapping) {
+          return array_key_exists($el, $mapping) && array_key_exists($mapping[$el], $this->mappingTableIds) ? $this->mappingTableIds[$mapping[$el]]['idAndParentsId'] : [];
+        }, $row['categories']);
+        $data[$key]['categories'] = array_unique($this->array_flatten($categories));
+      }
     }
     return $data;
   }

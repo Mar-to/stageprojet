@@ -7,6 +7,9 @@ use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Biopen\CoreBundle\Document\AbstractFile;
 
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+
 abstract class ImportState
 {
     const Started = "started";
@@ -119,6 +122,12 @@ class Import extends AbstractFile
      */
     private $taxonomyMapping = [];
 
+    /**
+     * Custom code made by the user to be run on the $data object when importing
+     * @MongoDB\Field(type="string")
+     */
+    private $customCode = "<?php";
+
 
     public function __construct() {
         $this->logs = new \Doctrine\Common\Collections\ArrayCollection();;
@@ -135,7 +144,19 @@ class Import extends AbstractFile
 
     public function isCategoriesFieldMapped()
     {
-        return in_array('categories', array_values($this->getOntologyMapping()));
+        return $this->getOntologyMapping() ? in_array('categories', array_values($this->getOntologyMapping())) : false;
+    }
+
+    /**
+     * @Assert\Callback
+     */
+    public function validate(ExecutionContextInterface $context)
+    {
+        if (preg_match("/new |process|mongo/i", $this->customCode)) {
+            $context->buildViolation("Il est interdit d'utiliser les mots suivants: new, mongo, process... Merci de ne pas faire de betises !")
+                ->atPath('customCode')
+                ->addViolation();
+        }
     }
 
     /**
@@ -472,5 +493,27 @@ class Import extends AbstractFile
     public function getTaxonomyMapping()
     {
         return $this->taxonomyMapping;
+    }
+
+    /**
+     * Set customCode
+     *
+     * @param string $customCode
+     * @return $this
+     */
+    public function setCustomCode($customCode)
+    {
+        $this->customCode = $customCode;
+        return $this;
+    }
+
+    /**
+     * Get customCode
+     *
+     * @return string $customCode
+     */
+    public function getCustomCode()
+    {
+        return $this->customCode;
     }
 }

@@ -89,31 +89,6 @@ class ElementImportService
     $data = json_decode($json, true);
     if ($data === null) return null;
 
-    // data can be stored inside a data attribute
-    if (array_key_exists('data', $data)) $data = $data['data'];
-
-    foreach ($data as $key => $row) {
-			if (array_key_exists('geo', $row))
-			{
-				$data[$key]['latitude']  = $row['geo']['latitude'];
-				$data[$key]['longitude'] = $row['geo']['longitude'];
-				unset($data[$key]['geo']);
-			}
-			if (array_key_exists('address', $row))
-			{
-				$address = $row['address'];
-
-				if (gettype($address) == "string") $data[$key]['streetAddress'] = $address;
-				else if ($address) {
-					if (array_key_exists('streetAddress', $address))   $data[$key]['streetAddress']   = $address['streetAddress'];
-					if (array_key_exists('addressLocality', $address)) $data[$key]['addressLocality'] = $address['addressLocality'];
-					if (array_key_exists('postalCode', $address))      $data[$key]['postalCode']      = $address['postalCode'];
-					if (array_key_exists('addressCountry', $address))  $data[$key]['addressCountry']  = $address['addressCountry'];
-				}
-				unset($data[$key]['address']);
-			}
-		}
-
     if ($onlyGetData) return $data;
 
     $elementImportedCount = $this->importData($data, $import);
@@ -125,7 +100,7 @@ class ElementImportService
   // create a mapping table for ontology and taxonomy
   public function collectData($import)
   {
-		$data = $import->getUrl() ?$this->importJson($import, true) : $this->importCsv($import, true);
+		$data = $import->getUrl() ? $this->importJson($import, true) : $this->importCsv($import, true);
   	$this->mappingService->transform($data, $import);
   }
 

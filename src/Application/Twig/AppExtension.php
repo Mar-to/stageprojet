@@ -29,7 +29,7 @@ class AppExtension extends AbstractExtension
 
     public function values($value)
     {
-        return array_values($value);
+        return $value ? array_values($value) : [];
     }
 
     public function getFunctions()
