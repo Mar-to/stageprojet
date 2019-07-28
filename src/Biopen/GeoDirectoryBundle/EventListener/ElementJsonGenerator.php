@@ -10,11 +10,20 @@ class ElementJsonGenerator
 {
   protected $currElementChangeset;
   protected $config = null;
+  protected $options = null;
 
   public function getConfig($dm)
   {
     if (!$this->config) $this->config = $dm->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
     return $this->config;
+  }
+
+  public function getOptions($dm)
+  {
+    // load all options so we don't need to do a query on each element being modified
+    if (!$this->options) $this->options = $dm->getRepository('BiopenGeoDirectoryBundle:Option')->createQueryBuilder()
+                                             ->select('name')->hydrate(false)->getQuery()->execute()->toArray();
+    return $this->options;
   }
 
   public function preFlush(\Doctrine\ODM\MongoDB\Event\PreFlushEventArgs $eventArgs)
@@ -46,6 +55,7 @@ class ElementJsonGenerator
   {
     if (!$element->getGeo()) { return; }
     $config = $this->getConfig($dm);
+    $options = $this->getOptions($dm);
 
     // -------------------- FULL JSON ----------------
 
@@ -65,7 +75,7 @@ class ElementJsonGenerator
     $sortedOptionsValues = $element->getSortedOptionsValues();
     $optValuesLength = count($sortedOptionsValues);
     // Options values ids
-    $baseJson .= ', "categories": [';
+    $baseJson .= ', "categoriesIds": [';
     if ($sortedOptionsValues)
     {
         for ($i=0; $i < $optValuesLength; $i++) {
@@ -74,15 +84,23 @@ class ElementJsonGenerator
     }
     $baseJson = rtrim($baseJson, ',');
     $baseJson .= '],';
-    // Options values with descriptionO
-    $optionDescriptionsJson = [];
+    // option values names
+    $optionsString = '';
+    $optionsFullJson = [];
     if ($sortedOptionsValues)
     {
-        for ($i=0; $i < $optValuesLength; $i++) {
-            if ($sortedOptionsValues[$i]->getDescription()) $optionDescriptionsJson[] =  $sortedOptionsValues[$i]->toJson();
-        }
+      for ($i=0; $i < $optValuesLength; $i++) {
+        $optionValue = $sortedOptionsValues[$i];
+        $optionName = json_encode($options[$optionValue->getOptionId()]['name']);
+        $optionsString .=  $optionName . ',';
+        $optionsFullJson[] = $sortedOptionsValues[$i]->toJson($optionName);
+      }
     }
-    if (count($optionDescriptionsJson)) $baseJson .= '"categoriesDescriptions": [' . implode(",", $optionDescriptionsJson) . '],';
+    $optionsString = rtrim($optionsString, ',');
+    $baseJson .= '"categories": [' . $optionsString . '],';
+    $element->setOptionsString($optionsString); // we also update optionsString attribute which is used in exporting from element admin list
+    // Options values with description
+    if (count($optionsFullJson)) $baseJson .= '"categoriesFull": [' . implode(",", $optionsFullJson) . '],';
 
     // CUSTOM DATA
     if ($element->getData())
@@ -135,7 +153,7 @@ class ElementJsonGenerator
 
     // -------------------- COMPACT JSON ----------------
     // [id, customData, latitude, longitude, status, moderationState]
-    $compactFields = $this->getConfig($dm)->getMarker()->getFieldsUsedByTemplate();
+    $compactFields = $config->getMarker()->getFieldsUsedByTemplate();
     $compactData = [];
     foreach ($compactFields as $field) $compactData[] = $element->getProperty($field);
 

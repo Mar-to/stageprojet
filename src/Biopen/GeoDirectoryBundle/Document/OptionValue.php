@@ -23,23 +23,25 @@ class OptionValue
 	*/
 	public $optionId;
 
-	/** 
+	/**
     * @Expose
-    * @MongoDB\Field(type="string") 
+    * @MongoDB\Field(type="string")
     */
 	public $description;
 
-	/** 
+	/**
     * @Expose
-    * @MongoDB\Field(type="int") 
+    * @MongoDB\Field(type="int")
     */
 	public $index = 0;
 
-    public function toJson()
+    public function toJson($optionName)
     {
         $result = "{";
-        $result .=  '"categoryId":"'   . $this->optionId . '"';
+        $result .=  '"id":'   . $this->optionId ;
+        if ($optionName) $result .=  ', "name":'   . $optionName;
         $result .=', "description":'  . json_encode($this->description);
+        $result .=', "index":'   . $this->index;
         $result .= "}";
         return $result;
     }

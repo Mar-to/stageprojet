@@ -57,6 +57,7 @@ services:
         tags:
             - { name: doctrine_mongodb.odm.event_listener, event: preRemove }
             - { name: doctrine_mongodb.odm.event_listener, event: preFlush }
+            - { name: doctrine_mongodb.odm.event_listener, event: preUpdate }
 
     biopen.element_import:
        class: Biopen\GeoDirectoryBundle\Services\ElementImportService
