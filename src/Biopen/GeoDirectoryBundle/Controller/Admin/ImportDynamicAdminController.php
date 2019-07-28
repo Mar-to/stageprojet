@@ -161,7 +161,9 @@ class ImportDynamicAdminController extends Controller
               try {
                   $object = $this->admin->create($object);
 
-                  $this->addFlash('sonata_flash_success', "Import créé avec succès. Vous pouvez maintenant cliquez sur 'Lire les Données' pour charger la liste des champs des éléments à importer");
+                  $result = $this->get('biopen.element_import')->collectData($object);
+
+                  $this->addFlash('sonata_flash_success', "Les données ont été chargées avec succès. Vous pouvez maintenant compléter les tables de correspondances, puis importer les données.");
 
                   $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]) . "#tab_2";
                   return $this->redirect($url);
