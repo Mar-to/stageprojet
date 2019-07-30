@@ -22,5 +22,10 @@
   <a href="{{ admin.generateObjectUrl('list', object) }}" class="btn btn-default view_link">
     <i class="fa fa-list" aria-hidden="true"></i>Retour à la liste
   </a>
+  {% if object.id != "" %}
+    <a href="{{ admin.generateObjectUrl('delete', object) }}" class="btn btn-danger view_link">
+      <i class="fa fa-trash" aria-hidden="true"></i>Supprimer (ainsi que tous les éléments importés)
+    </a>
+  {% endif %}
 {% endblock %}
 

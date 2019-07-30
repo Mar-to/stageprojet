@@ -152,8 +152,8 @@ class Import extends AbstractFile
      */
     public function validate(ExecutionContextInterface $context)
     {
-        if (preg_match("/new |process|mongo/i", $this->customCode)) {
-            $context->buildViolation("Il est interdit d'utiliser les mots suivants: new, mongo, process... Merci de ne pas faire de betises !")
+        if (preg_match("/new |process|mongo|this|symfony/i", $this->customCode)) {
+            $context->buildViolation("Il est interdit d'utiliser les mots suivants: new, mongo, process, this, symfony... Merci de ne pas faire de betises !")
                 ->atPath('customCode')
                 ->addViolation();
         }
