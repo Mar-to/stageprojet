@@ -12,14 +12,16 @@
         <th>Attribut d'origine</th>
         <th style="width:20px"></th>
         <th>à transformer en</th>
+        <th style="width:20px"></th>
       </tr>
     </thead>
     <tbody class="table-striped">
       {% for originName, mappedName in mapping %}
         <tr>
           <td class="original">{{originName}}</td>
-          <td><i class="arrow-icon fa fa-arrow-circle-right"></i></td>
+          <td><i class="arrow-icon fa fa-arrow-circle-right" title="Utiliser le nom d'origine"></i></td>
           <td class="mapped"><input type="text" name="ontology[{{originName}}]" class="form-control property-selector" value={{mappedName}} /></td>
+          <td><i class="clear-icon fa fa-ban" title="Ne pas importer ce champ"></i></td>
         </tr>
       {% endfor %}
     </tbody>
@@ -29,7 +31,7 @@
 
 <style>
   .arrow-icon { font-size: 18px; }
-  .arrow-icon:hover { cursor: pointer; }
+  .arrow-icon:hover, .clear-icon:hover { cursor: pointer; }
   td { vertical-align: middle !important; }
 </style>
 
@@ -40,13 +42,18 @@
       $(this).parent().parent().find('.property-selector:not(.select2-container)').val($(this).parent().siblings('.original').text()).trigger('change');
     });
 
-    var formProperties = JSON.parse('{{ form.vars.attr["data-form-props"]|raw }}');
-    var dataProperties = JSON.parse('{{ form.vars.attr["data-props"]|raw }}');
+    $('.clear-icon').click(function() {
+      $(this).parent().parent().find('.property-selector:not(.select2-container)').val("/").trigger('change');
+    });
+
+    var formProperties = {{ form.vars.attr["data-form-props"]|raw }};
+    var dataProperties = {{ form.vars.attr["data-props"]|raw }};
     var coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source']
     var formData = [], allProperties = [], otherData = []; var importedData = [];
     formData.push({id: 'id', text: 'Identifiant unique'});
     formData.push({id: 'name', text: 'Titre de la fiche'});
     formData.push({id: 'categories', text: 'Liste des catégories (en tableau ou séparées par des virgules)'});
+    formData.push({id: 'streetNumber', text: 'Adresse: numéro de rue'});
     formData.push({id: 'streetAddress', text: 'Adresse: rue'});
     formData.push({id: 'addressLocality', text: 'Adresse: ville'});
     formData.push({id: 'postalCode', text: 'Adresse: code postal'});

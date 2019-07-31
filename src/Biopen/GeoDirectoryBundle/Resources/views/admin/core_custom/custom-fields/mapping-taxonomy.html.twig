@@ -9,14 +9,16 @@
         <th>Catégories lues depuis le fichier d'origine</th>
         <th style="width:20px"></th>
         <th>Catégories du site</th>
+        <th style="width:20px"></th>
       </tr>
     </thead>
     <tbody class="table-striped">
       {% for originName, mappedName in mapping %}
         <tr>
           <td class="original">{{originName}}</td>
-          <td><i class="fa fa-arrow-circle-right"></i></td>
+          <td>></td>
           <td class="mapped"><input type="text" name="taxonomy[{{originName}}]" class="form-control category-selector" value={{mappedName}} /></td>
+          <td><i class="clear-icon fa fa-ban" title="Ne pas utiliser cette catégorie"></i></td>
         </tr>
       {% endfor %}
     </tbody>
@@ -30,8 +32,8 @@
 <script>
   jQuery(document).ready(function() {
 
-    var optionsList = JSON.parse('{{ form.vars.attr["data-options"]|raw }}');
-    var formData = []
+    var optionsList = {{ form.vars.attr["data-options"]|raw }};
+    var formData = [{ id: "", text: ""}]
 
     for(var key in optionsList) {
       var option = optionsList[key];
@@ -40,6 +42,10 @@
 
     $(".category-selector").select2({
         data: formData
+    });
+
+    $('.clear-icon').click(function() {
+      $(this).parent().parent().find('.category-selector:not(.select2-container)').val("").trigger('change');
     });
 
   });

@@ -101,7 +101,7 @@ class ElementImportService
   public function collectData($import)
   {
 		$data = $import->getUrl() ? $this->importJson($import, true) : $this->importCsv($import, true);
-  	$this->mappingService->transform($data, $import);
+  	return $this->mappingService->transform($data, $import);
   }
 
 	public function importData($data, $import)
@@ -149,7 +149,7 @@ class ElementImportService
 				if (!array_key_exists($e->getMessage(), $this->errorsCount)) $this->errorsCount[$e->getMessage()] = 1;
 				else $this->errorsCount[$e->getMessage()]++;
 				$message = '<u>' . $e->getMessage() . '</u> <b>(x' . $this->errorsCount[$e->getMessage()] . ')</b></br>' . $e->getFile() . ' LINE ' . $e->getLine() . '</br>';
-				$message .= 'CONTEXT : ' . print_r($row, true);
+				$message .= 'CONTEXT : <pre>' . print_r($row, true) . '</pre>';
 				$this->errorsMessages[$e->getMessage()] = $message;
 			}
 

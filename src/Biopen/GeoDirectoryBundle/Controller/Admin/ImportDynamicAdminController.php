@@ -14,8 +14,8 @@ class ImportDynamicAdminController extends Controller
     $object = $this->admin->getSubject();
     $result = $this->get('biopen.element_import')->collectData($object);
 
-    $this->addFlash('sonata_flash_success', "Les données ont été chargées avec succès. Vous pouvez maintenant compléter les tables de correspondances, puis importer les données.");
-    $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]) . "#tab_3";
+    $this->addFlash('sonata_flash_success', "Les données ont été chargées avec succès.</br>Voici le résultat obtenu pour le premier élément à importer :<pre>" . print_r($result, true) . '</pre>');
+    $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]);
     return $this->redirect($url);
   }
 
@@ -89,8 +89,16 @@ class ImportDynamicAdminController extends Controller
               'SonataAdminBundle'
             )
           );
-          // redirect to edit mode
-          return $this->redirectTo($object);
+
+          if ($request->get('collect')) {
+            $url = $this->admin->generateUrl('collect', ['id' => $object->getId()]);
+          } else if ($request->get('import')) {
+            $url = $this->admin->generateUrl('refresh', ['id' => $object->getId()]);
+          } else {
+            $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]);
+          }
+          return $this->redirect($url);
+
         } catch (ModelManagerException $e) {
           $this->handleModelManagerException($e);
           $isFormValid = false;

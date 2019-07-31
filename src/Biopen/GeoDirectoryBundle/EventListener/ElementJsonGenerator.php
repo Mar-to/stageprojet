@@ -74,17 +74,6 @@ class ElementJsonGenerator
     // OPTIONS VALUES (= TAXONOMY)
     $sortedOptionsValues = $element->getSortedOptionsValues();
     $optValuesLength = count($sortedOptionsValues);
-    // Options values ids
-    $baseJson .= ', "categoriesIds": [';
-    if ($sortedOptionsValues)
-    {
-        for ($i=0; $i < $optValuesLength; $i++) {
-            $baseJson .= $sortedOptionsValues[$i]->getOptionId() . ',';
-        }
-    }
-    $baseJson = rtrim($baseJson, ',');
-    $baseJson .= '],';
-    // option values names
     $optionsString = '';
     $optionsFullJson = [];
     if ($sortedOptionsValues)
@@ -97,7 +86,7 @@ class ElementJsonGenerator
       }
     }
     $optionsString = rtrim($optionsString, ',');
-    $baseJson .= '"categories": [' . $optionsString . '],';
+    $baseJson .= ',"categories": [' . $optionsString . '],';
     $element->setOptionsString($optionsString); // we also update optionsString attribute which is used in exporting from element admin list
     // Options values with description
     if (count($optionsFullJson)) $baseJson .= '"categoriesFull": [' . implode(",", $optionsFullJson) . '],';

@@ -91,9 +91,14 @@ class ElementImportOneService
 		}
 		$this->currentRow = $row;
 
+		// adds missings fields instead of checking if each field is set before accessing
+		$missingFields = array_diff($this->coreFields, array_keys($row));
+    foreach ($missingFields as $missingField) {
+      $data[$key][$missingField] = "";
+    }
+
 		$element->setOldId($row['id']);
 		$element->setName($row['name']);
-
 		$address = new PostalAddress($row['streetAddress'], $row['addressLocality'], $row['postalCode'], $row["addressCountry"]);
 		$element->setAddress($address);
 
@@ -200,8 +205,10 @@ class ElementImportOneService
 		$optionsIdAdded = [];
 		$options = $row['categories'];
 
-		foreach ($options as $optionId) {
-			$this->addOptionValue($element, $optionId);
+		$defaultOption = array("index" => 0, "description" => "");
+		foreach ($options as $option) {
+    	$option = array_merge($defaultOption, $option);
+			$this->addOptionValue($element, $option['mappedId'], $option['index'], $option['description']);
 		}
 
 		if ($import->getNeedToHaveOptionsOtherThanTheOnesAddedToEachElements()) {
@@ -217,12 +224,13 @@ class ElementImportOneService
 		if (count($element->getOptionValues()) == 0) $element->setModerationState(ModerationState::NoOptionProvided);
 	}
 
-	private function addOptionValue($element, $id)
+	private function addOptionValue($element, $id, $index = 0, $description = "")
 	{
 		if (!$id || $id == "0" || $id == 0) return;
 		$optionValue = new OptionValue();
 		$optionValue->setOptionId($id);
-	  $optionValue->setIndex(0);
+	  $optionValue->setIndex($index);
+	  $optionValue->setDescription($description);
 	  $element->addOptionValue($optionValue);
 	  return $id;
 	}

@@ -34,12 +34,12 @@
         .bs-callout-warning { border-left-color: #f39c12; }
 
         .btn i { margin-right: 6px; }
-        .btn i + i { margin-left: -4px; } 
+        .btn i + i { margin-left: -4px; }
 
         .markItUpHeader ul li {
             padding-right: 5px;
             padding-bottom: 5px;
-        }   
+        }
 
         .markItUpHeader ul .markItUpSeparator
         {
@@ -47,17 +47,17 @@
             color: transparent;
             border-right: 1px solid #b9b9b9;
             margin: 0 15px 0 5px;
-        }  
+        }
 
         .markItUpEditor {
             font-size: 15px;
             padding: 10px;
             font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
-        }  
+        }
 
         .markItUpButton4, .markItUpButton5, .markItUpButton6, .markItUpButton12 + .markItUpSeparator, .markItUpButton13, .markItUpButton14 { display: none; }
 
-        .box-body > .alert:last-child { margin-bottom: 0 } 
+        .box-body > .alert:last-child { margin-bottom: 0 }
 
         label[title]:hover {
             cursor: help;
@@ -69,7 +69,7 @@
             margin-left: 5px;
         }
         .box-body .iframe-container { text-align: center; margin-top: -20px; }
-        .box-body .iframe-container-aside {    
+        .box-body .iframe-container-aside {
             float: left;
             margin: -20px 20px 20px 0;
         }
@@ -80,14 +80,19 @@
         .main-header .logo { width: auto; }
         .main-header .logo label:hover { cursor: pointer; }
         .main-header .navbar { flex: auto; margin-left: 0; }
+
+        pre {
+          font-size: 11px;
+          line-height: 13px;
+        }
     </style>
-    
+
 
 {% endblock %}
 
 {% block javascripts %}
-    {{ parent() }}    
-    
+    {{ parent() }}
+
 
     {# CKEDITOR FORMATTER #}
     <script src="//cdn.ckeditor.com/4.7.3/full/ckeditor.js"></script>
@@ -95,7 +100,7 @@
     <script src="{{ asset('bundles/sonataformatter/markitup/sets/markdown/set.js') }}" type="text/javascript"></script>
     <script src="{{ asset('bundles/sonataformatter/markitup/sets/html/set.js') }}" type="text/javascript"></script>
     <script src="{{ asset('bundles/sonataformatter/markitup/sets/textile/set.js') }}" type="text/javascript"></script>
-    
+
     <script>
     // bootstrap-ckeditor-modal-fix.js
     // hack to fix ckeditor/bootstrap compatiability bug when ckeditor appears in a bootstrap modal dialog
@@ -105,13 +110,13 @@
       modal_this = this;
       console.log("enforce focus");
       $(document).on('focusin.modal', function (e) {
-        if (modal_this.$element[0] !== e.target && !modal_this.$element.has(e.target).length 
-        && !$(e.target.parentNode).hasClass('cke_dialog_ui_input_select') 
+        if (modal_this.$element[0] !== e.target && !modal_this.$element.has(e.target).length
+        && !$(e.target.parentNode).hasClass('cke_dialog_ui_input_select')
         && !$(e.target.parentNode).hasClass('cke_dialog_ui_input_text')) {
           modal_this.$element.focus()
         }
       })
-    };    
+    };
 
     // CONFIGURATION ADMIN, disable the whole feature box according to checkbox "feature active"
     $(document).ready(function() {
@@ -121,7 +126,7 @@
         $('.gogo-feature').each(function() {
             checkGoGoFeatureActivated(this);
         });
-        $('.gogo-feature .sonata-ba-field.sonata-ba-field-inline-natural > .form-group:first-child .icheckbox_square-blue .iCheck-helper').click(function() { 
+        $('.gogo-feature .sonata-ba-field.sonata-ba-field-inline-natural > .form-group:first-child .icheckbox_square-blue .iCheck-helper').click(function() {
             var that = this;
             setTimeout(function() { checkGoGoFeatureActivated($(that).closest('.gogo-feature'));  }, 10);
         });
@@ -133,13 +138,13 @@
         $('.collaborative-moderation-box').css('opacity', opacity);
     }
 
-    function checkGoGoFeatureActivated(object) {  
-        console.log("feature", object);      
+    function checkGoGoFeatureActivated(object) {
+        console.log("feature", object);
         var featureActive = $(object).find('.sonata-ba-field.sonata-ba-field-inline-natural > .form-group:first-child .icheckbox_square-blue').hasClass('checked');
         var opacity = featureActive ? '1' : '0.5';
-        $(object).css('opacity', opacity);        
+        $(object).css('opacity', opacity);
     }
-    
+
     // Helpers
     var formBuilder;
     var formBuilderInitialized = false;
@@ -168,7 +173,7 @@
                     {{ newErrorsCount }} {{ newErrorsCount == 1 ? 'erreur' : 'erreurs' }}
                 </label>
             {% endif %}
-            
+
         </a>
     {% endspaceless %}
 {% endblock %}
@@ -185,19 +190,19 @@
         <li><a href={{ path('biopen_element_add') }} target='_blank'>Formulaire</a></li>
         <li><a href={{ path('biopen_partners') }} target='_blank'>Qui sommes nous</a></li>
       </ul>
-    </div>    
+    </div>
 {% endblock %}
 
-{% block side_bar_after_nav %} 
+{% block side_bar_after_nav %}
     {# CUSTOM Menu #}
     <ul class="sidebar-menu">
-        <li class="first treeview">            
-            <a href="{{ path('biopen_bulk_actions_index') }}"><i class="fa fa-bullhorn"></i><span>Actions de masse</span></a>            
+        <li class="first treeview">
+            <a href="{{ path('biopen_bulk_actions_index') }}"><i class="fa fa-bullhorn"></i><span>Actions de masse</span></a>
         </li>
         <li>
             <a href="{{ path('biopen_core_help') }}"><i class="fa fa-question"></i><span>Aide</span></a>
         </li>
-        {% if use_as_saas %}            
+        {% if use_as_saas %}
             <li>
                 {% if is_root_project() %}
                     <a href="{{ path('admin_biopen_saas_project_list') }}"><i class="fa fa-folder-open"></i><span>Projets</span></a>

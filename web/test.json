@@ -1,16 +1,31 @@
 {
   "licence": "https://opendatacommons.org/licenses/odbl/summary/",
   "ontology":"gogofull",
-	"data":[{
+	"bala":[{
 		"id":"Rhm",
 		"newfields": "balam",
 		"name":"Entropie",
 		"coord":{"latitude":45.18679,"longitude":5.70548},
 		"sourceKey":"CapOuPasCap",
-		"address":{"streetAddress":"5 rue Georges Jacquet Grenoble"},
+		"addresses":{"street_num": "5", "streetAddress":"rue Georges Jacquet Grenoble"},
 		"createdAt":"21/12/2018 à 18:26",
 		"updatedAt":"17/03/2019 à 13:38",
 		"taxonomy": ["vert foncé", "tandem"],
+		"categories": ["Habitat"],
+		"categoriesFull": [
+			{
+				"id": 2,
+				"name": "boum",
+				"description": "un bel habitat",
+				"index": 5
+			},
+			{
+				"id": 8,
+				"name": "Couveuse",
+				"description": null,
+				"index": 1
+			}
+		],
 		"abstract": "Ateliers bricole",
 		"openHoursString": "",
 		"openHours": null,
