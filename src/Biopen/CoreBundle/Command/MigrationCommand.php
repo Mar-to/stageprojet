@@ -27,6 +27,8 @@ class MigrationCommand extends GoGoAbstractCommand
     public $commands = [
       // v2.3.1
       "app:elements:updateJson all"
+      // v2.3.4
+      "app:elements:updateJson all"
     ];
 
     public $messages = [
@@ -36,6 +38,8 @@ class MigrationCommand extends GoGoAbstractCommand
         "Nouvelle option pour le menu (Personnalisation -> La Carte -> onglet Menu) : afficher à côté de chaque catégories le nombre d'élements disponible pour cette catégorie",
         // v2.3.1
         "Vous pouvez maintenant renseigner la licence qui protège vos données dans Personnalisation -> Configuration Générale"
+        // v2.3.4
+        "Amélioration du système d'import: vous pouvez maintenant faire correspondre les champs et les catégories avant d'importer"
     ];
 
 

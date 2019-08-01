@@ -1,3 +1,9 @@
+v2.3.4
+======
+
+* FEATURE: Element import, ability to map ontology and taxonomy
+* BUG: Fix list mode
+
 v2.3.1
 ======
 
