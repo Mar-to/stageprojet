@@ -14,7 +14,7 @@
   </section>
 
   <section class="projects">
-    <h2>Liste des projets déjà créés</h2>
+    <h2>Liste des projets déjà créés ({{ projects|length }})</h2>
     <div class="project-list">
       {% for row in projects|batch(3) %}
         <div class="row">
@@ -26,8 +26,8 @@
               {% else %}
                 <img class="project-logo default" src="{{ asset('assets/img/default-icon.png') }}">
               {% endif %}
-              
-              <div class="project-content">              
+
+              <div class="project-content">
                 <div class="name">{{ project.name|capitalize }}</div>
                 <div class="data-size gogo-bg-primary">{{ project.dataSize }}<span class="icon gogo-icon-marker-symbol"></span></div>
               </div>
