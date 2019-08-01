@@ -11,6 +11,7 @@ use Biopen\GeoDirectoryBundle\Document\Element;
 use Application\Sonata\UserBundle\Document\Group;
 use Biopen\GeoDirectoryBundle\Document\Option;
 use Biopen\GeoDirectoryBundle\Document\ImportDynamic;
+use Biopen\GeoDirectoryBundle\Document\Import;
 use Biopen\GeoDirectoryBundle\Document\Webhook;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
@@ -42,7 +43,7 @@ class DatabaseIntegrityWatcher
 	      }
 	    }
 		}
-		else if ($document instanceof ImportDynamic)
+		else if ($document instanceof Import || $document instanceof ImportDynamic)
 		{
 			$import = $document;
 			$qb = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->createQueryBuilder();

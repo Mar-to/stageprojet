@@ -2,8 +2,8 @@
 
 {% block field %}
   {% spaceless %}
-    <span style="margin-right: 8px">{{ object.lastRefresh|date('d/m/Y - H:i') }}</span>
-    {% if object.logs|length > 0 %}
+    <span style="margin-right: 8px">{{ object.lastRefresh ? object.lastRefresh|date('d/m/Y - H:i') : '' }}</span>
+    {% if object.logs|length > 0 and object.isDynamicImport %}
       {% set log = object.logs[0] %}
       {% if log.getDataProp('elementsCreatedCount') > 0 %}
         <span class="label label-success log-label">+{{ log.getDataProp('elementsCreatedCount') }}</span>
@@ -16,7 +16,7 @@
       {% endif %}
       {% if log.getDataProp('elementsNothingToDoCount') > 0 %}
         <span class="label label-default log-label">{{ log.getDataProp('elementsNothingToDoCount') }} inchangés</span>
-      {% endif %}      
+      {% endif %}
       {% if log.getDataProp('elementsErrorsCount') > 0 %}
         <span class="label label-danger log-label">{{ log.getDataProp('elementsErrorsCount') }} erreurs</span>
       {% endif %}

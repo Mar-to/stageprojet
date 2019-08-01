@@ -113,24 +113,26 @@ class ElementImportService
 		// do the mapping
 		$data = $this->mappingService->transform($data, $import);
 
-		if ($import->isDynamicImport())
-		{
-			$import->setLastRefresh(time());
-	    $import->updateNextRefreshDate();
-		}
+    $import->setLastRefresh(time());
+    $import->setCurrState(ImportState::InProgress);
 
+    $qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 		if ($import->isDynamicImport())
 		{
-			// before updating the source, we put all elements into DynamicImportTemp status
-			$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+			$import->updateNextRefreshDate();
+
+      // before updating the source, we put all elements into DynamicImportTemp status
 			$qb->updateMany()
 				 ->field('source')->references($import)
 				 ->field('status')->gt(ElementStatus::Deleted) // leave the deleted one as they are, so we know we do not need to import them
 	       ->field('status')->set(ElementStatus::DynamicImportTemp)
 	       ->getQuery()->execute();
 	  }
-
-	  $import->setCurrState(ImportState::InProgress);
+    else
+    {
+      // before re importing a static source, we delete all previous items
+      $qb->remove()->field('source')->references($import)->getQuery()->execute();;
+    }
 
 	  $this->importOneService->initialize($import);
 
@@ -144,7 +146,7 @@ class ElementImportService
 			}
 			catch (\Exception $e) {
 				$this->countElementErrors++;
-				if (!is_array($row['id'])) $this->elementIdsErrors[] = "" . $row['id'];
+				if (isset($row['id']) && !is_array($row['id'])) $this->elementIdsErrors[] = "" . $row['id'];
 
 				if (!array_key_exists($e->getMessage(), $this->errorsCount)) $this->errorsCount[$e->getMessage()] = 1;
 				else $this->errorsCount[$e->getMessage()]++;
@@ -173,7 +175,7 @@ class ElementImportService
     {
       if ($this->countElementErrors > 0)
       {
-      	// If there was an error whil retrieving an already existing element
+      	// If there was an error while retrieving an already existing element
       	// we set back the status to DynamicImport otherwise it will be deleted just after
 	      $qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 	      $result = $qb->updateMany()

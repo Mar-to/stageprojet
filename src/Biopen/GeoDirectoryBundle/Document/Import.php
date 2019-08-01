@@ -128,6 +128,13 @@ class Import extends AbstractFile
      */
     private $customCode = "<?php";
 
+    /**
+     * @var date $lastRefresh
+     *
+     * @MongoDB\Field(type="date")
+     */
+    private $lastRefresh = null;
+
 
     public function __construct() {
         $this->logs = new \Doctrine\Common\Collections\ArrayCollection();;
@@ -515,5 +522,27 @@ class Import extends AbstractFile
     public function getCustomCode()
     {
         return $this->customCode;
+    }
+
+    /**
+     * Set lastRefresh
+     *
+     * @param date $lastRefresh
+     * @return $this
+     */
+    public function setLastRefresh($lastRefresh)
+    {
+        $this->lastRefresh = $lastRefresh;
+        return $this;
+    }
+
+    /**
+     * Get lastRefresh
+     *
+     * @return date $lastRefresh
+     */
+    public function getLastRefresh()
+    {
+        return $this->lastRefresh;
     }
 }

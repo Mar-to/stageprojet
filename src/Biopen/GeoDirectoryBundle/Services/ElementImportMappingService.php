@@ -93,7 +93,6 @@ class ElementImportMappingService
     // Ontology
     $this->collectOntology($data, $import);
     $data = $this->mapOntology($data);
-
     // remove empty row, i.e. without name
     $data = array_filter($data, function($row) { return array_key_exists('name', $row); });
 
@@ -134,7 +133,7 @@ class ElementImportMappingService
     $keyName = $parentKey ? $parentKey . '/' . $key : $key;
     if (!in_array($keyName, $this->allNewFields)) $this->allNewFields[] = $keyName;
     if (!array_key_exists($keyName, $this->ontologyMapping)) {
-      $value = in_array($key, $this->coreFields) ? $key : "";
+      $value = in_array($keyName, $this->coreFields) ? $key : "";
       if (!$value && array_key_exists($key, $this->mappedCoreFields) && in_array($this->mappedCoreFields[$key], $this->coreFields))
         $value = $this->mappedCoreFields[$key];
       if (!$value || !in_array($value, array_values($this->ontologyMapping))) $this->ontologyMapping[$keyName] = $value;
@@ -189,7 +188,6 @@ class ElementImportMappingService
   private function mapOntology($data)
   {
     $mapping = $this->import->getOntologyMapping();
-
     foreach ($data as $key => $row) {
 
       // First map nested fields

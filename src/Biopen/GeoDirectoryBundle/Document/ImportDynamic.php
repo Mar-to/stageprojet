@@ -13,20 +13,14 @@ use \Datetime;
 class ImportDynamic extends Import
 {
     /**
-     * @var string   
+     * @var string
      * @MongoDB\Field(type="int")
      */
     private $refreshFrequencyInDays;
 
-    /**
-     * @var date $lastRefresh
-     *
-     * @MongoDB\Field(type="date")
-     */
-    private $lastRefresh = null;
 
     /**
-     * @var date $lastRefresh
+     * @var date $nextRefresh
      *
      * @MongoDB\Field(type="date")
      */
@@ -35,17 +29,17 @@ class ImportDynamic extends Import
 
     public function isDynamicImport() { return true; }
 
-    public function updateNextRefreshDate() 
+    public function updateNextRefreshDate()
     {
         if ($this->getRefreshFrequencyInDays() == 0) $this->setNextRefresh(null);
-        else 
-        {           
+        else
+        {
             $interval = new \DateInterval('P' . $this->getRefreshFrequencyInDays() .'D');
             $date = new DateTime();
             $date->setTimestamp(time());
             $this->setNextRefresh($date->add($interval));
         }
-    }    
+    }
 
     /**
      * Set refreshFrequencyInDays
@@ -68,28 +62,6 @@ class ImportDynamic extends Import
     public function getRefreshFrequencyInDays()
     {
         return $this->refreshFrequencyInDays;
-    }
-
-    /**
-     * Set lastRefresh
-     *
-     * @param date $lastRefresh
-     * @return $this
-     */
-    public function setLastRefresh($lastRefresh)
-    {
-        $this->lastRefresh = $lastRefresh;
-        return $this;
-    }
-
-    /**
-     * Get lastRefresh
-     *
-     * @return date $lastRefresh
-     */
-    public function getLastRefresh()
-    {
-        return $this->lastRefresh;
     }
 
     /**
