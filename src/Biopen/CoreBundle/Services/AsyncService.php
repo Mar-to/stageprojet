@@ -59,13 +59,14 @@ class AsyncService
             $saasHelper = new SaasHelper();
             $dbname = $saasHelper->getCurrentProjectCode();
         }
-        
+
         $commandline = $this->phpPath . ' ' . $this->consolePath . ' ' . $commandName;
         foreach ($arguments as $key => $arg) {
             $commandline .= ' ' . $arg;
         }
         $commandline .= ' ' . $dbname;
-        $commandline .= ' > /tmp/command.log 2>/tmp/command.log &';
+        $commandline .= ' > /tmp/command.log 2>/tmp/command.log';
+        if (!$this->runSynchronously) $commandline .= ' &';
         return $this->runProcess($commandline);
     }
 
@@ -97,14 +98,7 @@ class AsyncService
     {
         $process = new Process($commandline);
         $process->start();
-
-        if ($this->runSynchronously) 
-        {
-            while ($process->isRunning()) {
-            // waiting for process to finish
-            }
-            return $process->getOutput();
-        }        
+        if ($this->runSynchronously) $process->wait();
 
         return $process->getPid();
     }
