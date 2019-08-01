@@ -34,8 +34,8 @@ class ConfigurationContributionsAdmin extends ConfigurationAbstractAdmin
                 ->add('deleteFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
             ->with('Modération directe', $contributionStyle)
                 ->add('directModerationFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
-            ->with('Modération collaborative (votes)', ['class' => 'col-md-6 col-lg-4 gogo-feature collaborative-feature'])
-                ->add('collaborativeModerationFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()                
+            ->with('Modération collaborative (pouvoir voter)', ['class' => 'col-md-6 col-lg-4 gogo-feature collaborative-feature'])
+                ->add('collaborativeModerationFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
             ->with('Paramètres pour la modération collaborative' , array('class' => 'col-md-4 collaborative-moderation-box'))
                 ->add('minVoteToChangeStatus', null, ['required'=>false, 'label' => "Nombre votes pour valider/refuser automatiquement"])
                 ->add('maxOppositeVoteTolerated', null, ['required'=>false, 'label' => "Nombres maximum de vos contradictoires tolérés"])
@@ -46,11 +46,11 @@ class ConfigurationContributionsAdmin extends ConfigurationAbstractAdmin
             ->with('Textes')
                 ->add('collaborativeModerationExplanations', 'sonata_simple_formatter_type', array(
                         'format' => 'richhtml',
-                        'label' => 'Explications au sujet de la modération collaborative', 
+                        'label' => 'Explications au sujet de la modération collaborative',
                         'ckeditor_context' => 'full',
                         'required' => false
                 ))
-            ->end() 
+            ->end()
         ;
     }
 }

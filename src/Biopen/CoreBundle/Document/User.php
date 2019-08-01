@@ -20,11 +20,11 @@ abstract class NewsletterFrequencyOptions
 {
     const Never = 0;
     const Weekly = 1;
-    const Monthly = 2;           
+    const Monthly = 2;
 }
 /**
  * @MongoDB\Document
- * @MongoDB\HasLifecycleCallbacks 
+ * @MongoDB\HasLifecycleCallbacks
  * @MongoDB\Index(keys={"geo"="2d"})
  * @MongoDB\Document(repositoryClass="Biopen\CoreBundle\Repository\UserRepository")
  */
@@ -33,7 +33,7 @@ class User extends BaseUser
      /**
      * @MongoDB\Id(strategy="auto")
      */
-    protected $id;    
+    protected $id;
 
     /**
      * Address of the user. Can be a simple postalCode, or a more precise address
@@ -41,9 +41,9 @@ class User extends BaseUser
      */
     protected $location;
 
-    /** 
+    /**
     * Geolocalisation of the location attribute
-    * @MongoDB\EmbedOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Coordinates") 
+    * @MongoDB\EmbedOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Coordinates")
     */
     public $geo;
 
@@ -392,7 +392,7 @@ class User extends BaseUser
 
     public function isAdmin()
     {
-       return in_array("ROLE_ADMIN", $this->getRoles());
+       return in_array("ROLE_ADMIN", $this->getRoles()) || in_array("ROLE_SUPER_ADMIN", $this->getRoles());
     }
 
     public function hasRole($role)
@@ -401,13 +401,13 @@ class User extends BaseUser
     }
 
     public function setGamification($value)
-    {         
+    {
         $this->gamification = $value;
         return $this;
     }
 
     public function getGamification()
-    {         
+    {
         return $this->gamification;
     }
 
@@ -420,14 +420,14 @@ class User extends BaseUser
     public function addReportsCount() { $this->votesCount++; }
     public function addContributionCount() { $this->votesCount++; }
 
-    public function updateNextNewsletterDate() 
+    public function updateNextNewsletterDate()
     {
         if ($this->getNewsletterFrequency() == 0) $this->setNextNewsletterDate(null);
-        else 
-        {           
-            switch ($this->getNewsletterFrequency()) 
+        else
+        {
+            switch ($this->getNewsletterFrequency())
             {
-                case NewsletterFrequencyOptions::Weekly: $interval = new \DateInterval('P7D'); break;                
+                case NewsletterFrequencyOptions::Weekly: $interval = new \DateInterval('P7D'); break;
                 case NewsletterFrequencyOptions::Monthly: $interval = new \DateInterval('P1M'); break;
             }
             $lastSent = clone $this->getLastNewsletterSentAt();
@@ -612,8 +612,8 @@ class User extends BaseUser
     {
         // reset last newsletter sent at to now when user check to receive newsletter
         if ($this->getNewsletterFrequency() == 0 && $newsletterFrequency > 0) $this->setLastNewsletterSentAt(new \DateTime());
-        $this->newsletterFrequency = $newsletterFrequency; 
-        $this->updateNextNewsletterDate();      
+        $this->newsletterFrequency = $newsletterFrequency;
+        $this->updateNextNewsletterDate();
         return $this;
     }
 

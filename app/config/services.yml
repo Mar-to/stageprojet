@@ -4,7 +4,7 @@ services:
 
     jms_serializer.naming_strategy:
         class: 'JMS\Serializer\Naming\SerializedNameAnnotationStrategy'
-        arguments : ['@jms_serializer.naming_strategy_camelCase']    
+        arguments : ['@jms_serializer.naming_strategy_camelCase']
 
     jms_serializer.expression_language:
         class: 'Symfony\Component\ExpressionLanguage\ExpressionLanguage'
@@ -19,3 +19,9 @@ services:
         arguments: [ "@doctrine.odm.mongoDB.document_manager" ]
         tags:
             - { name: twig.extension }
+
+    custom.sonata.security.handler.role:
+        class: Application\Sonata\UserBundle\Security\CustomRoleSecurityHandler
+        arguments:
+            - @security.authorization_checker
+            - [ROLE_SUPER_ADMIN]

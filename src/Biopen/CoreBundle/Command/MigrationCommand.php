@@ -39,7 +39,8 @@ class MigrationCommand extends GoGoAbstractCommand
         // v2.3.1
         "Vous pouvez maintenant renseigner la licence qui protège vos données dans Personnalisation -> Configuration Générale",
         // v2.3.4
-        "Amélioration du système d'import: vous pouvez maintenant faire correspondre les champs et les catégories avant d'importer"
+        "Amélioration du <b>système d'import</b>: vous pouvez maintenant faire correspondre les champs et les catégories avant d'importer",
+        "La gestion des permissions des utilisateurs fait peau neuve ! Votre ancienne configuration ne sera <u>peut être plus valide</u>. Veuillez vous rendre dans le <b>menu Utilisateurs pour mettre à jour les roles des utilisateurs et des groupes</b> d'utilisateurs."
     ];
 
 

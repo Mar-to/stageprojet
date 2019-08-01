@@ -2,7 +2,7 @@
 {% if renderedFromController is defined %}
   {% include '@BiopenCoreBundle/custom-head.html.twig' %}
 
-  {% block modals %} 
+  {% block modals %}
     {% include '@BiopenCoreBundle/modals/headerModals.html.twig' %}
     {% include '@BiopenCoreBundle/modals/loginModal.html.twig' %}
   {% endblock %}
@@ -14,37 +14,37 @@
 
     {% set iframe = app.request.get('iframe') %}
 
-		<div class="col menu-item" id="menu-home" >			
+		<div class="col menu-item" id="menu-home" >
 			<a href="{{ path('biopen_homepage') }}" {% if iframe %}target="_blank"{% endif %} class="small-logo">
         {% set logo = config.favicon ? config.favicon : config.logo %}
         {% if logo %}<img src="{{ logo.imageUrl }}"/>{% endif %}
-      </a> 
+      </a>
 			<a href="{{ path('biopen_homepage') }}" {% if iframe %}target="_blank"{% endif %} class="large-logo">
         {% set logo = config.logoInline ? config.logoInline : config.logo %}
         {% if logo %}
           <img src="{{ logo.imageUrl }}" id="logo-inline"/>
         {% else %}
           {{ config.appName }}
-        {% endif %}        
-      </a> 
+        {% endif %}
+      </a>
 		</div>
 
     <h1 id="nav-page-title">{{ navTitle|default(config.appName) }}</h1>
     <span id="nav-btn-dropdown" onclick="toggleNavDropdown()"><i class="gogo-icon-ellipsis"></i></span>
 
-		<div id="menu-actions"> 
-      <div class="nav-overlay" onclick="hideNavDropdown()"></div>     
+		<div id="menu-actions">
+      <div class="nav-overlay" onclick="hideNavDropdown()"></div>
       {% if not iframe %}
   			<div class="col menu-item">
-  			  <a href="{{ path('biopen_directory') }}"><span class="header-icon gogo-icon-map"></span><span class="text">La carte</span></a> 
-  			</div>	
+  			  <a href="{{ path('biopen_directory') }}"><span class="header-icon gogo-icon-map"></span><span class="text">La carte</span></a>
+  			</div>
       {% endif %}
 
       {% if config.addFeature.active and (not config.addFeature.isOnlyAllowedForAdmin() or is_granted('ROLE_ADMIN')) %}
 			<div class="col menu-item">
 				<a href="{{ path('biopen_element_add') }}" {% if iframe %}target="_blank"{% endif %}>
           <span class="header-icon gogo-icon-user-plus"></span><span class="text">Ajouter {{ config.elementDisplayNameIndefinite }}</span>
-        </a>  
+        </a>
 			</div>
       {% endif %}
 
@@ -52,20 +52,20 @@
   			<div class="col menu-item">
   				<a href="{{ path('biopen_partners') }}" {% if iframe %}target="_blank"{% endif %}>
             <span class="header-icon gogo-icon-partner-3"></span><span class="text">{{ config.partnerPageTitle }}</span>
-          </a>  
-  			</div>	
+          </a>
+  			</div>
       {% endif %}
-           
-      {% if config.activateAbouts and listAbouts.count %}            
+
+      {% if config.activateAbouts and listAbouts.count %}
         <div class="col menu-item dropdown-button" data-activates='listAbout'>
-          <a id='btn-about'><span class="header-icon gogo-icon-info"></span><span class="text">{{ config.aboutHeaderTitle }}</span></a> 
-          <div class="arrow-after"></div>                
+          <a id='btn-about'><span class="header-icon gogo-icon-info"></span><span class="text">{{ config.aboutHeaderTitle }}</span></a>
+          <div class="arrow-after"></div>
         </div>
-        <ul id='listAbout' class='dropdown-content'>    	
+        <ul id='listAbout' class='dropdown-content'>
           {% for about in listAbouts %}
           	{% if not loop.first %}<li class="item-divider"></li>{% endif %}
             <li class="name"><a class="about-title-item" id='modal{{about.id}}' onclick="$('#popup-{{about.id}}').openModal()">{{about.name}}</a></li>
-        	{% endfor %}            
+        	{% endfor %}
         </ul>
       {% endif %}
 
@@ -74,32 +74,32 @@
         {% set userName =  app.user ? app.user.username : app.session.get('userEmail') ?  app.session.get('userEmail') : null %}
         <div {{ userName ? '' : 'style="display:none"' }} class="col menu-item btn-login dropdown-button" data-activates='listUserActions' id="btn-logout">
           <span class="text username">{{ userName }}</span>
-          <div class="arrow-after"></div>  
+          <div class="arrow-after"></div>
         </div>
-        <ul id='listUserActions' class='dropdown-content'> 
-            <li class="name only-for-admin" {{ app.user and app.user.isAdmin ? '' : 'style="display:none"' }}>
-              <a class="about-title-item waves-effect waves-light" href="{{ path('sonata_admin_dashboard') }}">Interface admin</a></li> 
+        <ul id='listUserActions' class='dropdown-content'>
+            <li class="name only-for-admin" {{ is_granted('ROLE_SONATA_ADMIN') ? '' : 'style="display:none"' }}>
+              <a class="about-title-item waves-effect waves-light" href="{{ path('sonata_admin_dashboard') }}">Interface admin</a></li>
             <li class="item-divider"></li>
             {#<li class="name">
               <a class="about-title-item waves-effect waves-light" href="{{ path('biopen_user_profile') }}">Préférences</a></li>
             <li class="item-divider"></li>#}
             <li class="name only-for-user" {{ app.user ? '' : 'style="display:none"' }}>
-              <a class="about-title-item waves-effect waves-light" href="{{ path('biopen_user_space') }}">Mon Espace</a></li> 
+              <a class="about-title-item waves-effect waves-light" href="{{ path('biopen_user_space') }}">Mon Espace</a></li>
             <li class="item-divider"></li>
             <li class="name">
-              <a class="about-title-item waves-effect waves-light" onclick="logout()">Se Déconnecter</a></li>       
+              <a class="about-title-item waves-effect waves-light" onclick="logout()">Se Déconnecter</a></li>
         </ul>
 
       	<button {{ userName ? 'style="display:none"' : '' }}
   				onclick="$('#popup-login').openModal()" id="btn-login"
   				class="btn btn-login">
-          <span class="text">Connexion</span>				
-  			</button>		
+          <span class="text">Connexion</span>
+  			</button>
       {% endif %}
 
     </div>
 	</div>
-</nav> 
+</nav>
 </header>
 
 <script>
@@ -115,11 +115,11 @@ function toggleNavDropdown()
 function hideNavDropdown()
 {
   var menuActions = $('#menu-actions');
-  console.log("click",menuActions.attr('position'));  
-  if (menuActions.css('position') == "absolute") 
+  console.log("click",menuActions.attr('position'));
+  if (menuActions.css('position') == "absolute")
   {
     $('#menu-actions .nav-overlay').slideUp(300);
-    menuActions.slideUp(300);  
+    menuActions.slideUp(300);
   }
 }
 
@@ -146,7 +146,7 @@ function logout()
 }
 
 function submitAjaxLogin()
-{  
+{
   $('.error-message').hide();
   var datatSerialized = "_username=" + $('#username').val() + "&_password=" + $('#password').val();
   $.ajax({
@@ -162,12 +162,12 @@ function submitAjaxLogin()
             console.log("login success",data);
             handleLogin(true, data.roles, data.email);
             $('#btn-logout .username').text(data.username);
-            displayLoginButton(false);       
-          }  
+            displayLoginButton(false);
+          }
           else
           {
             $('.error-message').text("Les identifiants de connexion ne sont pas corrects").show();
-          }        
+          }
       },
       error: function(data, status, object){
           $('.error-message').text("Une erreur s'est produite lors de la tentative de connexion").show();
@@ -186,7 +186,7 @@ function handleLogin(bool, rolesObject, mail)
   $('#listUserActions li.only-for-admin').hide();
   $('#listUserActions li.only-for-user').hide();
 
-  if ($.inArray('ROLE_ADMIN', roles) > -1) $('#listUserActions li.only-for-admin').show();
+  if ($.inArray('ROLE_SONATA_ADMIN', roles) > -1) $('#listUserActions li.only-for-admin').show();
   if ($.inArray('ROLE_USER', roles) > -1) $('#listUserActions li.only-for-user').show();
 
   // carto is the GoGoCartoJs instance, defined in GeoDirectory/directoy.html.twig
@@ -198,7 +198,7 @@ function handleLogin(bool, rolesObject, mail)
     else carto.setUserRole('anonymous');
 
     carto.setUserEmail(mail);
-  }  
+  }
 }
 
 function displayLoginButton(bool)
@@ -210,7 +210,7 @@ function displayLoginButton(bool)
 		$('#btn-login').show();
 	}
 	else
-	{		
+	{
 		$('#btn-logout').show();
 		$('#btn-login').hide();
 	}

@@ -165,7 +165,7 @@ class ProjectController extends AbstractSaasController
         if ($form->handleRequest($request)->isValid()) {
             $user = $form->getData();
             $user->setEnabled(true);
-            $user->setRoles(array('ROLE_SUPER_ADMIN','ROLE_ADMIN', 'ROLE_SONATA_ADMIN'));
+            $user->setRoles(array('ROLE_SUPER_ADMIN'));
             $userManager->updateUser($user, true);
 
             $this->get('session')->getFlashBag()->add('success', "<b>Bienvenue dans votre espace Administrateur !</b></br>

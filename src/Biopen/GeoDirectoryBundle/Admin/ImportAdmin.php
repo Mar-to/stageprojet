@@ -57,7 +57,7 @@ class ImportAdmin extends AbstractAdmin
                         'choices_as_values' => true,
                         'multiple' => true,
                         'btn_add' => false,
-                        'label' => 'Catégories à ajouter à chaque élément importé'), array('admin_code' => 'admin.option'))
+                        'label' => 'Catégories à ajouter à chaque élément importé'), array('admin_code' => 'admin.option_hidden'))
                     ->add('needToHaveOptionsOtherThanTheOnesAddedToEachElements', null, array('required' => false, 'label' => 'Les éléments importés doivent contenir au moins une catégorie en dehors de celles ajoutées manuellement ci-dessus', 'label_attr' => ['title' => "Sans prendre en compte les catégories ajoutés via le champs \"Catégories à ajouter à chaque élément importé\", si les éléments importés n'ont pas de catégories, ils seront marqués comme \"Modération aucune catégorie renseignée\""]));
          if ($isDynamic)
             $formMapper

@@ -42,7 +42,7 @@ class UserAdmin extends AbstractAdmin
             ->add('reportsCount', null, ['label' => 'Signalements'])
             // ->add('enabled', null, array('editable' => true))
             // ->add('locked', null, array('editable' => true))
-            ->add('createdAt','date', array("format" => "d/m/Y")) 
+            ->add('createdAt','date', array("format" => "d/m/Y"))
 
         ;
 
@@ -104,7 +104,7 @@ class UserAdmin extends AbstractAdmin
     public function getUserManager()
     {
         return $this->userManager;
-    }    
+    }
 
     /**
      * {@inheritdoc}
@@ -116,7 +116,7 @@ class UserAdmin extends AbstractAdmin
             ->add('username')
             ->add('locked')
             ->add('newsletterFrequency', 'doctrine_mongo_callback', array(
-                'label' => 'Reception newsletter', 
+                'label' => 'Reception newsletter',
                 'field_type' => 'checkbox',
                 'callback' => function($queryBuilder, $alias, $field, $value) {
                     if (!$value || !$value['value']) { return; }
@@ -215,7 +215,7 @@ class UserAdmin extends AbstractAdmin
                     ->add('enabled', null, array('required' => false))
                     ->add('credentialsExpired', null, array('required' => false))
                 ->end()
-                ->with('Groups')                    
+                ->with('Groups')
                     ->add('groups', $modelType, array(
                         'required' => false,
                         'choices_as_values' => true,
@@ -224,10 +224,10 @@ class UserAdmin extends AbstractAdmin
                     ))
                 ->end()
             ->end()
-            ->tab('Security')                
+            ->tab('Security')
                 ->with('Roles')
                     ->add('realRoles', $securityRolesType, array(
-                        'label' => 'form.label_roles',
+                        'label' => false,
                         'expanded' => true,
                         'multiple' => true,
                         'required' => false,
@@ -237,7 +237,7 @@ class UserAdmin extends AbstractAdmin
         ;
     }
 
-    public function getTemplate($name) 
+    public function getTemplate($name)
    {
      switch ($name) {
          case 'list': return '@BiopenAdmin/list/list_user.html.twig';
@@ -251,7 +251,7 @@ class UserAdmin extends AbstractAdmin
     {
       // $actions = parent::configureBatchActions($actions);
       $actions = [];
-      
+
       $actions['sendMail'] = array(
          'label' => 'Envoyer un mail',
          'ask_confirmation' => false,

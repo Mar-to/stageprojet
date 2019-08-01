@@ -1,5 +1,5 @@
 <script>
-  var url = "{{ path('biopen_api_log_hide', {'id': 'ID'}) }}"; 
+  var url = "{{ path('biopen_api_log_hide', {'id': 'ID'}) }}";
 
   function hideLog($logId) {
     $.ajax({
@@ -7,9 +7,9 @@
       url         : url.replace("ID", $logId),
       complete     : function(data, status, object) {
         $('.sonata-block-logs').each(function() {
-          if ($(this).find('.alert').length == 0) $(this).hide(); 
+          if ($(this).find('.alert').length == 0) $(this).hide();
         })
-                
+
       },
     });
   }

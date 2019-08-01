@@ -22,6 +22,6 @@ class FeatureConfigurationAdmin extends AbstractAdmin
             ->add('activeInIframe', null, ['required'=>false, 'label' => "Activé en Iframe"])
             ->add('allow_role_anonymous', null, ['required'=>false, 'label' => "Autoriser Anonymes"])
             ->add('allow_role_user', null, ['required'=>false, 'label' => "Autoriser Utilisateurs"])
-            ->add('allow_role_admin', null, ['required'=>false, 'label' => "Autoriser Admin"]);
+            ->add('allow_role_admin', null, ['required'=>false, 'label' => "Autoriser Modérateurs"]);
     }
 }

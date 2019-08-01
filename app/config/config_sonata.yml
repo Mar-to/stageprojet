@@ -5,8 +5,8 @@ sonata_block:
         sonata.user.block.account: # used to display menu option (login option)
         sonata.block.service.text: # used to if you plan to use Sonata user routes
         # enable the SonataAdminBundle block
-        sonata.block.service.monitoring: 
-        sonata.block.service.charts: 
+        sonata.block.service.monitoring:
+        sonata.block.service.charts:
         biopen.block.recent_elements:
             contexts: [admin]
 
@@ -55,7 +55,14 @@ sonata_formatter:
 
 sonata_admin:
     security:
-        handler: sonata.admin.security.handler.role
+        handler: custom.sonata.security.handler.role # sonata.admin.security.handler.role
+        information:
+            LIST: LIST
+            CREATE: CREATE
+            EDIT: EDIT
+            DELETE: DELETE
+            EXPORT: EXPORT
+
     options:
         confirm_exit: false
     templates:
@@ -71,16 +78,16 @@ sonata_admin:
             - { position: top, class: col-md-12, type: sonata.block.service.charts}
         groups:
             Contenus:
-                icon: <i class='fa fa-file-text'></i> 
+                icon: <i class='fa fa-file-text'></i>
             data:
                 label: "Données"
-                icon: <i class='fa fa-database'></i> 
+                icon: <i class='fa fa-database'></i>
             custom:
                 label: Personnalisation
                 icon: <i class='fa fa-paint-brush'></i>
             data_model:
                 label: Modèle de donnée
-                icon: <i class='fa fa-database'></i> 
+                icon: <i class='fa fa-database'></i>
             emailing:
                 label: Mails / Newsletter
                 icon: <i class='fa fa-envelope'></i>

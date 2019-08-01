@@ -197,9 +197,11 @@
 {% block side_bar_after_nav %}
     {# CUSTOM Menu #}
     <ul class="sidebar-menu">
-        <li class="first treeview">
-            <a href="{{ path('biopen_bulk_actions_index') }}"><i class="fa fa-bullhorn"></i><span>Actions de masse</span></a>
-        </li>
+        {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_SUPER_ADMIN") %}
+            <li class="first treeview">
+                <a href="{{ path('biopen_bulk_actions_index') }}"><i class="fa fa-bullhorn"></i><span>Actions de masse</span></a>
+            </li>
+        {% endif %}
         <li>
             <a href="{{ path('biopen_core_help') }}"><i class="fa fa-question"></i><span>Aide</span></a>
         </li>

@@ -46,7 +46,7 @@ class FeatureConfiguration
         if (!$this->getActive() || !$this->getActiveInIframe() && $iframe) return false;
         if (!$user) return $this->getAllowRoleAnonymous();
         return  $user->hasRole('ROLE_USER')  && $this->getAllowRoleUser() ||
-                $user->hasRole('ROLE_ADMIN') && $this->getAllowRoleAdmin();
+                $user->isAdmin() && $this->getAllowRoleAdmin();
     }
 
     public function isOnlyAllowedForAdmin()
