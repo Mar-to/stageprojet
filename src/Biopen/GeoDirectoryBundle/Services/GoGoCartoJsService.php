@@ -47,20 +47,21 @@ class GoGoCartoJsService
         }
     }
 
-    return [
+    $result = [
       "security" =>
       [
           "userRoles" => $userGogocartoRole,
           "userEmail" => $userEmail ,
           "loginAction" => '$("#popup-login").openModal();'
       ],
-      "text" =>
+      "language" => "fr",
+      "translations" =>
       [
           "element" => $config->getElementDisplayName() ,
-          "elementDefinite" => $config->getElementDisplayNameDefinite(),
-          "elementIndefinite" => $config->getElementDisplayNameIndefinite(),
-          "elementPlural" => $config->getElementDisplayNamePlural(),
-          "collaborativeModeration" => $config->getCollaborativeModerationExplanations(),
+          "element.definite" => $config->getElementDisplayNameDefinite(),
+          "element.indefinite" => $config->getElementDisplayNameIndefinite(),
+          "element.plural" => $config->getElementDisplayNamePlural(),
+          "collaborative.moderation.paragaphs" => $config->getCollaborativeModerationExplanations(),
       ],
       "menu" =>
       [
@@ -139,10 +140,6 @@ class GoGoCartoJsService
           "mainFont" => $config->getMainFont() ,
           "titleFont" => $config->getTitleFont() ,
       ],
-      "images" =>
-      [
-          "buttonOpenMenu" =>  $config->getFavicon() ? $config->getFavicon()->getImageUrl() : ($config->getLogo() ? $config->getLogo()->getImageUrl() : null)
-      ],
       "features" =>
       [
           "listMode" => $this->getConfigFrom($config->getListModeFeature()) ,
@@ -194,6 +191,15 @@ class GoGoCartoJsService
           "requestByBounds" => true,
       ],
     ];
+
+    if ($config->getTheme() == "transiscope")
+    {
+      $result["images"] = [
+        "buttonOpenMenu" => $config->getFavicon() ? $config->getFavicon()->getImageUrl() : ($config->getLogo() ? $config->getLogo()->getImageUrl() : null)
+      ];
+    }
+
+    return $result;
   }
 
   private function getConfigFrom($feature, $route = null, $overwrite = [])

@@ -1,6 +1,5 @@
 {
   "name": "GoGoCarto",
-  "version": "2.0.0",
   "homepage": "https://gitlab.adullact.net/pixelhumain/GoGoCarto",
   "description": "Collaborative mapping directory",
   "keywords": [
@@ -31,6 +30,6 @@
     "watchify": "^3.8.0"
   },
   "dependencies": {
-    "gogocarto-js": "^1.4.3"
+    "gogocarto-js": "^1.4.5"
   }
 }
