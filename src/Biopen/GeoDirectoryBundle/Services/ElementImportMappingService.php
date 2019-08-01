@@ -226,6 +226,10 @@ class ElementImportMappingService
         $data[$key]['streetAddress'] = $data[$key]['streetNumber'] . ' ' . $data[$key]['streetAddress'];
         unset($data[$key]['streetNumber']);
       }
+      if (isset($data[$key]['fullAddress'])) {
+        $data[$key]['streetAddress'] = $data[$key]['fullAddress'];
+        unset($data[$key]['fullAddress']);
+      }
     }
 
     return $data;

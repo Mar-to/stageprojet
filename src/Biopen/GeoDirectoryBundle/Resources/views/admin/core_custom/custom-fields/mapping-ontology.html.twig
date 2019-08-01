@@ -49,20 +49,25 @@
     var formProperties = {{ form.vars.attr["data-form-props"]|raw }};
     var dataProperties = {{ form.vars.attr["data-props"]|raw }};
     var coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source']
-    var formData = [], allProperties = [], otherData = []; var importedData = [];
-    formData.push({id: 'id', text: 'Identifiant unique'});
-    formData.push({id: 'name', text: 'Titre de la fiche'});
-    formData.push({id: 'categories', text: 'Liste des catégories (en tableau ou séparées par des virgules)'});
-    formData.push({id: 'streetNumber', text: 'Adresse: numéro de rue'});
-    formData.push({id: 'streetAddress', text: 'Adresse: rue'});
-    formData.push({id: 'addressLocality', text: 'Adresse: ville'});
-    formData.push({id: 'postalCode', text: 'Adresse: code postal'});
-    formData.push({id: 'addressCountry', text: 'Adresse: pays'});
-    formData.push({id: 'latitude', text: 'Latitude'});
-    formData.push({id: 'longitude', text: 'Longitude'});
+    var coreData = [], allProperties = [], otherData = []; var importedData = [];
+    coreData.push({id: 'id', text: 'Identifiant unique'});
+    coreData.push({id: 'name', text: 'Titre de la fiche'});
+    coreData.push({id: 'categories', text: 'Liste des catégories (en tableau ou séparées par des virgules)'});
+    coreData.push({id: 'fullAddress', text: 'Adresse complète'});
+    coreData.push({id: 'streetNumber', text: 'Adresse: numéro de rue'});
+    coreData.push({id: 'streetAddress', text: 'Adresse: rue'});
+    coreData.push({id: 'addressLocality', text: 'Adresse: ville'});
+    coreData.push({id: 'postalCode', text: 'Adresse: code postal'});
+    coreData.push({id: 'addressCountry', text: 'Adresse: pays'});
+    coreData.push({id: 'latitude', text: 'Latitude'});
+    coreData.push({id: 'longitude', text: 'Longitude'});
+    coreData.push({id: 'email', text: "Email de l'élement"});
+    coreData.push({id: 'owner', text: "Email de l'utilisateur propriétaire de la fiche"});
+    coreData.push({id: 'source', text: "Origine de l'élément (source)"});
 
-    allProperties = $.map(formData, function(el) { return el.id });
+    allProperties = $.map(coreData, function(el) { return el.id });
 
+    var formData = [];
     for(var i = 0; i < formProperties.length; i++) {
       var prop = formProperties[i];
       allProperties.push(prop);
@@ -92,6 +97,7 @@
     {% endfor %}
 
     options = [{ id: "/", text: ""}]
+    options.push({ text: "Attributs principaux", children: coreData});
     options.push({ text: "Attributs du formulaire", children: formData});
     if (otherData.length > 0) options.push({text: "Autres attributs", children: otherData});
     options.push({ text: "Attributs importés", children: importedData});

@@ -7,8 +7,9 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
+use Sonata\AdminBundle\Admin\AbstractAdmin;
 
-class ImportAdmin extends ImportAbstractAdmin
+class ImportAdmin extends AbstractAdmin
 {
     public function getTemplate($name)
     {
@@ -104,12 +105,6 @@ class ImportAdmin extends ImportAbstractAdmin
             }
 
         }
-
-        $formMapper
-            ->tab('Aide')
-                ->with("Aide", ['box_class' => 'box box-default', "description" => $this->getInstructions('13154fa0-13c2-41f1-a4ad-e04c35c86e89')])
-                ->end()
-            ->end();
     }
 
     protected function configureRoutes(RouteCollection $collection)
