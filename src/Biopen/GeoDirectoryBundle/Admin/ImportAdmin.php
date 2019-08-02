@@ -36,6 +36,7 @@ class ImportAdmin extends AbstractAdmin
 
         $isDynamic = $this->getSubject()->isDynamicImport();
         $title = $isDynamic ? "Import Dynamique, pour afficher des données gérées par quelqu'un d'autre" : "Importer des données en dur, depuis un fichier CSV ou une API Json";
+
         $formMapper
             ->tab('Général')
                 ->with($title, ['class' => 'col-md-6'])
@@ -72,7 +73,7 @@ class ImportAdmin extends AbstractAdmin
         $formMapper->end();
         $formMapper->tab('Modifier les données en exécutant du code')
             ->with('Entrez du code qui sera exécuté à la reception des données, avant leur traitement par GoGoCarto', ["description" => "La variable <b>\$data</b> représente le tableau PHP créé à partir des données Csv ou Json. Quelques examples de transformations simple:
-<pre>&lt;?php</br>\$data = \$data['elements']</pre>
+<pre>&lt;?php</br>\$data = \$data['elements'];</pre>
 <pre>&lt;?php</br>foreach(\$data as \$key => \$row) {
     \$data[\$key]['source'] = \"MySource\";
 }</pre>

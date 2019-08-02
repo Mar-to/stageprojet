@@ -82,8 +82,11 @@ class DatabaseIntegrityWatcher
       if (array_key_exists("name", $changeset)) {
         $query = $dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element')->field('optionValues.optionId')->in([$document->getId()]);
         $elementIds = array_keys($query->select('id')->hydrate(false)->getQuery()->execute()->toArray());
-        $elementIdsString = '"' . implode(',',$elementIds) . '"';
-        $this->asyncService->callCommand('app:elements:updateJson', ['ids' => $elementIdsString]);
+        if (count($elementIds))
+        {
+          $elementIdsString = '"' . implode(',',$elementIds) . '"';
+          $this->asyncService->callCommand('app:elements:updateJson', ['ids' => $elementIdsString]);
+        }
       }
     }
   }

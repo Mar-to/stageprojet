@@ -2,16 +2,21 @@
 {# the following code works great, except when creating new file, then an error in thrwn during the template render #}
 {% set file = form.vars.sonata_admin.admin.subject is defined ? form.vars.sonata_admin.admin.subject : null %}
 {% if file %}
-  {% set imagePath = file.fileUrl is defined ? file.fileUrl : file.externalImageUrl is defined ? file.externalImageUrl : null %}
-  {% if imagePath %}
-      <img src="{{ imagePath }}" class="thumbnail"/>
+  {% set filePath = file.fileUrl is defined ? file.fileUrl : file.externalImageUrl is defined ? file.externalImageUrl : null %}
+  {% set extension = filePath|split('.')|last|lower %}
+  {% if filePath %}
+    {% if extension in ['jpg', 'jpeg', 'png', 'gif', 'svg'] %}
+      <img src="{{ filePath }}" class="thumbnail"/>
+    {% else %}
+      Fichier actuel: <i>{{ filePath|split('/')|last }}</i>
+    {% endif %}
   {% endif %}
 {% endif %}
 
 <style>
-  .thumbnail {     
+  .thumbnail {
     width: 100px;
-    display: inline-block; 
+    display: inline-block;
     margin-right: 10px;
   }
 </style>

@@ -1,46 +1,35 @@
 {
   "licence": "https://opendatacommons.org/licenses/odbl/summary/",
-  "ontology":"gogofull",
-	"bala":[{
+  "source": "Cap ou pas Cap",
+	"graph":[{
 		"id":"Rhm",
-		"newfields": "balam",
 		"name":"Entropie",
 		"coord":{"latitude":45.18679,"longitude":5.70548},
+		"address": "rue Georges Jacquet, Grenoble",
 		"sourceKey":"CapOuPasCap",
-		"addresses":{"street_num": "5", "streetAddress":"rue Georges Jacquet Grenoble"},
-		"createdAt":"21/12/2018 à 18:26",
-		"updatedAt":"17/03/2019 à 13:38",
-		"taxonomy": ["vert foncé", "tandem"],
-		"categories": ["Habitat"],
-		"categoriesFull": [
-			{
-				"id": 2,
-				"name": "boum",
-				"description": "un bel habitat",
-				"index": 5
-			},
-			{
-				"id": 8,
-				"name": "Couveuse",
-				"description": null,
-				"index": 1
-			}
+		"categories": [
+			{ "name": "Nature", "index": 5, "description": "balade en forêt"},
+		  { "name": "Numérique", "index": 1}
 		],
-		"abstract": "Ateliers bricole",
-		"openHoursString": "",
-		"openHours": null,
-		"descriptionMore": null,
-		"phone": "",
-		"tags": ["Atelier DIY"],
 		"website": "https:\/\/www.asso-entropie.fr\/",
-		"showUrl": "https:\/\/www.capoupascap.info\/capalts_alt\/entropie\/",
-		"editUrl": null,
-		"updatedAt": "2018-12-11 13:54:14",
-		"email": "entropie@gresille.org",
 		"images": ["https:\/\/www.capoupascap.info\/wp-content\/uploads\/2018\/12\/entropie.png"]
 	},
 	{
-		"otherobject": "blim"
+		"id":"Ki",
+		"name":"Foot",
+		"coord":{"latitude":45.18679,"longitude":5.70548},
+		"address": "rue Bernard, Tours",
+		"sourceKey":"CapOuPasCap",
+		"categories": [6]
+	},
+	{
+		"id":"sa",
+		"name":"tata",
+		"coord":{"latitude":46.18679,"longitude":5.70548},
+		"address": "rue Jacquet, Labrit",
+		"sourceKey":"CapOuPasCap",
+		"categories": [2],
+		"website": "https:\/\/www.asso-cala.fr\/"
 	}
 	]
 }

@@ -159,6 +159,7 @@ class ElementImportMappingService
       $categories = is_array($categories) ? $categories : explode(',', $categories);
       foreach($categories as $category) {
         if (is_array($category)) $category = $category['name'];
+        $category = ltrim(rtrim($category));
         if (!in_array($category, $allNewCategories)) $allNewCategories[] = $category;
         if ($category && !array_key_exists($category, $taxonomyMapping))
         {
