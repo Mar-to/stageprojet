@@ -33,9 +33,9 @@ class Configuration implements \JsonSerializable
 
     /** @MongoDB\Field(type="string") */
     protected $appName;
-    
-    /** 
-    * @MongoDB\Field(type="string") 
+
+    /**
+    * @MongoDB\Field(type="string")
     * @Gedmo\Slug(fields={"appName"}, updatable=false)
     */
     protected $appSlug;
@@ -71,22 +71,22 @@ class Configuration implements \JsonSerializable
     // ----------------------------
     // The strings to describe an element of the directory (it can be a "point" an "organization" ...)
 
-    /** @MongoDB\Field(type="string") */ 
+    /** @MongoDB\Field(type="string") */
     protected $elementDisplayName = "élément"; // element
 
-    /** @MongoDB\Field(type="string") */ 
+    /** @MongoDB\Field(type="string") */
     protected $elementDisplayNameDefinite = "l'élément"; // the element
 
-    /** @MongoDB\Field(type="string") */    
-    protected $elementDisplayNameIndefinite = "un élément"; // an element 
+    /** @MongoDB\Field(type="string") */
+    protected $elementDisplayNameIndefinite = "un élément"; // an element
 
-    /** @MongoDB\Field(type="string") */    
-    protected $elementDisplayNamePlural = "éléments"; // elements 
+    /** @MongoDB\Field(type="string") */
+    protected $elementDisplayNamePlural = "éléments"; // elements
 
     // ----------------------------
     // --------- GENRAL -----------
     // ----------------------------
-    
+
     /** @MongoDB\Field(type="bool") */
     protected $activateHomePage;
 
@@ -104,14 +104,14 @@ class Configuration implements \JsonSerializable
 
     // ----------------------------
     // ---------- USER -----------
-    // ----------------------------    
+    // ----------------------------
 
     /** @MongoDB\EmbedOne(targetDocument="Biopen\CoreBundle\Document\Configuration\ConfigurationUser") */
     protected $user;
 
     // ----------------------------
     // ----------- HOME -----------
-    // ----------------------------    
+    // ----------------------------
 
     /** @MongoDB\ReferenceOne(targetDocument="Biopen\CoreBundle\Document\ConfImage", cascade={"all"})   */
     protected $backgroundImage;
@@ -133,13 +133,13 @@ class Configuration implements \JsonSerializable
     protected $exportIframeFeature;
 
     /** @MongoDB\EmbedOne(targetDocument="Biopen\CoreBundle\Document\FeatureConfiguration") */
-    protected $directionsFeature;    
+    protected $directionsFeature;
 
     /** @MongoDB\EmbedOne(targetDocument="Biopen\CoreBundle\Document\FeatureConfiguration") */
-    protected $reportFeature;  
+    protected $reportFeature;
 
     /** @MongoDB\EmbedOne(targetDocument="Biopen\CoreBundle\Document\FeatureConfiguration") */
-    protected $stampFeature;  
+    protected $stampFeature;
 
     /** @MongoDB\EmbedOne(targetDocument="Biopen\CoreBundle\Document\FeatureConfiguration") */
     protected $pendingFeature;
@@ -168,6 +168,8 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\EmbedOne(targetDocument="Biopen\CoreBundle\Document\FeatureConfiguration") */
     protected $mapDefaultViewFeature;
 
+    /** @MongoDB\Field(type="string") */
+    protected $searchExcludingWords;
 
     // ---------------------------------
     // --------- CONTRIBUTIONS ---------
@@ -203,8 +205,8 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\Field(type="int") */
     protected $maxDaysLeavingAnElementPending = 15;
 
-    /** @MongoDB\Field(type="string") */    
-    protected $collaborativeModerationExplanations;    
+    /** @MongoDB\Field(type="string") */
+    protected $collaborativeModerationExplanations;
 
 
     // -------------------------
@@ -221,7 +223,7 @@ class Configuration implements \JsonSerializable
     protected $marker;
 
     /** @MongoDB\ReferenceOne(targetDocument="Biopen\CoreBundle\Document\TileLayer") */
-    protected $defaultTileLayer;    
+    protected $defaultTileLayer;
 
     /** @MongoDB\Field(type="float") */
     protected $defaultNorthEastBoundsLat;
@@ -240,15 +242,15 @@ class Configuration implements \JsonSerializable
 
     /** @MongoDB\Field(type="bool") */
     protected $saveTileLayerInCookies = true;
-    
 
-    
+
+
 
     // -------------------------
     // ------ MAP POPUP --------
     // -------------------------
 
-    /** @MongoDB\Field(type="string") */    
+    /** @MongoDB\Field(type="string") */
     protected $customPopupText;
 
     /** @MongoDB\Field(type="int") */
@@ -313,10 +315,10 @@ class Configuration implements \JsonSerializable
     // -------- IMPORTS -----------
     // ----------------------------
 
-    /** @MongoDB\Field(type="string") */ 
+    /** @MongoDB\Field(type="string") */
     protected $fontImport;
 
-    /** @MongoDB\Field(type="string") */ 
+    /** @MongoDB\Field(type="string") */
     protected $iconImport;
 
 
@@ -325,7 +327,7 @@ class Configuration implements \JsonSerializable
     // -------------------------
 
     /** @MongoDB\Field(type="string") */
-    protected $theme; 
+    protected $theme;
 
     // FONTS
 
@@ -338,7 +340,7 @@ class Configuration implements \JsonSerializable
     // COLORS BASIC
 
     /** @MongoDB\Field(type="string") */
-    protected $textColor;    
+    protected $textColor;
 
     /** @MongoDB\Field(type="string") */
     protected $primaryColor;
@@ -370,7 +372,7 @@ class Configuration implements \JsonSerializable
     protected $contentBackgroundColor;
 
     /** @MongoDB\Field(type="string") */
-    protected $contentBackgroundElementBodyColor;    
+    protected $contentBackgroundElementBodyColor;
 
     /** @MongoDB\Field(type="string") */
     protected $headerColor;
@@ -381,7 +383,7 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\Field(type="string") */
     protected $headerHoverColor;
 
-    // COLORS ADVANCED    
+    // COLORS ADVANCED
 
     /** @MongoDB\Field(type="string") */
     protected $searchBarColor;
@@ -393,7 +395,7 @@ class Configuration implements \JsonSerializable
     protected $errorColor;
 
     /** @MongoDB\Field(type="string") */
-    protected $pendingColor; 
+    protected $pendingColor;
 
     /** @MongoDB\Field(type="string") */
     protected $interactiveSectionColor;
@@ -401,7 +403,7 @@ class Configuration implements \JsonSerializable
 
     // -------------------------
     // ---- CUSTOM ASSETS ------
-    // ------------------------- 
+    // -------------------------
 
     /** @MongoDB\Field(type="string") */
     protected $customCSS = '';
@@ -411,19 +413,19 @@ class Configuration implements \JsonSerializable
 
     // -------------------------
     // ---- CUSTOM ASSETS ------
-    // ------------------------- 
+    // -------------------------
     /** @MongoDB\Field(type="string") */
     protected $customDashboard = '';
 
     // -------------------------
     // --------- API -----------
-    // ------------------------- 
+    // -------------------------
 
     /** @MongoDB\EmbedOne(targetDocument="Biopen\CoreBundle\Document\Configuration\ConfigurationApi") */
     protected $api;
 
-    
-    public function __toString() 
+
+    public function __toString()
     {
         return "Configuration Générale";
     }
@@ -442,7 +444,7 @@ class Configuration implements \JsonSerializable
         $this->shareFeature = new FeatureConfiguration();
         $this->exportIframeFeature = new FeatureConfiguration();
         $this->directionsFeature = new FeatureConfiguration();
-        $this->reportFeature = new FeatureConfiguration(); 
+        $this->reportFeature = new FeatureConfiguration();
         $this->stampFeature = new FeatureConfiguration();
         $this->pendingFeature = new FeatureConfiguration();
         $this->listModeFeature = new FeatureConfiguration();
@@ -453,9 +455,9 @@ class Configuration implements \JsonSerializable
         $this->mapDefaultViewFeature = new FeatureConfiguration();
 
         $this->sendMailFeature = new InteractionConfiguration();
-        
+
         $this->addFeature = new InteractionConfiguration();
-        $this->editFeature = new InteractionConfiguration(); 
+        $this->editFeature = new InteractionConfiguration();
         $this->deleteFeature = new InteractionConfiguration();
         $this->collaborativeModerationFeature = new InteractionConfiguration();
         $this->directModerationFeature = new InteractionConfiguration();
@@ -490,14 +492,14 @@ class Configuration implements \JsonSerializable
             else return new Rgba($colorString);
         } catch (\Exception $e) {
             return new Hex("#000");
-        }        
+        }
     }
     public function getDefaultColor($colorName)
     {
         $method = "getDefault" . ucfirst($colorName);
-        if (method_exists($this, $method)) 
+        if (method_exists($this, $method))
             return $this->$method();
-        else 
+        else
             return null;
     }
 
@@ -644,7 +646,7 @@ class Configuration implements \JsonSerializable
     /* --------------------------------------- */
     /*             END DEFAULT COLORS
     /* ---------------------------------------- */
-    
+
 
     /**
      * Set favoriteFeature
@@ -1936,7 +1938,7 @@ class Configuration implements \JsonSerializable
         return $this->elementFormGeocodingHelp;
     }
 
-    
+
 
     /**
      * Set activateHomePage
@@ -2067,7 +2069,7 @@ class Configuration implements \JsonSerializable
      */
     public function getHome()
     {
-        if(!$this->home) $this->home = new ConfigurationHome(); 
+        if(!$this->home) $this->home = new ConfigurationHome();
         return $this->home;
     }
 
@@ -2575,8 +2577,8 @@ class Configuration implements \JsonSerializable
     public function getTheme()
     {
         return $this->theme;
-    }     
-    
+    }
+
 
     /**
      * Set textColor
@@ -3005,5 +3007,27 @@ class Configuration implements \JsonSerializable
     public function getDataLicenseUrl()
     {
         return $this->dataLicenseUrl;
+    }
+
+    /**
+     * Set searchExcludingWords
+     *
+     * @param string $searchExcludingWords
+     * @return $this
+     */
+    public function setSearchExcludingWords($searchExcludingWords)
+    {
+        $this->searchExcludingWords = $searchExcludingWords;
+        return $this;
+    }
+
+    /**
+     * Get searchExcludingWords
+     *
+     * @return string $searchExcludingWords
+     */
+    public function getSearchExcludingWords()
+    {
+        return str_replace(' ', '', $this->searchExcludingWords);
     }
 }

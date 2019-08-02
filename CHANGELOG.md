@@ -1,6 +1,7 @@
 v2.3.4
 ======
 
+* FEATURE: Ability to add excluding words for element search
 * FEATURE: Complete reorganisation of user role management. Please update your users & groups roles
 * FEATURE: Element import, ability to map ontology and taxonomy
 * BUG: Fix list mode

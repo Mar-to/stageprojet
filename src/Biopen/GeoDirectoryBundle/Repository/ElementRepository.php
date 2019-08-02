@@ -32,7 +32,7 @@ class ElementRepository extends DocumentRepository
     $radius = $distance / 110;
     $status = $includeDeleted ? ElementStatus::Duplicate : ElementStatus::PendingModification;
 
-    $qb->addOr($qb->expr()->text($element->getName())->language('fr'));
+    $qb->addOr($this->queryText($qb->expr(), $element->getName()));
     if ($element->getEmail()) $qb->addOr($qb->expr()->field('email')->equals($element->getEmail()));
 
     $qb->limit($maxResults)
@@ -83,8 +83,7 @@ class ElementRepository extends DocumentRepository
   {
     $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 
-    $qb->text($text)->sortMeta('score', 'textScore');
-
+    $this->queryText($qb, $text)->sortMeta('score', 'textScore');
     $this->filterVisibles($qb);
 
     $this->selectJson($qb, $fullRepresentation, $isAdmin);
@@ -184,6 +183,13 @@ class ElementRepository extends DocumentRepository
 
     $limit = $request->get('limit');
     if ($limit && $limit > 0) $qb->limit($limit);
+  }
+
+  private function queryText($qb, $text)
+  {
+    $config = $this->getDocumentManager()->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+    $text = $text . ' --' . str_replace(',', ' --', $config->getSearchExcludingWords());
+    return $qb->text($text)->language('fr');
   }
 
   private function filterVisibles($qb, $status = ElementStatus::PendingModification)
@@ -291,9 +297,9 @@ class ElementRepository extends DocumentRepository
   {
     $formProperties = [];
     $propTypeToIgnore = ['separator', 'header', 'address', 'title', 'email', 'taxonomy', 'openhours'];
-    $config = $this->getDocumentManager()->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();          
+    $config = $this->getDocumentManager()->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
     foreach ($config->getElementFormFields() as $key => $field) {
-      if (property_exists($field, 'name') && !in_array($field->type, $propTypeToIgnore)) 
+      if (property_exists($field, 'name') && !in_array($field->type, $propTypeToIgnore))
         $formProperties[] = $field->name;
     }
     return $formProperties;
