@@ -49,21 +49,21 @@
 		  			{% if logo %}<img src="{{ logo.imageUrl }}"/>{% endif %}
 		  			{{ config.appName }}
 		  		</a>
-		  		{% if config.user.loginWithMonPrintemps %}
+		  		{% if config.user.loginWithMonPrintemps and oauth_communs != 'disabled' %}
 	        	<a class="oauth-btn waves-effect waves-light printemps" href="{{ hwi_oauth_login_url('communs') }}"><i class="icon gogo-icon-printemps left"></i>Printemps de l'éducation</a>
 	        {% endif %}
-	        {% if config.user.loginWithLesCommuns %}
-	        <a class="oauth-btn waves-effect waves-light communs" href="{{ hwi_oauth_login_url('communs') }}"><i class="icon gogo-icon-communs left"></i>LesCommuns.org</a>
+	        {% if config.user.loginWithLesCommuns and oauth_communs != 'disabled' %}
+	        	<a class="oauth-btn waves-effect waves-light communs" href="{{ hwi_oauth_login_url('communs') }}"><i class="icon gogo-icon-communs left"></i>LesCommuns.org</a>
 	      	{% endif %}
-	      {% if config.user.loginWithMonPrintemps %}
+	      {% if config.user.loginWithMonPrintemps and oauth_communs != 'disabled' %}
 	      </div>
 	      <div class="oauth-section">
 	      {% endif %}
-	      	{% if config.user.loginWithGoogle %}
-	        <a class="oauth-btn waves-effect waves-light gplus" href="{{ hwi_oauth_login_url('gplus') }}"><i class="icon gogo-icon-gplus left"></i>Google</a>
+	      	{% if config.user.loginWithGoogle and oauth_google != 'disabled' %}
+	        	<a class="oauth-btn waves-effect waves-light gplus" href="{{ hwi_oauth_login_url('gplus') }}"><i class="icon gogo-icon-gplus left"></i>Google</a>
 	        {% endif %}
-	        {% if config.user.loginWithFacebook %}
-	        <a class="oauth-btn waves-effect waves-light facebook" href="{{ hwi_oauth_login_url('facebook') }}"><i class="icon gogo-icon-facebook left"></i>Facebook</a>
+	        {% if config.user.loginWithFacebook and oauth_facebook != 'disabled' %}
+	        	<a class="oauth-btn waves-effect waves-light facebook" href="{{ hwi_oauth_login_url('facebook') }}"><i class="icon gogo-icon-facebook left"></i>Facebook</a>
 	        {% endif %}
         </div>
 			</div>

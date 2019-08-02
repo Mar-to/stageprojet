@@ -1,29 +1,29 @@
 <!-- Pop up message alerte-->
-{% set oauthLoginAvailable = config.user.loginWithLesCommuns or config.user.loginWithMonPrintemps or config.user.loginWithGoogle or config.user.loginWithFacebook %}
+{% set oauthLoginAvailable = config.user.loginWithLesCommuns and oauth_communs != 'disabled' or config.user.loginWithMonPrintemps and oauth_communs != 'disabled' or config.user.loginWithGoogle and oauth_google != 'disabled' or config.user.loginWithFacebook and oauth_facebook != 'disabled' %}
 
 <div id="popup-login" class="modal page-modal {{ oauthLoginAvailable ? 'with-oauth' : 'without-oauth' }}">
   <div class="modal-content page-modal-content">
 
     <span class="icon btn-back gogo-icon-material-design-icons-1" onclick="$('#popup-login').closeModal()"></span>
-    <h1>Connexion</h1>    
+    <h1>Connexion</h1>
 
     <div class="row login-form">
 
       {# OAuth LOGIN #}
-      {% if oauthLoginAvailable %}       
+      {% if oauthLoginAvailable %}
         <div class="col s12 m6 oauth-section section">
-          {% if config.user.loginWithLesCommuns %}
+          {% if config.user.loginWithLesCommuns and oauth_communs != 'disabled' %}
           <a class="oauth-btn waves-effect waves-light communs" href="{{ hwi_oauth_login_url('communs') }}"><i class="icon gogo-icon-communs left"></i>LesCommuns.org</a>
           {% endif %}
-          {% if config.user.loginWithMonPrintemps %}
+          {% if config.user.loginWithMonPrintemps and oauth_communs != 'disabled' %}
           <a class="oauth-btn waves-effect waves-light printemps" href="{{ hwi_oauth_login_url('communs') }}"><i class="icon gogo-icon-printemps left"></i>Printemps de l'éducation</a>
           {% endif %}
-          {% if config.user.loginWithGoogle %}
+          {% if config.user.loginWithGoogle and oauth_google != 'disabled' %}
           <a class="oauth-btn waves-effect waves-light gplus" href="{{ hwi_oauth_login_url('gplus') }}"><i class="icon gogo-icon-gplus left"></i>Google</a>
           {% endif %}
-          {% if config.user.loginWithFacebook %}
+          {% if config.user.loginWithFacebook and oauth_facebook != 'disabled' %}
           <a class="oauth-btn waves-effect waves-light facebook" href="{{ hwi_oauth_login_url('facebook') }}"><i class="icon gogo-icon-facebook left"></i>Facebook</a>
-          <p class="facebook-alert">ATTENTION ! Si votre mail est privé sur Facebook, vous ne serez pas informé du l'évolution de vos contributions</p>    
+          <p class="facebook-alert">ATTENTION ! Si votre mail est privé sur Facebook, vous ne serez pas informé du l'évolution de vos contributions</p>
           {% endif %}
           {#<a class="oauth-btn waves-effect waves-light yahoo" href="{{ hwi_oauth_login_url('yahoo') }}"><i class="icon gogo-icon-yahoo left"></i>Se connecter avec Yahoo</a>#}
         </div>
@@ -62,9 +62,9 @@
     <div class="register">Besoin d'un compte ? <a href="{{ path('fos_user_registration_register') }}">S'inscrire</a></div>
     {% endif %}
   </div>
-   
+
 </div>
 
 <script>
-// scripts are in header.html.twig 
+// scripts are in header.html.twig
 </script>

@@ -26,16 +26,16 @@ class ConfigurationUserAdmin extends ConfigurationAbstractAdmin
         $formMapper
             ->add('user.enableRegistration', 'checkbox', array('label' => "Autoriser la création de compte", 'required' => false))
             ->add('user.sendConfirmationEmail', 'checkbox', array('label' => "Valider la création avec un email de confirmation", 'required' => false));
-        
+
         // provide oauth id if configured
         if ($container->getParameter('oauth_communs_id') != "disabled") {
             $formMapper->add('user.loginWithLesCommuns', 'checkbox', array('label' => "Activer la connexion avec \"LesCommuns.org\"", 'required' => false));
             $formMapper->add('user.loginWithMonPrintemps', 'checkbox', array('label' => "Activer la connexion avec MonPrintemps", 'required' => false));
         }
-        if ($container->getParameter('oauth_google_id') != "disabled") 
+        if ($container->getParameter('oauth_google_id') != "disabled")
             $formMapper->add('user.loginWithGoogle', 'checkbox', array('label' => "Activer la connexion avec Google", 'required' => false));
-        if ($container->getParameter('oauth_facebook_id') != "disabled") 
+        if ($container->getParameter('oauth_facebook_id') != "disabled")
             $formMapper->add('user.loginWithFacebook', 'checkbox', array('label' => "Activer la connexion avec Facebook", 'required' => false));
-        
+
     }
 }

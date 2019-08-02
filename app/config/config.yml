@@ -10,9 +10,9 @@ imports:
     - { resource: "@BiopenCoreBundle/Resources/config/services.yml" }
     - { resource: "@BiopenCoreBundle/Resources/config/services_admin.yml" }
     - { resource: "@BiopenGeoDirectoryBundle/Resources/config/services.yml" }
-    - { resource: "@BiopenGeoDirectoryBundle/Resources/config/services_admin.yml" }  
-    - { resource: "@BiopenSaasBundle/Resources/config/services.yml" }    
-    - { resource: "@BiopenSaasBundle/Resources/config/services_admin.yml" }   
+    - { resource: "@BiopenGeoDirectoryBundle/Resources/config/services_admin.yml" }
+    - { resource: "@BiopenSaasBundle/Resources/config/services.yml" }
+    - { resource: "@BiopenSaasBundle/Resources/config/services_admin.yml" }
     - { resource: "@SonataUserBundle/Resources/config/services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
@@ -56,6 +56,9 @@ twig:
         use_as_saas: '%use_as_saas%'
         base_path: '%base_path%'
         contact_email: '%contact_email%'
+        oauth_communs: '%oauth_communs_id%'
+        oauth_google: '%oauth_google_id%'
+        oauth_facebook: '%oauth_facebook_id%'
     strict_variables: "%kernel.debug%"
     paths:
         "%kernel.root_dir%/../src/Biopen/GeoDirectoryBundle/Resources/views": BiopenGeoDirectory
@@ -69,13 +72,13 @@ twig:
     form:
         resources:
             - 'SonataFormatterBundle:Form:formatter.html.twig'
-            
+
 # Doctrine Configuration
 doctrine:
     dbal:
         driver:   pdo_mysql
         charset:  UTF8
-        
+
 # Mongodb Configuration
 doctrine_mongodb:
     connections:
@@ -86,7 +89,7 @@ doctrine_mongodb:
     document_managers:
         default:
             auto_mapping: true
-            mappings:                  
+            mappings:
                 # gedmo_translatable:
                 #     type: annotation
                 #     prefix: Gedmo\Translatable\Document
@@ -122,9 +125,9 @@ stof_doctrine_extensions:
             timestampable: true
 
 pix_sortable_behavior:
-    db_driver: mongodb 
+    db_driver: mongodb
     position_field:
-        default: position 
+        default: position
         entities:
             Biopen\GeoDirectoryBundle\Document\Option: index
             Biopen\GeoDirectoryBundle\Document\Category: index
@@ -153,7 +156,6 @@ assetic:
 
 # Error monitoring
 sentry:
-    dsn: "https://6145d1aac36c429781fc1b0f79b0da48@sentry.io/1402018"            
-            
-            
-            
+    dsn: "https://6145d1aac36c429781fc1b0f79b0da48@sentry.io/1402018"
+
+
