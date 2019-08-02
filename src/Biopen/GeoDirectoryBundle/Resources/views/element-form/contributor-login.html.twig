@@ -21,22 +21,22 @@
 	{# NOT ACTIVE #}
 	{% if not featureConfig.getActive() %}
 
-		<h1>Erreur</h1> 
+		<h1>Erreur</h1>
 		<p><center>Désolé, cette fonctionnalité n'est pas activée pour le moment</center></p>
 
 	{# NOT ACTIVE IN IFRAME #}
 	{% elseif app.request.get('iframe') and not featureConfig.getActiveInIframe() %}
 
-		<h1>Erreur</h1> 
+		<h1>Erreur</h1>
 		<p><center>Désolé, cette fonctionnalité n'est pas disponible à l'intérieur d'une iframe</center></p>
 
 	{% else %}
 
-		<h1>Identification</h1> 
+		<h1>Identification</h1>
 
 		{# Only Admins warning #}
 		{% if featureConfig.isOnlyAllowedForAdmin() %}
-			<p>Attention ! Cette fonctionalité est reservée aux administrateur</p>
+			<p>Attention ! Cette fonctionnalité est reservée aux administrateur</p>
 		{% endif %}
 
 		{# Login button #}
@@ -79,8 +79,8 @@
 			{{ form_start(loginForm) }}
 
 			<div class="input-field col s12">
-				<i class="material-icons gogo-icon-mail prefix"></i>	
-				{{ form_widget(loginForm.email, {'id': 'inputMail', 
+				<i class="material-icons gogo-icon-mail prefix"></i>
+				{{ form_widget(loginForm.email, {'id': 'inputMail',
 											      		   'attr': {'class': 'validate required',
 														   		 'placeholder':'Entrez simplement une adresse mail' }}) }}
 				<label for="inputMail" data-error="Veuillez renseigner une adresse mail valide" class="gogo-form-label" style="margin-left: 2.5rem;"></label>

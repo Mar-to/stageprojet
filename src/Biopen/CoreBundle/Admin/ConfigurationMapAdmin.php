@@ -24,20 +24,20 @@ class ConfigurationMapAdmin extends ConfigurationAbstractAdmin
         $featureStyle = array('class' => 'col-md-6 col-lg-3 gogo-feature');
         $featureFormOption = ['delete' => false, 'required'=> false, 'label_attr'=> ['style'=> 'display:none']];
         $featureFormTypeOption = ['edit' => 'inline'];
-        $container = $this->getConfigurationPool()->getContainer(); 
+        $container = $this->getConfigurationPool()->getContainer();
         $em = $container->get('doctrine_mongodb')->getManager();
-        $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();  
+        $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
 
         $formMapper
-            ->tab('Paramètres de la carte')  
+            ->tab('Paramètres de la carte')
                 ->with('La carte')
                     ->add('defaultTileLayer', 'sonata_type_model', array(
-                            'class'=> 'Biopen\CoreBundle\Document\TileLayer', 
-                            'required' => true, 
+                            'class'=> 'Biopen\CoreBundle\Document\TileLayer',
+                            'required' => true,
                             'choices_as_values' => true,
                             'label' => 'Fond de carte par défaut (enregistez pour voir apparaitre le fond délectionné sur la carte ci-dessous)'))
                     ->add('defaultViewPicker', 'hidden', array('mapped' => false, 'attr' => [
-                                                        'class' => 'gogo-viewport-picker', 
+                                                        'class' => 'gogo-viewport-picker',
                                                         'data-title-layer' => $config->getDefaultTileLayer()->getUrl(),
                                                         'data-default-bounds' => json_encode($config->getDefaultBounds())
                                                     ]))
@@ -51,18 +51,18 @@ class ConfigurationMapAdmin extends ConfigurationAbstractAdmin
                     ->add('saveTileLayerInCookies', 'checkbox', array('label' => "Sauvegarder le choix du fond de carte par l'utilisateur dans les cookies", 'required' => false))
                 ->end()
             ->end()
-            ->tab('Fonctionalités')  
+            ->tab('Fonctionnalités')
                 ->with('Favoris', $featureStyle)
-                    ->add('favoriteFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()              
+                    ->add('favoriteFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
                 ->with('Partage de l\'URL', $featureStyle)
-                    ->add('shareFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()                
+                    ->add('shareFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
                 ->with('Calcul Itinéraire', $featureStyle)
                     ->add('directionsFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
                 ->with('Signalement d\'une erreur', $featureStyle)
                     ->add('reportFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
                 ->with('Etiquetter les éléments', $featureStyle)
-                    ->add('stampFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()                
-                
+                    ->add('stampFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
+
 
                 ->with('Mode Liste', $featureStyle)
                     ->add('listModeFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
@@ -72,30 +72,30 @@ class ConfigurationMapAdmin extends ConfigurationAbstractAdmin
                     ->add('searchGeolocateFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
                 ->with("Recherche d'un élément", $featureStyle)
                     ->add('searchElementsFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
-                
+
                 ->with('Choix du fond de carte', $featureStyle)
                     ->add('layersFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
                 ->with('Revenir à la vue par défault', $featureStyle)
                     ->add('mapDefaultViewFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
                 ->with('Export Iframe', $featureStyle)
-                    ->add('exportIframeFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()                       
+                    ->add('exportIframeFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
                 ->with('Affichage des éléments en attente de validation', $featureStyle)
-                    ->add('pendingFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()                
-            ->end()  
-            ->tab('Message personnalisé')  
+                    ->add('pendingFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
+            ->end()
+            ->tab('Message personnalisé')
                 ->with('Message personnalisé à faire apparaitre dans un coin de la carte', ['class' => 'gogo-feature'])
                     ->add('customPopupFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)
                     ->add('customPopupText', 'sonata_simple_formatter_type', array(
                             'format' => 'richhtml',
                             'label' => 'Texte à afficher (Exemple: "Ce site est encore en version bêta !")',
-                            'label_attr' => ['style' => 'margin-top: 20px'],                             
+                            'label_attr' => ['style' => 'margin-top: 20px'],
                             'ckeditor_context' => 'full',
                             'required' => false
                     ))
                     ->add('customPopupId', null, array('label' => 'Numéro de version du popup (à changer quand vous modifiez le texte)', 'required' => false))
                     ->add('customPopupShowOnlyOnce', null, array('label' => "Afficher la popup une fois seulement (si l'utilisateur la ferme, il ne la reverra plus jusqu'à ce que vous changiez le numéro de version)", 'required' => false))
                 ->end()
-            ->end()                
+            ->end()
             ->tab('Menu')
                 ->with('Menu (contient les filtre des catégories et la barre de recherche)')
                     ->add('menu.width', 'number', array('label' => "Largueur du menu", 'required' => false, 'attr' => ['placeholder' => '290']))
@@ -107,6 +107,6 @@ class ConfigurationMapAdmin extends ConfigurationAbstractAdmin
                     ->add('menu.displayNumberOfElementRoundResults', 'checkbox', array('label' => "Arrondir les résultat (afficher 300+ au lieu de 326)",  'label_attr' => ['title' => "Valable uniquement si \"afficher le nombre d'éléments par catégorie\" est coché"], 'required' => false))
                 ->end()
             ->end()
-        ;           
+        ;
     }
 }
