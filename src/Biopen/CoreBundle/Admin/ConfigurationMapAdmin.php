@@ -81,7 +81,7 @@ class ConfigurationMapAdmin extends ConfigurationAbstractAdmin
                 ->with("Recherche d'un élément", $featureStyle)
                     ->add('searchElementsFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
                 ->with("Paramètre de la recherche")
-                    ->add('searchExcludingWords', null, ['label' => 'Mots à exclure de la recherche, séparés par des virgules', 'label_attr' => ['title' => 'Si vous faites un annuaire de producteurs locaux, vous voudrez peut être exclure les mots comme "bio", car ce genre de recherche donnerait de mauvais résultats. Par exemple si vous cherchez "Ferme du bayou bio", des résultat qui n\'ont rien à voir tel que "Amap bio" sortiraient dans les résultats, juste à cause du mot "bio". De manière générale, excluez les mots communément utilisés dans les titres de vos fiches. Notez que la recherche par titre de la fiche est aussi utilisée dans la détection de doublons']])
+                    ->add('searchExcludingWords', null, ['required' => false, 'label' => 'Mots à exclure de la recherche, séparés par des virgules', 'label_attr' => ['title' => 'Si vous faites un annuaire de producteurs locaux, vous voudrez peut être exclure les mots comme "bio", car ce genre de recherche donnerait de mauvais résultats. Par exemple si vous cherchez "Ferme du bayou bio", des résultat qui n\'ont rien à voir tel que "Amap bio" sortiraient dans les résultats, juste à cause du mot "bio". De manière générale, excluez les mots communément utilisés dans les titres de vos fiches. Notez que la recherche par titre de la fiche est aussi utilisée dans la détection de doublons']])
                 ->end()
             ->end()
             ->tab('Message personnalisé')
