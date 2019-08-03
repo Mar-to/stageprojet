@@ -15,7 +15,10 @@ class ImportAdminController extends Controller
     $result = $this->get('biopen.element_import')->collectData($object);
 
     $showUrl = $this->admin->generateUrl('showData', ['id' => $object->getId()]);
-    $this->addFlash('sonata_flash_success', "Les données ont été chargées avec succès.</br>Voici le résultat obtenu pour le premier élément à importer :<pre>" . print_r($result[0], true) . '</pre>' . "<a href='$showUrl'>Voir toutes les données</a>");
+    if (count($result) > 0)
+      $this->addFlash('sonata_flash_success', "Les données ont été chargées avec succès.</br>Voici le résultat obtenu pour le premier élément à importer :<pre>" . print_r($result[0], true) . '</pre>' . "<a href='$showUrl'>Voir toutes les données</a>");
+    else
+      $this->addFlash('sonata_flash_error', "Erreur pendant le chargement des données, le résultat est vide");
     $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]);
     return $this->redirect($url);
   }
