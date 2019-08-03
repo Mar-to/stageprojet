@@ -9,7 +9,7 @@
  * @license    MIT License
  * @Last Modified time: 2018-01-19 13:05:00
  */
- 
+
 
 namespace Biopen\GeoDirectoryBundle\Document;
 
@@ -19,26 +19,29 @@ use JMS\Serializer\Annotation\Expose;
 /** @MongoDB\EmbeddedDocument */
 class DailyTimeSlot
 {
-	/** 
+	/**
     * @Expose
     * @MongoDB\Field(type="date") */
     private $slot1start;
-    /** 
+    /**
     * @Expose
     * @MongoDB\Field(type="date") */
     private $slot1end;
-    /** 
+    /**
     * @Expose
     * @MongoDB\Field(type="date") */
 	private $slot2start;
-    /** 
+    /**
     * @Expose
     * @MongoDB\Field(type="date") */
     private $slot2end;
 
-	public function __construct()
+	public function __construct($slot1start = null, $slot1end = null, $slot2start = null, $slot2end = null)
 	{
-		
+		$this->slot1start = $slot1start;
+        $this->slot1end = $slot1end;
+        $this->slot2start = $slot2start;
+        $this->slot2end = $slot2end;
 	}
 
     public function toJson()
@@ -55,7 +58,7 @@ class DailyTimeSlot
         //return date_format($this->slot1start, 'H:i');
         return $this->slot1start;
     }
-    
+
 
     public function getSlot2Start()
     {
@@ -68,7 +71,7 @@ class DailyTimeSlot
         //return date_format($this->slot1end, 'H:i');
         return $this->slot1end;
     }
-    
+
 
     public function getSlot2End()
     {
@@ -84,7 +87,7 @@ class DailyTimeSlot
         $this->slot1start = $slot;
         return $this;
     }
-    
+
 
     public function setSlot2Start($slot)
     {
@@ -97,7 +100,7 @@ class DailyTimeSlot
         $this->slot1end = $slot;
         return $this;
     }
-    
+
 
     public function setSlot2End($slot)
     {

@@ -7,6 +7,7 @@ use Biopen\GeoDirectoryBundle\Document\Element;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Biopen\GeoDirectoryBundle\Document\ModerationState;
 use Biopen\GeoDirectoryBundle\Document\Coordinates;
+use Biopen\GeoDirectoryBundle\Document\OpenHours;
 use Biopen\GeoDirectoryBundle\Document\Option;
 use Biopen\GeoDirectoryBundle\Document\OptionValue;
 use Biopen\GeoDirectoryBundle\Document\UserInteractionContribution;
@@ -21,7 +22,7 @@ class ElementImportOneService
 
 	protected $optionIdsToAddToEachElement = [];
 
-	protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source'];
+	protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source', 'openHours'];
 	protected $privateDataProps;
 
 	/**
@@ -125,6 +126,7 @@ class ElementImportOneService
 
 		$this->createCategories($element, $row, $import);
 		$this->createImages($element, $row);
+		$this->createOpenHours($element, $row);
 		$this->saveCustomFields($element, $row);
 
 		if ($import->isDynamicImport()) { // keep the same status for the one who were deleted
@@ -158,7 +160,6 @@ class ElementImportOneService
 	private function saveCustomFields($element, $raw_data)
 	{
 		$customFields = array_diff(array_keys($raw_data), $this->coreFields);
-		$customFields = array_diff($customFields, ['lat', 'long', 'lon', 'lng', 'title', 'nom', 'categories', 'address']);
 		$customData = [];
     foreach ($customFields as $customField) {
 			if ($customField && is_string($customField)) $customData[$customField] = $raw_data[$customField];
@@ -192,6 +193,20 @@ class ElementImportOneService
 			}
 		}
 	}
+
+	private function createOpenHours($element, $row)
+	{
+		if (!isset($row['openHours']) || !$this->isAssociativeArray($row['openHours'])) return;
+		$element->setOpenHours(new OpenHours($row['openHours']));
+	}
+
+	private function isAssociativeArray($a) {
+    if (!is_array($a)) return false;
+    foreach(array_keys($a) as $key)
+      if (!is_int($key)) return true;
+    return false;
+  }
+
 
 	function startsWith($haystack, $needle)
 	{

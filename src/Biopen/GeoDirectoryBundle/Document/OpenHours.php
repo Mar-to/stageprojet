@@ -9,7 +9,7 @@
  * @license    MIT License
  * @Last Modified time: 2018-01-19 13:04:59
  */
- 
+
 
 namespace Biopen\GeoDirectoryBundle\Document;
 
@@ -19,34 +19,59 @@ use JMS\Serializer\Annotation\Expose;
 /** @MongoDB\EmbeddedDocument */
 class OpenHours
 {
-	/** 
+	protected $days = ['Mo' => 'Monday', 'Tu' => 'Tuesday', 'We' => 'Wednesday', 'Th' => 'Thursday', 'Fr' => 'Friday', 'Sa' => 'Saturday', 'Sun' => 'Sunday'];
+
+	/**
 	* @Expose
 	* @MongoDB\EmbedOne(targetDocument="Biopen\GeoDirectoryBundle\Document\DailyTimeSlot") */
 	private $Monday;
-	/** 
+
+	/**
 	* @Expose
 	* @MongoDB\EmbedOne(targetDocument="Biopen\GeoDirectoryBundle\Document\DailyTimeSlot") */
 	private $Tuesday;
-	/** 
+	/**
 	* @Expose
 	* @MongoDB\EmbedOne(targetDocument="Biopen\GeoDirectoryBundle\Document\DailyTimeSlot") */
 	private $Wednesday;
-	/** 
+	/**
 	* @Expose
 	* @MongoDB\EmbedOne(targetDocument="Biopen\GeoDirectoryBundle\Document\DailyTimeSlot") */
 	private $Thursday;
-	/** 
+	/**
 	* @Expose
 	* @MongoDB\EmbedOne(targetDocument="Biopen\GeoDirectoryBundle\Document\DailyTimeSlot") */
 	private $Friday;
-	/** 
+	/**
 	* @Expose
 	* @MongoDB\EmbedOne(targetDocument="Biopen\GeoDirectoryBundle\Document\DailyTimeSlot") */
 	private $Saturday;
-	/** 
+	/**
 	* @Expose
 	* @MongoDB\EmbedOne(targetDocument="Biopen\GeoDirectoryBundle\Document\DailyTimeSlot") */
 	private $Sunday;
+
+	public function __construct($openHours)
+  {
+    foreach ($openHours as $day => $timeSlotString) {
+    	$slot1start = null; $slot1end = null; $slot2start = null; $slot2end = null;
+    	$slots = explode(',', $timeSlotString);
+    	if (count($slots) > 0) list($slot1start, $slot1end) = $this->buildSlotsFrom($slots[0]);
+    	if (count($slots) == 2) list($slot2start, $slot2end) = $this->buildSlotsFrom($slots[1]);
+    	$dailySlot = new DailyTimeSlot($slot1start, $slot1end, $slot2start, $slot2end);
+    	$method = 'set' . $this->days[$day];
+    	$this->$method($dailySlot);
+    }
+    dump($this);
+  }
+
+  private function buildSlotsFrom($string)
+  {
+  	$times = explode('-',$string);
+  	$start = date_create_from_format('H:i', $times[0]);
+  	$end = date_create_from_format('H:i', $times[1]);
+  	return [$start, $end];
+  }
 
 	public function toJson() {
 		$result = '{';
@@ -141,7 +166,7 @@ class OpenHours
 	}
 
 	/*public function __construct()
-	{		
+	{
 	}
 
 	public setDailyTimeSlot($day,$plage1,$plage2)
