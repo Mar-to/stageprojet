@@ -94,6 +94,8 @@ class ImportAdminController extends Controller
           // ----- CUSTOM -------
           $object->setOntologyMapping($request->get('ontology'));
           $object->setTaxonomyMapping($request->get('taxonomy'));
+          $object->setNewOntologyToMap(false);
+          $object->setNewTaxonomyToMap(false);
 
           // ---- END CUSTOM ------
 

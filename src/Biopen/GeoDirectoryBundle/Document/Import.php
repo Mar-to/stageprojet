@@ -120,9 +120,19 @@ class Import extends AbstractFile
     private $ontologyMapping = [];
 
     /**
+     * @MongoDB\Field(type="bool")
+     */
+    private $newOntologyToMap = false;
+
+    /**
      * @MongoDB\Field(type="hash")
      */
     private $taxonomyMapping = [];
+
+    /**
+     * @MongoDB\Field(type="bool")
+     */
+    private $newTaxonomyToMap = false;
 
     /**
      * Custom code made by the user to be run on the $data object when importing
@@ -580,5 +590,49 @@ class Import extends AbstractFile
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+
+    /**
+     * Set newOntologyToMap
+     *
+     * @param bool $newOntologyToMap
+     * @return $this
+     */
+    public function setNewOntologyToMap($newOntologyToMap)
+    {
+        $this->newOntologyToMap = $newOntologyToMap;
+        return $this;
+    }
+
+    /**
+     * Get newOntologyToMap
+     *
+     * @return bool $newOntologyToMap
+     */
+    public function getNewOntologyToMap()
+    {
+        return $this->newOntologyToMap;
+    }
+
+    /**
+     * Set newTaxonomyToMap
+     *
+     * @param bool $newTaxonomyToMap
+     * @return $this
+     */
+    public function setNewTaxonomyToMap($newTaxonomyToMap)
+    {
+        $this->newTaxonomyToMap = $newTaxonomyToMap;
+        return $this;
+    }
+
+    /**
+     * Get newTaxonomyToMap
+     *
+     * @return bool $newTaxonomyToMap
+     */
+    public function getNewTaxonomyToMap()
+    {
+        return $this->newTaxonomyToMap;
     }
 }

@@ -197,7 +197,7 @@ class ElementImportOneService
 	private function createOpenHours($element, $row)
 	{
 		if (!isset($row['openhours']) || !$this->isAssociativeArray($row['openhours'])) return;
-		$element->setOpenHours(new OpenHours($row['openHours']));
+		$element->setOpenHours(new OpenHours($row['openhours']));
 	}
 
 	private function isAssociativeArray($a) {

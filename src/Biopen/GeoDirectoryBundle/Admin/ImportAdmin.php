@@ -90,15 +90,19 @@ class ImportAdmin extends AbstractAdmin
 
         if ($this->getSubject()->getId())
         {
+            $title = 'Table de correspondance des champs';
+            if ($this->getSubject()->getNewOntologyToMap()) $title .= ' <label class="label label-info">Nouveaux champs</label>';
             $formMapper
-                ->tab('Table de correspondance des champs')
+                ->tab($title)
                     ->with('Transformer les données à importer')
                         ->add('ontologyMapping', 'hidden', array('attr' => ['class' => 'gogo-mapping-ontology', 'data-form-props' => $formProperties, 'data-props' => $elementProperties]))
                     ->end()
                 ->end();
             if (count($this->getSubject()->getOntologyMapping()) > 0)
             {
-                $formMapper->tab('Table de correspondance des catégories')
+                $title = 'Table de correspondance des catégories';
+                if ($this->getSubject()->getNewTaxonomyToMap()) $title .= ' <label class="label label-info">Nouvelles catégories</label>';
+                $formMapper->tab($title)
                     ->with('Faites correspondre les catégories')
                         ->add('taxonomyMapping', 'hidden', array('attr' => ['class' => 'gogo-mapping-taxonomy', 'data-options' => $optionsList]))
                     ->end()

@@ -115,9 +115,9 @@ class ElementImportMappingService
     foreach($data as $row)
     {
       foreach ($row as $key => $value) {
-        $this->collectKey($key);
+        $this->collectKey($key, null, $import);
         if ($this->isAssociativeArray($value) && !in_array($key, ['openHours', 'modifiedElement'])) {
-          foreach ($value as $subkey => $subvalue) { $this->collectKey($subkey, $key); }
+          foreach ($value as $subkey => $subvalue) { $this->collectKey($subkey, $key, $import); }
         }
       }
     }
@@ -129,7 +129,7 @@ class ElementImportMappingService
     $import->setOntologyMapping($this->ontologyMapping);
   }
 
-  private function collectKey($key, $parentKey = null) {
+  private function collectKey($key, $parentKey = null, $import) {
     if (in_array($key, ['__initializer__', '__cloner__', '__isInitialized__'])) return;
     $keyName = $parentKey ? $parentKey . '/' . $key : $key;
     if (!$keyName || strlen($keyName) == 0) return;
@@ -142,7 +142,10 @@ class ElementImportMappingService
         $value = $this->mappedCoreFields[$keyLower];
       // Asign mapping
       if (!$value || !in_array($value, array_values($this->ontologyMapping)))
+      {
         $this->ontologyMapping[$keyName] = $value;
+        $import->setNewOntologyToMap(true);
+      }
     }
   }
 
@@ -176,6 +179,7 @@ class ElementImportMappingService
           if ($value == '' && $this->createMissingOptions) $value = $this->createOption($category);
 
           $taxonomyMapping[$category] = $value;
+          $import->setNewTaxonomyToMap(true);
         }
         // create options for previously imported non mapped options
         if (array_key_exists($category, $taxonomyMapping)

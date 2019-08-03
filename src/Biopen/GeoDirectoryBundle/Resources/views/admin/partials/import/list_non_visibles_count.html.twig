@@ -2,15 +2,23 @@
 
 {% block field %}
   {% spaceless %}
+    {% if object.newOntologyToMap %}
+      <span class="label label-info log-label">Nouveaux champs à mapper</span>
+    {% endif %}
+
+    {% if object.newTaxonomyToMap %}
+      <span class="label label-info log-label">Nouvelles caatégories à mapper</span>
+    {% endif %}
+
     {% set deletedCount = field_description.options.choices[object.id] is defined ? field_description.options.choices[object.id] : 0 %}
     {% if deletedCount > 0 %}
       <span class="label label-danger log-label">{{ deletedCount }} localement supprimés</span>
-    {% endif %} 
+    {% endif %}
     {% if object.logs|length > 0 %}
       {% set log = object.logs[0] %}
       {% if log.getDataProp('elementsMissingGeoCount') > 0 %}
         <span class="label label-warning log-label">{{ log.getDataProp('elementsMissingGeoCount') }} sans geoloc</span>
-      {% endif %} 
+      {% endif %}
       {% if log.getDataProp('elementsMissingTaxoCount') > 0 %}
         <span class="label label-warning log-label">{{ log.getDataProp('elementsMissingTaxoCount') }} sans categories</span>
       {% endif %}
