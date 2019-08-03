@@ -80,9 +80,16 @@ class ElementJsonGenerator
     {
       for ($i=0; $i < $optValuesLength; $i++) {
         $optionValue = $sortedOptionsValues[$i];
-        $optionName = json_encode($options[$optionValue->getOptionId()]['name']);
-        $optionsString .=  $optionName . ',';
-        $optionsFullJson[] = $sortedOptionsValues[$i]->toJson($optionName);
+        if (isset($options[$optionValue->getOptionId()]))
+        {
+          $optionName = json_encode($options[$optionValue->getOptionId()]['name']);
+          $optionsString .=  $optionName . ',';
+          $optionsFullJson[] = $sortedOptionsValues[$i]->toJson($optionName);
+        }
+        else
+        {
+          $element->removeOptionValue($sortedOptionsValues[$i]);
+        }
       }
     }
     $optionsString = rtrim($optionsString, ',');
