@@ -132,6 +132,7 @@ class ElementImportMappingService
   private function collectKey($key, $parentKey = null) {
     if (in_array($key, ['__initializer__', '__cloner__', '__isInitialized__'])) return;
     $keyName = $parentKey ? $parentKey . '/' . $key : $key;
+    if (!$keyName || strlen($keyName) == 0) return;
     if (!in_array($keyName, $this->allNewFields)) $this->allNewFields[] = $keyName;
     if (!array_key_exists($keyName, $this->ontologyMapping)) {
       $keyLower = str_replace('_', '', strtolower($key));
