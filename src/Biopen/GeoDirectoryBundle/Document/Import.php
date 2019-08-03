@@ -10,6 +10,8 @@ use Biopen\CoreBundle\Document\AbstractFile;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
+use Gedmo\Mapping\Annotation as Gedmo;
+
 abstract class ImportState
 {
     const Started = "started";
@@ -134,6 +136,18 @@ class Import extends AbstractFile
      * @MongoDB\Field(type="date")
      */
     private $lastRefresh = null;
+
+    /**
+     * @MongoDB\Field(type="date")
+     * @Gedmo\Timestampable(on="create")
+     */
+    private $createdAt;
+
+    /**
+     * @MongoDB\Field(type="date")
+     * @Gedmo\Timestampable(on="update")
+     */
+    private $updatedAt;
 
 
     public function __construct() {
@@ -544,5 +558,27 @@ class Import extends AbstractFile
     public function getLastRefresh()
     {
         return $this->lastRefresh;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param date $createdAt
+     * @return $this
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return date $createdAt
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 }
