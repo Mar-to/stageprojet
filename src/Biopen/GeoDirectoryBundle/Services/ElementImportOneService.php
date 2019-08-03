@@ -22,7 +22,7 @@ class ElementImportOneService
 
 	protected $optionIdsToAddToEachElement = [];
 
-	protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source', 'openHours'];
+	protected $coreFields = ['id', 'name', 'categories', 'streetaddress', 'addresslocality', 'postalcode', 'addresscountry', 'latitude', 'longitude', 'images', 'owner', 'source', 'openhours'];
 	protected $privateDataProps;
 
 	/**
@@ -100,7 +100,7 @@ class ElementImportOneService
 
 		$element->setOldId($row['id']);
 		$element->setName($row['name']);
-		$address = new PostalAddress($row['streetAddress'], $row['addressLocality'], $row['postalCode'], $row["addressCountry"]);
+		$address = new PostalAddress($row['streetaddress'], $row['addresslocality'], $row['postalcode'], $row["addresscountry"]);
 		$element->setAddress($address);
 
 		$defaultSourceName = $import ? $import->getSourceName() : 'Inconnu';
@@ -196,7 +196,7 @@ class ElementImportOneService
 
 	private function createOpenHours($element, $row)
 	{
-		if (!isset($row['openHours']) || !$this->isAssociativeArray($row['openHours'])) return;
+		if (!isset($row['openhours']) || !$this->isAssociativeArray($row['openhours'])) return;
 		$element->setOpenHours(new OpenHours($row['openHours']));
 	}
 

@@ -27,14 +27,14 @@ class ElementImportMappingService
   protected $em;
   protected $ontologyMapping;
   protected $allNewFields;
-  protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source', 'openHours'];
+  protected $coreFields = ['id', 'name', 'categories', 'streetaddress', 'addresslocality', 'postalcode', 'addresscountry', 'latitude', 'longitude', 'images', 'owner', 'source', 'openhours'];
   protected $mappedCoreFields = [
     'title' => 'name', 'nom' => 'name',
     'taxonomy' => 'categories',
-    'address' => 'streetAddress',
-    'city' => 'addressLocatily',
-    'postcode' => 'postalCode',
-    'country' => 'addressCountry',
+    'address' => 'streetaddress',
+    'city' => 'addresslocatily',
+    'postcode' => 'postalcode',
+    'country' => 'addresscountry',
     'lat' => 'latitude',
     'long' => 'longitude', 'lng' => 'longitude', 'lon' => 'longitude'
   ];
@@ -134,10 +134,14 @@ class ElementImportMappingService
     $keyName = $parentKey ? $parentKey . '/' . $key : $key;
     if (!in_array($keyName, $this->allNewFields)) $this->allNewFields[] = $keyName;
     if (!array_key_exists($keyName, $this->ontologyMapping)) {
-      $value = in_array($keyName, $this->coreFields) ? $key : "";
-      if (!$value && array_key_exists($key, $this->mappedCoreFields) && in_array($this->mappedCoreFields[$key], $this->coreFields))
-        $value = $this->mappedCoreFields[$key];
-      if (!$value || !in_array($value, array_values($this->ontologyMapping))) $this->ontologyMapping[$keyName] = $value;
+      $keyLower = str_replace('_', '', strtolower($key));
+      $value = in_array($keyLower, $this->coreFields) ? $keyLower : "";
+      // use alternative name, like lat instead of latitude
+      if (!$value && array_key_exists($keyLower, $this->mappedCoreFields) && in_array($this->mappedCoreFields[$keyLower], $this->coreFields))
+        $value = $this->mappedCoreFields[$keyLower];
+      // Asign mapping
+      if (!$value || !in_array($value, array_values($this->ontologyMapping)))
+        $this->ontologyMapping[$keyName] = $value;
     }
   }
 
