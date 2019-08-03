@@ -27,16 +27,16 @@ class ElementImportMappingService
   protected $em;
   protected $ontologyMapping;
   protected $allNewFields;
-  protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source'];
+  protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source', 'openHours'];
   protected $mappedCoreFields = [
-    'title' => 'name',
+    'title' => 'name', 'nom' => 'name',
     'taxonomy' => 'categories',
     'address' => 'streetAddress',
     'city' => 'addressLocatily',
     'postcode' => 'postalCode',
     'country' => 'addressCountry',
     'lat' => 'latitude',
-    'long' => 'longitude', 'lng' => 'longitude'
+    'long' => 'longitude', 'lng' => 'longitude', 'lon' => 'longitude'
   ];
 
   public function __construct(DocumentManager $documentManager)
@@ -116,7 +116,7 @@ class ElementImportMappingService
     {
       foreach ($row as $key => $value) {
         $this->collectKey($key);
-        if ($this->isAssociativeArray($value)) {
+        if ($this->isAssociativeArray($value) && !in_array($key, ['openHours', 'modifiedElement'])) {
           foreach ($value as $subkey => $subvalue) { $this->collectKey($subkey, $key); }
         }
       }
@@ -130,6 +130,7 @@ class ElementImportMappingService
   }
 
   private function collectKey($key, $parentKey = null) {
+    if (in_array($key, ['__initializer__', '__cloner__', '__isInitialized__'])) return;
     $keyName = $parentKey ? $parentKey . '/' . $key : $key;
     if (!in_array($keyName, $this->allNewFields)) $this->allNewFields[] = $keyName;
     if (!array_key_exists($keyName, $this->ontologyMapping)) {
