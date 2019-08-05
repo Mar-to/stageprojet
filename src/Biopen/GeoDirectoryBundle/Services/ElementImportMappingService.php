@@ -27,14 +27,15 @@ class ElementImportMappingService
   protected $em;
   protected $ontologyMapping;
   protected $allNewFields;
-  protected $coreFields = ['id', 'name', 'categories', 'streetaddress', 'addresslocality', 'postalcode', 'addresscountry', 'latitude', 'longitude', 'images', 'owner', 'source', 'openhours'];
+  protected $existingProps;
+  protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source', 'openHours', 'email'];
   protected $mappedCoreFields = [
     'title' => 'name', 'nom' => 'name',
     'taxonomy' => 'categories',
-    'address' => 'streetaddress',
-    'city' => 'addresslocatily',
-    'postcode' => 'postalcode',
-    'country' => 'addresscountry',
+    'address' => 'streetAddress',
+    'city' => 'addressLocality',
+    'postcode' => 'postalCode',
+    'country' => 'addressCountry',
     'lat' => 'latitude',
     'long' => 'longitude', 'lng' => 'longitude', 'lon' => 'longitude'
   ];
@@ -56,6 +57,7 @@ class ElementImportMappingService
 
     // elements is ofently stored nested in a data attribute
     if (array_key_exists('data', $data)) $data = $data['data'];
+    if (array_key_exists('elements', $data)) $data = $data['elements'];
 
     // Fixs gogocarto ontology when importing, to simplify import/export from gogocarto to gogocarto
     foreach ($data as $key => $row) {
@@ -112,6 +114,13 @@ class ElementImportMappingService
   {
     $this->ontologyMapping = $import->getOntologyMapping();
     $this->allNewFields = [];
+    $props = $this->em->getRepository('BiopenGeoDirectoryBundle:Element')->findAllCustomProperties();
+    $props = array_merge($this->coreFields, $props);
+    $this->existingProps = [];
+    foreach ($props as $prop) {
+      $this->existingProps[str_replace('_', '', strtolower($prop))] = $prop;
+    }
+
     foreach($data as $row)
     {
       foreach ($row as $key => $value) {
@@ -133,12 +142,13 @@ class ElementImportMappingService
     if (in_array($key, ['__initializer__', '__cloner__', '__isInitialized__'])) return;
     $keyName = $parentKey ? $parentKey . '/' . $key : $key;
     if (!$keyName || strlen($keyName) == 0) return;
+
     if (!in_array($keyName, $this->allNewFields)) $this->allNewFields[] = $keyName;
     if (!array_key_exists($keyName, $this->ontologyMapping)) {
       $keyLower = str_replace('_', '', strtolower($key));
-      $value = in_array($keyLower, $this->coreFields) ? $keyLower : "";
+      $value = array_key_exists($keyLower, $this->existingProps) ? $this->existingProps[$keyLower] : "";
       // use alternative name, like lat instead of latitude
-      if (!$value && array_key_exists($keyLower, $this->mappedCoreFields) && in_array($this->mappedCoreFields[$keyLower], $this->coreFields))
+      if (!$value && array_key_exists($keyLower, $this->mappedCoreFields))
         $value = $this->mappedCoreFields[$keyLower];
       // Asign mapping
       if (!$value || !in_array($value, array_values($this->ontologyMapping)))
@@ -207,7 +217,7 @@ class ElementImportMappingService
         if (count($searchKeys) == 2) {
           $searchkey = $searchKeys[0]; $subkey = $searchKeys[1];
 
-          if (!in_array($replace, ['/', '']) && isset($data[$key][$searchkey]) && !isset($data[$key][$replace])) {
+          if (!in_array($replace, ['/', '']) && isset($data[$key][$searchkey]) && isset($row[$searchkey][$subkey]) && !isset($data[$key][$replace])) {
             $data[$key][$replace] = $row[$searchkey][$subkey];
             unset($data[$key][$searchkey][$subkey]);
           }
@@ -265,15 +275,18 @@ class ElementImportMappingService
                 $newcat['originalValue'] = $val;
                 $newcat['mappedName'] = $this->mappingTableIds[$mappedCategory]['name'];
                 $newcat['mappedId'] = $this->mappingTableIds[$mappedCategory]['id'];
-                if (isset($category['index'])) $newcat['index'] = $category['index'];
-                if (isset($category['description'])) $newcat['description'] = $category['description'];
-                $categories[] = $newcat;
-                $categoriesIds[] = $newcat['mappedId'];
-                $parentIds = $this->mappingTableIds[$mappedCategory]['idAndParentsId'];
-                foreach ($parentIds as $id) {
-                  if (!in_array($id, $categoriesIds)) {
-                    $categories[] = ['mappedId' => $id, 'info' => "Automatiquement ajoutée (category parente d'une category importée)"];
-                    $categoriesIds[] = $id;
+                if (!in_array($newcat['mappedId'], $categoriesIds))
+                {
+                  if (isset($category['index'])) $newcat['index'] = $category['index'];
+                  if (isset($category['description'])) $newcat['description'] = $category['description'];
+                  $categories[] = $newcat;
+                  $categoriesIds[] = $newcat['mappedId'];
+                  $parentIds = $this->mappingTableIds[$mappedCategory]['idAndParentsId'];
+                  foreach ($parentIds as $id) {
+                    if (!in_array($id, $categoriesIds)) {
+                      $categories[] = ['mappedId' => $id, 'info' => "Automatiquement ajoutée (category parente d'une category importée)"];
+                      $categoriesIds[] = $id;
+                    }
                   }
                 }
               }

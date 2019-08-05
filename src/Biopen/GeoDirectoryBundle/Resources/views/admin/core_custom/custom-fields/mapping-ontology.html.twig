@@ -48,24 +48,24 @@
 
     var formProperties = {{ form.vars.attr["data-form-props"]|raw }};
     var dataProperties = {{ form.vars.attr["data-props"]|raw }};
-    var coreFields = ['id', 'name', 'categories', 'streetaddress', 'addresslocality', 'postalcode', 'addresscountry', 'latitude', 'longitude', 'images', 'owner', 'source']
+    var coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source', 'email', 'openhours', 'streetNumber', 'fullAddress'];
     var coreData = [], allProperties = [], otherData = []; var importedData = [];
     coreData.push({id: 'id', text: 'Identifiant unique'});
     coreData.push({id: 'name', text: 'Titre de la fiche'});
     coreData.push({id: 'categories', text: 'Liste des catégories (en tableau ou séparées par des virgules)'});
-    coreData.push({id: 'fulladdress', text: 'Adresse complète'});
-    coreData.push({id: 'streetnumber', text: 'Adresse: numéro de rue'});
-    coreData.push({id: 'streetaddress', text: 'Adresse: rue'});
-    coreData.push({id: 'addresslocality', text: 'Adresse: ville'});
-    coreData.push({id: 'postalcode', text: 'Adresse: code postal'});
-    coreData.push({id: 'addresscountry', text: 'Adresse: pays'});
+    coreData.push({id: 'fullAddress', text: 'Adresse complète'});
+    coreData.push({id: 'streetNumber', text: 'Adresse: numéro de rue'});
+    coreData.push({id: 'streetAddress', text: 'Adresse: rue'});
+    coreData.push({id: 'addressLocality', text: 'Adresse: ville'});
+    coreData.push({id: 'postalCode', text: 'Adresse: code postal'});
+    coreData.push({id: 'addressCountry', text: 'Adresse: pays'});
     coreData.push({id: 'latitude', text: 'Latitude'});
     coreData.push({id: 'longitude', text: 'Longitude'});
     coreData.push({id: 'images', text: "Image(s) sous forme d'url, en tableau, ou séparés par des virgules"});
     coreData.push({id: 'email', text: "Email de l'élement"});
     coreData.push({id: 'owner', text: "Email de l'utilisateur propriétaire de la fiche"});
     coreData.push({id: 'source', text: "Origine de l'élément (source)"});
-    coreData.push({id: 'openhours', text: "Horaire d'ouvertues (format GoGoCarto)"});
+    coreData.push({id: 'openHours', text: "Horaire d'ouvertues (format GoGoCarto)"});
 
     allProperties = $.map(coreData, function(el) { return el.id });
 
