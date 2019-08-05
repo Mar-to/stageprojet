@@ -26,7 +26,7 @@
             </div>
         </div>
 
-        {% if is_granted('ROLE_ADMIN_ELEMENT_LIST') %}
+        {% if is_granted('ROLE_ADMIN_ELEMENTS_LIST') %}
         <div class="box-footer">
                 <a href="{{ path('admin_biopen_geodirectory_element_list') }}?filter[status][type]=1&filter[status][value]={{settings.filterStatus}}&filter[_page]=1&filter[_sort_by]=updatedAt&filter[_sort_order]=DESC&filter[_per_page]=32" class="btn btn-primary btn-block"><i class="fa fa-list"></i> Afficher tous</a>
         </div>

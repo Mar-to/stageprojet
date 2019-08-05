@@ -38,23 +38,23 @@
     </div>
 		{% endif %}
 
-    {% if is_granted('ROLE_ADMIN_ELEMENT_LIST') %}
-		<div class="row">
-      <div class="col-xs-6 col-md-3">
-    			<!-- small box -->
-			    <div class="small-box bg-red">
-			        <div class="inner">
-			            <h3>{{ moderationNeededCount }}</h3>
-			            <p>Éléments à modérer</p>
-			        </div>
-			        <div class="icon">
-			            <i class="fa fa-wrench"></i>
-			        </div>
-			        <a href="{{ path('admin_biopen_geodirectory_element_list') }}?filter[moderationNeeded][value]=1" class="small-box-footer">
-			            Afficher <i class="fa fa-arrow-circle-right"></i>
-			        </a>
-			    </div>
-		  </div>
+    {% if is_granted('ROLE_ADMIN_ELEMENTS_LIST') %}
+  		<div class="row">
+        <div class="col-xs-6 col-md-3">
+      			<!-- small box -->
+  			    <div class="small-box bg-red">
+  			        <div class="inner">
+  			            <h3>{{ moderationNeededCount }}</h3>
+  			            <p>Éléments à modérer</p>
+  			        </div>
+  			        <div class="icon">
+  			            <i class="fa fa-wrench"></i>
+  			        </div>
+  			        <a href="{{ path('admin_biopen_geodirectory_element_list') }}?filter[moderationNeeded][value]=1" class="small-box-footer">
+  			            Afficher <i class="fa fa-arrow-circle-right"></i>
+  			        </a>
+  			    </div>
+  		  </div>
 
 
         <div class="col-xs-6 col-md-3">
