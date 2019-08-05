@@ -257,20 +257,25 @@ class ElementImportMappingService
         foreach ($row['categories'] as $category)
         {
           $val = is_array($category) ? $category['name'] : $category;
-          if (array_key_exists($val, $mapping) && array_key_exists($mapping[$val], $this->mappingTableIds))
+          if (isset($mapping[$val]) && $mapping[$val])
           {
-            $newcat['originalValue'] = $val;
-            $newcat['mappedName'] = $this->mappingTableIds[$mapping[$val]]['name'];
-            $newcat['mappedId'] = $this->mappingTableIds[$mapping[$val]]['id'];
-            if (isset($category['index'])) $newcat['index'] = $category['index'];
-            if (isset($category['description'])) $newcat['description'] = $category['description'];
-            $categories[] = $newcat;
-            $categoriesIds[] = $newcat['mappedId'];
-            $parentIds = $this->mappingTableIds[$mapping[$val]]['idAndParentsId'];
-            foreach ($parentIds as $id) {
-              if (!in_array($id, $categoriesIds)) {
-                $categories[] = ['mappedId' => $id, 'info' => "Automatiquement ajoutée (category parente d'une category importée)"];
-                $categoriesIds[] = $id;
+            foreach ($mapping[$val] as $mappedCategory) {
+              if (array_key_exists($mappedCategory, $this->mappingTableIds))
+              {
+                $newcat['originalValue'] = $val;
+                $newcat['mappedName'] = $this->mappingTableIds[$mappedCategory]['name'];
+                $newcat['mappedId'] = $this->mappingTableIds[$mappedCategory]['id'];
+                if (isset($category['index'])) $newcat['index'] = $category['index'];
+                if (isset($category['description'])) $newcat['description'] = $category['description'];
+                $categories[] = $newcat;
+                $categoriesIds[] = $newcat['mappedId'];
+                $parentIds = $this->mappingTableIds[$mappedCategory]['idAndParentsId'];
+                foreach ($parentIds as $id) {
+                  if (!in_array($id, $categoriesIds)) {
+                    $categories[] = ['mappedId' => $id, 'info' => "Automatiquement ajoutée (category parente d'une category importée)"];
+                    $categoriesIds[] = $id;
+                  }
+                }
               }
             }
           }

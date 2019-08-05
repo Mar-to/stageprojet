@@ -30,9 +30,9 @@ class ImportAdmin extends AbstractAdmin
         $repo = $dm->getRepository('BiopenGeoDirectoryBundle:Element');
         $formProperties = json_encode($repo->findFormProperties());
         $elementProperties = json_encode($repo->findDataCustomProperties());
-        $optionsList = $dm->getRepository('BiopenGeoDirectoryBundle:Option')->createQueryBuilder()
-                      ->select('name')->hydrate(false)->getQuery()->execute()->toArray();
-        $optionsList = json_encode($optionsList);
+
+        $taxonomy = $dm->getRepository('BiopenGeoDirectoryBundle:Taxonomy')->findTaxonomy();
+        $optionsList = $taxonomy->getTaxonomyJson();
 
         $isDynamic = $this->getSubject()->isDynamicImport();
         $title = $isDynamic ? "Import Dynamique, pour afficher des données gérées par quelqu'un d'autre" : "Importer des données en dur, depuis un fichier CSV ou une API Json";

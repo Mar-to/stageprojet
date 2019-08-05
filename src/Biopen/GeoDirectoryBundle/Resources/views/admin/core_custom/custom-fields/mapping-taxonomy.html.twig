@@ -6,7 +6,7 @@
   <table class="table">
     <thead>
       <tr>
-        <th>Catégories lues depuis le fichier d'origine</th>
+        <th class="original">Catégories lues depuis le fichier d'origine</th>
         <th style="width:20px"></th>
         <th>Catégories du site</th>
         <th style="width:20px"></th>
@@ -17,7 +17,7 @@
         <tr>
           <td class="original">{{originName}}</td>
           <td>></td>
-          <td class="mapped"><input type="text" name="taxonomy[{{originName}}]" class="form-control category-selector" value={{mappedName}} /></td>
+          <td class="mapped"><input type="text" name="taxonomy[{{originName}}][]" class="form-control category-selector" value="{{mappedName|join(',')}}"/></td>
           <td><i class="clear-icon fa fa-ban" title="Ne pas utiliser cette catégorie"></i></td>
         </tr>
       {% endfor %}
@@ -28,20 +28,48 @@
   <div class="alert alert-info">Veuillez d'abords sélectionner le champs correspondant aux catégories dans l'onglet 'Table de correspondance des champs' puis cliquer sur 'Lire les données'</div>
 {% endif %}
 
-
+<style>
+  .original { width: 30%; }
+</style>
 <script>
   jQuery(document).ready(function() {
 
-    var optionsList = {{ form.vars.attr["data-options"]|raw }};
+    var taxonomy = {{ form.vars.attr["data-options"]|raw }};
+    console.log(taxonomy);
     var formData = [{ id: "", text: ""}]
 
-    for(var key in optionsList) {
-      var option = optionsList[key];
-      formData.push({id: option['_id'], text: option.name});
+    function recursivelyAddOption(category, parentOption)
+    {
+      console.log("category", category.name);
+      for(var i = 0; i < category.options.length; i++)
+      {
+        var option = category.options[i];
+        console.log("option", option.name);
+        var optionName = parentOption ? parentOption + '/' : '';
+        optionName += option.name;
+        formData.push({id: option.id, text: optionName});
+        if (option.subcategories)
+        {
+          for(var j = 0; j < option.subcategories.length; j++)
+          {
+            recursivelyAddOption(option.subcategories[j], optionName);
+          }
+        }
+      }
     }
 
+    for(var k = 0; k < taxonomy.length; k++) recursivelyAddOption(taxonomy[k], null);
+
+    console.log(formData);
+
+    // for(var key in taxonomy) {
+    //   var option = taxonomy[key];
+    //   formData.push({id: option['_id'], text: option.name});
+    // }
+
     $(".category-selector").select2({
-        data: formData
+        data: formData,
+        multiple: true
     });
 
     $('.clear-icon').click(function() {
