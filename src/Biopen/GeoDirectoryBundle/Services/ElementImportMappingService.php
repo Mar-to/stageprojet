@@ -178,14 +178,14 @@ class ElementImportMappingService
           // create option if does not exist
           if ($value == '' && $this->createMissingOptions) $value = $this->createOption($category);
 
-          $taxonomyMapping[$category] = $value;
+          $taxonomyMapping[$category] = [$value];
           $import->setNewTaxonomyToMap(true);
         }
         // create options for previously imported non mapped options
         if (array_key_exists($category, $taxonomyMapping)
             && (!$taxonomyMapping[$category] || $taxonomyMapping[$category] == '/')
             && $this->createMissingOptions) {
-          $taxonomyMapping[$category] = $this->createOption($category);
+          $taxonomyMapping[$category] = [$this->createOption($category)];
         }
       }
     }

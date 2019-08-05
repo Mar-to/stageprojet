@@ -141,7 +141,12 @@ class ElementImportService
 		{
 			try {
 				$import->setCurrMessage("Importation des données " . $i . '/' . $size . ' traitées');
-				$this->importOneService->createElementFromArray($row, $import);
+				$result = $this->importOneService->createElementFromArray($row, $import);
+        switch ($result) {
+          case 'nothing_to_do': $this->countElementNothingToDo++; break;
+          case 'created': $this->countElementCreated++; break;
+          case 'updated': $this->countElementUpdated++; break;
+        }
 				$i++;
 			}
 			catch (\Exception $e) {

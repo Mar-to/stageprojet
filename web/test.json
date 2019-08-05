@@ -7,6 +7,7 @@
 		"coord":{"latitude":45.18679,"longitude":5.70548},
 		"address": "rue Georges Jacquet, Grenoble",
 		"sourceKey":"CapOuPasCap",
+		"updatedAt": "15/08/2019",
 		"categories": [
 			{ "name": "Nature", "index": 5, "description": "balade en forêt"},
 		  { "name": "Numérique", "index": 1}
@@ -20,23 +21,25 @@
 			"Fr": "09:30-19:30",
 			"Sa": "09:30-19:30"
 		}
-	},
-	{
-		"id":"Ki",
-		"name":"Foot",
-		"coord":{"latitude":45.18679,"longitude":5.70548},
-		"address": "rue Bernard, Tours",
-		"sourceKey":"CapOuPasCap",
-		"categories": [6]
-	},
-	{
-		"id":"sa",
-		"name":"tata",
-		"coord":{"latitude":46.18679,"longitude":5.70548},
-		"address": "rue Jacquet, Labrit",
-		"sourceKey":"CapOuPasCap",
-		"categories": [2],
-		"website": "https:\/\/www.asso-cala.fr\/"
-	}
+		},
+		{
+			"id":"ddKi",
+			"name":"Foot",
+			"coord":{"latitude":45.18679,"longitude":5.70548},
+			"address": "rue Bernard, Tours",
+			"sourceKey":"CapOuPasCap",
+			"updatedAt": "10/08/2019",
+			"categories": [6]
+		},
+		{
+			"id":"sa",
+			"name":"tata",
+			"coord":{"latitude":46.18679,"longitude":5.70548},
+			"address": "rue Jacquet, Labrit",
+			"sourceKey":"CapOuPasCap",
+			"categories": [2],
+			"updatedAt": "11/08/2019",
+			"website": "https:\/\/www.asso-cala.fr\/"
+		}
 	]
 }

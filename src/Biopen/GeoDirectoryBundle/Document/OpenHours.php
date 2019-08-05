@@ -62,7 +62,6 @@ class OpenHours
     	$method = 'set' . $this->days[$day];
     	$this->$method($dailySlot);
     }
-    dump($this);
   }
 
   private function buildSlotsFrom($string)

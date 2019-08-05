@@ -35,17 +35,14 @@
   jQuery(document).ready(function() {
 
     var taxonomy = {{ form.vars.attr["data-options"]|raw }};
-    console.log(taxonomy);
     var formData = [{ id: "", text: ""}]
 
     function recursivelyAddOption(category, parentOption)
     {
-      console.log("category", category.name);
       for(var i = 0; i < category.options.length; i++)
       {
         var option = category.options[i];
-        console.log("option", option.name);
-        var optionName = parentOption ? parentOption + '/' : '';
+        var optionName = parentOption ? parentOption + ' / ' : '';
         optionName += option.name;
         formData.push({id: option.id, text: optionName});
         if (option.subcategories)
@@ -59,13 +56,6 @@
     }
 
     for(var k = 0; k < taxonomy.length; k++) recursivelyAddOption(taxonomy[k], null);
-
-    console.log(formData);
-
-    // for(var key in taxonomy) {
-    //   var option = taxonomy[key];
-    //   formData.push({id: option['_id'], text: option.name});
-    // }
 
     $(".category-selector").select2({
         data: formData,

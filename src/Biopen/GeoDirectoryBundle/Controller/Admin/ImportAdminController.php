@@ -93,11 +93,13 @@ class ImportAdminController extends Controller
 
           // ----- CUSTOM -------
           $object->setOntologyMapping($request->get('ontology'));
-
-          $taxonomy = array_map(function($value) {
-            $array = explode(',', $value[0]);
-            return array_filter($array, function($el) { return $el != '/'; });
-          }, $request->get('taxonomy'));
+          if ($request->get('taxonomy'))
+          {
+            $taxonomy = array_map(function($value) {
+              $array = explode(',', $value[0]);
+              return array_filter($array, function($el) { return $el != '/'; });
+            }, $request->get('taxonomy'));
+          } else $taxonomy = null;
 
           $object->setTaxonomyMapping($taxonomy);
           $object->setNewOntologyToMap(false);
