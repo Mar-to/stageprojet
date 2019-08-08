@@ -96,7 +96,9 @@ class MigrationCommand extends GoGoAbstractCommand
 
             if (count($this->messages) > $migrationState->getMessagesIndex()) {
                 $messagesToAdd = array_slice($this->messages, $migrationState->getMessagesIndex());
+                $this->log(count($messagesToAdd) . " messages to add");
                 foreach($dbs as $db) {
+                    $this->log("add message on project " . $db);
                     foreach($messagesToAdd as $message) {
                         // create a GoGoLogUpdate
                         $asyncService->callCommand('gogolog:add:message', ['"' . $message . '"'], $db);

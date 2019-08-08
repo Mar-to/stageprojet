@@ -52,6 +52,13 @@ class ElementImportOneService
 	{
 		$updateExisting = false; // if we create a new element or update an existing one
 		$realUpdate = false; // if we are sure that the external has been edited with 'FieldToCheckElementHaveBeenUpdated'
+
+		// adds missings fields instead of checking if each field is set before accessing
+		$missingFields = array_diff($this->coreFields, array_keys($row));
+    foreach ($missingFields as $missingField) {
+      $row[$missingField] = "";
+    }
+
 		if (isset($row['id']))
 		{
 			if (in_array($row['id'], $import->getIdsToIgnore())) return;
@@ -91,12 +98,6 @@ class ElementImportOneService
 			$element = new Element();
 		}
 		$this->currentRow = $row;
-
-		// adds missings fields instead of checking if each field is set before accessing
-		$missingFields = array_diff($this->coreFields, array_keys($row));
-    foreach ($missingFields as $missingField) {
-      $row[$missingField] = "";
-    }
 
 		$element->setOldId($row['id']);
 		$element->setName($row['name']);

@@ -95,6 +95,8 @@ class ElementImportMappingService
     // Ontology
     $this->collectOntology($data, $import);
     $data = $this->mapOntology($data);
+
+    if (!is_array($data)) return [];
     // remove empty row, i.e. without name
     $data = array_filter($data, function($row) { return array_key_exists('name', $row); });
 

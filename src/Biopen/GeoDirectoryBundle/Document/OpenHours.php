@@ -51,16 +51,19 @@ class OpenHours
 	* @MongoDB\EmbedOne(targetDocument="Biopen\GeoDirectoryBundle\Document\DailyTimeSlot") */
 	private $Sunday;
 
-	public function __construct($openHours)
+	public function __construct($openHours = null)
   {
-    foreach ($openHours as $day => $timeSlotString) {
-    	$slot1start = null; $slot1end = null; $slot2start = null; $slot2end = null;
-    	$slots = explode(',', $timeSlotString);
-    	if (count($slots) > 0) list($slot1start, $slot1end) = $this->buildSlotsFrom($slots[0]);
-    	if (count($slots) == 2) list($slot2start, $slot2end) = $this->buildSlotsFrom($slots[1]);
-    	$dailySlot = new DailyTimeSlot($slot1start, $slot1end, $slot2start, $slot2end);
-    	$method = 'set' . $this->days[$day];
-    	$this->$method($dailySlot);
+    if ($openHours && is_array($openHours))
+    {
+    	foreach ($openHours as $day => $timeSlotString) {
+	    	$slot1start = null; $slot1end = null; $slot2start = null; $slot2end = null;
+	    	$slots = explode(',', $timeSlotString);
+	    	if (count($slots) > 0) list($slot1start, $slot1end) = $this->buildSlotsFrom($slots[0]);
+	    	if (count($slots) == 2) list($slot2start, $slot2end) = $this->buildSlotsFrom($slots[1]);
+	    	$dailySlot = new DailyTimeSlot($slot1start, $slot1end, $slot2start, $slot2end);
+	    	$method = 'set' . $this->days[$day];
+	    	$this->$method($dailySlot);
+	    }
     }
   }
 
