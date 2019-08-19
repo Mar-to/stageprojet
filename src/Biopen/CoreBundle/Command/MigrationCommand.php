@@ -28,6 +28,8 @@ class MigrationCommand extends GoGoAbstractCommand
       // v2.3.1
       "app:elements:updateJson all",
       // v2.3.4
+      "app:elements:updateJson all",
+      // v2.4.5
       "app:elements:updateJson all"
     ];
 
@@ -68,6 +70,7 @@ class MigrationCommand extends GoGoAbstractCommand
 
             if (count($this->migrations) > $migrationState->getMigrationIndex()) {
                 $migrationsToRun = array_slice($this->migrations, $migrationState->getMigrationIndex());
+                $migrationsToRun = array_unique($migrationsToRun);
                 foreach($dbs as $db) {
                     foreach($migrationsToRun as $migration) {
                         $this->runCommand($db, $migration);
@@ -86,7 +89,7 @@ class MigrationCommand extends GoGoAbstractCommand
                 $this->log(count($commandsToRun) . " commands to run");
                 foreach($dbs as $db) {
                     foreach($commandsToRun as $command) {
-                        $this->log("call command" . $command . " on project " . $db);
+                        $this->log("call command " . $command . " on project " . $db);
                         $asyncService->callCommand($command, [], $db);
                     }
                 }
