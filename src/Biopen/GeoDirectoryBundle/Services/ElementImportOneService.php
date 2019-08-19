@@ -59,7 +59,7 @@ class ElementImportOneService
       $row[$missingField] = "";
     }
 
-		if (isset($row['id']))
+		if ($row['id'])
 		{
 			if (in_array($row['id'], $import->getIdsToIgnore())) return;
 			$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
