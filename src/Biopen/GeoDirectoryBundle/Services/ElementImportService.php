@@ -107,8 +107,8 @@ class ElementImportService
 	public function importData($data, $import)
 	{
 		if (!$data) return 0;
-		// Define the size of record, the frequency for persisting the data and the current index of records
-		$size = count($data); $batchSize = 100; $i = 0;
+		// Define the frequency for persisting the data and the current index of records
+		$batchSize = 100; $i = 0;
 
 		// do the mapping
 		$data = $this->mappingService->transform($data, $import);
@@ -135,6 +135,8 @@ class ElementImportService
     }
 
 	  $this->importOneService->initialize($import);
+
+    $size = count($data);
 
 		// processing each data
 		foreach($data as $row)
