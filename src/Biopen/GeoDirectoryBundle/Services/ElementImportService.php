@@ -64,8 +64,7 @@ class ElementImportService
         if(!$header) {
           $header = $row;
         } else {
-          if (count($header) != count ($row)) dump($row);
-          else $data[] = array_combine($header, $row);
+          if (count($header) == count($row)) $data[] = array_combine($header, $row);
         }
       }
       fclose($handle);
