@@ -18,21 +18,21 @@ use Biopen\GeoDirectoryBundle\Document\Coordinates;
 use Biopen\CoreBundle\Document\TileLayer;
 
 class LoadConfiguration implements FixtureInterface
-{  
+{
    public function load(ObjectManager $manager, $container = null, $configToCopy = null, $contribConfig = null)
-   {  
-      $configuration = new Configuration();   
+   {
+      $configuration = new Configuration();
       $tileLayersToCopy = null;
-      
+
       if ($configToCopy) {
          foreach ($configToCopy as $key => $value)
          {
-            if ($value && !in_array($key, ['id', "appSlug", 'appTags', 'defaultTileLayer', 'logo', 'logoInline', 'socialShareImage', 'favicon', 'tileLayers'])) {            
+            if ($value && !in_array($key, ['id', "appSlug", 'appTags', 'defaultTileLayer', 'logo', 'logoInline', 'socialShareImage', 'favicon', 'tileLayers'])) {
                // dealing with subobjects
-               if (is_object($value)) { 
+               if (is_object($value)) {
                   if (strpos($key, 'Feature') !== false) {
                      $object = property_exists($value, 'allow_role_anonymous_with_mail') ? new InteractionConfiguration() : new FeatureConfiguration();
-                  } 
+                  }
                   elseif (strpos($key, 'Mail') !== false) $object = new AutomatedMailConfiguration();
                   elseif ($key == "user") $object = new ConfigurationUser();
                   elseif ($key == "infobar") $object = new ConfigurationInfobar();
@@ -45,7 +45,7 @@ class LoadConfiguration implements FixtureInterface
                      if ($subvalue && !in_array($subkey, ['id'])) {
                         $subkey = 'set' . ucfirst($subkey);
                         $object->$subkey($subvalue);
-                     }                  
+                     }
                   }
                   $value = $object;
                }
@@ -87,11 +87,11 @@ class LoadConfiguration implements FixtureInterface
          $configuration->setFavoriteFeature(  new FeatureConfiguration(true, false, true, true, true));
          $configuration->setShareFeature(    new FeatureConfiguration(true, true,  true, true, true));
          $configuration->setExportIframeFeature(   new FeatureConfiguration(true, false, true, true, true));
-         $configuration->setDirectionsFeature(new FeatureConfiguration(true, true,  true, true, true));      
+         $configuration->setDirectionsFeature(new FeatureConfiguration(true, true,  true, true, true));
          $configuration->setPendingFeature(   new FeatureConfiguration(true, false, true, true, true));
          $configuration->setSendMailFeature(   new InteractionConfiguration(true, false, true, true, true, true));
          $configuration->setCustomPopupFeature(   new FeatureConfiguration());
-         $configuration->setStampFeature(   new FeatureConfiguration(true, false, true, true, true));   
+         $configuration->setStampFeature(   new FeatureConfiguration(true, false, true, true, true));
          $configuration->setSearchPlaceFeature(    new FeatureConfiguration(true, true,  true, true, true));
          $configuration->setSearchGeolocateFeature(    new FeatureConfiguration(true, true,  true, true, true));
          $configuration->setLayersFeature(    new FeatureConfiguration(true, true,  true, true, true));
@@ -110,12 +110,12 @@ class LoadConfiguration implements FixtureInterface
          $configuration->setCollaborativeModerationExplanations("
             <p>
               Lorsqu'un élément est ajouté ou modifié, la mise à jour des données n'est pas instantanée. L'élément va d'abords apparaître \"grisé\" sur la carte,
-              et il sera alors possible à tous les utilisateurs logué de voter une et une seule fois pour cet élément. 
-              Ce vote n'est pas une opinion, mais un partage de connaissance. 
+              et il sera alors possible à tous les utilisateurs logué de voter une et une seule fois pour cet élément.
+              Ce vote n'est pas une opinion, mais un partage de connaissance.
               Si vous connaissez cet élément, ou savez que cet élément n'existe pas, alors votre savoir nous intéresse !
-            </p> 
+            </p>
             <p>
-              Au bout d'un certain nombre de votes, l'élément pourra alors être automatiquement validé ou refusé. 
+              Au bout d'un certain nombre de votes, l'élément pourra alors être automatiquement validé ou refusé.
               En cas de litige (des votes à la fois positifs et négatifs), un modérateur interviendra au plus vite. On compte sur vous!
             </p>");
 
@@ -164,47 +164,47 @@ class LoadConfiguration implements FixtureInterface
       $defaultLayer = $this->loadTileLayers($manager, $tileLayersToCopy, $defaultTileLayerName);
       $configuration->setDefaultTileLayer($defaultLayer);
 
-      $manager->persist($configuration);  
+      $manager->persist($configuration);
       $manager->flush();
 
       return $configuration;
    }
 
    public function loadTileLayers(ObjectManager $manager, $tileLayersToCopy = null, $defaultTileLayerName = null)
-   {  
+   {
       $tileLayers = $tileLayersToCopy ? $tileLayersToCopy : array(
-         array('name' => 'cartodb', 
-              'url' => 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', 
-              'attribution' => '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'), 
-         array('name' => 'hydda', 
-              'url' => 'https://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', 
+         array('name' => 'cartodb',
+              'url' => 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
+              'attribution' => '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'),
+         array('name' => 'hydda',
+              'url' => 'https://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png',
               'attribution' => 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'),
-         array('name' => 'wikimedia', 
+         array('name' => 'wikimedia',
               'url' => 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
               'attribution' => '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a> | Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'),
-         array('name' => 'lyrk' , 
+         array('name' => 'lyrk' ,
               'url' => 'https://tiles.lyrk.org/ls/{z}/{x}/{y}?apikey=982c82cc765f42cf950a57de0d891076',
-              'attribution' => '&copy Lyrk | Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'), 
-         array('name' => 'osmfr', 
+              'attribution' => '&copy Lyrk | Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'),
+         array('name' => 'osmfr',
               'url' => 'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',
-              'attribution' => '&copy; Openstreetmap France | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'),      
-         array('name' => 'stamenWaterColor', 
+              'attribution' => '&copy; Openstreetmap France | &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'),
+         array('name' => 'stamenWaterColor',
               'url' => 'https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png',
-              'attribution' => 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'),      
+              'attribution' => 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'),
       );
 
       $defaultTileLayer = null;
       $createdTileLayers = [];
-      foreach ($tileLayers as $key => $layer) 
-      {      
+      foreach ($tileLayers as $key => $layer)
+      {
          $layer = (array) $layer;
          if (!in_array($layer['name'], $createdTileLayers)) {
             $tileLayer = new TileLayer();
-            $tileLayer->setName($layer['name']); 
+            $tileLayer->setName($layer['name']);
             $tileLayer->setUrl($layer['url']);
-            $tileLayer->setAttribution($layer['url']); 
-            $position = array_key_exists('position', $layer) ? $layer['position'] : $key;  
-            $tileLayer->setPosition($key);   
+            $tileLayer->setAttribution($layer['attribution']);
+            $position = array_key_exists('position', $layer) ? $layer['position'] : $key;
+            $tileLayer->setPosition($key);
             $manager->persist($tileLayer);
             $createdTileLayers[] = $layer['name'];
 
