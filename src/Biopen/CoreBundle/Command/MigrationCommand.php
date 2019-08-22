@@ -90,6 +90,7 @@ class MigrationCommand extends GoGoAbstractCommand
             $asyncService->setRunSynchronously(true);
             if (count($this->commands) > $migrationState->getCommandsIndex()) {
                 $commandsToRun = array_slice($this->commands, $migrationState->getCommandsIndex());
+                $commandsToRun = array_unique($commandsToRun);
                 $this->log(count($commandsToRun) . " commands to run");
                 foreach($dbs as $db) {
                     foreach($commandsToRun as $command) {
