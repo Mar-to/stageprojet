@@ -135,6 +135,8 @@ class ImportAdmin extends AbstractAdmin
        return $query;
     }
 
+    public function configureBatchActions($actions) { return []; }
+
     protected function configureListFields(ListMapper $listMapper)
     {
         $dm = $this->getConfigurationPool()->getContainer()->get('doctrine_mongodb');
