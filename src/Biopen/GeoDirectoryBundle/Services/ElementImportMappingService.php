@@ -191,29 +191,31 @@ class ElementImportMappingService
 
     foreach($data as $row)
     {
-      $categories = $row['categories'];
-      $categories = is_array($categories) ? $categories : explode(',', $categories);
-      foreach($categories as $category) {
-        if (is_array($category)) $category = $category['name'];
-        $category = ltrim(rtrim($category));
-        $category = str_replace('.', '_', $category);
-        if (!in_array($category, $allNewCategories)) $allNewCategories[] = $category;
-        if ($category && !array_key_exists($category, $taxonomyMapping))
-        {
-          $categorySlug = $this->slugify($category);
-          $value = array_key_exists($categorySlug, $this->mappingTableIds) ? $this->mappingTableIds[$categorySlug]['id'] : '';
+      if (isset($row['categories'])) {
+        $categories = $row['categories'];
+        $categories = is_array($categories) ? $categories : explode(',', $categories);
+        foreach($categories as $category) {
+          if (is_array($category)) $category = $category['name'];
+          $category = ltrim(rtrim($category));
+          $category = str_replace('.', '_', $category);
+          if (!in_array($category, $allNewCategories)) $allNewCategories[] = $category;
+          if ($category && !array_key_exists($category, $taxonomyMapping))
+          {
+            $categorySlug = $this->slugify($category);
+            $value = array_key_exists($categorySlug, $this->mappingTableIds) ? $this->mappingTableIds[$categorySlug]['id'] : '';
 
-          // create option if does not exist
-          if ($value == '' && $this->createMissingOptions) $value = $this->createOption($category);
+            // create option if does not exist
+            if ($value == '' && $this->createMissingOptions) $value = $this->createOption($category);
 
-          $taxonomyMapping[$category] = [$value];
-          $import->setNewTaxonomyToMap(true);
-        }
-        // create options for previously imported non mapped options
-        if (array_key_exists($category, $taxonomyMapping)
-            && (!$taxonomyMapping[$category] || $taxonomyMapping[$category] == '/')
-            && $this->createMissingOptions) {
-          $taxonomyMapping[$category] = [$this->createOption($category)];
+            $taxonomyMapping[$category] = [$value];
+            $import->setNewTaxonomyToMap(true);
+          }
+          // create options for previously imported non mapped options
+          if (array_key_exists($category, $taxonomyMapping)
+              && (!$taxonomyMapping[$category] || $taxonomyMapping[$category] == '/')
+              && $this->createMissingOptions) {
+            $taxonomyMapping[$category] = [$this->createOption($category)];
+          }
         }
       }
     }
