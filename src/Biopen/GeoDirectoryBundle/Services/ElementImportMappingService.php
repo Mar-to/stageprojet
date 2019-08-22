@@ -16,8 +16,6 @@ use Biopen\GeoDirectoryBundle\Document\PostalAddress;
 use Biopen\GeoDirectoryBundle\Document\ElementUrl;
 use Biopen\GeoDirectoryBundle\Document\ElementImage;
 use Biopen\GeoDirectoryBundle\Document\ImportState;
-use Biopen\CoreBundle\Document\GoGoLogImport;
-use Biopen\CoreBundle\Document\GoGoLogLevel;
 
 class ElementImportMappingService
 {
@@ -54,10 +52,13 @@ class ElementImportMappingService
 
     // Execute custom code (the <?php is used to have proper code highliting in text editor, we remove it before executing)
     eval(str_replace('<?php', '', $import->getCustomCode()));
+    if ($data == null || !is_array($data)) return [];
 
     // elements is ofently stored nested in a data attribute
     if (array_key_exists('data', $data)) $data = $data['data'];
+    if ($data == null || !is_array($data)) return [];
     if (array_key_exists('elements', $data)) $data = $data['elements'];
+    if ($data == null || !is_array($data)) return [];
 
     // Fixs gogocarto ontology when importing, to simplify import/export from gogocarto to gogocarto
     foreach ($data as $key => $row) {
@@ -96,7 +97,7 @@ class ElementImportMappingService
     $this->collectOntology($data, $import);
     $data = $this->mapOntology($data);
 
-    if (!is_array($data)) return [];
+    if ($data == null || !is_array($data)) return [];
     // remove empty row, i.e. without name
     $data = array_filter($data, function($row) { return array_key_exists('name', $row); });
 
