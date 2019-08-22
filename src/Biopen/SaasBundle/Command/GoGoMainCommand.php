@@ -33,7 +33,7 @@ class GoGoMainCommand extends ContainerAwareCommand
       $odm = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
 
       $qb = $odm->createQueryBuilder('BiopenSaasBundle:ScheduledCommand');
-      
+
       $commandToExecute = $qb->field('nextExecutionAt')->lte(new \DateTime())
                              ->sort('nextExecutionAt', 'ASC')
                              ->getQuery()->getSingleResult();
@@ -42,15 +42,7 @@ class GoGoMainCommand extends ContainerAwareCommand
 
       if ($commandToExecute !== null)
       {
-        // the project has been deleted
-        if (!$commandToExecute->getProject()) {
-          $logger->info('---- DELETEING command ' . $commandToExecute->getCommandName());
-          $odm->remove($commandToExecute);
-          $odm->flush();
-          return;
-        }
-
-         // Updating next execution time  
+         // Updating next execution time
          $dateNow = new \DateTime();
          $dateNow->setTimestamp(time());
          $interval = new \DateInterval('PT' . $this->scheduledCommands[$commandToExecute->getCommandName()]);
@@ -58,8 +50,15 @@ class GoGoMainCommand extends ContainerAwareCommand
          $odm->persist($commandToExecute);
          $odm->flush();
 
-         $logger->info('---- Running command ' . $commandToExecute->getCommandName() . ' for project : ' . $commandToExecute->getProject()->getName());
-
+         try {
+          $logger->info('---- Running command ' . $commandToExecute->getCommandName() . ' for project : ' . $commandToExecute->getProject()->getName());
+         } catch (\Exception $e) {
+          // the project has been deleted
+          $logger->info('---- DELETEING command ' . $commandToExecute->getCommandName());
+          $odm->remove($commandToExecute);
+          $odm->flush();
+          return;
+         }
          $command = $this->getApplication()->find($commandToExecute->getCommandNAme());
 
          $arguments = array(
@@ -69,7 +68,7 @@ class GoGoMainCommand extends ContainerAwareCommand
 
          $input = new ArrayInput($arguments);
          try { $command->run($input, $output); }
-         catch (\Exception $e) { $logger->error($e->getMessage()); }    
+         catch (\Exception $e) { $logger->error($e->getMessage()); }
       }
    }
 }
