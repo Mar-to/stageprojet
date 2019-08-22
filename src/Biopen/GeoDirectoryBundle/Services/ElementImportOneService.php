@@ -56,8 +56,10 @@ class ElementImportOneService
 		// adds missings fields instead of checking if each field is set before accessing
 		$missingFields = array_diff($this->coreFields, array_keys($row));
     foreach ($missingFields as $missingField) {
-      $row[$missingField] = "";
+      $row[$missingField] = ($missingField == 'categories') ? [] : "";
     }
+
+    $element = null;
 
 		if ($row['id'])
 		{
@@ -66,7 +68,7 @@ class ElementImportOneService
 			$qb->field('source')->references($import);
 			$qb->field('oldId')->equals("" . $row['id']);
 			$element = $qb->getQuery()->getSingleResult();
-		} else {
+		} else if (strlen($row['name']) > 0 && strlen($row['latitude']) > 0 && strlen($row['longitude']) > 0) {
 			$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 			$qb->field('source')->references($import);
 			$qb->field('name')->equals($row['name']);
@@ -75,7 +77,7 @@ class ElementImportOneService
 			$element = $qb->getQuery()->getSingleResult();
 		}
 
-		if ($element) // if element with this Id already exists
+		if ($element) // if the element already exists, we update it
 		{
 			$updatedAtField = $import->getFieldToCheckElementHaveBeenUpdated();
 			// if updated date hasn't change, nothing to do
