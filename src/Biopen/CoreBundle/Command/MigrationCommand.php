@@ -76,6 +76,7 @@ class MigrationCommand extends GoGoAbstractCommand
                 $migrationsToRun = array_slice($this->migrations, $migrationState->getMigrationIndex());
                 $migrationsToRun = array_unique($migrationsToRun);
                 foreach($dbs as $db) {
+                    $this->log("run migration on project " . $db);
                     foreach($migrationsToRun as $migration) {
                         $this->runCommand($db, $migration);
                     }
