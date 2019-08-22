@@ -54,15 +54,15 @@ class ElementImportMappingService
     eval(str_replace('<?php', '', $import->getCustomCode()));
     if ($data == null || !is_array($data)) return [];
 
-    // elements is ofently stored nested in a data attribute
-    if (array_key_exists('data', $data)) $data = $data['data'];
-    if ($data == null || !is_array($data)) return [];
-    if (array_key_exists('elements', $data)) $data = $data['elements'];
-    if ($data == null || !is_array($data)) return [];
+    // elements is ofently stored nested in some attribute
+    if (array_key_exists('data', $data) && is_array($data['data'])) $data = $data['data'];
+    if (array_key_exists('elements', $data) && is_array($data['elements'])) $data = $data['elements'];
+    if (array_key_exists('features', $data) && is_array($data['features'])) $data = $data['features'];
 
     // Fixs gogocarto ontology when importing, to simplify import/export from gogocarto to gogocarto
     foreach ($data as $key => $row) {
       if (is_array($row)) {
+        // GOGOCARTO ONTOLGY
         if (array_key_exists('geo', $row))
         {
           $data[$key]['latitude']  = $row['geo']['latitude'];
@@ -86,6 +86,20 @@ class ElementImportMappingService
         if (array_key_exists('categories', $row) && array_key_exists('categoriesFull', $row)) {
           $data[$key]['categories'] = $data[$key]['categoriesFull'];
           unset($data[$key]['categoriesFull']);
+        }
+
+        // GEOJSON
+        if (isset($row['geometry']) && isset($row['geometry']['coordinates'])) {
+          $data[$key]['latitude']  = $row['geometry']['coordinates'][1];
+          $data[$key]['longitude'] = $row['geometry']['coordinates'][0];
+          unset($data[$key]['geometry']);
+
+          if (isset($row['properties']) && $this->isAssociativeArray($row['properties'])) {
+            foreach ($row['properties'] as $field => $value) {
+              $data[$key][$field] = $value;
+            }
+            unset($data[$key]['properties']);
+          }
         }
       } else {
         // the $row is not an array, probably a string so we ignore it
