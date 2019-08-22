@@ -18,7 +18,7 @@ class ImportAdminController extends Controller
     if (!in_array("name",array_values($object->getOntologyMapping())))
       $this->addFlash('sonata_flash_warning', "Merci de remplir le tableau de correspondance des champs. Renseignez au moins le Titre de la fiche");
     else if (count($result) > 0)
-      $this->addFlash('sonata_flash_success', "Les données ont été chargées avec succès.</br>Voici le résultat obtenu pour le premier élément à importer :<pre>" . print_r($result[0], true) . '</pre>' . "<a href='$showUrl'>Voir toutes les données</a>");
+      $this->addFlash('sonata_flash_success', "Les données ont été chargées avec succès.</br>Voici le résultat obtenu pour le premier élément à importer :<pre>" . print_r(reset($result), true) . '</pre>' . "<a href='$showUrl'>Voir toutes les données</a>");
     else
       $this->addFlash('sonata_flash_error', "Erreur pendant le chargement des données, le résultat est vide");
     $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]);
