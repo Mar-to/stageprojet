@@ -111,4 +111,4 @@ db.Configuration.updateMany( { } , { $set: { 'defautTileLayer': DBRef("TileLayer
 // Reset duplicates
 db.Element.updateMany({moderationState: 4}, {$set: {moderationState: 0, isDuplicateNode: false}, $unset: { potentialDuplicates: 1} })
 
-db.MigrationState.updateMany({}, { $set: { migrationsIndex: 0}})
+db.MigrationState.updateMany({}, { $set: { migrationIndex: 0}})

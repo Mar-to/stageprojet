@@ -20,12 +20,12 @@ class MigrationCommand extends GoGoAbstractCommand
     // -----------------------------------------------------------------
     public $migrations = [
       // v2.4.6
-      "db.TileLayer.updateMany({'name':'cartodb'}, {\$set: {'attribution':'&copy; <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a> &copy; <a href=\'http://cartodb.com/attributions\'>CartoDB</a>'}})",
-      "db.TileLayer.updateMany({'name':'hydda'}, {\$set: {'attribution':'Tiles courtesy of <a href=\'http://openstreetmap.se/\' target=\'_blank\'>OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a>'}})",
-      "db.TileLayer.updateMany({'name':'wikimedia'}, {\$set: {'attribution':'<a href=\'https://wikimediafoundation.org/wiki/Maps_Terms_of_Use\'>Wikimedia</a> | Map data © <a href=\'https://www.openstreetmap.org/copyright\'>OpenStreetMap contributors</a>'}})",
-      "db.TileLayer.updateMany({'name':'lyrk'}, {\$set: {'attribution':'&copy Lyrk | Map data &copy; <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a>'}})",
-      "db.TileLayer.updateMany({'name':'osmfr'}, {\$set: {'attribution':'&copy; Openstreetmap France | &copy; <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a>'}})",
-      "db.TileLayer.updateMany({'name':'stamenWaterColor'}, {\$set: {'attribution':'Map tiles by <a href=\'http://stamen.com\'>Stamen Design</a>, <a href=\'http://creativecommons.org/licenses/by/3.0\'>CC BY 3.0</a> &mdash; Map data &copy; <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a>'}})",
+      'db.TileLayer.updateMany({name:"cartodb"}, {$set: {attribution:"&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> &copy; <a href=\"http://cartodb.com/attributions\">CartoDB</a>"}})',
+      'db.TileLayer.updateMany({name:"hydda"}, {$set: {attribution:"Tiles courtesy of <a href=\"http://openstreetmap.se/\" target=\"_blank\">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a>"}})',
+      'db.TileLayer.updateMany({name:"wikimedia"}, {$set: {attribution:"<a href=\"https://wikimediafoundation.org/wiki/Maps_Terms_of_Use\">Wikimedia</a> | Map data © <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>"}})',
+      'db.TileLayer.updateMany({name:"lyrk"}, {$set: {attribution:"&copy Lyrk | Map data &copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a>"}})',
+      'db.TileLayer.updateMany({name:"osmfr"}, {$set: {attribution:"&copy; Openstreetmap France | &copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a>"}})',
+      'db.TileLayer.updateMany({name:"stamenWaterColor"}, {$set: {attribution:"Map tiles by <a href=\"http://stamen.com\">Stamen Design</a>, <a href=\"http://creativecommons.org/licenses/by/3.0\">CC BY 3.0</a> &mdash; Map data &copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a>"}})',
     ];
 
     public $commands = [
@@ -76,9 +76,9 @@ class MigrationCommand extends GoGoAbstractCommand
                 $migrationsToRun = array_slice($this->migrations, $migrationState->getMigrationIndex());
                 $migrationsToRun = array_unique($migrationsToRun);
                 foreach($dbs as $db) {
-                    $this->log("run migration on project " . $db);
                     foreach($migrationsToRun as $migration) {
-                        $this->runCommand($db, $migration);
+                        $this->log("run migration " . $migration . " on project " . $db);
+                        $this->runMongoCommand($db, $migration);
                     }
                 }
                 $this->log(count($migrationsToRun) . " migrations performed");
@@ -129,9 +129,9 @@ class MigrationCommand extends GoGoAbstractCommand
         $em->flush();
     }
 
-    private function runCommand($db, $command)
+    private function runMongoCommand($db, $command)
     {
-        $process = new Process("mongo {$db} --eval \"{$command}\"");
+        $process = new Process("mongo {$db} --eval '{$command}'");
         return $process->run();
     }
 }
