@@ -36,7 +36,7 @@ class Coordinates
      */
     public function setLatitude($latitude)
     {
-        $this->latitude = number_format($latitude % 180,5);
+        $this->latitude = ($latitude * 100000) % (180 * 100000) / 100000;
         return $this;
     }
 
@@ -58,7 +58,7 @@ class Coordinates
      */
     public function setLongitude($longitude)
     {
-        $this->longitude = number_format($longitude % 180,5);
+        $this->longitude = ($longitude * 100000) % (180 * 100000) / 100000;
         return $this;
     }
 
