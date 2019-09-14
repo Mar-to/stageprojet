@@ -4,27 +4,27 @@ namespace Biopen\GeoDirectoryBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Biopen\CoreBundle\Services\User;  
+use Biopen\CoreBundle\Services\User;
 
 abstract class InteractionType
 {
-    const Deleted = -1;   
+    const Deleted = -1;
     const Add = 0;
     const Edit = 1;
-    const Vote = 2;  
+    const Vote = 2;
     const Report = 3;
-    const Import = 4; 
-    const Restored = 5;  
-    const ModerationResolved = 6;   
+    const Import = 4;
+    const Restored = 5;
+    const ModerationResolved = 6;
 }
 
 abstract class UserRoles
 {
     const Anonymous = 0;
     const AnonymousWithEmail = 1;
-    const Loggued = 2;  
-    const Admin = 3; 
-    const AnonymousWithHash = 4; 
+    const Loggued = 2;
+    const Admin = 3;
+    const AnonymousWithHash = 4;
 }
 
 /** @MongoDB\Document */
@@ -39,7 +39,7 @@ class UserInteraction
      * @MongoDB\Field(type="int")
      * @MongoDB\Index
      */
-    protected $type;      
+    protected $type;
 
     /**
      * @var string
@@ -97,12 +97,12 @@ class UserInteraction
      *
      * @MongoDB\Field(type="date")
      */
-    protected $updatedAt;  
+    protected $updatedAt;
 
     /**
      * @MongoDB\EmbedMany(targetDocument="Biopen\GeoDirectoryBundle\Document\WebhookPost")
      */
-    protected $webhookPosts; 
+    protected $webhookPosts;
 
 
     public function getTimestamp()
@@ -129,7 +129,7 @@ class UserInteraction
             $this->setUserEmail($user->getEmail());
             $this->setUserRole($user->isAdmin() ? UserRoles::Admin : UserRoles::Loggued);
         }
-        else 
+        else
         {
             if ($email)
             {
@@ -137,8 +137,8 @@ class UserInteraction
                 $this->setUserRole(UserRoles::AnonymousWithEmail);
             }
             else $this->setUserRole(UserRoles::Anonymous);
-            
-            if ($directModerationWithHash) $this->setUserRole(UserRoles::AnonymousWithHash);            
+
+            if ($directModerationWithHash) $this->setUserRole(UserRoles::AnonymousWithHash);
         }
     }
 
@@ -149,7 +149,7 @@ class UserInteraction
             $user = $securityContext->getToken()->getUser();
             $this->setResolvedBy($user->getEmail());
         }
-        else 
+        else
         {
             if ($email)                          $this->setResolvedBy($email);
             else if ($directModerationWithHash)  $this->setResolvedBy('Anonymous with hash');
@@ -160,7 +160,7 @@ class UserInteraction
 
     public function isMadeBy($user, $userEmail)
     {
-        if ($user instanceof User)
+        if (is_object($user))
             return $this->getUserEmail() == $user->getEmail();
         else
             return ($userEmail && $this->getUserEmail() == $userEmail);
@@ -380,7 +380,7 @@ class UserInteraction
     public function getResolvedMessage()
     {
         return $this->resolvedMessage;
-    }    
+    }
 
     /**
      * Add webhookPost
