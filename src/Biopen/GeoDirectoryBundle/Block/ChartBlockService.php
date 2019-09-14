@@ -30,7 +30,7 @@ class ChartBlockService extends AbstractBlockService
 
 	protected $statusChoices = [
 		'-4'=>'Supprimé',
-		'-3'=>'Refusé (votes) ', 
+		'-3'=>'Refusé (votes) ',
 		'-2'=>'Refusé (admin)',
 		'1' => 'Validé (admin)',
 		'2' => 'Validé (votes)',
@@ -43,7 +43,7 @@ class ChartBlockService extends AbstractBlockService
 
 	protected $statusColors = [
 		'-4'=> '#434348',
-		'-3'=> '#f7a35c', 
+		'-3'=> '#f7a35c',
 		'-2'=> '#dd4b39',
 		'1' => '#00a65a',
 		'2' => '#90ed7d',
@@ -80,7 +80,7 @@ class ChartBlockService extends AbstractBlockService
 	}
 
 	public function execute(BlockContextInterface $blockContext, Response $response = null)
-	{	 
+	{
 		$timestampEnd = time();
 		$timestampStart = $timestampEnd - ( 60 * 60 * 24 * 60 );
 
@@ -88,7 +88,7 @@ class ChartBlockService extends AbstractBlockService
 		$this->mongoDateStart = new \MongoDate($timestampStart);        # Add one day to that
 
 		$this->dateEnd = date('m/d/Y', $timestampEnd );
-		$this->dateStart = date('m/d/Y', $timestampStart );		
+		$this->dateStart = date('m/d/Y', $timestampStart );
 
 		// ----------------------
 		// USER INTERACTION CHART
@@ -97,7 +97,7 @@ class ChartBlockService extends AbstractBlockService
 		  array("type" => "spline", "name" => "Ajouts", "color" => "#7a6ba7", "data" => $this->getDataContributionFromType(0)),
 		  array("type" => "spline", "name" => "Modifications", "color" => "#7cb5ec", "data" => $this->getDataContributionFromType(1)),
 		  array("type" => "spline", "dashStyle" => 'shortDash', "name" => "Votes", "color" => "#8bc34a", "data" => $this->getDataVote()),
-		  array("type" => "spline", "dashStyle" => 'shortDash', "name" => "Signalements", "color" => "#dd4b39", "data" => $this->getDataReports()),			  
+		  array("type" => "spline", "dashStyle" => 'shortDash', "name" => "Signalements", "color" => "#dd4b39", "data" => $this->getDataReports()),
 		);
 
 		$userInteractChart = new Highchart();
@@ -121,7 +121,7 @@ class ChartBlockService extends AbstractBlockService
 		// ----------------------
 		$collabResolveData = array(
     		array('type' => 'column',"name" => "Validations Collaborative", "color" => "#90ed7d", "data" => $this->getDataCollaborativeResolve(ElementStatus::CollaborativeValidate)),
-		   array('type' => 'column',"name" => "Refus collaboratifs", "color" => "#f7a35c", "data" => $this->getDataCollaborativeResolve(ElementStatus::CollaborativeRefused)), 
+		   array('type' => 'column',"name" => "Refus collaboratifs", "color" => "#f7a35c", "data" => $this->getDataCollaborativeResolve(ElementStatus::CollaborativeRefused)),
     	);
 
 		$collabResolveChart = new Highchart();
@@ -172,7 +172,7 @@ class ChartBlockService extends AbstractBlockService
     	return $contribsResolvedPie;
 	}
 
-	private function dateRange( $first, $last, $step = '+1 day', $format = 'm/d/Y' ) 
+	private function dateRange( $first, $last, $step = '+1 day', $format = 'm/d/Y' )
 	{
 		$dates = array();
 		$current = strtotime( $first );
@@ -192,29 +192,30 @@ class ChartBlockService extends AbstractBlockService
 		$builder = $this->em->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionContribution');
 		$builder
         ->match()
-            ->field('type')->equals($type);   
-		return $this->getDataGroupedBy($builder, 'createdAt');      
+            ->field('type')->equals($type)
+            ->field('status')->notEqual(7); // Do not get dynamic import in chart
+		return $this->getDataGroupedBy($builder, 'createdAt');
 	}
 
 	private function getDataVote()
 	{
-		$builder = $this->em->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionVote'); 
-      return $this->getDataGroupedBy($builder, 'createdAt');      
+		$builder = $this->em->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionVote');
+      return $this->getDataGroupedBy($builder, 'createdAt');
 	}
 
 	private function getDataReports()
 	{
-		$builder = $this->em->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionReport'); 
-      return $this->getDataGroupedBy($builder, 'createdAt');      
+		$builder = $this->em->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionReport');
+      return $this->getDataGroupedBy($builder, 'createdAt');
 	}
 
 	private function getDataCollaborativeResolve($status)
 	{
-		$builder = $this->em->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionContribution'); 
+		$builder = $this->em->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionContribution');
 		$builder
         ->match()
-            ->field('status')->equals($status);   
-      return $this->getDataGroupedBy($builder, 'updatedAt');      
+            ->field('status')->equals($status);
+      return $this->getDataGroupedBy($builder, 'updatedAt');
 	}
 
 	private function getDataGroupedBy($builder, $groupField)
@@ -237,8 +238,8 @@ class ChartBlockService extends AbstractBlockService
 
     	$results = $builder->execute()->toArray();
 
-		$results = array_map(function($x) 
-		{ 
+		$results = array_map(function($x)
+		{
 			$date = date_create($x['_id']['day']);
 			$timestamp = $date->getTimestamp();
 			return array(
@@ -246,9 +247,9 @@ class ChartBlockService extends AbstractBlockService
 				'date_mdy' => $x['_id']['day'],
 				'timestamp' => $timestamp,
 				'count' => $x['count']
-			); 
+			);
 		}, $results);
-		
+
 		usort($results,function( $a, $b ) { return $a['timestamp'] - $b['timestamp'];});
 
 		$range = $this->dateRange($this->dateStart,$this->dateEnd);
@@ -284,17 +285,17 @@ class ChartBlockService extends AbstractBlockService
             ->field('_id')
             ->expression('$status')
             ->field('count')
-        		->sum(1)        	
-    	;    	
+        		->sum(1)
+    	;
     	$results = $builder->execute()->toArray();
 
     	$results = array_map(function($x)
-		{ 
-			return array(				
+		{
+			return array(
 				'name' => $this->statusChoices[$x['_id']],
 				'color' => $this->statusColors[$x['_id']],
-				'y' => $x['count']				
-			); 
+				'y' => $x['count']
+			);
 		}, $results);
 		return $results;
 	}
