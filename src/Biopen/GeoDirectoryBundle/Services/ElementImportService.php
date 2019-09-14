@@ -61,7 +61,6 @@ class ElementImportService
 
     if (($handle = fopen($fileName, 'r')) !== FALSE) {
       while (($row = fgetcsv($handle, 0, $delimiter)) !== FALSE) {
-        $row = array_map("utf8_encode", $row);
         if(!$header) {
           $header = $row;
         } else {
