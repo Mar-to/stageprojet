@@ -76,6 +76,11 @@ class Import extends AbstractFile
     private $needToHaveOptionsOtherThanTheOnesAddedToEachElements = false;
 
     /**
+     * @MongoDB\Field(type="bool")
+     */
+    private $preventImportIfNoCategories = false;
+
+    /**
      * @var string
      * @MongoDB\Field(type="string")
      */
@@ -634,5 +639,27 @@ class Import extends AbstractFile
     public function getNewTaxonomyToMap()
     {
         return $this->newTaxonomyToMap;
+    }
+
+    /**
+     * Set preventImportIfNoCategories
+     *
+     * @param bool $preventImportIfNoCategories
+     * @return $this
+     */
+    public function setPreventImportIfNoCategories($preventImportIfNoCategories)
+    {
+        $this->preventImportIfNoCategories = $preventImportIfNoCategories;
+        return $this;
+    }
+
+    /**
+     * Get preventImportIfNoCategories
+     *
+     * @return bool $preventImportIfNoCategories
+     */
+    public function getPreventImportIfNoCategories()
+    {
+        return $this->preventImportIfNoCategories;
     }
 }

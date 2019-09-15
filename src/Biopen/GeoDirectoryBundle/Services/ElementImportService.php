@@ -18,6 +18,7 @@ class ElementImportService
 	protected $countElementUpdated = 0;
 	protected $countElementNothingToDo = 0;
 	protected $countElementErrors = 0;
+  protected $countNoCategoryPreventImport = 0;
 	protected $elementIdsErrors = [];
 	protected $errorsMessages = [];
 	protected $errorsCount = [];
@@ -38,6 +39,7 @@ class ElementImportService
 		$this->countElementUpdated = 0;
 		$this->countElementNothingToDo = 0;
 		$this->countElementErrors = 0;
+    $this->countNoCategoryPreventImport = 0;
 		$this->elementIdsErrors = [];
 		$this->errorsMessages = [];
 		$this->errorsCount = [];
@@ -147,6 +149,7 @@ class ElementImportService
           case 'nothing_to_do': $this->countElementNothingToDo++; break;
           case 'created': $this->countElementCreated++; break;
           case 'updated': $this->countElementUpdated++; break;
+          case 'no_category': $this->countNoCategoryPreventImport++; break;
         }
 				$i++;
 			}
@@ -219,6 +222,7 @@ class ElementImportService
 			"elementsNothingToDoCount" => $this->countElementNothingToDo,
 			"elementsMissingGeoCount" => $elementsMissingGeoCount,
 			"elementsMissingTaxoCount" => $elementsMissingTaxoCount,
+      "elementsPreventImportedNoTaxo" => $this->countNoCategoryPreventImport,
 			"elementsDeletedCount" => $countElemenDeleted,
 			"elementsErrorsCount" => $this->countElementErrors,
 			"errorMessages" => $this->errorsMessages

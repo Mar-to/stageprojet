@@ -145,6 +145,9 @@ class ElementImportOneService
 		$element->setGeo(new Coordinates($lat, $lng));
 
 		$this->createCategories($element, $row, $import);
+
+		if ($import->getPreventImportIfNoCategories() && $element->getModerationState() == ModerationState::NoOptionProvided) return "no_category";
+
 		$this->createImages($element, $row);
 		$this->createOpenHours($element, $row);
 		$this->saveCustomFields($element, $row);

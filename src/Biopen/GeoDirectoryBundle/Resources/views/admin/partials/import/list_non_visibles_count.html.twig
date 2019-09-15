@@ -22,6 +22,9 @@
       {% if log.getDataProp('elementsMissingTaxoCount') > 0 %}
         <span class="label label-warning log-label">{{ log.getDataProp('elementsMissingTaxoCount') }} sans categories</span>
       {% endif %}
+      {% if log.getDataProp('elementsPreventImportedNoTaxo') > 0 %}
+        <span class="label label-warning log-label">{{ log.getDataProp('elementsPreventImportedNoTaxo') }} non importés car sans catégories</span>
+      {% endif %}
 
       <style>
         .label.log-label { margin-right: 5px; }
