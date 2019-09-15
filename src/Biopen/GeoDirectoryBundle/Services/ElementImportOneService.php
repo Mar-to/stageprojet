@@ -68,12 +68,26 @@ class ElementImportOneService
 			$qb->field('source')->references($import);
 			$qb->field('oldId')->equals("" . $row['id']);
 			$element = $qb->getQuery()->getSingleResult();
-		} else if (strlen($row['name']) > 0 && strlen($row['latitude']) > 0 && strlen($row['longitude']) > 0) {
+		}
+		else if (strlen($row['name']) > 0)
+		{
 			$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 			$qb->field('source')->references($import);
 			$qb->field('name')->equals($row['name']);
-			$qb->field('geo.latitude')->equals((float) number_format((float)$row['latitude'], 5));
-			$qb->field('geo.longitude')->equals((float) number_format((float)$row['longitude'], 5));
+
+			if (strlen($row['latitude']) > 0 && strlen($row['longitude']) > 0)
+			{
+				$geo = new Coordinates($row['latitude'], $row['longitude']);
+				$qb->field('geo.latitude')->equals($geo->getLatitude());
+				$qb->field('geo.longitude')->equals($geo->getLongitude());
+			}
+			else
+			{
+				if (strlen($row['streetAddress']) > 0) $qb->field('address.streetAddress')->equals($row['streetAddress']);
+				if (strlen($row['addressLocality']) > 0) $qb->field('address.addressLocality')->equals($row['addressLocality']);
+				if (strlen($row['postalCode']) > 0) $qb->field('address.postalCode')->equals($row['postalCode']);
+			}
+
 			$element = $qb->getQuery()->getSingleResult();
 		}
 
@@ -81,13 +95,16 @@ class ElementImportOneService
 		{
 			$updatedAtField = $import->getFieldToCheckElementHaveBeenUpdated();
 			// if updated date hasn't change, nothing to do
-			if ($updatedAtField && array_key_exists($updatedAtField, $row)) {
-				if ($row[$updatedAtField] && $row[$updatedAtField] == $element->getCustomProperty($updatedAtField)) {
+			if ($updatedAtField && array_key_exists($updatedAtField, $row))
+			{
+				if ($row[$updatedAtField] && $row[$updatedAtField] == $element->getCustomProperty($updatedAtField))
+				{
 					$element->setPreventJsonUpdate(true);
 					if ($element->getStatus() == ElementStatus::DynamicImportTemp) $element->setStatus(ElementStatus::DynamicImport);
 					$this->em->persist($element);
 					return "nothing_to_do";
-				} else {
+				}
+				else {
 					$realUpdate = true;
 				}
 			}
@@ -125,7 +142,7 @@ class ElementImportOneService
 		}
 
 		if ($lat == 0 || $lng == 0) $element->setModerationState(ModerationState::GeolocError);
-		$element->setGeo(new Coordinates((float)$lat, (float)$lng));
+		$element->setGeo(new Coordinates($lat, $lng));
 
 		$this->createCategories($element, $row, $import);
 		$this->createImages($element, $row);

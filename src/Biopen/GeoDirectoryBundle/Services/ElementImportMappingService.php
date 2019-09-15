@@ -29,6 +29,7 @@ class ElementImportMappingService
   protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source', 'openHours', 'email'];
   protected $mappedCoreFields = [
     'title' => 'name', 'nom' => 'name',
+    'mail' => 'email',
     'taxonomy' => 'categories',
     'address' => 'streetAddress',
     'city' => 'addressLocality',

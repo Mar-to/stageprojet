@@ -24,8 +24,8 @@ class Coordinates
 
     public function __construct($lat = null, $lng = null)
     {
-        $this->setLatitude($lat);
-        $this->setLongitude($lng);
+        $this->setLatitude((float) $lat);
+        $this->setLongitude((float) $lng);
     }
 
     /**
