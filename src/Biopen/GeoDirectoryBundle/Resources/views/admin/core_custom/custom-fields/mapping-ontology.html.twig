@@ -37,6 +37,12 @@
 
 <script>
   jQuery(document).ready(function() {
+
+    $('.property-selector').change(function() {
+      console.log("input change new val", $(this).val());
+      var new_val = $(this).val().replace('.', '_');
+      $(this).val(new_val);
+    });
     // on arrow click, use the original name
     $('.arrow-icon').click(function() {
       $(this).parent().parent().find('.property-selector:not(.select2-container)').val($(this).parent().siblings('.original').text()).trigger('change');
