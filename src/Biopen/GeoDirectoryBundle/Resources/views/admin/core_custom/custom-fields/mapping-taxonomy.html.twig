@@ -17,7 +17,9 @@
         <tr>
           <td class="original">{{originName}}</td>
           <td>></td>
-          <td class="mapped"><input type="text" name="taxonomy[{{originName}}][]" class="form-control category-selector" value="{{mappedName|join(',')}}"/></td>
+          <td class="mapped">
+            <input type="text" name="taxonomy[{{originName}}][]" class="form-control category-selector" value="{{mappedName|join(',')}}"/>
+          </td>
           <td><i class="clear-icon fa fa-ban" title="Ne pas utiliser cette catégorie"></i></td>
         </tr>
       {% endfor %}
@@ -39,6 +41,7 @@
 
     function recursivelyAddOption(category, parentOption)
     {
+      if (!category.options) return;
       for(var i = 0; i < category.options.length; i++)
       {
         var option = category.options[i];
@@ -54,12 +57,16 @@
         }
       }
     }
-
     for(var k = 0; k < taxonomy.length; k++) recursivelyAddOption(taxonomy[k], null);
 
     $(".category-selector").select2({
         data: formData,
         multiple: true
+    });
+
+    // on init, if the category selector is empty that mean that the old mapped category does not exist anymore
+    $(".category-selector").each(function() {
+      if (!$(this).val()) $(this).siblings('input').val('/');
     });
 
     $('.clear-icon').click(function() {

@@ -39,7 +39,7 @@ class ImportAdminController extends Controller
     ]);
   }
 
-  public function refreshAction()
+  public function refreshAction(Request $request)
   {
     $object = $this->admin->getSubject();
 
@@ -55,9 +55,10 @@ class ImportAdminController extends Controller
     $em->persist($object);
     $em->flush();
 
-    $this->get('biopen.async')->callCommand('app:elements:importSource', [$object->getId()]);
-
-    // $result = $this->get('biopen.element_import')->startImport($object);
+    if ($request->get('direct'))
+      $result = $this->get('biopen.element_import')->startImport($object);
+    else
+      $this->get('biopen.async')->callCommand('app:elements:importSource', [$object->getId()]);
 
     $redirectionUrl = $this->admin->generateUrl('edit', ['id' => $object->getId()]);
     $stateUrl = $this->generateUrl('biopen_import_state', ['id' => $object->getId()]);

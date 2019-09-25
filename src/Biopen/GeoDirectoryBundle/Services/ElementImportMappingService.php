@@ -127,6 +127,7 @@ class ElementImportMappingService
 
     $this->em->persist($import);
     $this->em->flush();
+
     return $data;
   }
 
@@ -189,9 +190,19 @@ class ElementImportMappingService
   public function collectTaxonomy($data, $import)
   {
     $taxonomyMapping = $import->getTaxonomyMapping();
+    // delete obsolte mapping (if an option have been deleted, but is still in the mapping)
+    $allOptionsIds = array_keys($this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Option')->select('id')
+                                ->hydrate(false)->getQuery()->execute()->toArray());
+    foreach ($taxonomyMapping as $key => $value) {
+      $taxonomyMapping[$key] = array_filter($value, function($el) use ($allOptionsIds) {
+        return in_array($el, $allOptionsIds);
+      });
+      if (count($taxonomyMapping[$key]) == 0) unset($taxonomyMapping[$key]);
+    }
+    $import->setTaxonomyMapping($taxonomyMapping);
+
     $allNewCategories = [];
     $this->createOptionsMappingTable();
-
     foreach($data as $row)
     {
       if (isset($row['categories'])) {
@@ -215,7 +226,7 @@ class ElementImportMappingService
           }
           // create options for previously imported non mapped options
           if (array_key_exists($category, $taxonomyMapping)
-              && (!$taxonomyMapping[$category] || $taxonomyMapping[$category] == '/')
+              && (!$taxonomyMapping[$category] || $taxonomyMapping[$category] == '/' || $taxonomyMapping[$category] == '')
               && $this->createMissingOptions) {
             $taxonomyMapping[$category] = [$this->createOption($category)];
           }
@@ -359,7 +370,6 @@ class ElementImportMappingService
       $mainCategory->setName('Catégories Principales');
       $mainCategory->setPickingOptionText('Une catégorie principale');
       $this->em->persist($mainCategory);
-      $this->em->flush();
       $this->parentCategoryIdToCreateMissingOptions = $mainCategory->getId();
       $parent = $mainCategory;
     }

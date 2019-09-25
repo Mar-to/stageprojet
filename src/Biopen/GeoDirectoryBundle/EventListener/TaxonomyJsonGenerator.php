@@ -80,7 +80,7 @@ class TaxonomyJsonGenerator
     }
   }
 
-	private function updateTaxonomy($dm)
+	public function updateTaxonomy($dm)
 	{
     $taxonomy = $dm->getRepository('BiopenGeoDirectoryBundle:Taxonomy')->findTaxonomy();
 		if (!$taxonomy || $taxonomy->preventUpdate) return false;

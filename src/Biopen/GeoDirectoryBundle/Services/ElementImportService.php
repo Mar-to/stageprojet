@@ -26,11 +26,12 @@ class ElementImportService
 	/**
     * Constructor
     */
-  public function __construct(DocumentManager $documentManager, $importOneService, $mappingService)
+  public function __construct(DocumentManager $documentManager, $importOneService, $mappingService, $taxonomyJsonGenerator)
   {
 		$this->em = $documentManager;
 		$this->importOneService = $importOneService;
 		$this->mappingService = $mappingService;
+    $this->taxonomyJsonGenerator = $taxonomyJsonGenerator;
   }
 
   public function startImport($import)
@@ -176,6 +177,8 @@ class ElementImportService
 
 		$this->em->flush();
 		$this->em->clear();
+
+    $this->taxonomyJsonGenerator->updateTaxonomy($this->em);
 		$import = $this->em->getRepository('BiopenGeoDirectoryBundle:Import')->find($import->getId());
 		$this->em->persist($import);
 
