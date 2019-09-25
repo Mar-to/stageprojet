@@ -35,7 +35,7 @@ class TaxonomyJsonGenerator
 		$dm = $args->getDocumentManager();
 
 		if ($document instanceof Taxonomy)
-		{			
+		{
       $this->updateTaxonomy($dm);
 		}
 	}
@@ -47,7 +47,7 @@ class TaxonomyJsonGenerator
 
     if ($document instanceof Option || $document instanceof  Category)
     {
-      $this->updateTaxonomy($dm);      
+      $this->updateTaxonomy($dm);
     }
   }
 
@@ -57,7 +57,7 @@ class TaxonomyJsonGenerator
 
     foreach ($dm->getUnitOfWork()->getScheduledDocumentInsertions() as $document) {
       if ($document instanceof Option || $document instanceof Category) {
-        $this->needUpdateTaxonomyOnNextFlush = true;      
+        $this->needUpdateTaxonomyOnNextFlush = true;
         return;
       }
     }
@@ -67,47 +67,52 @@ class TaxonomyJsonGenerator
         $this->needUpdateTaxonomyOnNextFlush = true;
         return;
       }
-    }      
+    }
   }
 
   public function postFlush(\Doctrine\ODM\MongoDB\Event\PostFlushEventArgs $eventArgs)
   {
     $dm = $eventArgs->getDocumentManager();
-    if ($this->needUpdateTaxonomyOnNextFlush) 
-    { 
+    if ($this->needUpdateTaxonomyOnNextFlush)
+    {
       $this->needUpdateTaxonomyOnNextFlush = false;
-      $this->updateTaxonomy($dm);      
+      $this->updateTaxonomy($dm);
     }
   }
 
 	private function updateTaxonomy($dm)
-	{		
-    $taxonomy = $dm->getRepository('BiopenGeoDirectoryBundle:Taxonomy')->findTaxonomy();     
+	{
+    $taxonomy = $dm->getRepository('BiopenGeoDirectoryBundle:Taxonomy')->findTaxonomy();
 		if (!$taxonomy || $taxonomy->preventUpdate) return false;
     $taxonomy->preventUpdate = true;
-		
+
 		$rootCategories = $dm->getRepository('BiopenGeoDirectoryBundle:Category')->findRootCategories();
 		$options = $dm->getRepository('BiopenGeoDirectoryBundle:Option')->findAll();
 
-		if (count($rootCategories) == 0) return false;
-		
-		// Create hierachic taxonomy
-		$rootCategoriesSerialized = [];
-		foreach ($rootCategories as $key => $rootCategory)
-		{
-			$rootCategoriesSerialized[] = $this->serializer->serialize($rootCategory, 'json');			
-		}
-		$taxonomyJson = '[' . implode(", ", $rootCategoriesSerialized) . ']';
-		$taxonomy->setTaxonomyJson($taxonomyJson);
-		
-		// Create flatten option list		
-		$optionsSerialized = [];
-		foreach ($options as $key => $option) 
-		{
-			$optionsSerialized[] = $this->serializer->serialize($option, 'json', SerializationContext::create()->setGroups(['semantic']));
-		}
-		$optionsJson = '[' . implode(", ", $optionsSerialized) . ']';
-		$taxonomy->setOptionsJson($optionsJson);	
-    $dm->flush(); 
+		if (count($rootCategories) == 0) {
+      $optionsJson = "[]";
+      $taxonomyJson = "[]";
+    }
+    else
+    {
+      // Create hierachic taxonomy
+      $rootCategoriesSerialized = [];
+      foreach ($rootCategories as $key => $rootCategory)
+      {
+        $rootCategoriesSerialized[] = $this->serializer->serialize($rootCategory, 'json');
+      }
+      $taxonomyJson = '[' . implode(", ", $rootCategoriesSerialized) . ']';
+
+      // Create flatten option list
+      $optionsSerialized = [];
+      foreach ($options as $key => $option)
+      {
+        $optionsSerialized[] = $this->serializer->serialize($option, 'json', SerializationContext::create()->setGroups(['semantic']));
+      }
+      $optionsJson = '[' . implode(", ", $optionsSerialized) . ']';
+    }
+    $taxonomy->setTaxonomyJson($taxonomyJson);
+		$taxonomy->setOptionsJson($optionsJson);
+    $dm->flush();
 	}
 }

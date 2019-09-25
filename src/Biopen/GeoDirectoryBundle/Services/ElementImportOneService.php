@@ -69,13 +69,13 @@ class ElementImportOneService
 			$qb->field('oldId')->equals("" . $row['id']);
 			$element = $qb->getQuery()->getSingleResult();
 		}
-		else if (strlen($row['name']) > 0)
+		else if (is_string($row['name']) && strlen($row['name']) > 0)
 		{
 			$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 			$qb->field('source')->references($import);
 			$qb->field('name')->equals($row['name']);
 
-			if (strlen($row['latitude']) > 0 && strlen($row['longitude']) > 0)
+			if (is_string($row['latitude']) && strlen($row['latitude']) > 0 && is_string($row['longitude']) && strlen($row['longitude']) > 0)
 			{
 				$geo = new Coordinates($row['latitude'], $row['longitude']);
 				$qb->field('geo.latitude')->equals($geo->getLatitude());

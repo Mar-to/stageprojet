@@ -49,7 +49,7 @@ protected $baseRoutePattern = 'admin_biopen_geodirectory_option';
             ->add('icon', null, array('required' => false, 'label' => 'Icone', 'attr' => ['class' => 'gogo-icon-picker']))
             ->add('parent', 'sonata_type_model', array(
             'class'=> 'Biopen\GeoDirectoryBundle\Document\Category',
-            'required' => false,
+            'required' => true,
             'choices_as_values' => true,
             'label' => 'Groupe de Catégorie parent',
             'mapped' => true), array('admin_code' => 'admin.categories.lite_hidden'))

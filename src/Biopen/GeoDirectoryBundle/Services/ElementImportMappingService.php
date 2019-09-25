@@ -10,6 +10,7 @@ use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Biopen\GeoDirectoryBundle\Document\ModerationState;
 use Biopen\GeoDirectoryBundle\Document\Coordinates;
 use Biopen\GeoDirectoryBundle\Document\Option;
+use Biopen\GeoDirectoryBundle\Document\Category;
 use Biopen\GeoDirectoryBundle\Document\OptionValue;
 use Biopen\GeoDirectoryBundle\Document\UserInteractionContribution;
 use Biopen\GeoDirectoryBundle\Document\PostalAddress;
@@ -42,6 +43,7 @@ class ElementImportMappingService
   public function __construct(DocumentManager $documentManager)
   {
     $this->em = $documentManager;
+    $this->mappingTableIds = [];
   }
 
   public function transform($data, $import)
@@ -49,7 +51,7 @@ class ElementImportMappingService
     $this->import = $import;
     $this->createMissingOptions = $import->getCreateMissingOptions();
     $parent = $import->getParentCategoryToCreateOptions() ?: $this->em->getRepository('BiopenGeoDirectoryBundle:Category')->findOneByIsRootCategory(true);
-    $this->parentCategoryIdToCreateMissingOptions = $parent->getId();
+    $this->parentCategoryIdToCreateMissingOptions = $parent ? $parent->getId() : null;
 
     // Execute custom code (the <?php is used to have proper code highliting in text editor, we remove it before executing)
     eval(str_replace('<?php', '', $import->getCustomCode()));
@@ -346,9 +348,24 @@ class ElementImportMappingService
 
   private function createOption($name)
   {
+    if ($this->parentCategoryIdToCreateMissingOptions)
+    {
+      $parent = $this->em->getRepository('BiopenGeoDirectoryBundle:Category')->find($this->parentCategoryIdToCreateMissingOptions);
+    }
+    else
+    {
+      // create a default category
+      $mainCategory = new Category();
+      $mainCategory->setName('Catégories Principales');
+      $mainCategory->setPickingOptionText('Une catégorie principale');
+      $this->em->persist($mainCategory);
+      $this->em->flush();
+      $this->parentCategoryIdToCreateMissingOptions = $mainCategory->getId();
+      $parent = $mainCategory;
+    }
+
     $option = new Option();
     $option->setName($name);
-    $parent = $this->em->getRepository('BiopenGeoDirectoryBundle:Category')->find($this->parentCategoryIdToCreateMissingOptions);
     $option->setParent($parent);
     $option->setUseIconForMarker(false);
     $option->setUseColorForMarker(false);

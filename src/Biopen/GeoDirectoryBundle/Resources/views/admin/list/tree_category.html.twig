@@ -4,7 +4,7 @@
     Liste des catégories
 {% endblock %}
 
-{%- block actions -%}		
+{%- block actions -%}
     <li><a class="sonata-action-element" href="{{ path('admin_biopen_geodirectory_category_create') }}">
     				<i class="fa fa-plus-circle" aria-hidden="true"></i>
             Ajouter un Groupe de catégories
@@ -16,8 +16,8 @@
 {%- endblock -%}
 
 
-{% block show %}  
-  
+{% block show %}
+
   <link rel="stylesheet" href="{{ asset('assets/fonts/fontawesome-5/css/all.css') }}" />
   {{ config.iconImport|raw }}
 
@@ -25,11 +25,11 @@
         <i class="fa fa-plus-circle" aria-hidden="true"></i>
         Ajouter un Groupe de catégories
   </a>
-  <a class="btn btn-primary sonata-action-element" href="{{ path('admin_biopen_geodirectory_option_create') }}">
+  <a class="btn btn-primary sonata-action-element {{ categories|length == 0 ? 'disabled' : ''}}" href="{{ path('admin_biopen_geodirectory_option_create') }}">
           <i class="fa fa-plus-circle" aria-hidden="true"></i>
           Ajouter une Catégorie
   </a></p>
-	
+
 	<div class="well" style="margin-top: 20px; font-size: 15px; line-height: 26px;">
   	{% if categories|length %}
   		{% for category in categories %}
@@ -38,9 +38,10 @@
           {% include '@BiopenAdmin/list/tree_category_item.html.twig' with {'category': category, 'firstDepth':true} %}
         </ul>
         {% endif %}
-      {% endfor %}      
+      {% endfor %}
     {% else %}
-    	Aucune catégorie
+    	Aucune catégories. Veuillez créer un nouveau Groupe de catégorie, puis des catégories à l'intérieur de celui-ci.
+      Les catégories sont un élément essentiel dans GoGoCarto. Il se peut que votre carte ne fonctionne plus sans catégories
     {% endif %}
 	</div>
 
@@ -119,7 +120,7 @@ span.option-item
 
 .expandable:hover
 {
-	cursor: pointer;	
+	cursor: pointer;
 	color: black;
 }
 
