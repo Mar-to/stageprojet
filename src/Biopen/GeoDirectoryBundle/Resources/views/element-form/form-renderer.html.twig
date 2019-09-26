@@ -5,11 +5,11 @@
     {% set elementValue = element.data[field.name] is defined ? element.data[field.name] : element.privateData[field.name] is defined ? element.privateData[field.name] : null %}
   {% endif %}
 
-  <div class="field-container field-{{field.type}}" id="field-{{ field.name|default('unknown-name') }}" 
+  <div class="field-container field-{{field.type}}" id="field-{{ field.name|default('unknown-name') }}"
         {% if field.access is defined and not is_granted("ROLE_ADMIN") %}style="display:none"{% endif %}>
     {# STANDARD INPUT #}
     {% if field.type == "text" or field.type == "title" or field.type == "textarea" or field.type == "date" or field.type == "number" or field.type == "email" or field.type == "image"%}
-      {% include '@BiopenGeoDirectory/element-form/form-partials/text.html.twig' %}     
+      {% include '@BiopenGeoDirectory/element-form/form-partials/text.html.twig' %}
     {# SELECT #}
     {% elseif field.type == "select" %}
        {% include '@BiopenGeoDirectory/element-form/form-partials/select.html.twig' %}
@@ -30,6 +30,9 @@
     {# OPENHOURS #}
     {% elseif field.type == "openhours" %}
       {% include "@BiopenGeoDirectory/element-form/form-partials/open-hours.html.twig" %}
+    {# IMAGES #}
+    {% elseif field.type == "images" %}
+      {% include "@BiopenGeoDirectory/element-form/form-partials/images.html.twig" %}
     {# ADDRESS #}
     {% elseif field.type == "address" %}
       {% include '@BiopenGeoDirectory/element-form/form-partials/address.html.twig' %}

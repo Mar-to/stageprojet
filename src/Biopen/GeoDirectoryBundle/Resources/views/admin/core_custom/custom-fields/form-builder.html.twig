@@ -7,7 +7,7 @@
 {% include '@BiopenAdmin/core_custom/custom-fields/icon-picker.html.twig' with { 'preventInput': true } %}
 
 {% set formData = form.vars.sonata_admin.admin.subject.elementFormFieldsJson|default('[]') %}
-<script> 
+<script>
 
   if (!formBuilderInitialized) {
     formBuilderInitialized = true;
@@ -20,9 +20,9 @@
         { label: 'Adresse (obligatoire)', name: "address", attrs: { type: 'address' }, icon: '*' },
         { label: 'Horaires d\'ouvertures', name: "openhours", attrs: { type: 'openhours' }, icon: '⌚' },
         { label: 'Séparateur de section', name: "separator", attrs: { type: 'separator' }, icon: '⚊' },
-        { label: 'Case à cocher', name: "checkbox", attrs: { type: 'checkbox' }, icon: '☑' },  
-        { label: 'Email principal', name: "email", attrs: { type: 'email' }, icon: '@' }, 
-        { label: 'Image (url)', name: "image", attrs: { type: 'image' }, icon: '@' },                       
+        { label: 'Case à cocher', name: "checkbox", attrs: { type: 'checkbox' }, icon: '☑' },
+        { label: 'Email principal', name: "email", attrs: { type: 'email' }, icon: '@' },
+        { label: 'Images (upload)', name: "images", attrs: { type: 'images' }, icon: '⇫' },
       ];
       var templates = {
         title: function(fieldData) { return { field: '<input id="' + fieldData.name + '"><span class="mandatory"> Ce champ est indispensable</span>' }; },
@@ -32,14 +32,15 @@
         separator: function(fieldData) { return { field: '<hr>' }; },
         checkbox: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + (fieldData.defaultvalue == "yes" ? 'checked="checked"' : '') + ' type="checkbox"/>' }; },
         email: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + ' type="email"/><span class="mandatory"> Ce champ est conseillé</span>' }; },
+        images: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + ' type="file"/>' }; },
         image: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + ' type="text"/>' }; },
       };
 
       var iconAttr = { label: 'Icone', placeholder: 'Choisissez une icone'  }
       var errorMsgAttrs = { label: "Msg. Erreur", placeholder: "Oups ce texte est un peu long ! // Veuillez renseigner une adresse email valide // ..." }
       var typeUserAttrs = {
-        text: { 
-          icon: iconAttr, 
+        text: {
+          icon: iconAttr,
           separator: { label: '' }, // separate important attrs from others
           subtype: { label: 'Type', options: {
               'text': 'Texte',
@@ -47,43 +48,47 @@
               'email': 'Courriel',
               'url': 'Url'
             },
-          }, 
+          },
           errorMsg: errorMsgAttrs
         },
-        textarea: { 
+        textarea: {
           icon: iconAttr,
           errorMsg: errorMsgAttrs,
           separator: { label: '' }, // separate important attrs from others
         },
         select: { icon: iconAttr, errorMsg: errorMsgAttrs },
         number: { icon: iconAttr, errorMsg: errorMsgAttrs },
-        title: { 
-          maxlength: { label: "Longueur Max."}, 
-          icon: iconAttr, 
+        title: {
+          maxlength: { label: "Longueur Max."},
+          icon: iconAttr,
           errorMsg: errorMsgAttrs,
           separator: { label: '' }, // separate important attrs from others
         },
         address: { icon: iconAttr },
-        'checkbox-group': { 
+        'checkbox-group': {
           style: { label: 'Style des cases', options: {
             'normal': 'Normal',
             'filled': 'Plein',
-          }, errorMsg: errorMsgAttrs } 
+          }, errorMsg: errorMsgAttrs }
         },
         checkbox: {
-          defaultvalue: { label: 'Valeur initiale', options: {            
+          defaultvalue: { label: 'Valeur initiale', options: {
             'no': 'Non cochée',
             'yes': 'Cochée',
-          }, errorMsg: errorMsgAttrs } 
+          }, errorMsg: errorMsgAttrs }
         },
         email: {
-          icon: iconAttr, 
+          icon: iconAttr,
           errorMsg: errorMsgAttrs,
           separator: { label: '' }, // separate important attrs from others
         },
         image: {
-          icon: iconAttr, 
+          icon: iconAttr,
           errorMsg: errorMsgAttrs,
+          separator: { label: '' }, // separate important attrs from others
+        },
+        images: {
+          icon: iconAttr,
           separator: { label: '' }, // separate important attrs from others
         }
       };
@@ -93,12 +98,12 @@
         dataType: "json",
         fields: fields,
         templates: templates,
-        i18n: { 
+        i18n: {
           locale: 'fr-FR',
           location: '{{ asset("assets/js/") }}'
-        },              
+        },
         disableFields: ['hidden', 'file', 'button', 'autocomplete', 'title', 'taxonomy', 'address'],
-        controlOrder: ['text', 'email', 'image', 'textarea', 'checkbox', 'checkbox-group', 'radio-group', 'select', 'date', 'number'],
+        controlOrder: ['text', 'email', 'images', 'textarea', 'checkbox', 'checkbox-group', 'radio-group', 'select', 'date', 'number'],
         disabledAttrs: ['className', 'inline', 'toggle', 'description', 'other', 'multiple'],
         formData: {{ formData|json_encode|raw }},
         roles: { 1: "Administrateur" },
@@ -107,29 +112,29 @@
 
       $(document).ready(function() {
         setTimeout(function() { $('.form-field:not(.paragraph-field) .fld-label').each(function() { $(this).text($(this).html()) }); }, 0);
-      }); 
+      });
 
       setInterval(function() {
         // prevent adding two contat email attributes
         $('.input-control[data-type=email]').toggle($('.email-field').length == 0);
-        $('.input-control[data-type=image]').toggle($('.image-field').length == 0);
+        $('.input-control[data-type=images]').toggle($('.images-field').length == 0);
 
         // $('.name-wrap input[name=name]').val('email');
         // get all input names (used after for uniqueness)
         var allNames = [];
         $('.fld-name').each(function() {
           // Slugify
-          var newValue = $(this).val().replace(/[^a-z^A-Z^_^0-9]/g, '_').toLowerCase();  
-          $(this).val(newValue); 
-          // collect names 
-          allNames.push($(this).val()); 
+          var newValue = $(this).val().replace(/[^a-z^A-Z^_^0-9]/g, '_').toLowerCase();
+          $(this).val(newValue);
+          // collect names
+          allNames.push($(this).val());
         });
 
-        $('.fld-name:visible').each(function() {                  
+        $('.fld-name:visible').each(function() {
           // Check names are unique
           var count = 0, currValue = $(this).val();
           for(var i = 0; i < allNames.length; ++i) if (allNames[i] == currValue) count++;
-          if (count > 1) $(this).val(currValue + "_bis");                   
+          if (count > 1) $(this).val(currValue + "_bis");
         });
 
         $('#{{ form.vars.id }}').val(JSON.stringify(formBuilder.actions.getData()));
@@ -140,7 +145,7 @@
         $('a[type=edit].icon-pencil').attr('title', 'Editer/Masquer');
 
         $('.email-field input[name=name]').val('email');
-        $('.image-field input[name=name]').val('image');
+        $('.images-field input[name=name]').val('images');
 
         $('.iconpicker-popover button').click(function(e) {
           e.stopPropagation();
@@ -151,19 +156,19 @@
 
       $('input[name="access"]').change(function() {
         $(this).find('input[name="roles[]"]').prop('checked', $(this).is(':checked'));
-      });    
+      });
     });
-  }    
+  }
 
-     
+
 </script>
 
-<style>  
+<style>
   /* disable actions for particular fields */
   .taxonomy-field .field-actions .del-button, .taxonomy-field .field-actions .copy-button,
   .address-field .field-actions .del-button, .address-field .field-actions .copy-button,
   .title-field .field-actions .del-button, .title-field .field-actions .copy-button,
-  .openhours-field .field-actions .copy-button, .email-field .copy-button, .image-field .copy-button
+  .openhours-field .field-actions .copy-button, .email-field .copy-button, .images-field .copy-button, .image-field .copy-button
   { display: none !important; }
   .separator-field label, .separator-field .copy-button, .separator-field .toggle-form { display: none !important; }
 
@@ -175,9 +180,9 @@
   .title-field .name-wrap, .title-field .access-wrap, .title-field .required-wrap,
   .textarea-field .subtype-wrap, .checkbox-field .field-options, .checkbox-field .required-wrap,
   .paragraph-field .subtype-wrap, .header-field .subtype-wrap,
-  .email-field .name-wrap, .image-field .name-wrap
-  { display: none !important; }  
-  
+  .email-field .name-wrap, .image-field .name-wrap, .images-field .name-wrap, .images-field .placeholder-wrap, .images-field .value-wrap, .images-field .required-wrap
+  { display: none !important; }
+
   /* specific fields styling */
   .title-field .required-asterisk, .address-field .required-asterisk, .taxonomy-field .required-asterisk
   { display: inline !important; }
@@ -191,16 +196,16 @@
   .name-wrap { order: 1 !important; }
   .label-wrap { order: 2 !important; }
   .subtype-wrap { order: 3 !important; }
-  .separator-wrap { 
-    order: 50 !important; 
+  .separator-wrap {
+    order: 50 !important;
     margin-top: 10px;
     border-top: 1px dashed grey;
     padding-top: 10px;
   }
-  .access-wrap { order: 110 !important; }  
+  .access-wrap { order: 110 !important; }
 
   /* Styling */
-  .address-field, .taxonomy-field, .title-field, .email-field, .image-field {  background-color: whitesmoke !important; }
+  .address-field, .taxonomy-field, .title-field, .email-field {  background-color: whitesmoke !important; }
   #form-builder-container .checkbox label, #form-builder-container .radio label { padding-left: 30px !important; }
   .mandatory { color: #693232; font-style: italic; float: right; }
   #form-builder-container { padding-top: 20px; }
@@ -209,7 +214,7 @@
   .iconpicker .iconpicker-item {
     width: 36px;
     height: 36px;
-  }      
-    
+  }
+
   .iconpicker-popover.popover.right { right: -200px; left: initial !important;}
 </style>

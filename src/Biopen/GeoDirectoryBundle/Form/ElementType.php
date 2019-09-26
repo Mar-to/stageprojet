@@ -9,7 +9,7 @@
  * @license    MIT License
  * @Last Modified time: 2018-01-19 13:04:59
  */
- 
+
 
 namespace Biopen\GeoDirectoryBundle\Form;
 
@@ -35,11 +35,11 @@ use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Biopen\GeoDirectoryBundle\Form\OpenHoursType;
 use Biopen\GeoDirectoryBundle\Form\PostalAddressType;
 use Biopen\GeoDirectoryBundle\Form\CoordinatesType;
-
+use Biopen\GeoDirectoryBundle\Form\ElementImageType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
-
 
 class ElementType extends AbstractType
 {
@@ -61,9 +61,15 @@ class ElementType extends AbstractType
       ->add('fullAddress', TextType::class, array('mapped' => false))
       ->add('address', PostalAddressType::class)
       ->add('geo', CoordinatesType::class)
-      ->add('openHours', OpenHoursType::class, array('required' => false));   
+      ->add('images', CollectionType::class, array(
+                'entry_type' => ElementImageType::class,
+                'allow_add'     => true,
+                'allow_delete'  => true,
+                'label' => ''
+            ))
+      ->add('openHours', OpenHoursType::class, array('required' => false));
   }
-  
+
   /**
    * @param OptionsResolver $resolver
    */

@@ -1,7 +1,7 @@
 fos_js_routing:
     routes_to_expose: []
 
-bazinga_geocoder: 
+bazinga_geocoder:
     providers:
         google_maps:
             locale:               fr
@@ -20,7 +20,7 @@ ivory_ck_editor:
             - [ Image, Link, Unlink, Table , Blockquote, HorizontalRule, Iframe ]
             - -
             - [ Cut, Copy, Paste, PasteText, PasteFromWord, -, Undo, Redo ]
-            - [ -,Maximize, ShowBlocks, Source ]            
+            - [ -,Maximize, ShowBlocks, Source ]
             - /
             - [ Bold, Italic, Underline, Strike, -, RemoveFormat ]
             - [ -, Styles,Format,Font,FontSize, TextColor, BGColor]
@@ -47,6 +47,7 @@ vich_uploader:
             upload_destination: '%kernel.root_dir%/../web'
             directory_namer: biopen.upload_directory_namer
             namer: vich_uploader.namer_origname
+            delete_on_remove: true
         partner_image:
             upload_destination: '%kernel.root_dir%/../web'
             directory_namer: biopen.upload_directory_namer

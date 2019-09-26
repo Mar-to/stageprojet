@@ -258,12 +258,10 @@ class ElementFormController extends GoGoController
 			$em->persist($element);
 			$em->flush();
 
-			// for new elements, we need to flush again for the json representation to be complete
-			if (!$editMode)
-			{
-				$em->refresh($element);
-				$em->flush();
-			}
+			// sometimes, we need to flush again for the json representation to be complete
+			$em->refresh($element);
+			$element->setPreventJsonUpdate(false);
+			$em->flush();
 
 			$elementToUse = $editMode ? $realElement : $element;
 			$elementShowOnMapUrl = $elementToUse->getShowUrlFromController($this);

@@ -9,7 +9,7 @@
  * @license    MIT License
  * @Last Modified time: 2018-06-17 16:48:39
  */
- 
+
 namespace Biopen\GeoDirectoryBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
@@ -19,37 +19,37 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Biopen\CoreBundle\Document\EmbeddedImage;
 
 abstract class ElementStatus
-{    
+{
     const Duplicate = -6;
     const ModifiedPendingVersion = -5;
     const Deleted = -4;
     const CollaborativeRefused = -3;
-    const AdminRefused = -2;    
+    const AdminRefused = -2;
     const PendingModification = -1;
     const PendingAdd = 0;
     const AdminValidate = 1;
     const CollaborativeValidate = 2;
-    const AddedByAdmin = 3; 
-    const ModifiedByAdmin = 4; 
-    const ModifiedByOwner = 5; 
+    const AddedByAdmin = 3;
+    const ModifiedByAdmin = 4;
+    const ModifiedByOwner = 5;
     const ModifiedFromHash = 6; // in the emails we provide a link to edit the element with a hash validation
-    const DynamicImport = 7; // Element imported from an ExternalSource, they cannot be edited      
-    const DynamicImportTemp = 8; // Temporary status used while importing    
+    const DynamicImport = 7; // Element imported from an ExternalSource, they cannot be edited
+    const DynamicImportTemp = 8; // Temporary status used while importing
 }
 
 abstract class ModerationState
 {
     const GeolocError = -2;
-    const NoOptionProvided = -1;     
+    const NoOptionProvided = -1;
     const NotNeeded = 0;
     const ReportsSubmitted = 1;
-    const VotesConflicts = 2; 
+    const VotesConflicts = 2;
     const PendingForTooLong = 3;
-    const PotentialDuplicate = 4;         
+    const PotentialDuplicate = 4;
 }
 
-/** 
-* @MongoDB\EmbeddedDocument 
+/**
+* @MongoDB\EmbeddedDocument
 * @Vich\Uploadable
 */
 class ElementImage extends EmbeddedImage
@@ -71,18 +71,18 @@ class Element
 {
     /**
      * @var int
-     *  
+     *
      * @MongoDB\Id(strategy="ALNUM")
      */
     public $id;
 
-    /** 
+    /**
      * See ElementStatus
      * @MongoDB\Field(type="int") @MongoDB\Index
      */
     private $status;
 
-    /** 
+    /**
      * If element need moderation we write here the type of modification needed
      * @MongoDB\Field(type="int")
      */
@@ -129,8 +129,8 @@ class Element
      */
     public $name;
 
-    /** 
-    * @MongoDB\EmbedOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Coordinates") 
+    /**
+    * @MongoDB\EmbedOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Coordinates")
     */
     public $geo;
 
@@ -138,11 +138,11 @@ class Element
      * @var string
      *
      * Complete address
-     *    
-     * @MongoDB\EmbedOne(targetDocument="Biopen\GeoDirectoryBundle\Document\PostalAddress") 
+     *
+     * @MongoDB\EmbedOne(targetDocument="Biopen\GeoDirectoryBundle\Document\PostalAddress")
      */
     private $address;
-    
+
     /**
      * @var \stdClass
      *
@@ -158,11 +158,11 @@ class Element
      */
     private $optionsString;
 
-    /** 
-     * @var string 
+    /**
+     * @var string
      * @MongoDB\Field(type="string") @MongoDB\Index
-     */ 
-    private $email; 
+     */
+    private $email;
 
     /**
      * @var \stdClass
@@ -175,8 +175,8 @@ class Element
 
     /**
      * Images, photos, logos, linked to an element
-     * 
-     * @MongoDB\EmbedMany(targetDocument="Biopen\GeoDirectoryBundle\Document\ElementImage") 
+     *
+     * @MongoDB\EmbedMany(targetDocument="Biopen\GeoDirectoryBundle\Document\ElementImage")
      */
     private $images;   
 
@@ -187,7 +187,7 @@ class Element
      *
      * @MongoDB\Field(type="hash")
      */
-    private $data = []; 
+    private $data = [];
 
     /**
      * @var string
@@ -196,7 +196,7 @@ class Element
      *
      * @MongoDB\Field(type="hash")
      */
-    private $privateData = []; 
+    private $privateData = [];
 
     /**
      * @var string
@@ -231,11 +231,11 @@ class Element
      */
     private $potentialDuplicates;
 
-    /** 
+    /**
     * To simlifu duplicates process, we store the element which have been treated in the duplicates detection
     * Because if we check duplicates for element A, and element B and C are detected as potential duplicates, then
     * we do not detect duplicates for B and C
-    * @MongoDB\Field(type="bool", nullable=true) 
+    * @MongoDB\Field(type="bool", nullable=true)
     */
     private $isDuplicateNode = false;
 
@@ -246,44 +246,44 @@ class Element
      */
     private $nonDuplicates;
 
-    /** 
-     * @var string 
+    /**
+     * @var string
      *
      * The Compact Json representation of the Element. We save it so we don't have to serialize the element
      * each time.
      * The compact json is a small array with the basic informations of the element : id, name, coordinates, optionsValues
-     * 
-     * @MongoDB\Field(type="string") 
-     */ 
-    private $compactJson; 
+     *
+     * @MongoDB\Field(type="string")
+     */
+    private $compactJson;
 
-    /** 
-     * @var string 
-     * 
+    /**
+     * @var string
+     *
      * The complete Json representation of the Element. We save it so we don't have to serialize the element
      * each time
      *
-     * @MongoDB\Field(type="string") 
-     */ 
-    private $baseJson; 
+     * @MongoDB\Field(type="string")
+     */
+    private $baseJson;
 
-    /** 
-     * @var string 
-     * 
+    /**
+     * @var string
+     *
      * Somes special field returned only for trusted people. this privateJson is concatenated to the baseJson
      *
-     * @MongoDB\Field(type="string") 
-     */ 
-    private $privateJson; 
+     * @MongoDB\Field(type="string")
+     */
+    private $privateJson;
 
-    /** 
-     * @var string 
-     * 
+    /**
+     * @var string
+     *
      * Somes special field returned only for admins. this adminJson is concatenated to the baseJson
      *
-     * @MongoDB\Field(type="string") 
-     */ 
-    private $adminJson; 
+     * @MongoDB\Field(type="string")
+     */
+    private $adminJson;
 
     /**
      * @var date $createdAt
@@ -301,29 +301,29 @@ class Element
     private $updatedAt;
 
     /**
-    * @MongoDB\Field(type="string") 
-    */ 
+    * @MongoDB\Field(type="string")
+    */
     private $randomHash;
 
     /**
-    * @MongoDB\Field(type="string") 
-    */ 
+    * @MongoDB\Field(type="string")
+    */
     private $userOwnerEmail;
 
     /**
     * Shorcut to know if this element is managed by a dynamic source
-    * @MongoDB\Field(type="bool") 
-    */ 
+    * @MongoDB\Field(type="bool")
+    */
     private $isExternal;
 
     /**
      * When actions are made by many person (like moderation, duplicates check...) we lock the elements currently proceed by someone
-     * so noone else make action on the same element 
+     * so noone else make action on the same element
      * @MongoDB\Field(type="int")
      */
-    private $lockUntil = 0; 
+    private $lockUntil = 0;
 
-    private $preventJsonUpdate = false; 
+    private $preventJsonUpdate = false;
 
     /**
      * Constructor
@@ -337,7 +337,7 @@ class Element
 
     // automatically resolve moderation error
     public function checkForModerationStillNeeded()
-    { 
+    {
         if ($this->getModerationState() == ModerationState::NotNeeded) return;
 
         $needed = true;
@@ -352,7 +352,7 @@ class Element
                     $needed = false;
                 break;
             case ModerationState::GeolocError:
-                if ($this->getGeo()->getLatitude() != 0 && $this->getGeo()->getLongitude() != 0) 
+                if ($this->getGeo()->getLatitude() != 0 && $this->getGeo()->getLongitude() != 0)
                     $needed = false;
                 break;
         }
@@ -418,7 +418,7 @@ class Element
     public function hasValidContributionMadeBy($userEmail)
     {
         $contribs = $this->getArrayFromCollection($this->getContributions());
-        $userValidContributionsOnElement = array_filter($contribs, function($contribution) use ($userEmail) { 
+        $userValidContributionsOnElement = array_filter($contribs, function($contribution) use ($userEmail) {
             return $contribution->countAsValidContributionFrom($userEmail);
         });
         return count($userValidContributionsOnElement) > 0;
@@ -438,14 +438,14 @@ class Element
         {
             $sortedOptionsValues = is_array($this->optionValues) ? $this->optionValues : $this->optionValues->toArray();
             usort( $sortedOptionsValues , function ($a, $b) { return $a->getIndex() - $b->getIndex(); });
-        } 
+        }
         return $sortedOptionsValues;
     }
 
     public function getNonDuplicatesIds()
     {
         $result = [];
-        if ($this->nonDuplicates) 
+        if ($this->nonDuplicates)
             try {
                  $result = array_map(function($nonDuplicate) {
                     return $nonDuplicate->getId();
@@ -456,7 +456,7 @@ class Element
                 $this->nonDuplicates = [];
             }
         if ($this->getId()) $result[] = $this->getId();
-        return $result;            
+        return $result;
     }
 
     public function isPotentialDuplicate() { return $this->moderationState == ModerationState::PotentialDuplicate; }
@@ -466,20 +466,20 @@ class Element
         if (!$duplicates) $duplicates = $this->getPotentialDuplicates() ? $this->getPotentialDuplicates()->toArray() : null;
         if (!$duplicates) return [];
         $duplicates[] = $this;
-        usort($duplicates, function ($a, $b) 
-        { 
+        usort($duplicates, function ($a, $b)
+        {
             // Keep in priority the one from our DB instead of the on dynamically imported
             $aIsDynamicImported = $a->isDynamicImported();
             $bIsDynamicImported = $b->isDynamicImported();
             if ($aIsDynamicImported != $bIsDynamicImported) return $aIsDynamicImported - $bIsDynamicImported;
             // Or get the more recent
-            $diffDays = (float) date_diff($a->getUpdatedAt(), $b->getUpdatedAt())->format('%d'); 
+            $diffDays = (float) date_diff($a->getUpdatedAt(), $b->getUpdatedAt())->format('%d');
             if ($diffDays != 0) return $diffDays;
             // Or the one with more categories
             return $b->countOptionsValues() - $a->countOptionsValues();
         });
         return $duplicates;
-    }  
+    }
 
     public function isDynamicImported() { return $this->isExternal; }
 
@@ -491,7 +491,7 @@ class Element
         if ($includeAdminJson && $this->adminJson && $this->adminJson != '{}')
            $result = substr($result , 0, -1) . ',' . substr($this->adminJson,1);
         return $result;
-    }    
+    }
 
     public function isPending()
     {
@@ -526,15 +526,15 @@ class Element
     public function getCurrContribution()
     {
         $contributions = $this->getContributions();
-        if (is_array($contributions))   
+        if (is_array($contributions))
         {
             if (count($contributions) > 0) {
                 $currContrib = array_slice($contributions, -1);
                 return array_pop($currContrib);
             }
             return null;
-        } 
-        else 
+        }
+        else
             return $contributions ? $contributions->last() : null;
     }
 
@@ -571,7 +571,7 @@ class Element
     }
 
     public function reset()
-    {             
+    {
         $this->name = null;
         $this->address = null;
         $this->resetOptionsValues();
@@ -583,24 +583,23 @@ class Element
     public function setCustomData($data, $privateProps)
     {
         $privateData = [];
-        if ($data != null) 
+        if ($data != null)
         {
             if (array_key_exists('email', $data)) {
                 $this->setEmail($data['email']);
             }
-            
+
             foreach ($privateProps as $key => $prop) {
                 if (array_key_exists($prop, $data)) {
                     $privateData[$prop] = $data[$prop];
                     unset($data[$prop]);
                 }
             }
-        }            
-
-        if ($this->getData()) $data = array_merge($this->getData(), $data); // keeping also old data
+        }
+        if ($this->getData() && $data) $data = array_merge($this->getData(), $data); // keeping also old data
         $this->setData($data);
-        
-        if ($this->getPrivateData()) $privateData = array_merge($this->getPrivateData(), $privateData); // keeping also old data
+
+        if ($this->getPrivateData() && $privateData) $privateData = array_merge($this->getPrivateData(), $privateData); // keeping also old data
         $this->setPrivateData($privateData);
     }
 
@@ -626,12 +625,12 @@ class Element
      * @return $this
      */
     public function setStatus($newStatus)
-    {         
+    {
         $this->status = $newStatus;
         return $this;
     }
 
-    public function __toString() 
+    public function __toString()
     {
         return $this->getName() ? $this->getName() : "";
     }
@@ -917,7 +916,7 @@ class Element
     {
         return $this->modifiedElement;
     }
-    
+
     /**
      * Set sourceKey
      *
@@ -937,7 +936,7 @@ class Element
      */
     public function getSourceKey()
     {
-        return $this->sourceKey;    
+        return $this->sourceKey;
     }
 
     /**
@@ -947,7 +946,7 @@ class Element
      */
     public function addContribution(\Biopen\GeoDirectoryBundle\Document\UserInteractionContribution $contribution)
     {
-        $contribution->setElement($this);       
+        $contribution->setElement($this);
         $this->contributions[] = $contribution;
     }
 
@@ -1196,7 +1195,9 @@ class Element
 
     public function setImages($images)
     {
-        $this->images = $images;
+        $this->images = array_filter($images, function($el) {
+            return $el->getImageUrl() != '';
+        });
     }
 
     /**
@@ -1225,7 +1226,7 @@ class Element
         foreach ($this->images as $image) $result[] = $image->getImageUrl();
         return $result;
     }
-    
+
     /**
      * Add potentialDuplicate
      *
@@ -1402,30 +1403,30 @@ class Element
         return $this->privateData;
     }
 
-        /** 
-     * Set email 
-     * 
-     * @param string $email 
-     * @return $this 
-     */ 
-    public function setEmail($email) 
-    { 
-        $this->email = $email; 
-        return $this; 
-    } 
- 
-    /** 
-     * Get email 
-     * 
-     * @return string $email 
-     */ 
-    public function getEmail() 
-    { 
-        if ($this->email) return $this->email; 
+        /**
+     * Set email
+     *
+     * @param string $email
+     * @return $this
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return string $email
+     */
+    public function getEmail()
+    {
+        if ($this->email) return $this->email;
         if ($this->data && array_key_exists('email', $this->data)) return $this->data['email'];
         if ($this->privateData && array_key_exists('email', $this->privateData)) return $this->privateData['email'];
         return "";
-    } 
+    }
 
 
     public function setPreventJsonUpdate($preventJsonUpdate)

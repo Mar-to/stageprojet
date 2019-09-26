@@ -366,6 +366,82 @@
     @include transition(color 0.5s);
   }
   .redo-time-slot-button { line-height: 3rem; }
+
+  #images-fields-list {
+    display: flex;
+    .image-container {
+      margin: 8px 10px;
+      &:first-child { margin-left: 0; }
+      &:last-child { margin-right: 0; }
+      position: relative;
+      max-height: 150px;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: opacity .3s;
+      }
+      .icon-close {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        cursor: pointer;
+        padding: 5px;
+        &:before {
+          color: white;
+          background-color: #495057;
+          transition: background-color .1s;
+          border-radius: 50%;
+          padding: 2px 3px 3px 3px;
+        }
+        &:hover {
+          &:before { background-color: #64d29a; }
+        }
+      }
+    }
+  }
+
+  #images-fields-list, #new-images-fields-list {
+    margin: 0;
+  }
+
+  #new-images-fields-list li:first-child { margin-top: .8rem; }
+
+  .btn-add-image, .btn-pick-image {
+    font-size: .9rem;
+    height: 2rem !important;
+    line-height: 2rem !important;
+    padding: 0 1.3rem !important;
+  }
+
+  .btn-pick-image {
+    width: calc(3rem - 10px);
+    padding: 0 !important;
+  }
+
+  .file-field {
+    margin-top: 0;
+    .file-path { height: 2rem; }
+    .file-path-wrapper {
+      padding-right: 30px;
+    }
+    .icon-close {
+      position: absolute;
+      top: 10px;
+      right: 0;
+      font-size: 17px;
+    }
+  }
+
+  .input-field .prefix~button {
+    margin-left: 3rem;
+  }
+  .input-field.images {
+    line-height: 3rem;
+    margin-top: 0;
+    .prefix { line-height: 2.8rem; }
+  }
 }
 
 

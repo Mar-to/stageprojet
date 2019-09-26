@@ -8,7 +8,7 @@
  * @Last Modified time: 2018-02-20 17:36:33
  */
 jQuery(document).ready(function()
-{	
+{
   $('select').material_select();
 
   $('.to-html').each(function() { $(this).html($(this).text()); });
@@ -24,7 +24,7 @@ jQuery(document).ready(function()
       case 4: start_time = ["18", "00"];break;
     }
     if ($(this).val()) { start_time = $(this).val().split(':'); }
-    $(this).timepicki({start_time: start_time, increase_direction:"up", show_meridian:false, step_size_minutes:15,min_hour_value:0, max_hour_value:23, overflow_minutes:true}); 
+    $(this).timepicki({start_time: start_time, increase_direction:"up", show_meridian:false, step_size_minutes:15,min_hour_value:0, max_hour_value:23, overflow_minutes:true});
   });
 
 	$('.tooltipped').tooltip();
@@ -38,13 +38,34 @@ jQuery(document).ready(function()
 	// ---------------
 	// LISTENERS
 	// ---------------
-	
+
 	// OPEN HOURS
 	// 2nd time slot
 	$('.add-time-slot-button').click(function() { addTimeSlot($(this).attr('id').split("_")[0]); });
   $('.clear-time-slot-button').click(function() { clearTimeSlot($(this).attr('id').split("_")[0]); });
 	// recopy info
 	$('.redo-time-slot-button').click(function() { redoTimeSlot($(this).attr('id').split("_")[0]); });
+
+  $('.btn-add-image').click(function (e) {
+
+    var list = $('#new-images-fields-list');
+    // Try to find the counter of the list
+    var counter = list.data('widget-counter') || $('#images-fields-list').children().length;
+
+    // grab the prototype template
+    var newWidget = $('#new-image-template').html().replace(/__count__/g, counter);
+    counter++;
+    list.data('widget-counter', counter);
+
+    // create a new list element and add it to the list
+    var newElem = $('<li></li>').html(newWidget);
+    newElem.appendTo(list);
+    newElem.find('input[type=file]').trigger('click');
+  });
+
+  $('#images-fields-list .icon-close').click(function() {
+    $(this).closest('li').remove();
+  })
 });
 
 

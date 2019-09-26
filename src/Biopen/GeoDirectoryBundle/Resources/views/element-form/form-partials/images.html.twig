@@ -1,0 +1,26 @@
+{{ form_errors(form.images) }}
+<ul id="images-fields-list">
+  {% for imageField in form.images %}
+      {% set image_url = imageField.vars.value.fileUrl ? imageField.vars.value.fileUrl : imageField.vars.value.externalImageUrl %}
+      {% if image_url %}
+      <li class="image-container">
+          <img src="{{ image_url }}" />
+          <span class="icon-close material-icons gogo-icon-close"></span>
+          <input style="display:none" type="file" name="{{ imageField.vars.form.vars.full_name }}[file][file]">
+      </li>
+      {% endif %}
+  {% endfor %}
+</ul>
+<ul id="new-images-fields-list">
+  {# Dynamically added image upload button #}
+</ul>
+
+<div class="input-field images">
+  {% if field.icon is defined %}
+    <i class="material-icons {{ field.icon }} prefix"></i>
+  {% endif %}
+  <button type="button" class="btn-add-image btn btn-secondary waves-effect waves-light">
+    <span >{{ field.label|raw }}</span>
+    {#{% if field.required|default(false) %} *{% endif %}#}
+  </button>
+</div>

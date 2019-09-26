@@ -8,22 +8,40 @@ use Biopen\SaasBundle\Helper\SaasHelper;
 use Biopen\CoreBundle\Services\UploadDirectoryNamer;
 
 /**
-* Represent a common File. Need to be extended by real Document 
+* Represent a common File. Need to be extended by real Document
 * You need to implement $vichUploadFileKey and the annotation of the $file to specify the mapping key inside it (defined also in config.yml -> vich_uploader)
 */
-/** 
-* @MongoDB\EmbeddedDocument 
+/**
+* @MongoDB\EmbeddedDocument
 * @Vich\Uploadable
 */
-class AbstractFile
+class AbstractFile implements \Serializable
 {
   protected $vichUploadFileKey = "default_file";
 
+  /** @see \Serializable::serialize() */
+  public function serialize()
+  {
+      return serialize(array(
+          $this->id,
+          $this->fileUrl,
+      ));
+  }
+
+  /** @see \Serializable::unserialize() */
+  public function unserialize($serialized)
+  {
+      list (
+          $this->id,
+          $this->fileUrl,
+      ) = unserialize($serialized, array('allowed_classes' => false));
+  }
+
   /**
    * NOTE: This is not a mapped field of entity metadata, just a simple property.
-   * 
+   *
    * @Vich\UploadableField(mapping="default_file", fileNameProperty="fileName", size="fileSize")
-   * 
+   *
    * @var File
    */
   protected $file;
@@ -43,16 +61,16 @@ class AbstractFile
   /**
    * @var string
    * memory
-   * @MongoDB\Field(type="string")  
+   * @MongoDB\Field(type="string")
    */
-  public $fileUrl = "";  
+  public $fileUrl = "";
 
    /**
    * @var string
    * memory
-   * @MongoDB\Field(type="string")  
+   * @MongoDB\Field(type="string")
    */
-  public $filePath = ""; 
+  public $filePath = "";
 
   /**
    * @MongoDB\Field(type="date")
@@ -61,9 +79,9 @@ class AbstractFile
    */
   private $updatedAt;
 
-  public function toJson() 
-  { 
-    return json_encode($this->fileUrl); 
+  public function toJson()
+  {
+    return json_encode($this->fileUrl);
   }
 
   /**
@@ -85,14 +103,14 @@ class AbstractFile
       $this->filePath = $this->calculateFilePath();
 
       // It is required that at least one field changes if you are using doctrine
-      // otherwise the event listeners won't be called and the file is lost      
+      // otherwise the event listeners won't be called and the file is lost
       $this->updatedAt = new \DateTimeImmutable();
     }
   }
 
   public function calculateFileUrl()
   {
-    $hostHelper = new SaasHelper();      
+    $hostHelper = new SaasHelper();
     $fileUrl  =     $hostHelper->getPublicFolderUrl();
     $fileUrl .= '/' . $this->calculateFilePath();
     return $fileUrl;
@@ -100,7 +118,7 @@ class AbstractFile
 
   public function calculateFilePath($suffix = '', $extension = '')
   {
-    $uploadDirHelper = new UploadDirectoryNamer();    
+    $uploadDirHelper = new UploadDirectoryNamer();
     $filePath = $uploadDirHelper->getDirectoryPathFromKey($this->vichUploadFileKey) .'/' . $this->fileName;
     if ($suffix) {
       return preg_replace(

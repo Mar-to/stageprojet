@@ -7,8 +7,8 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Biopen\SaasBundle\Helper\SaasHelper;
 use Biopen\CoreBundle\Document\AbstractFile;
 
-/** 
-* @MongoDB\EmbeddedDocument 
+/**
+* @MongoDB\EmbeddedDocument
 * @Vich\Uploadable
 */
 class EmbeddedImage extends AbstractFile
@@ -18,7 +18,7 @@ class EmbeddedImage extends AbstractFile
     /**
      * @var string
      * Instead of uploading a file, we can give an external url to an image
-     * @MongoDB\Field(type="string")    
+     * @MongoDB\Field(type="string")
      */
     public $externalImageUrl = "";
 
@@ -27,10 +27,10 @@ class EmbeddedImage extends AbstractFile
       return $this->fileName ?: $this->externalImageUrl;
     }
 
-    public function toJson() 
-    { 
-        return json_encode($this->getImageUrl()); 
-    } 
+    public function toJson()
+    {
+        return json_encode($this->getImageUrl());
+    }
 
     public function isExternalFile() { return $this->fileUrl == "" && $this->externalImageUrl != ""; }
 
@@ -47,9 +47,9 @@ class EmbeddedImage extends AbstractFile
                 return $this->fileUrl;
             }
         } else {
-            return $this->externalImageUrl; 
+            return $this->externalImageUrl;
         }
-    }   
+    }
 
     /**
      * Set externalImageUrl
@@ -73,7 +73,7 @@ class EmbeddedImage extends AbstractFile
         return $this->externalImageUrl;
     }
 
-    public function __construct($imageUrl = "") 
+    public function __construct($imageUrl = "")
     {
         $this->externalImageUrl = $imageUrl;
     }
