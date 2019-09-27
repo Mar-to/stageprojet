@@ -46,20 +46,15 @@ jQuery(document).ready(function()
 	// recopy info
 	$('.redo-time-slot-button').click(function() { redoTimeSlot($(this).attr('id').split("_")[0]); });
 
+  var imagesCounter = $('#images-fields-list').children().length;
   $('.btn-add-image').click(function (e) {
-
-    var list = $('#new-images-fields-list');
-    // Try to find the counter of the list
-    var counter = list.data('widget-counter') || $('#images-fields-list').children().length;
-
     // grab the prototype template
-    var newWidget = $('#new-image-template').html().replace(/__count__/g, counter);
-    counter++;
-    list.data('widget-counter', counter);
+    var newWidget = $('#new-image-template').html().replace(/__count__/g, imagesCounter);
+    imagesCounter++;
 
     // create a new list element and add it to the list
     var newElem = $('<li></li>').html(newWidget);
-    newElem.appendTo(list);
+    newElem.appendTo($('#new-images-fields-list'));
     newElem.find('input[type=file]').trigger('click');
   });
 

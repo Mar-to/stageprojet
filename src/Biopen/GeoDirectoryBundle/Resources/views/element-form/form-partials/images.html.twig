@@ -6,7 +6,7 @@
       <li class="image-container">
           <img src="{{ image_url }}" />
           <span class="icon-close material-icons gogo-icon-close"></span>
-          <input style="display:none" type="file" name="{{ imageField.vars.form.vars.full_name }}[file][file]">
+          <input style="display:none" type="file" name="{{ imageField.vars.form.vars.full_name }}[file][file]" value="{{image_url}}">
       </li>
       {% endif %}
   {% endfor %}
@@ -23,4 +23,18 @@
     <span >{{ field.label|raw }}</span>
     {#{% if field.required|default(false) %} *{% endif %}#}
   </button>
+</div>
+
+{# Template added when user click "add image" #}
+<div style="display: none" id="new-image-template">
+  <div class="file-field input-field">
+    <div class="btn btn-pick-image btn-neutral">
+      <span class="fa fa-upload"></span>
+      <input type="file" name="biopen_elementbundle_element[images][__count__][file][file]" accept="image/*">
+    </div>
+    <div class="file-path-wrapper">
+      <input class="file-path validate" type="text">
+    </div>
+    <span class="icon-close far fa-times-circle" onclick="$(this).closest('li').remove();"></span>
+  </div>
 </div>

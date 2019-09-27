@@ -178,7 +178,7 @@ class Element
      *
      * @MongoDB\EmbedMany(targetDocument="Biopen\GeoDirectoryBundle\Document\ElementImage")
      */
-    private $images;   
+    private $images;
 
     /**
      * @var string
@@ -1196,7 +1196,7 @@ class Element
     public function setImages($images)
     {
         $this->images = array_filter($images, function($el) {
-            return $el->getImageUrl() != '';
+            return ($el->getExternalImageUrl() != '' || $el->getFile() != null);
         });
     }
 

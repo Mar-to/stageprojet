@@ -167,6 +167,7 @@ class ElementFormController extends GoGoController
 			if ($checkDuplicateOk)
 			{
 				$element = $session->get('elementWaitingForDuplicateCheck');
+				$element->resetImages(); // see comment in AbstractFile:59
 
 				// filling the form with the previous element created in case we want to recopy its informations (only for admins)
 				$elementForm = $this->get('form.factory')->create(ElementType::class, $element);
@@ -256,11 +257,6 @@ class ElementFormController extends GoGoController
 			}
 
 			$em->persist($element);
-			$em->flush();
-
-			// sometimes, we need to flush again for the json representation to be complete
-			$em->refresh($element);
-			$element->setPreventJsonUpdate(false);
 			$em->flush();
 
 			$elementToUse = $editMode ? $realElement : $element;

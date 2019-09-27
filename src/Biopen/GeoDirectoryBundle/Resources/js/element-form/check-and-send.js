@@ -1,23 +1,23 @@
-function checkAndSend(submitOption) 
-{	
+function checkAndSend(submitOption)
+{
 	checkCategories();
 	if (!$('#section_admin').is(':visible')) checkAgreeConditions();
-	checkOpenHours();	
+	checkOpenHours();
 	checkRequiredFields();
 	checkCaptcha();
 
 	// Dealing with error class
 	$('.invalid, .invalid-required').each(function ()
-	{ 		
+	{
 		$(this).closest('.input-field').addClass('error');
 	});
 
 	$('.valid, .validate:not(.invalid)').each(function ()
-	{ 		
+	{
 		$(this).closest('.input-field').removeClass('error');
 	});
 
-	$('.input-field.error input, .input-field.error textarea').focusout(function() 
+	$('.input-field.error input, .input-field.error textarea').focusout(function()
 	{
 		if ($(this).hasClass('valid') || ($(this).hasClass('validate') && !$(this).hasClass('invalid')))
 		{
@@ -34,16 +34,19 @@ function checkAndSend(submitOption)
 
 	var errorCount = $('.error:visible:not(.flash-message), .invalid:visible').length;
 
-	if (errorCount === 0) 
+	if (errorCount === 0)
 	{
 		encodeOptionValuesIntoHiddenInput();
 		checkCustomFormatedAddressBeforeSend(); // defined in geocode-address.js
 		// add submit option for handling multiple submit buttons
 		$('input#submit-option').val(submitOption);
+		$('input[type=file]').each(function() {
+			if (!$(this).val() && !$(this).attr('value')) $(this).remove();
+		})
 		$('form').submit();
 	}
 	else  $('html,body').animate({scrollTop: $('.error:visible, .invalid:visible').first().offset().top - 80}, 'slow');
-	
+
 }
 
 function checkCaptcha()
@@ -64,13 +67,13 @@ function checkCaptcha()
 	else
 	{
 		$('#captcha-error-message').removeClass('error').hide();
-	}	
+	}
 }
 
 
 function checkCategories()
-{	
-	$('.category-field.mandatory:visible').each(function() 
+{
+	$('.category-field.mandatory:visible').each(function()
 	{
 		if ($(this).children('.option-field:visible').length === 0)
 		{
@@ -105,17 +108,17 @@ function checkOpenHours()
 			$(this).parents(".open-hours-container").removeClass('open-day');
 			$(this).removeClass('invalid');
 
-			if(!value_2) 
+			if(!value_2)
 			{
 				$('#'+id_2e_plage).addClass('invalid');
 			}
 			else
 			{
 				$('#'+id_2e_plage).removeClass('invalid');
-				$(this).parents(".open-hours-container").addClass('open-day');				
+				$(this).parents(".open-hours-container").addClass('open-day');
 			}
 		}
-		else if (value_2) $(this).addClass('invalid');		
+		else if (value_2) $(this).addClass('invalid');
 	});
 }
 
@@ -129,17 +132,17 @@ function checkAddressGeolocalisation()
 function checkRequiredFields()
 {
 	$('.required').each(function ()
-	{ 
+	{
 		if ($(this).hasClass('required-only-add') && editMode) return;
 
 		var valuePresent = false;
 		if ($(this).hasClass('checkbox-radio-group')) valuePresent = ($(this).find('input:checked').length > 0);
 		else if ($(this).hasClass('select-input')) valuePresent = ($(this).find('option:selected:not(:disabled)').length > 0);
 		else valuePresent = $(this).val();
-		
-		if(!valuePresent) 
+
+		if(!valuePresent)
 		{
-			$(this).addClass('invalid invalid-required');	
+			$(this).addClass('invalid invalid-required');
 		}
 		else
 		{

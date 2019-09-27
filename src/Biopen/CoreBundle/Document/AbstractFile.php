@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Biopen\SaasBundle\Helper\SaasHelper;
 use Biopen\CoreBundle\Services\UploadDirectoryNamer;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
 * Represent a common File. Need to be extended by real Document
@@ -23,8 +24,8 @@ class AbstractFile implements \Serializable
   public function serialize()
   {
       return serialize(array(
-          $this->id,
-          $this->fileUrl,
+          // $this->getFile()->getPath(),
+          // $this->getFile()->getFileName(),
       ));
   }
 
@@ -32,9 +33,13 @@ class AbstractFile implements \Serializable
   public function unserialize($serialized)
   {
       list (
-          $this->id,
-          $this->fileUrl,
-      ) = unserialize($serialized, array('allowed_classes' => false));
+          // $path,
+          // $fileName
+      ) = unserialize($serialized);
+      // TODO : on element creation, when potential duplicate is detected, the element is stored in the session (serialized)
+      // until the user say "no this is a new element". So we would need to serialize the files as well, but it's not working for the moment
+      // In the meantimes, the images are reseted in this case.
+      // $this->file = new UploadedFile($path, $fileName);
   }
 
   /**
