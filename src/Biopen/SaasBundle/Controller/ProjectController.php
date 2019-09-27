@@ -85,7 +85,7 @@ class ProjectController extends AbstractSaasController
             // Clone the root configuration into the new project
             // Due to conflicts between ODM, we get the Configuration froma Json API, and convert it to an object
             $baseUrl = $this->getParameter('base_url');
-            if ($baseUrl == 'saas.localhost') $baseUrl = "127.0.0.1"; # Fixs for docker in localhost
+            if ($baseUrl == 'saas.localhost') $baseUrl = "gogocarto.fr"; # Fixs for docker in localhost
             $configUrl = 'http://' . $baseUrl . $this->generateUrl('biopen_api_configuration');
             $rootConfigToCopy = json_decode(file_get_contents($configUrl));
             $rootConfigToCopy->appName = $project->getName();
