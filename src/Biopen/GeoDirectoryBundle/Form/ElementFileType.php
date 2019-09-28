@@ -5,9 +5,9 @@ namespace Biopen\GeoDirectoryBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Vich\UploaderBundle\Form\Type\VichImageType;
+use Vich\UploaderBundle\Form\Type\VichFileType;
 
-class ElementImageType extends AbstractType
+class ElementFileType extends AbstractType
 {
   /**
    * @param FormBuilderInterface $builder
@@ -16,7 +16,7 @@ class ElementImageType extends AbstractType
   public function buildForm(FormBuilderInterface $builder, array $options)
   {
     $builder
-      ->add('file', VichImageType::class, [
+      ->add('file', VichFileType::class, [
             'required' => false, 'label' => false
         ]);
   }
@@ -27,7 +27,7 @@ class ElementImageType extends AbstractType
   public function configureOptions(OptionsResolver $resolver)
   {
     $resolver->setDefaults(array(
-        'data_class' => 'Biopen\GeoDirectoryBundle\Document\ElementImage'
+        'data_class' => 'Biopen\GeoDirectoryBundle\Document\ElementFile'
     ));
   }
 
@@ -36,6 +36,6 @@ class ElementImageType extends AbstractType
   */
   public function getName()
   {
-    return 'biopen_geodirectorybundle_element_image';
+    return 'biopen_geodirectorybundle_element_file';
   }
 }

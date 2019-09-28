@@ -23,6 +23,7 @@
         { label: 'Case à cocher', name: "checkbox", attrs: { type: 'checkbox' }, icon: '☑' },
         { label: 'Email principal', name: "email", attrs: { type: 'email' }, icon: '@' },
         { label: 'Images (upload)', name: "images", attrs: { type: 'images' }, icon: '⇫' },
+        { label: 'Fichiers (upload)', name: "files", attrs: { type: 'files' }, icon: '⇫' },
       ];
       var templates = {
         title: function(fieldData) { return { field: '<input id="' + fieldData.name + '"><span class="mandatory"> Ce champ est indispensable</span>' }; },
@@ -32,7 +33,8 @@
         separator: function(fieldData) { return { field: '<hr>' }; },
         checkbox: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + (fieldData.defaultvalue == "yes" ? 'checked="checked"' : '') + ' type="checkbox"/>' }; },
         email: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + ' type="email"/><span class="mandatory"> Ce champ est conseillé</span>' }; },
-        images: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + ' type="file"/>' }; },
+        images: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + ' type="file" accept="images/*"/>' }; },
+        files: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + ' type="file" accept="'+fieldData.accept+'"/>' }; },
         image: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + ' type="text"/>' }; },
       };
 
@@ -90,6 +92,11 @@
         images: {
           icon: iconAttr,
           separator: { label: '' }, // separate important attrs from others
+        },
+        files: {
+          icon: iconAttr,
+          accept: { label: "Fichier acceptés", placeholder: ".pdf, audio/*, .mp3 (séparés par des virgules)"},
+          separator: { label: '' }, // separate important attrs from others
         }
       };
 
@@ -102,8 +109,8 @@
           locale: 'fr-FR',
           location: '{{ asset("assets/js/") }}'
         },
-        disableFields: ['hidden', 'file', 'button', 'autocomplete', 'title', 'taxonomy', 'address'],
-        controlOrder: ['text', 'email', 'images', 'textarea', 'checkbox', 'checkbox-group', 'radio-group', 'select', 'date', 'number'],
+        disableFields: ['hidden', 'file', 'button', 'autocomplete', 'title', 'taxonomy', 'address', 'image'],
+        controlOrder: ['text', 'email', 'images', 'textarea', 'checkbox', 'checkbox-group', 'radio-group', 'select', 'date', 'number', 'files'],
         disabledAttrs: ['className', 'inline', 'toggle', 'description', 'other', 'multiple'],
         formData: {{ formData|json_encode|raw }},
         roles: { 1: "Administrateur" },
@@ -115,9 +122,10 @@
       });
 
       setInterval(function() {
-        // prevent adding two contat email attributes
+        // prevent adding two of those fields
         $('.input-control[data-type=email]').toggle($('.email-field').length == 0);
         $('.input-control[data-type=images]').toggle($('.images-field').length == 0);
+        $('.input-control[data-type=files]').toggle($('.files-field').length == 0);
 
         // $('.name-wrap input[name=name]').val('email');
         // get all input names (used after for uniqueness)
@@ -146,6 +154,7 @@
 
         $('.email-field input[name=name]').val('email');
         $('.images-field input[name=name]').val('images');
+        $('.files-field input[name=name]').val('files');
 
         $('.iconpicker-popover button').click(function(e) {
           e.stopPropagation();
@@ -168,7 +177,7 @@
   .taxonomy-field .field-actions .del-button, .taxonomy-field .field-actions .copy-button,
   .address-field .field-actions .del-button, .address-field .field-actions .copy-button,
   .title-field .field-actions .del-button, .title-field .field-actions .copy-button,
-  .openhours-field .field-actions .copy-button, .email-field .copy-button, .images-field .copy-button, .image-field .copy-button
+  .openhours-field .field-actions .copy-button, .email-field .copy-button, .images-field .copy-button, .image-field .copy-button, .files-field .copy-button
   { display: none !important; }
   .separator-field label, .separator-field .copy-button, .separator-field .toggle-form { display: none !important; }
 
@@ -180,7 +189,7 @@
   .title-field .name-wrap, .title-field .access-wrap, .title-field .required-wrap,
   .textarea-field .subtype-wrap, .checkbox-field .field-options, .checkbox-field .required-wrap,
   .paragraph-field .subtype-wrap, .header-field .subtype-wrap,
-  .email-field .name-wrap, .image-field .name-wrap, .images-field .name-wrap, .images-field .placeholder-wrap, .images-field .value-wrap, .images-field .required-wrap
+  .email-field .name-wrap, .image-field .name-wrap, .images-field .name-wrap, .images-field .placeholder-wrap, .images-field .value-wrap, .images-field .required-wrap, .files-field .name-wrap, .files-field .placeholder-wrap, .files-field .value-wrap, .files-field .required-wrap
   { display: none !important; }
 
   /* specific fields styling */

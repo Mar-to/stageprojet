@@ -63,7 +63,6 @@ class ElementFormController extends GoGoController
 		}
 
 		$addOrEditComplete = false;
-
 		$securityContext = $this->container->get('security.context');
 		$userRoles = [];
 		$session = $this->getRequest()->getSession();
@@ -168,6 +167,7 @@ class ElementFormController extends GoGoController
 			{
 				$element = $session->get('elementWaitingForDuplicateCheck');
 				$element->resetImages(); // see comment in AbstractFile:59
+				$element->resetFiles();
 
 				// filling the form with the previous element created in case we want to recopy its informations (only for admins)
 				$elementForm = $this->get('form.factory')->create(ElementType::class, $element);
@@ -315,7 +315,8 @@ class ElementFormController extends GoGoController
 						"isAllowedDirectModeration" => $isAllowedDirectModeration,
 						"isAnonymousWithEmail" => $session->has('userEmail'),
 						"config" => $configService->getConfig(),
-						"uploadMaxFilesize" => $this->detectMaxUploadFileSize()
+						"imagesMaxFilesize" => $this->detectMaxUploadFileSize('images'),
+						"filesMaxFilesize" => $this->detectMaxUploadFileSize('files')
 					));
 	}
 
@@ -374,7 +375,7 @@ class ElementFormController extends GoGoController
 	*
 	* @return int	Max file size in bytes
 	*/
-	private function detectMaxUploadFileSize()
+	private function detectMaxUploadFileSize($key = null)
 	{
 		/**
 		* Converts shorthands like "2M" or "512K" to bytes
@@ -396,6 +397,11 @@ class ElementFormController extends GoGoController
 		$max_post = $normalize(ini_get('post_max_size'));
 		$memory_limit = $normalize(ini_get('memory_limit'));
 		$maxFileSize = min($max_upload, $max_post, $memory_limit);
+
+		if ($key) {
+			$appMaxsize = $this->container->getParameter($key."_max_filesize");
+			$maxFileSize = min($maxFileSize, $normalize($appMaxsize));
+		}
 		return $maxFileSize;
 	}
 }

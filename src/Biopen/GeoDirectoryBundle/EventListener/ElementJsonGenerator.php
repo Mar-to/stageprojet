@@ -107,6 +107,7 @@ class ElementJsonGenerator
     // SPECIFIC DATA
     $baseJson .= $this->encodeArrayObjectToJson("stamps", $element->getStamps());
     $baseJson .= $this->encodeArrayObjectToJson("images", $element->getImages());
+    $baseJson .= $this->encodeArrayObjectToJson("files", $element->getFiles());
     $baseJson = rtrim($baseJson, ',');
 
     // MODIFIED ELEMENT (for pending modification)

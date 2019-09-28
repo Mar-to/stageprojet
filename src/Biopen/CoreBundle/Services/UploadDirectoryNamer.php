@@ -19,14 +19,15 @@ class UploadDirectoryNamer implements DirectoryNamerInterface
    private $PATHS = [
       "image" => "/images",
       "element_image" => "/images/elements",
+      "element_file" => "/files/elements",
       "partner_image" => "/images/partners",
       "config_image" => "/images/config",
       "import_file" => "/imports",
       "default_file" => '/default'
-   ];   
+   ];
 
    public function directoryName($object, PropertyMapping $mapping)
-   {     
+   {
       $name = $this->getDirectoryPathFromKey($object->getVichUploadFileKey());
       return $name;
    }

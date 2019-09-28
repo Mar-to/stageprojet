@@ -31,8 +31,8 @@
     {% elseif field.type == "openhours" %}
       {% include "@BiopenGeoDirectory/element-form/form-partials/open-hours.html.twig" %}
     {# IMAGES #}
-    {% elseif field.type == "images" %}
-      {% include "@BiopenGeoDirectory/element-form/form-partials/images.html.twig" %}
+    {% elseif field.type == "images" or field.type == "files" %}
+      {% include "@BiopenGeoDirectory/element-form/form-partials/files-images.html.twig" %}
     {# ADDRESS #}
     {% elseif field.type == "address" %}
       {% include '@BiopenGeoDirectory/element-form/form-partials/address.html.twig' %}

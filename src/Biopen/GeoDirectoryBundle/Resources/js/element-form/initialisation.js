@@ -46,28 +46,31 @@ jQuery(document).ready(function()
 	// recopy info
 	$('.redo-time-slot-button').click(function() { redoTimeSlot($(this).attr('id').split("_")[0]); });
 
-  var imagesCounter = $('#images-fields-list').children().length;
-  $('.btn-add-image').click(function (e) {
+  $('.btn-add-file').click(function (e) {
+    var type = $(this).data('type');
+    var maxsize = $(this).data('maxsize');
     // grab the prototype template
-    var newWidget = $('#new-image-template').html().replace(/__count__/g, imagesCounter);
-    imagesCounter++;
+    var counter = parseInt($(this).data('count'));
+    var newWidget = $('.new-file-template.' + type).html().replace(/__count__/g, counter);
+    console.log("add file", type, counter);
+    $(this).data('count', counter + 1);
 
     // create a new list element and add it to the list
     var newElem = $('<li></li>').html(newWidget);
-    newElem.appendTo($('#new-images-fields-list'));
+    newElem.appendTo($('.new-file-fields-list.' + type));
     var uploadField = newElem.find('input[type=file]');
     uploadField.trigger('click');
 
     uploadField.change(function() {
       newElem.find('.file-too-big').hide();
-      if(this.files[0].size > uploadMaxFilesize){
+      if(this.files[0].size > maxsize){
          newElem.find('.file-too-big').show();
          this.value = "";
       };
     });
   });
 
-  $('#images-fields-list .icon-close').click(function() {
+  $('.file-fields-list .icon-close').click(function() {
     $(this).closest('li').remove();
   })
 });

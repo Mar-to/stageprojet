@@ -48,6 +48,11 @@ vich_uploader:
             directory_namer: biopen.upload_directory_namer
             namer: vich_uploader.namer_origname
             delete_on_remove: true
+        element_file:
+            upload_destination: '%kernel.root_dir%/../web'
+            directory_namer: biopen.upload_directory_namer
+            namer: vich_uploader.namer_origname
+            delete_on_remove: true
         partner_image:
             upload_destination: '%kernel.root_dir%/../web'
             directory_namer: biopen.upload_directory_namer

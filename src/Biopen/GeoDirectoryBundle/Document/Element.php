@@ -17,6 +17,7 @@ use JMS\Serializer\Annotation\Expose;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Biopen\CoreBundle\Document\EmbeddedImage;
+use Biopen\CoreBundle\Document\AbstractFile;
 
 abstract class ElementStatus
 {
@@ -55,6 +56,15 @@ abstract class ModerationState
 class ElementImage extends EmbeddedImage
 {
     protected $vichUploadFileKey = "element_image";
+}
+
+/**
+* @MongoDB\EmbeddedDocument
+* @Vich\Uploadable
+*/
+class ElementFile extends AbstractFile
+{
+    protected $vichUploadFileKey = "element_file";
 }
 
 /**
@@ -179,6 +189,13 @@ class Element
      * @MongoDB\EmbedMany(targetDocument="Biopen\GeoDirectoryBundle\Document\ElementImage")
      */
     private $images;
+
+    /**
+     * Files linked to an element
+     *
+     * @MongoDB\EmbedMany(targetDocument="Biopen\GeoDirectoryBundle\Document\ElementFile")
+     */
+    private $files;
 
     /**
      * @var string
@@ -383,6 +400,11 @@ class Element
     public function resetImages()
     {
         $this->images = [];
+    }
+
+    public function resetFiles()
+    {
+        $this->files = [];
     }
 
     public function resetContributions()
@@ -608,6 +630,7 @@ class Element
         if (property_exists($this,$key)) {
             $method = 'get' . ucfirst($key);
             if ($key == 'images') $method = 'getImagesUrls';
+            if ($key == 'files') $method = 'getFilesUrls';
             return $this->$method();
         }
         else return $this->getCustomProperty($key);
@@ -1457,5 +1480,49 @@ class Element
     public function getIsExternal()
     {
         return $this->isExternal;
+    }
+
+    /**
+     * Add file
+     *
+     * @param Biopen\GeoDirectoryBundle\Document\ElementFile $file
+     */
+    public function addFile($file)
+    {
+        $this->files[] = $file;
+    }
+
+    public function setFiles($files)
+    {
+        $this->files = array_filter($files, function($el) {
+            return $el->getFile() != null;
+        });
+    }
+
+    /**
+     * Remove file
+     *
+     * @param Biopen\GeoDirectoryBundle\Document\ElementFile $file
+     */
+    public function removeFile($file)
+    {
+        $this->files->removeElement($file);
+    }
+
+    /**
+     * Get files
+     *
+     * @return \Doctrine\Common\Collections\Collection $files
+     */
+    public function getFiles()
+    {
+        return $this->files;
+    }
+
+    public function getFilesUrls()
+    {
+        $result = [];
+        foreach ($this->files as $file) $result[] = $file->getFileUrl();
+        return $result;
     }
 }

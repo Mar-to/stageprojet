@@ -18,7 +18,7 @@ class ImageResizer
             $destImage = preg_replace('/(\.jpe?g|\.png)$/i', '-'.$w.'x'.$h.'.png', $srcImage);
             $image = InterventionImage::make($srcImage)->fit($w, $h)->save($destImage);
         }
-        if ($document instanceof ElementImage)
+        else if ($document instanceof ElementImage)
         {
             if (!$document->getFile()) return;
             $srcImage = $document->calculateFilePath();

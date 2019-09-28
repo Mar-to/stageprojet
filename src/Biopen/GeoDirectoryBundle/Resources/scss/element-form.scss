@@ -367,7 +367,7 @@
   }
   .redo-time-slot-button { line-height: 3rem; }
 
-  #images-fields-list {
+  .file-fields-list.images {
     display: flex;
     .image-container {
       margin: 8px 10px;
@@ -384,8 +384,8 @@
       }
       .icon-close {
         position: absolute;
-        top: -10px;
-        right: -10px;
+        top: -12px;
+        right: -14px;
         cursor: pointer;
         padding: 5px;
         &:before {
@@ -402,20 +402,20 @@
     }
   }
 
-  #images-fields-list, #new-images-fields-list {
+  .file-fields-list, .new-file-fields-list {
     margin: 0;
   }
 
-  #new-images-fields-list li:first-child { margin-top: .8rem; }
+  .new-file-fields-list.images li:first-child { margin-top: .8rem; }
 
-  .btn-add-image, .btn-pick-image {
+  .btn-add-file, .btn-pick-file {
     font-size: .9rem;
     height: 2rem !important;
     line-height: 2rem !important;
     padding: 0 1.3rem !important;
   }
 
-  .btn-pick-image {
+  .btn-pick-file {
     width: calc(3rem - 10px);
     padding: 0 !important;
   }
@@ -437,13 +437,24 @@
   .input-field .prefix~button {
     margin-left: 3rem;
   }
-  .input-field.images {
+  .input-field.file-field {
+    line-height: 2.2rem;
+    .file-path-wrapper {
+      height: 2.5rem;
+      a { color: inherit !important; }
+    }
+  }
+  .input-field.images, .input-field.files {
     line-height: 3rem;
     margin-top: 0;
     .prefix { line-height: 2.8rem; }
   }
 
-  .error {
+  .field-images, .field-files {
+    margin-bottom: 15px;
+  }
+
+  .error, .form-error {
     color: $error-color;
   }
 }

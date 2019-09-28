@@ -33,7 +33,7 @@ class AbstractFile implements \Serializable
   public function unserialize($serialized)
   {
       list (
-          // $path,
+          $path,
           // $fileName
       ) = unserialize($serialized);
       // TODO : on element creation, when potential duplicate is detected, the element is stored in the session (serialized)
