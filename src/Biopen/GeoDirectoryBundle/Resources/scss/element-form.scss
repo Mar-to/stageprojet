@@ -442,6 +442,10 @@
     margin-top: 0;
     .prefix { line-height: 2.8rem; }
   }
+
+  .error {
+    color: $error-color;
+  }
 }
 
 

@@ -315,15 +315,16 @@ class ElementFormController extends GoGoController
 						"isAllowedDirectModeration" => $isAllowedDirectModeration,
 						"isAnonymousWithEmail" => $session->has('userEmail'),
 						"config" => $configService->getConfig(),
+						"uploadMaxFilesize" => $this->detectMaxUploadFileSize()
 					));
 	}
 
 	// If user check "do not validate" on pending element, it means we just want to
-   // modify some few things, but staying on the same state. So that's not a "Real" modification
-   private function isRealModification($element, $request)
-   {
-      return !$element->isPending() || !$request->request->get('dont-validate');
-   }
+  // modify some few things, but staying on the same state. So that's not a "Real" modification
+  private function isRealModification($element, $request)
+  {
+    return !$element->isPending() || !$request->request->get('dont-validate');
+  }
 
 	// when submitting new element, check it's not yet existing
 	public function checkDuplicatesAction(Request $request)
@@ -353,14 +354,48 @@ class ElementFormController extends GoGoController
 	}
 
 	protected function authenticateUser($user)
-   {
-      try {
-         $this->container->get('fos_user.security.login_manager')->loginUser(
+  {
+    try {
+      $this->container->get('fos_user.security.login_manager')->loginUser(
             $this->container->getParameter('fos_user.firewall_name'),
             $user, null);
-      } catch (AccountStatusException $ex) {
-         // We simply do not authenticate users which do not pass the user
-         // checker (not enabled, expired, etc.).
-      }
-   }
+    } catch (AccountStatusException $ex) {
+        // We simply do not authenticate users which do not pass the user
+        // checker (not enabled, expired, etc.).
+    }
+  }
+
+  /**
+	* Detects max size of file cab be uploaded to server
+	*
+	* Based on php.ini parameters "upload_max_filesize", "post_max_size" &
+	* "memory_limit". Valid for single file upload form. May be used
+	* as MAX_FILE_SIZE hidden input or to inform user about max allowed file size.
+	*
+	* @return int	Max file size in bytes
+	*/
+	private function detectMaxUploadFileSize()
+	{
+		/**
+		* Converts shorthands like "2M" or "512K" to bytes
+		*
+		* @param $size
+		* @return mixed
+		*/
+		$normalize = function($size) {
+			if (preg_match('/^([\d\.]+)([KMG])$/i', $size, $match)) {
+				$pos = array_search($match[2], array("K", "M", "G"));
+				if ($pos !== false) {
+					$size = $match[1] * pow(1024, $pos + 1);
+				}
+			}
+			return $size;
+		};
+
+		$max_upload = $normalize(ini_get('upload_max_filesize'));
+		$max_post = $normalize(ini_get('post_max_size'));
+		$memory_limit = $normalize(ini_get('memory_limit'));
+		$maxFileSize = min($max_upload, $max_post, $memory_limit);
+		return $maxFileSize;
+	}
 }

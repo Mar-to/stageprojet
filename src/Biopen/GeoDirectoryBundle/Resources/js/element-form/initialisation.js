@@ -55,7 +55,16 @@ jQuery(document).ready(function()
     // create a new list element and add it to the list
     var newElem = $('<li></li>').html(newWidget);
     newElem.appendTo($('#new-images-fields-list'));
-    newElem.find('input[type=file]').trigger('click');
+    var uploadField = newElem.find('input[type=file]');
+    uploadField.trigger('click');
+
+    uploadField.change(function() {
+      newElem.find('.file-too-big').hide();
+      if(this.files[0].size > uploadMaxFilesize){
+         newElem.find('.file-too-big').show();
+         this.value = "";
+      };
+    });
   });
 
   $('#images-fields-list .icon-close').click(function() {

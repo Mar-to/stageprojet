@@ -1,4 +1,4 @@
-{{ form_errors(form.images) }}
+<div class="error">{{ form_errors(form.images) }}</div>
 <ul id="images-fields-list">
   {% for imageField in form.images %}
       {% set image_url = imageField.vars.value.fileUrl ? imageField.vars.value.fileUrl : imageField.vars.value.externalImageUrl %}
@@ -36,5 +36,8 @@
       <input class="file-path validate" type="text">
     </div>
     <span class="icon-close far fa-times-circle" onclick="$(this).closest('li').remove();"></span>
+    <div class="error file-too-big" style="display:none">
+      Ce fichier est trop lourd, la taille maximum autorisée est {{ uploadMaxFilesize / 1024 / 1024 }} Mb
+    </div>
   </div>
 </div>
