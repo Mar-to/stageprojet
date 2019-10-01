@@ -19,7 +19,9 @@
   'address': 'text',
   'openhours': 'openhours',
   'separator': 'separator',
-  'header': 'header'
+  'header': 'header',
+  'files': 'files',
+  'images': ''
 }
 %}
 {% set formFields = [] %}
@@ -29,32 +31,34 @@
     <th>Type</th>
     <th>Label dans le formulaire</th>
     <th>Exemple de filtre à utiliser</th>
-  </tr>  
+  </tr>
 
-  {% for field in fields %}    
-    {% set gogoFilter = filterFromType[field.type] %}
-    {% if field.type == 'text' %}{% set gogoFilter = field.subtype %}{% endif %}
-    {% set gogoFilter = gogoFilter ? ('|gogo_' ~ gogoFilter) : '' %}
+  {% for field in fields %}
+    {% if field.type != 'images' %}
+      {% set gogoFilter = filterFromType[field.type] %}
+      {% if field.type == 'text' %}{% set gogoFilter = field.subtype %}{% endif %}
+      {% set gogoFilter = gogoFilter ? ('|gogo_' ~ gogoFilter) : '' %}
 
-    {% set fieldName = field.name is defined ? field.name : '' %}
-    {% if field.type == 'address' %}{% set fieldName = "address" %}{% endif %}
-    {% if field.type == 'openhours' %}{% set fieldName = "formatedOpenHours" %}{% endif %}
-    {% set formFields = formFields|merge([fieldName]) %}
+      {% set fieldName = field.name is defined ? field.name : '' %}
+      {% if field.type == 'address' %}{% set fieldName = "address" %}{% endif %}
+      {% if field.type == 'openhours' %}{% set fieldName = "formatedOpenHours" %}{% endif %}
+      {% set formFields = formFields|merge([fieldName]) %}
 
-    {% if field.type == "header" %}
-      {% set fieldTag = '## ' ~ field.label %}
-    {% elseif field.type == "separator" %}
-      {% set fieldTag = '________________________________' %}
-    {% else %}
-      {% set fieldTag = '{{ ' ~ fieldName ~ gogoFilter ~ ' }}' %}
-    {% endif %}    
-    
-    <tr {% if field.type in ["separator", "header"] %}style="display:none"{% endif %}>
-      <td>{{ fieldName }}</td>
-      <td>{{ field.type|capitalize }}</td>
-      <td>{{ field.label }}</td>        
-      <td class="value">{{ fieldTag }}</td>
-    </tr>
+      {% if field.type == "header" %}
+        {% set fieldTag = '## ' ~ field.label %}
+      {% elseif field.type == "separator" %}
+        {% set fieldTag = '________________________________' %}
+      {% else %}
+        {% set fieldTag = '{{ ' ~ fieldName ~ gogoFilter ~ ' }}' %}
+      {% endif %}
+
+      <tr {% if field.type in ["separator", "header"] %}style="display:none"{% endif %}>
+        <td>{{ fieldName }}</td>
+        <td>{{ field.type|capitalize }}</td>
+        <td>{{ field.label }}</td>
+        <td class="value">{{ fieldTag }}</td>
+      </tr>
+    {% endif %}
   {% endfor %}
 </table>
 
@@ -72,8 +76,8 @@
     <th>Nom du champ</th>
     <th>Description</th>
     <th>Utilisation</th>
-  </tr>  
-   
+  </tr>
+
   <tr>
     <td>status</td>
     <td><ul>
@@ -123,9 +127,9 @@
     <tr>
       <th>Nom du champ</th>
       <th>Utilisation</th>
-    </tr>  
+    </tr>
 
-    {% for field in otherFields %}    
+    {% for field in otherFields %}
       <tr>
         <td>{{ field }}</td>
         <td>{{ '{{ ' ~ field ~ ' }}'}}</td>
