@@ -54,7 +54,7 @@
       <span class="fa fa-upload"></span>
       {% set accept = field.type == 'images' ? 'image/*' : field.accept %}
       <input type="file" name="biopen_elementbundle_element[{{field.name}}][__count__][file][file]"
-             {% if accept %}accept="{{ accept }}"{% endif %}>
+             {% if accept %}accept="{{ accept|replace({" ": ','}) }}"{% endif %}>
     </div>
     <div class="file-path-wrapper">
       <input class="file-path validate" type="text">
