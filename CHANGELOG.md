@@ -1,6 +1,9 @@
 v2.5
 ======
+* FEATURE: Ability to import files and images in the public form
 * BUG: private properties in API was not working properly
+* BUG: users were able to vote to their own contribution
+* IMPROVEMENTS: in element import. Better match, prevent using dot in mapping field...
 
 v2.4
 ======
