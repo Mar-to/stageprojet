@@ -1,3 +1,7 @@
+v2.5
+======
+* BUG: private properties in API was not working properly
+
 v2.4
 ======
 

@@ -56,6 +56,7 @@ class ElementJsonGenerator
     if (!$element->getGeo()) { return; }
     $config = $this->getConfig($dm);
     $options = $this->getOptions($dm);
+    $privateProps = $config->getApi()->getPublicApiPrivateProperties();
 
     // -------------------- FULL JSON ----------------
 
@@ -106,8 +107,10 @@ class ElementJsonGenerator
 
     // SPECIFIC DATA
     $baseJson .= $this->encodeArrayObjectToJson("stamps", $element->getStamps());
-    $baseJson .= $this->encodeArrayObjectToJson("images", $element->getImages());
-    $baseJson .= $this->encodeArrayObjectToJson("files", $element->getFiles());
+    $imagesJson = $this->encodeArrayObjectToJson("images", $element->getImages());
+    $filesJson  = $this->encodeArrayObjectToJson("files", $element->getFiles());
+    if (!in_array('images', $privateProps)) $baseJson .= $imagesJson;
+    if (!in_array('files', $privateProps))  $baseJson .= $filesJson;
     $baseJson = rtrim($baseJson, ',');
 
     // MODIFIED ELEMENT (for pending modification)
@@ -128,6 +131,8 @@ class ElementJsonGenerator
     foreach ($element->getPrivateData() as $key => $value) {
         $privateJson .= '"'. $key .'": ' . json_encode($value) . ',';
     }
+    if (in_array('images', $privateProps)) $privateJson .= $imagesJson;
+    if (in_array('files', $privateProps))  $privateJson .= $filesJson;
     $privateJson = rtrim($privateJson, ',');
     $privateJson .= '}';
     $element->setPrivateJson($privateJson);
