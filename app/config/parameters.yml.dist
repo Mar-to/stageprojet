@@ -37,4 +37,5 @@ parameters:
 
     # UPLOAD
     images_max_filesize: '8M' # for public images upload
+    image_resize_width: 1000 # in pixel
     files_max_filesize: '1M' # for other public file upload

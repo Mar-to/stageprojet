@@ -7,7 +7,7 @@ services:
       class: Application\Sonata\UserBundle\Security\AuthenticationHandler
       public: false
       arguments: [ '@router', '@session', '@security.context']
-        
+
   biopen.config_service:
     class: Biopen\CoreBundle\Services\ConfigurationService
     arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.context" ]
@@ -23,9 +23,11 @@ services:
   biopen.upload_directory_namer:
     class: Biopen\CoreBundle\Services\UploadDirectoryNamer
     arguments: []
-  
+
   biopen.image_resizer:
     class: Biopen\CoreBundle\EventListener\ImageResizer
+    arguments:
+        - '%image_resize_width%'
     tags:
         - { name: doctrine_mongodb.odm.event_listener, event: postPersist }
 

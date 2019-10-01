@@ -8,6 +8,11 @@ use Intervention\Image\ImageManagerStatic as InterventionImage;
 /* While image is uploaded, generate thumbnails and other thing */
 class ImageResizer
 {
+    public function __construct($image_resize_width)
+    {
+        $this->image_resize_width = $image_resize_width;
+    }
+
     public function postPersist(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $args)
     {
         $document = $args->getDocument();
@@ -23,7 +28,7 @@ class ImageResizer
             if (!$document->getFile()) return;
             $srcImage = $document->calculateFilePath();
             $image = InterventionImage::make($srcImage);
-            if ($image->width() > 700) $image->widen(700)->save($srcImage);
+            if ($image->width() > $this->image_resize_width) $image->widen($this->image_resize_width)->save($srcImage);
             return;
         }
     }
