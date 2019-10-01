@@ -156,4 +156,9 @@
     $('textarea[data-id="body-template"]').text(template).change();
     $('input[type=checkbox].use-markdown').prop('checked', true)
   }
+  $(document).ready(function() {
+    $('.control-label__text').each(function() {
+      $(this).text($(this).text().replace('Autoriser', "Masquer l'email aux"))
+    })
+  })
 </script>
