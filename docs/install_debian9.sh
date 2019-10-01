@@ -82,7 +82,7 @@ then
   CERT_PATH=/etc/letsencrypt/live/${WEB_URL};
 else
   CERT_PATH=${WEB_DIR};
-  cd ${WEB_DIR}; 
+  cd ${WEB_DIR};
   openssl req -x509 -out fullchain.pem -keyout privkey.pem \
   -newkey rsa:2048 -nodes -sha256 \
   -subj '/CN=localhost' -extensions EXT -config <( \
@@ -231,6 +231,12 @@ server {
 
     # Media: images, icons, video, audio, HTC
     location ~* \.(?:jpg|jpeg|gif|png|ico|cur|gz|svg|mp4|ogg|ogv|webm|htc)$ {
+    access_log off;
+    add_header Cache-Control \"max-age=2592000\";
+    }
+
+    # Uploads
+    location /uploads/ {
     access_log off;
     add_header Cache-Control \"max-age=2592000\";
     }
