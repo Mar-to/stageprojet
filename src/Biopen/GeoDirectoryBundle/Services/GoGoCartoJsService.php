@@ -31,7 +31,7 @@ class GoGoCartoJsService
     $user = $this->securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED') ? $this->securityContext->getToken()->getUser() : null;
 
     $roles = $user ? $user->getRoles() : [];
-    $userGogocartoRole = in_array('ROLE_ADMIN', $roles) ? 'admin' : (in_array('ROLE_USER', $roles) ? 'user' : 'anonymous');
+    $userGogocartoRole = $user && $user->isAdmin() ? 'admin' : (in_array('ROLE_USER', $roles) ? 'user' : 'anonymous');
     $userGogocartoRole = [$userGogocartoRole];
     $userEmail = $user ? $user->getEmail() : $this->session->get('userEmail');
 
@@ -51,7 +51,7 @@ class GoGoCartoJsService
       "security" =>
       [
           "userRoles" => $userGogocartoRole,
-          "userEmail" => $userEmail ,
+          "userEmail" => $userEmail,
           "loginAction" => '$("#popup-login").openModal();'
       ],
       "language" => "fr",
