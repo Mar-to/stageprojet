@@ -17,6 +17,7 @@
 		],
 		"website": "https:\/\/www.asso-entropie.fr\/",
 		"images": ["https:\/\/www.capoupascap.info\/wp-content\/uploads\/2018\/12\/entropie.png"],
+		"files": ["https:\/\/toto.fr\/wp-content\/file.pdf", "https:\/\/aabjka.fr\/wp-content\/file.pdf"],
 		"openHours": {
 			"Tu": "09:30-19:30",
 			"We": "09:30-19:30",

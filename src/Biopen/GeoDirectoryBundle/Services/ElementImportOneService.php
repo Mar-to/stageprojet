@@ -13,6 +13,7 @@ use Biopen\GeoDirectoryBundle\Document\OptionValue;
 use Biopen\GeoDirectoryBundle\Document\UserInteractionContribution;
 use Biopen\GeoDirectoryBundle\Document\PostalAddress;
 use Biopen\GeoDirectoryBundle\Document\ElementImage;
+use Biopen\GeoDirectoryBundle\Document\ElementFile;
 
 class ElementImportOneService
 {
@@ -22,7 +23,7 @@ class ElementImportOneService
 
 	protected $optionIdsToAddToEachElement = [];
 
-	protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source', 'openHours'];
+	protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'files', 'owner', 'source', 'openHours'];
 	protected $privateDataProps;
 
 	/**
@@ -149,6 +150,7 @@ class ElementImportOneService
 		if ($import->getPreventImportIfNoCategories() && $element->getModerationState() == ModerationState::NoOptionProvided) return "no_category";
 
 		$this->createImages($element, $row);
+		$this->createFiles($element, $row);
 		$this->createOpenHours($element, $row);
 		$this->saveCustomFields($element, $row);
 
@@ -213,6 +215,27 @@ class ElementImportOneService
 				$elementImage = new ElementImage();
 				$elementImage->setExternalImageUrl($imageUrl);
 				$element->addImage($elementImage);
+			}
+		}
+	}
+
+	private function createFiles($element, $row)
+	{
+		$element->resetFiles();
+		$files = $row['files'];
+		if (is_string($files) && strlen($files) > 0) $files = explode(',', files);
+		if (!is_array($files) || count($files) == 0) return;
+
+		foreach($files as $url)
+		{
+			if (is_string($url) && strlen($url) > 5)
+			{
+				$elementFile = new ElementFile();
+				$elementFile->setFileUrl($url);
+				$name = explode('/',$url);
+				$name = end($name);
+				$elementFile->setFileName($name);
+				$element->addFile($elementFile);
 			}
 		}
 	}

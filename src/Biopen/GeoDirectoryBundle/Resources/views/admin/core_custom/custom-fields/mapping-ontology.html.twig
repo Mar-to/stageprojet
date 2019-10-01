@@ -54,7 +54,7 @@
 
     var formProperties = {{ form.vars.attr["data-form-props"]|raw }};
     var dataProperties = {{ form.vars.attr["data-props"]|raw }};
-    var coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source', 'email', 'openhours', 'streetNumber', 'fullAddress'];
+    var coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'files', 'owner', 'source', 'email', 'openhours', 'streetNumber', 'fullAddress'];
     var coreData = [], allProperties = [], otherData = []; var importedData = [];
     coreData.push({id: 'id', text: 'Identifiant unique'});
     coreData.push({id: 'name', text: 'Titre de la fiche'});
@@ -68,6 +68,7 @@
     coreData.push({id: 'latitude', text: 'Latitude'});
     coreData.push({id: 'longitude', text: 'Longitude'});
     coreData.push({id: 'images', text: "Image(s) sous forme d'url, en tableau, ou séparés par des virgules"});
+    coreData.push({id: 'files', text: "Fichier(s) sous forme d'url, en tableau, ou séparés par des virgules"});
     coreData.push({id: 'email', text: "Email de l'élement"});
     coreData.push({id: 'owner', text: "Email de l'utilisateur propriétaire de la fiche"});
     coreData.push({id: 'source', text: "Origine de l'élément (source)"});
@@ -78,8 +79,10 @@
     var formData = [];
     for(var i = 0; i < formProperties.length; i++) {
       var prop = formProperties[i];
-      allProperties.push(prop);
-      formData.push({id: prop, text: prop});
+       if (allProperties.indexOf(prop) == -1 && prop != '/') {
+        allProperties.push(prop);
+        formData.push({id: prop, text: prop});
+      }
     }
     for(var i = 0; i < dataProperties.length; i++) {
       var prop = dataProperties[i];

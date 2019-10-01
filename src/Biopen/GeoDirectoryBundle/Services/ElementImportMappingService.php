@@ -27,7 +27,7 @@ class ElementImportMappingService
   protected $ontologyMapping;
   protected $allNewFields;
   protected $existingProps;
-  protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'owner', 'source', 'openHours', 'email'];
+  protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'files', 'owner', 'source', 'openHours', 'email'];
   protected $mappedCoreFields = [
     'title' => 'name', 'nom' => 'name',
     'mail' => 'email',
