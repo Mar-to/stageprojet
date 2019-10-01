@@ -16,20 +16,20 @@ class DuplicatesActionsController extends BulkActionsAbstractController
    protected $duplicateService;
    protected $elementActionService;
 
-   public function detectDuplicatesAction(Request $request) 
-   { 
-      $this->title = "Détection des doublons"; 
+   public function detectDuplicatesAction(Request $request)
+   {
+      $this->title = "Détection des doublons";
       $this->automaticRedirection = false;
-      $this->batchSize = 2000; 
+      $this->batchSize = 2000;
       $this->duplicateService = $this->get("biopen.element_duplicates_service");
       $this->elementActionService = $this->get("biopen.element_action_service");
-      return $this->elementsBulkAction('detectDuplicates', $request); 
+      return $this->elementsBulkAction('detectDuplicates', $request);
    }
 
    public function detectDuplicates($element, $em)
    {
-      if ($element->getStatus() >= ElementStatus::PendingModification 
-          && !array_key_exists($element->getId(), $this->duplicatesFound) 
+      if ($element->getStatus() >= ElementStatus::PendingModification
+          && !array_key_exists($element->getId(), $this->duplicatesFound)
           && !$element->isPotentialDuplicate())
       {
          $distance = 0.4;
@@ -55,14 +55,14 @@ class DuplicatesActionsController extends BulkActionsAbstractController
 
             foreach($otherDuplicates as $key => $duplicate) {
                if ($duplicate != $element) $element->addPotentialDuplicate($duplicate);
-               $duplicate->setModerationState(ModerationState::PotentialDuplicate); 
-               $this->duplicatesFound[$duplicate->getId()] = true;              
-            } 
-            $element->setIsDuplicateNode(true);          
+               $duplicate->setModerationState(ModerationState::PotentialDuplicate);
+               $this->duplicatesFound[$duplicate->getId()] = true;
+            }
+            $element->setIsDuplicateNode(true);
          }
 
          return $this->render('@BiopenAdmin/pages/bulks/bulk_duplicates.html.twig', array(
-               'duplicates' => $duplicates, 
+               'duplicates' => $duplicates,
                'automaticMerge' => count($perfectMatches) > 0,
                'needHumanMerge' => count($otherDuplicates) > 0,
                'mergedId' => $element->getId(),
@@ -74,18 +74,18 @@ class DuplicatesActionsController extends BulkActionsAbstractController
    {
       $sortedDuplicates = $element->getSortedDuplicates($duplicates);
 
-      foreach($sortedDuplicates as $duplicate) $this->duplicatesFound[$duplicate->getId()] = true; 
+      foreach($sortedDuplicates as $duplicate) $this->duplicatesFound[$duplicate->getId()] = true;
 
-      $merged = array_shift($sortedDuplicates); 
+      $merged = array_shift($sortedDuplicates);
       $mergedData = $merged->getData();
       $mergedPrivateData = $merged->getPrivateData();
       $mergedOptionIds = $merged->getOptionIds();
 
       foreach($sortedDuplicates as $duplicate) {
          // Auto merge option values
-         foreach ($duplicate->getOptionValues() as $dupOptionValue) 
+         foreach ($duplicate->getOptionValues() as $dupOptionValue)
          {
-            if (!in_array($dupOptionValue->getOptionId(), $mergedOptionIds)) 
+            if (!in_array($dupOptionValue->getOptionId(), $mergedOptionIds))
             {
                $mergedOptionIds[] = $dupOptionValue->getOptionId();
                $merged->addOptionValue($dupOptionValue);
@@ -94,18 +94,19 @@ class DuplicatesActionsController extends BulkActionsAbstractController
          // Auto merge custom attributes
          foreach($duplicate->getData() as $key => $value)
          {
-            if ($value && (!array_key_exists($key, $mergedData) || !$mergedData[$key] 
+            if ($value && (!array_key_exists($key, $mergedData) || !$mergedData[$key]
                            || ($key == 'description' && strlen($value) > strlen($mergedData[$key]))))
                $mergedData[$key] = $value;
          }
          foreach($duplicate->getPrivateData() as $key => $value)
          {
-            if ($value && (!array_key_exists($key, $mergedPrivateData) || !$mergedPrivateData[$key] 
+            if ($value && (!array_key_exists($key, $mergedPrivateData) || !$mergedPrivateData[$key]
                            || ($key == 'description' && strlen($value) > strlen($mergedPrivateData[$key]))))
                $mergedPrivateData[$key] = $value;
          }
          // Auto merge special attributes
-         if ($duplicate->getImages()->count() > $merged->getImages()->count()) $merged->setImages($duplicate->getImages());
+         $merged->setImages(array_merge($merged->getImages()->toArray(), $duplicate->getImages()->toArray()));
+         $merged->setFiles(array_merge($merged->getFiles()->toArray(), $duplicate->getFiles()->toArray()));
          if (!$merged->getOpenHours() && $duplicate->getOpenHours()) $merged->setOpenHours($duplicate->getOpenHours());
          if (!$merged->getUserOwnerEmail() && $duplicate->getUserOwnerEmail()) $merged->setUserOwnerEmail($duplicate->getUserOwnerEmail());
          if (!$merged->getAddress()->isComplete()) {
@@ -118,15 +119,15 @@ class DuplicatesActionsController extends BulkActionsAbstractController
             $merged->setAddress($address);
          }
          // setting this moderation so when deleted it becomes "deleted duplicate" instead of just "deleted"
-         $duplicate->setModerationState(ModerationState::PotentialDuplicate); 
+         $duplicate->setModerationState(ModerationState::PotentialDuplicate);
          $this->elementActionService->delete($duplicate, false);
       }
-      $merged->setModerationState(ModerationState::NotNeeded); 
+      $merged->setModerationState(ModerationState::NotNeeded);
       $merged->setData($mergedData);
       $merged->setPrivateData($mergedPrivateData);
 
       return $merged;
-   }   
+   }
 
    private function slugify($text)
    {
@@ -142,11 +143,11 @@ class DuplicatesActionsController extends BulkActionsAbstractController
       $text = str_replace('î', 'i', $text);
       $text = preg_replace('~[^\pL\d]+~u', '-', $text);
 
-      $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text); // transliterate   
-      $text = preg_replace('~[^-\w]+~', '', $text); // remove unwanted characters   
-      $text = trim($text, '-'); // trim   
-      $text = rtrim($text, 's'); // remove final "s" for plural   
-      $text = preg_replace('~-+~', '-', $text); // remove duplicate -      
+      $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text); // transliterate
+      $text = preg_replace('~[^-\w]+~', '', $text); // remove unwanted characters
+      $text = trim($text, '-'); // trim
+      $text = rtrim($text, 's'); // remove final "s" for plural
+      $text = preg_replace('~-+~', '-', $text); // remove duplicate -
 
       if (empty($text)) return '';
       return $text;

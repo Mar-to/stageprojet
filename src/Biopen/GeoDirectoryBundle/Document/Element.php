@@ -1219,7 +1219,7 @@ class Element
     public function setImages($images)
     {
         $this->images = array_filter($images, function($el) {
-            return ($el->getExternalImageUrl() != '' || $el->getFile() != null);
+            return ($el->getExternalImageUrl() != '' || $el->getFileUrl() != '');
         });
     }
 
@@ -1495,7 +1495,7 @@ class Element
     public function setFiles($files)
     {
         $this->files = array_filter($files, function($el) {
-            return $el->getFile() != null;
+            return $el->getFileUrl() != '';
         });
     }
 

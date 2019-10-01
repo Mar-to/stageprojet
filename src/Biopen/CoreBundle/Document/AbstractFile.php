@@ -24,7 +24,8 @@ class AbstractFile implements \Serializable
   public function serialize()
   {
       return serialize(array(
-          $this->getFile()->getPath(),
+          "fake"
+          // $this->getFile()->getPath(),
           // $this->getFile()->getFileName(),
       ));
   }
