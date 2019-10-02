@@ -70,7 +70,7 @@ jQuery(document).ready(function()
     });
   });
 
-  $('.file-fields-list .icon-close').click(function() {
+  $('.file-fields-list .btn-close').click(function() {
     $(this).closest('li').remove();
   })
 });

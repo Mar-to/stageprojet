@@ -9,7 +9,7 @@
       {% if image_url %}
       <li class="image-container">
           <img src="{{ image_url }}" />
-          <span class="icon-close material-icons gogo-icon-close"></span>
+          <span class="btn-close material-icons gogo-icon-close"></span>
           <input style="display:none" type="file" name="{{ formField.vars.form.vars.full_name }}[file][file]" value="{{image_url}}">
       </li>
       {% endif %}
@@ -23,7 +23,7 @@
         <div class="file-path-wrapper">
           <a href="{{formField.vars.value.fileUrl}}" target="_blank">{{ formField.vars.value.fileName }}</a>
         </div>
-        <span class="icon-close far fa-times-circle" onclick="$(this).closest('.input-field').remove();"></span>
+        <span class="btn-close far fa-times-circle" onclick="$(this).closest('.input-field').remove();"></span>
       </div>
     {% endif %}
   {% endfor %}
@@ -59,7 +59,7 @@
     <div class="file-path-wrapper">
       <input class="file-path validate" type="text">
     </div>
-    <span class="icon-close far fa-times-circle" onclick="$(this).closest('li').remove();"></span>
+    <span class="btn-close far fa-times-circle" onclick="$(this).closest('li').remove();"></span>
     <div class="error file-too-big" style="display:none">
       Ce fichier est trop lourd, la taille maximum autorisée est {{ (maxFilesize / 1024 / 1024) | round(2) }} Mb
     </div>
