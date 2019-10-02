@@ -66,7 +66,7 @@ class ElementImportMappingService
     foreach ($data as $key => $row) {
       if (is_array($row)) {
         // GOGOCARTO ONTOLGY
-        if (array_key_exists('geo', $row))
+        if (isset($row['geo']) && isset($row['geo']['latitude']) && isset($row['geo']['longitude']))
         {
           $data[$key]['latitude']  = $row['geo']['latitude'];
           $data[$key]['longitude'] = $row['geo']['longitude'];
