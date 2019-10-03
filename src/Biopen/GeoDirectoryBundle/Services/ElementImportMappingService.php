@@ -197,10 +197,8 @@ class ElementImportMappingService
       $taxonomyMapping[$key] = array_filter($value, function($el) use ($allOptionsIds) {
         return in_array($el, $allOptionsIds);
       });
-      if (count($taxonomyMapping[$key]) == 0) unset($taxonomyMapping[$key]);
     }
     $import->setTaxonomyMapping($taxonomyMapping);
-
     $allNewCategories = [];
     $this->createOptionsMappingTable();
     foreach($data as $row)
@@ -222,7 +220,7 @@ class ElementImportMappingService
             if ($value == '' && $this->createMissingOptions) $value = $this->createOption($category);
 
             $taxonomyMapping[$category] = [$value];
-            $import->setNewTaxonomyToMap(true);
+            if (!$value) $import->setNewTaxonomyToMap(true);
           }
           // create options for previously imported non mapped options
           if (array_key_exists($category, $taxonomyMapping)

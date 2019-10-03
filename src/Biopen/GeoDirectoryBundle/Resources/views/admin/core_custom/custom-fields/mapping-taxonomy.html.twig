@@ -64,11 +64,6 @@
         multiple: true
     });
 
-    // on init, if the category selector is empty that mean that the old mapped category does not exist anymore
-    $(".category-selector").each(function() {
-      if (!$(this).val()) $(this).siblings('input').val('/');
-    });
-
     $('.clear-icon').click(function() {
       $(this).parent().parent().find('.category-selector:not(.select2-container)').val("").trigger('change');
     });
