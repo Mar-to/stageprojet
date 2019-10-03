@@ -1,3 +1,7 @@
+v2.5.1
+======
+* BUG: In Element Import Taxonomy Mapping, all mapping was deleted on save
+
 v2.5
 ======
 * FEATURE: Ability to import files and images in the public form
