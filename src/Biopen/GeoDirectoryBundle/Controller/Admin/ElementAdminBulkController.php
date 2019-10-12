@@ -176,8 +176,9 @@ class ElementAdminBulkController extends Controller
     {
         $em = $this->get('doctrine_mongodb')->getManager();
 
-        // Add contributions - Get elements visible, no need to add a contirbution if element where already soft deleted for example
-        $elementIds = array_keys($selectedModelQuery->select('id')->field('status')->gte(-1)->hydrate(false)->getQuery()->execute()->toArray());
+        // Add contribution for webhook - Get elements visible, no need to add a contirbution if element where already soft deleted for example
+        $selectedModels = clone $selectedModelQuery;
+        $elementIds = array_keys($selectedModels->select('id')->field('status')->gte(-1)->hydrate(false)->getQuery()->execute()->toArray());
         if (count($elementIds)) {
             $interactionService = $this->container->get('biopen.user_interaction_service');
             $contribution = $interactionService->createContribution(null, InteractType::Deleted, ElementStatus::Deleted);
@@ -186,7 +187,8 @@ class ElementAdminBulkController extends Controller
         }
 
         // Add element id to ignore to sources
-        $elementsIdsGroupedBySource = $selectedModelQuery
+        $selectedModels = clone $selectedModelQuery;
+        $elementsIdsGroupedBySource = $selectedModels
             ->map('function() { if (this.source) emit(this.source.$id, this._id); }')
             ->reduce('function(k, vals) {
                 return vals.join(",");
