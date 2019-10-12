@@ -223,7 +223,7 @@ class ElementImportOneService
 	{
 		$element->resetFiles();
 		$files = $row['files'];
-		if (is_string($files) && strlen($files) > 0) $files = explode(',', files);
+		if (is_string($files) && strlen($files) > 0) $files = explode(',', $files);
 		if (!is_array($files) || count($files) == 0) return;
 
 		foreach($files as $url)

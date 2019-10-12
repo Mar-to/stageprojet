@@ -1218,6 +1218,7 @@ class Element
 
     public function setImages($images)
     {
+        if (!is_array($images)) $images = $images->toArray();
         $this->images = array_filter($images, function($el) {
             return ($el->getExternalImageUrl() != '' || $el->getFileUrl() != '');
         });
@@ -1241,6 +1242,12 @@ class Element
     public function getImages()
     {
         return $this->images;
+    }
+
+    public function getImagesArray()
+    {
+        if (!$this->images) return [];
+        return is_array($this->images) ? $this->images : $this->images->toArray();
     }
 
     public function getImagesUrls()
@@ -1494,6 +1501,7 @@ class Element
 
     public function setFiles($files)
     {
+        if (!is_array($files)) $files = $files->toArray();
         $this->files = array_filter($files, function($el) {
             return $el->getFileUrl() != '';
         });
@@ -1517,6 +1525,12 @@ class Element
     public function getFiles()
     {
         return $this->files;
+    }
+
+    public function getFilesArray()
+    {
+        if (!$this->files) return [];
+        return is_array($this->files) ? $this->files : $this->files->toArray();
     }
 
     public function getFilesUrls()

@@ -8,9 +8,15 @@ use Intervention\Image\ImageManagerStatic as InterventionImage;
 /* While image is uploaded, generate thumbnails and other thing */
 class ImageResizer
 {
+    protected $image_resize_width;
+
     public function __construct($image_resize_width)
     {
-        $this->image_resize_width = $image_resize_width;
+        if (isset($image_resize_width)) // strange bug in localhost this variable is not defined
+            $this->image_resize_width = $image_resize_width;
+        else
+            $this->image_resize_width = 700;
+
     }
 
     public function postPersist(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $args)

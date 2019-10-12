@@ -105,8 +105,8 @@ class DuplicatesActionsController extends BulkActionsAbstractController
                $mergedPrivateData[$key] = $value;
          }
          // Auto merge special attributes
-         $merged->setImages(array_merge($merged->getImages()->toArray(), $duplicate->getImages()->toArray()));
-         $merged->setFiles(array_merge($merged->getFiles()->toArray(), $duplicate->getFiles()->toArray()));
+         $merged->setImages(array_merge($merged->getImagesArray(), $duplicate->getImagesArray()));
+         $merged->setFiles(array_merge($merged->getFilesArray(), $duplicate->getFilesArray()));
          if (!$merged->getOpenHours() && $duplicate->getOpenHours()) $merged->setOpenHours($duplicate->getOpenHours());
          if (!$merged->getUserOwnerEmail() && $duplicate->getUserOwnerEmail()) $merged->setUserOwnerEmail($duplicate->getUserOwnerEmail());
          if (!$merged->getAddress()->isComplete()) {

@@ -29,6 +29,7 @@ class ChartBlockService extends AbstractBlockService
 	protected $configService;
 
 	protected $statusChoices = [
+		'-6'=>'Doublon',
 		'-4'=>'Supprimé',
 		'-3'=>'Refusé (votes) ',
 		'-2'=>'Refusé (admin)',
@@ -42,6 +43,7 @@ class ChartBlockService extends AbstractBlockService
 	];
 
 	protected $statusColors = [
+		'-6'=> '#434348',
 		'-4'=> '#434348',
 		'-3'=> '#f7a35c',
 		'-2'=> '#dd4b39',
@@ -56,9 +58,9 @@ class ChartBlockService extends AbstractBlockService
 
 	public function __construct($templating, DocumentManager $documentManager, $configService)
 	{
-		 $this->em = $documentManager;
-       $this->templating = $templating;
-       $this->configService = $configService;
+		$this->em = $documentManager;
+    $this->templating = $templating;
+    $this->configService = $configService;
 	}
 
 	public function getName()
