@@ -7,7 +7,7 @@
     {% endif %}
 
     {% if object.newTaxonomyToMap %}
-      <span class="label label-info log-label">Nouvelles caatégories à mapper</span>
+      <span class="label label-info log-label">Nouvelles catégories à mapper</span>
     {% endif %}
 
     {% set deletedCount = field_description.options.choices[object.id] is defined ? field_description.options.choices[object.id] : 0 %}
