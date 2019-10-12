@@ -10,5 +10,6 @@ php bin/console db:migrate
 sh cache_clear.sh
 sleep 5
 chmod 777 -R var/
-sleep 1
+sleep 10
 chmod 777 -R var/
+chmod 777 -R /var/www/gogocarto/var/
