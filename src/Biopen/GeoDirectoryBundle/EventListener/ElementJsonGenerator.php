@@ -125,7 +125,9 @@ class ElementJsonGenerator
     // -------------------- PRIVATE JSON -------------------------
     $privateJson = '{';
     // status
-    $privateJson .= '"status": ' . strval($element->getStatus()) . ',';
+    $status = strval($element->getStatus());
+    if (!$status || $status == "" || strlen($status) == 0) $status = "0";
+    $privateJson .= '"status": ' . $status . ',';
     $privateJson .= '"moderationState": ' . $element->getModerationState() . ',';
     // CUSTOM PRIVATE DATA
     foreach ($element->getPrivateData() as $key => $value) {
@@ -171,7 +173,9 @@ class ElementJsonGenerator
         $compactJson = rtrim($compactJson, ',');
     }
     $compactJson .= ']';
-    if ($element->getStatus() <= 0 || $element->getModerationState() != 0) $compactJson .= ','. strval($element->getStatus());
+    if ($element->getStatus() <= 0 || $element->getModerationState() != 0) {
+      $compactJson .= ','. $status;
+    }
     if ($element->getModerationState() != 0) $compactJson .= ','. $element->getModerationState();
     $compactJson .= ']';
     $element->setCompactJson($compactJson);
