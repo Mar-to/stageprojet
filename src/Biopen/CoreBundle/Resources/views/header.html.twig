@@ -186,7 +186,7 @@ function handleLogin(bool, rolesObject, mail)
   $('#listUserActions li.only-for-admin').hide();
   $('#listUserActions li.only-for-user').hide();
 
-  if ($.inArray('ROLE_SONATA_ADMIN', roles) > -1) $('#listUserActions li.only-for-admin').show();
+  if ($.inArray('ROLE_SONATA_ADMIN', roles) > -1 || $.inArray('ROLE_SUPER_ADMIN', roles) > -1) $('#listUserActions li.only-for-admin').show();
   if ($.inArray('ROLE_USER', roles) > -1) $('#listUserActions li.only-for-user').show();
 
   // carto is the GoGoCartoJs instance, defined in GeoDirectory/directoy.html.twig
