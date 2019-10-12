@@ -188,8 +188,15 @@ class ElementRepository extends DocumentRepository
   private function queryText($qb, $text)
   {
     $config = $this->getDocumentManager()->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
-    $text = $text . ' --' . str_replace(',', ' --', $config->getSearchExcludingWords());
-    return $qb->text($text)->language('fr');
+    if ($config->getSearchExcludingWords())
+      $text = $text . ' --' . str_replace(',', ' --', $config->getSearchExcludingWords());
+    // remove words smaller than two letters
+    $filtered_words = array_filter(explode(' ', $text), function($el) {
+      return strlen($el) > 2;
+    });
+    $text = implode($filtered_words, ' ');
+    // return $qb->field('name')->equals(new \MongoRegex("/$text/i"));
+    return $qb->text($text); //->language('fr');
   }
 
   private function filterVisibles($qb, $status = ElementStatus::PendingModification)
