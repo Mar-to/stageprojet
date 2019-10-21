@@ -29,7 +29,7 @@ class ElementImportMappingService
   protected $existingProps;
   protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'files', 'owner', 'source', 'openHours', 'email'];
   protected $mappedCoreFields = [
-    'title' => 'name', 'nom' => 'name',
+    'title' => 'name', 'nom' => 'name', 'titre' => 'name',
     'mail' => 'email',
     'taxonomy' => 'categories',
     'address' => 'streetAddress',
@@ -139,7 +139,7 @@ class ElementImportMappingService
     $props = array_merge($this->coreFields, $props);
     $this->existingProps = [];
     foreach ($props as $prop) {
-      $this->existingProps[str_replace('_', '', strtolower($prop))] = $prop;
+      $this->existingProps[preg_replace('~(^bf_|_)~', '', strtolower($prop))] = $prop;
     }
 
     foreach($data as $row)
@@ -166,7 +166,7 @@ class ElementImportMappingService
 
     if (!in_array($keyName, $this->allNewFields)) $this->allNewFields[] = $keyName;
     if (!array_key_exists($keyName, $this->ontologyMapping)) {
-      $keyLower = str_replace('_', '', strtolower($key));
+      $keyLower = preg_replace('~(^bf_|_)~', '', strtolower($keyName));
       $value = array_key_exists($keyLower, $this->existingProps) ? $this->existingProps[$keyLower] : "";
       // use alternative name, like lat instead of latitude
       if (!$value && array_key_exists($keyLower, $this->mappedCoreFields))
@@ -174,7 +174,7 @@ class ElementImportMappingService
       // Asign mapping
       if (!$value || !in_array($value, array_values($this->ontologyMapping)))
       {
-        $this->ontologyMapping[$keyName] = $value;
+        $this->ontologyMapping[str_replace('.', '', $keyName)] = $value;
         $import->setNewOntologyToMap(true);
       }
     }
