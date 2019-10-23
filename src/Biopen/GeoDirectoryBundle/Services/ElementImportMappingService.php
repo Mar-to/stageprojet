@@ -283,6 +283,11 @@ class ElementImportMappingService
         $data[$key]['streetAddress'] = $data[$key]['fullAddress'];
         unset($data[$key]['fullAddress']);
       }
+      // convert lat/long numeric into string
+      if (isset($data[$key]['latitude']) && is_numeric($data[$key]['latitude']))
+        $data[$key]['latitude'] = '' . $data[$key]['latitude'];
+      if (isset($data[$key]['longitude']) && is_numeric($data[$key]['longitude']))
+        $data[$key]['longitude'] = '' . $data[$key]['longitude'];
     }
 
     return $data;
