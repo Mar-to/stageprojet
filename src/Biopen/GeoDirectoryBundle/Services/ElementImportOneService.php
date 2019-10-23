@@ -81,15 +81,15 @@ class ElementImportOneService
 				$geo = new Coordinates($row['latitude'], $row['longitude']);
 				$qb->field('geo.latitude')->equals($geo->getLatitude());
 				$qb->field('geo.longitude')->equals($geo->getLongitude());
+				$element = $qb->getQuery()->getSingleResult();
 			}
-			else
+			else if (strlen($row['streetAddress']) > 0)
 			{
 				if (strlen($row['streetAddress']) > 0) $qb->field('address.streetAddress')->equals($row['streetAddress']);
 				if (strlen($row['addressLocality']) > 0) $qb->field('address.addressLocality')->equals($row['addressLocality']);
 				if (strlen($row['postalCode']) > 0) $qb->field('address.postalCode')->equals($row['postalCode']);
+				$element = $qb->getQuery()->getSingleResult();
 			}
-
-			$element = $qb->getQuery()->getSingleResult();
 		}
 
 		if ($element) // if the element already exists, we update it
