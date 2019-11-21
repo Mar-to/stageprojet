@@ -8,40 +8,44 @@
 <!--[if !(IE)]><!--> <html class="no-js" lang="fr"> <!--<![endif]-->
 <head>
   <title>{% block title %}GoGoCarto{% endblock %}</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />    
- 
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
   {# gogocarto contains materializeCss lib, so we load it for all files #}
-  <link rel="stylesheet" href="{{ asset('assets/css/gogocarto.min.css?ver=' ~ version) }}">    
-  <link rel="stylesheet" href="{{ asset('assets/css/saas.css?ver=' ~ version) }}"> 
+  <link rel="stylesheet" href="{{ asset('assets/css/gogocarto.min.css?ver=' ~ version) }}">
+  <link rel="stylesheet" href="{{ asset('assets/css/saas.css?ver=' ~ version) }}">
 
   {% block stylesheets %}
-  {% endblock %}  
+  {% endblock %}
+
+  {% if config is defined %}
+    {% include '@BiopenCoreBundle/custom-head.html.twig' %}
+  {% endif %}
 
   <meta name="robots" content="index, follow, all" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
 
-<body class="gogo-load-css"> {# use this class to load the css vendors encapsulated inside gogocarto.css #}
-  
+<body class="gogo-load-css saas-layout"> {# load the css vendors encapsulated inside gogocarto.css #}
+
   {% include '@BiopenCoreBundle/custom-head.html.twig' %}
 
   <div id="page-container" {% if pageName is defined %}class="{{ pageName }}"{% endif %}>
     <div id="page-content" {% if pageName is defined %}class="{{ pageName }}"{% endif %}>
       {% block body %}
-      {% endblock %} 
+      {% endblock %}
     </div>
   </div>
 
   {# Mains javascripts libs #}
-  <script src="{{ asset('js/libs.js?ver=' ~ version) }}"></script> 
-  <script src="{{ asset('js/gogocarto.js?ver=' ~ version) }}"></script>      
+  <script src="{{ asset('js/libs.js?ver=' ~ version) }}"></script>
+  <script src="{{ asset('js/gogocarto.js?ver=' ~ version) }}"></script>
 
   {# Block to add custom javascript to each page #}
-  {% block javascripts %}           
-  {% endblock %}   
+  {% block javascripts %}
+  {% endblock %}
 
-  {% block modals %}  
-  {% endblock %} 
+  {% block modals %}
+  {% endblock %}
 
 </body>
 </html>
