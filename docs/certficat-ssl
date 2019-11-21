@@ -1,6 +1,6 @@
 ssh sur serveur gogocarto
 
-certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --preferred-challenges dns -d *.gogocarto.fr -d gogocarto.fr
+certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --preferred-challenges dns-01 --agree-tos --manual-public-ip-logging-ok -d *.gogocarto.fr -d gogocarto.fr
 
 comme il y a 2 domaines *.gogocarto.fr ET gogocarto.fr
 il te donne un premier code en te demandant de le mettre sur gandi
@@ -11,6 +11,7 @@ le truc a faire a la main c'est donc d'aller sur https://admin.gandi.net, choisi
 if faut éditer l'entrée txt acme-challenge pour gogocarto.fr et mettre al valeur donnée par la ligne de commande
 
 puis restart nginx
+systemctl restart nginx
 
 Only renew?
 -----
@@ -38,7 +39,7 @@ bizarre car cela marche pas la premiere fois
 puis ok la deuxieme fois
 aussi il y avait un truc louche avec 2 comptes
 peut etre d'ici 4 mois switcher sur https://github.com/Neilpang/acme.sh
- 
+
 github.com
 Neilpang/acme.sh
 A pure Unix shell script implementing ACME client protocol - Neilpang/acme.sh
