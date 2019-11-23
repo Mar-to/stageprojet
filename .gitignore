@@ -17,6 +17,7 @@
 /web/bundles/
 /web/assets/css/*
 /web/js/*
+/web/sw.js
 /node_modules/
 /npm-debug.log
 /TODO

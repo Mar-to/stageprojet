@@ -7,7 +7,8 @@ var gulp = require('gulp'),
     notify = require('gulp-notify'),
     gzip = require('gulp-gzip'),
     del = require('del'),
-    notifier = require('node-notifier');
+    notifier = require('node-notifier'),
+    workboxBuild = require('workbox-build');
 
 function handleError(err) {
   console.log(err.toString());
@@ -40,11 +41,29 @@ gulp.task('scriptsLibs', function() {
   gulp.src(['node_modules/gogocarto-js/dist/gogocarto.js'])
       .pipe(gulp.dest('web/js'));
   return gulp.src(['src/Biopen/GeoDirectoryBundle/Resources/js/libs/**/*.js', 
-                   'src/Biopen/CoreBundle/Resources/js/libs/**/*.js', 
+                   'src/Biopen/CoreBundle/Resources/js/libs/**/*.js',
+                   'src/Biopen/CoreBundle/Resources/js/init-sw.js',
                    'web/bundles/fosjsrouting/js/router.js',
                    ])
     .pipe(concat('libs.js'))
     .pipe(gulp.dest('web/js'));
+});
+
+gulp.task('service-worker', () => {
+    return workboxBuild.injectManifest({
+        swSrc: 'src/Biopen/CoreBundle/Resources/js/sw.js',
+        swDest: 'web/sw.js',
+        globDirectory: 'web',
+        globPatterns: [
+            '+(assets|js|templates)\/**\/*.{js,css,html,png}',
+            'offline.html'
+        ],
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024
+    }).then(({count, size, warnings}) => {
+        // Optionally, log any warnings and details.
+        warnings.forEach(console.warn);
+        console.log(`${count} files will be precached, totaling ${size} bytes.`);
+    });
 });
 
 gulp.task('sass', function () {
@@ -140,7 +159,7 @@ gulp.task('clean', function(cb) {
 });
 
 gulp.task('build', function() {
-    gulp.start('clean','sass', 'scriptsLibs', 'scriptsHome', 'scriptsExternalPages', 'scriptsElementForm', 'gogocarto_assets');
+    gulp.start('clean','sass', 'scriptsLibs', 'scriptsHome', 'scriptsExternalPages', 'scriptsElementForm', 'gogocarto_assets', 'service-worker');
 });
 
 gulp.task('production', function() {
