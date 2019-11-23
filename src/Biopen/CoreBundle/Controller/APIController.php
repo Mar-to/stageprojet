@@ -10,9 +10,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class APIController extends GoGoController
 {
   public function apiUiAction()
-  {        
+  {
     $em = $this->get('doctrine_mongodb')->getManager();
-    $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();  
+    $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
     $protectPublicApiWithToken = $config->getApi()->getProtectPublicApiWithToken();
 
     $securityContext = $this->get('security.context');
@@ -30,10 +30,10 @@ class APIController extends GoGoController
     }
 
     $options = $em->getRepository('BiopenGeoDirectoryBundle:Option')->findAll();
-    return $this->render('BiopenCoreBundle:api:api-ui.html.twig', array('options' => $options));        
+    return $this->render('BiopenCoreBundle:api:api-ui.html.twig', array('options' => $options));
   }
 
-  public function getManifestAction() 
+  public function getManifestAction()
   {
     $em = $this->get('doctrine_mongodb')->getManager();
     $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
@@ -42,9 +42,12 @@ class APIController extends GoGoController
 
     if ($img) {
       $imgUrl = $img->getImageUrl('512x512', 'png');
-      if (!$img->isExternalFile()) $imageData = InterventionImage::make($img->calculateFilePath('512x512', 'png'));
-    } else {
-      $imgUrl = $this->getRequest()->getUriForPath('/assets/img/default-icon.png');      
+      try {
+        if (!$img->isExternalFile()) $imageData = InterventionImage::make($img->calculateFilePath('512x512', 'png'));
+      } catch (\Exception $error) {}
+    }
+    if (!$imageData) {
+      $imgUrl = $this->getRequest()->getUriForPath('/assets/img/default-icon.png');
       if ($this->container->get('kernel')->getEnvironment() == 'dev') {
         $imgUrl = str_replace('app_dev.php/', '', $imgUrl);
       }
@@ -55,11 +58,11 @@ class APIController extends GoGoController
     if ($imageData) {
       $icon['sizes'] = $imageData->height().'x'.$imageData->width();
       $icon['mime'] = $imageData->mime();
-    } 
+    }
 
     $responseArray = array(
       "name" => $config->getAppName(),
-      "short_name" =>  str_split($config->getAppName(), 9)[0],
+      "short_name" =>  str_split($config->getAppName(), 12)[0],
       "lang" => "fr",
       "start_url" => "/annuaire#/carte/autour-de-moi",
       "display" => "standalone",
@@ -67,12 +70,12 @@ class APIController extends GoGoController
       "background_color" => $config->getBackgroundColor(),
       "icons" => [ $icon ]
     );
-    $response = new Response(json_encode($responseArray));  
+    $response = new Response(json_encode($responseArray));
     $response->headers->set('Content-Type', 'application/json');
     return $response;
   }
 
-  public function getProjectInfoAction() 
+  public function getProjectInfoAction()
   {
     $em = $this->get('doctrine_mongodb')->getManager();
     $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
@@ -86,12 +89,12 @@ class APIController extends GoGoController
       "description" => $config->getAppBaseline(),
       "dataSize" => $dataSize
     );
-    $response = new Response(json_encode($responseArray));  
+    $response = new Response(json_encode($responseArray));
     $response->headers->set('Content-Type', 'application/json');
     return $response;
   }
 
-  public function getConfigurationAction() 
+  public function getConfigurationAction()
   {
     $odm = $this->get('doctrine_mongodb')->getManager();
     $config = $odm->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
@@ -102,7 +105,7 @@ class APIController extends GoGoController
 
     $config->defaultTileLayer = $defaultTileLayer;
     $config->tileLayers = $tileLayers;
-    $response = new Response(json_encode($config));  
+    $response = new Response(json_encode($config));
     $response->headers->set('Content-Type', 'application/json');
     return $response;
   }
@@ -113,7 +116,7 @@ class APIController extends GoGoController
     $log = $odm->getRepository('BiopenCoreBundle:GoGoLog')->find($id);
     $log->setHidden(true);
     $odm->flush();
-    $response = new Response(json_encode(['success' => true]));  
+    $response = new Response(json_encode(['success' => true]));
     $response->headers->set('Content-Type', 'application/json');
     return $response;
   }
@@ -125,7 +128,7 @@ class APIController extends GoGoController
     $qb->updateMany()
        ->field('type')->notEqual('update')
        ->field('hidden')->equals(false)
-       ->field('hidden')->set(true)->getQuery()->execute(); 
+       ->field('hidden')->set(true)->getQuery()->execute();
     return $this->redirectToRoute('sonata_admin_dashboard');
   }
 
@@ -136,7 +139,7 @@ class APIController extends GoGoController
     $qb->updateMany()
        ->field('type')->equals('update')
        ->field('hidden')->equals(false)
-       ->field('hidden')->set(true)->getQuery()->execute(); 
+       ->field('hidden')->set(true)->getQuery()->execute();
     return $this->redirectToRoute('sonata_admin_dashboard');
   }
 }
