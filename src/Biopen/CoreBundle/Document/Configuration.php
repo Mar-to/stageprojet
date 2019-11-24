@@ -34,6 +34,9 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\Field(type="string") */
     protected $appName;
 
+    /** @MongoDB\Field(type="string") */
+    protected $appNameShort;
+
     /**
     * @MongoDB\Field(type="string")
     * @Gedmo\Slug(fields={"appName"}, updatable=false)
@@ -3029,5 +3032,27 @@ class Configuration implements \JsonSerializable
     public function getSearchExcludingWords()
     {
         return str_replace(' ', '', $this->searchExcludingWords);
+    }
+
+    /**
+     * Set appNameShort
+     *
+     * @param string $appNameShort
+     * @return $this
+     */
+    public function setAppNameShort($appNameShort)
+    {
+        $this->appNameShort = $appNameShort;
+        return $this;
+    }
+
+    /**
+     * Get appNameShort
+     *
+     * @return string $appNameShort
+     */
+    public function getAppNameShort()
+    {
+        return $this->appNameShort;
     }
 }

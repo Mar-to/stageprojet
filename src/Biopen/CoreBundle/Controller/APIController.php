@@ -59,10 +59,10 @@ class APIController extends GoGoController
       $icon['sizes'] = $imageData->height().'x'.$imageData->width();
       $icon['mime'] = $imageData->mime();
     }
-
+    $shortName = $config->getAppNameShort() && strlen($config->getAppNameShort()) > 0 ? $config->getAppNameShort() : $config->getAppName();
     $responseArray = array(
       "name" => $config->getAppName(),
-      "short_name" =>  str_split($config->getAppName(), 12)[0],
+      "short_name" =>  str_split($shortName, 12)[0],
       "lang" => "fr",
       "start_url" => "/annuaire#/carte/autour-de-moi",
       "display" => "standalone",
