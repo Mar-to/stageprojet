@@ -2,6 +2,7 @@
 
 namespace Biopen\GeoDirectoryBundle\Controller;
 
+use Biopen\GeoDirectoryBundle\Document\ElementJsonOntology;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Biopen\CoreBundle\Controller\GoGoController;
@@ -18,7 +19,7 @@ class APIController extends GoGoController
   * @bounds
   * @categories (ids)
   * @stamps (ids)
-  * @ontology ( gogofull or gogocompact )
+  * @ontology (gogofull, gogocompact or semantic) -> see ElementJsonOntology
   **/
   public function getElementsAction(Request $request, $id = null, $_format = 'json')
   {
@@ -26,8 +27,7 @@ class APIController extends GoGoController
 
     $jsonLdRequest = $this->isJsonLdRequest($request, $_format); 
     $token = $request->get('token');
-    $ontology = $request->get('ontology') ? strtolower($request->get('ontology')) : "gogofull";
-    $fullRepresentation =  $jsonLdRequest || $ontology != "gogocompact";
+    $ontology = $jsonLdRequest ? ElementJsonOntology::Semantic : ( $request->get('ontology') ? strtolower($request->get('ontology')) : ElementJsonOntology::Full );
     $elementId = $id ? $id : $request->get('id');     
     $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();  
     $protectWithToken = $config->getApi()->getProtectPublicApiWithToken();
@@ -62,7 +62,10 @@ class APIController extends GoGoController
     if ($elementId) 
     {
       $element = $elementRepo->findOneBy(array('id' => $elementId));
-      $elementsJson = $element ? $element->getJson($includePrivateFields, $isAdmin) : null;
+      $elementsJson = $element ? $element->getJson($ontology, $includePrivateFields, $isAdmin) : null;
+      if( $elementsJson && $ontology === ElementJsonOntology::Semantic ) {
+          $elementsJson = $this->appendSemanticContextAndType($elementsJson);
+      }
     }
     else 
     {
@@ -71,13 +74,13 @@ class APIController extends GoGoController
         $boxes = [];
         $bounds = explode( ';' , $request->get('bounds'));
         foreach ($bounds as $key => $bound) $boxes[] = explode( ',' , $bound);
-        $elementsFromDB = $elementRepo->findWhithinBoxes($boxes, $request, $fullRepresentation, $isAdmin);          
+        $elementsFromDB = $elementRepo->findWhithinBoxes($boxes, $request, $ontology, $isAdmin);
       } 
       else
       {
-        $elementsFromDB = $elementRepo->findAllPublics($fullRepresentation, $isAdmin, $request);
+        $elementsFromDB = $elementRepo->findAllPublics($ontology, $isAdmin, $request);
       }  
-      $elementsJson = $this->encodeElementArrayToJsonArray($elementsFromDB, $fullRepresentation, $isAdmin, $includePrivateFields);        
+      $elementsJson = $this->encodeElementArrayToJsonArray($elementsFromDB, $ontology, $isAdmin, $includePrivateFields, $config);
     }   
 
     $status = 200;
@@ -88,10 +91,7 @@ class APIController extends GoGoController
     }
     else if ($jsonLdRequest)
     {
-      $responseJson = '{
-        "@context" : "https://rawgit.com/jmvanel/rdf-convert/master/context-gogo.jsonld",
-        "@graph"   :  '. $elementsJson . '
-      }';
+      $responseJson = $elementsJson;
     }
     else
     {
@@ -99,7 +99,7 @@ class APIController extends GoGoController
         "licence": "' . $config->getDataLicenseUrl() . '",
         "ontology":"'. $ontology . '"';        
 
-      if (!$fullRepresentation) 
+      if ($ontology === ElementJsonOntology::Compact )
       {
         $mapping = ['id', $config->getMarker()->getFieldsUsedByTemplate(), 'latitude', 'longitude', 'status', 'moderationState'];
         $responseJson .= ', "mapping":' . json_encode($mapping);
@@ -185,8 +185,8 @@ class APIController extends GoGoController
 
     $elements = $em->getRepository('BiopenGeoDirectoryBundle:Element')->findElementsWithText($request->get('text'), true, $isAdmin);
 
-    $elementsJson = $this->encodeElementArrayToJsonArray($elements, true, $isAdmin, true);
-    $responseJson = '{ "data":'. $elementsJson . ', "ontology" : "gogofull"}';
+    $elementsJson = $this->encodeElementArrayToJsonArray($elements, ElementJsonOntology::Full, $isAdmin, true);
+    $responseJson = '{ "data":'. $elementsJson . ', "ontology" : "' . ElementJsonOntology::Full . '"}';
     
     $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();  
     return $this->createResponse($responseJson, $config);
@@ -204,28 +204,40 @@ class APIController extends GoGoController
     return false;    
   }
 
-  private function encodeElementArrayToJsonArray($array, $fullRepresentation, $isAdmin = false, $includePrivateFields = false)
+  private function encodeElementArrayToJsonArray($array, $ontology, $isAdmin = false, $includePrivateFields = false, $config = null )
   {
-    $elementsJson = '['; 
+    $elementsJson = '[';
     foreach ($array as $key => $value) 
-    { 
-      if ($fullRepresentation == 'true') 
-      {
-        $elementJson = $value['baseJson']; 
-        if ($includePrivateFields && $value['privateJson'] != '{}') {
-          $elementJson = substr($elementJson , 0, -1) . ',' . substr($value['privateJson'],1);
+    {
+        switch($ontology) {
+            case ElementJsonOntology::Full:
+                $elementJson = $value['baseJson'];
+                if ($includePrivateFields && $value['privateJson'] != '{}') {
+                    $elementJson = substr($elementJson , 0, -1) . ',' . substr($value['privateJson'],1);
+                }
+                if ($isAdmin && $value['adminJson'] != '{}') {
+                    $elementJson = substr($elementJson , 0, -1) . ',' . substr($value['adminJson'],1);
+                }
+                if (key_exists('score', $value)) {
+                    // remove first '{'
+                    $elementJson = substr($elementJson, 1);
+                    $elementJson = '{"searchScore" : ' . $value['score'] . ',' . $elementJson;
+                }
+                break;
+
+            case ElementJsonOntology::Compact:
+                $elementJson = $value['compactJson'];
+                break;
+
+            case ElementJsonOntology::Semantic:
+                $elementJson =  $value['semanticJson'];
+                $elementJson = $this->appendSemanticContextAndType($elementJson);
+                break;
+
+            default:
+                throw new \Exception('Unknown ontology : ' . $ontology);
         }
-        if ($isAdmin && $value['adminJson'] != '{}') {
-          $elementJson = substr($elementJson , 0, -1) . ',' . substr($value['adminJson'],1);
-        }        
-        if (key_exists('score', $value)) {
-          // remove first '{'
-          $elementJson = substr($elementJson, 1);
-          $elementJson = '{"searchScore" : ' . $value['score'] . ',' . $elementJson;
-        }
-      } 
-      else $elementJson = $value['compactJson'];      
-      $elementsJson .=  $elementJson .  ',';
+        $elementsJson .=  $elementJson .  ',';
     }   
 
     $elementsJson = rtrim($elementsJson,",") . ']'; 
@@ -240,6 +252,17 @@ class APIController extends GoGoController
     $gogocartoConf = $this->get('biopen.gogocartojs_service')->getConfig();
 
     return $this->createResponse(json_encode($gogocartoConf), $config);
+  }
+
+  public function appendSemanticContextAndType($semanticJson)
+  {
+    $em = $this->get('doctrine_mongodb')->getManager();
+    $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+
+    return '{
+      "@context" : "' . $config->getElementFormSemanticContext() . '",
+      "@type" : "' . $config->getElementFormSemanticType() . '",
+      ' . substr($semanticJson, 1);
   }
 }
   

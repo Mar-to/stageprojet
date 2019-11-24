@@ -303,6 +303,15 @@ class Element
     private $adminJson;
 
     /**
+     * @var string
+     *
+     * The Json representation of all elements semantically-defined
+     *
+     * @MongoDB\Field(type="string")
+     */
+    private $semanticJson;
+
+    /**
      * @var date $createdAt
      *
      * @MongoDB\Field(type="date") @MongoDB\Index
@@ -505,14 +514,26 @@ class Element
 
     public function isDynamicImported() { return $this->isExternal; }
 
-    public function getJson($includePrivateJson, $includeAdminJson)
+    public function getJson($ontology, $includePrivateJson, $includeAdminJson)
     {
-        $result = $this->baseJson;
-        if ($includePrivateJson && $this->privateJson && $this->privateJson != '{}')
-           $result = substr($result , 0, -1) . ',' . substr($this->privateJson,1);
-        if ($includeAdminJson && $this->adminJson && $this->adminJson != '{}')
-           $result = substr($result , 0, -1) . ',' . substr($this->adminJson,1);
-        return $result;
+        switch($ontology) {
+            case ElementJsonOntology::Full:
+                $result = $this->baseJson;
+                if ($includePrivateJson && $this->privateJson && $this->privateJson != '{}')
+                    $result = substr($result , 0, -1) . ',' . substr($this->privateJson,1);
+                if ($includeAdminJson && $this->adminJson && $this->adminJson != '{}')
+                    $result = substr($result , 0, -1) . ',' . substr($this->adminJson,1);
+                return $result;
+
+            case ElementJsonOntology::Compact:
+                return $this->compactJson;
+
+            case ElementJsonOntology::Semantic:
+                return $this->semanticJson;
+
+            default:
+                throw new \Exception('Unknown ontology : ' . $ontology);
+        }
     }
 
     public function isPending()
@@ -811,6 +832,28 @@ class Element
     public function getBaseJson()
     {
         return $this->baseJson;
+    }
+
+    /**
+     * Set semanticJson
+     *
+     * @param string $semanticJson
+     * @return $this
+     */
+    public function setSemanticJson($semanticJson)
+    {
+        $this->semanticJson = $semanticJson;
+        return $this;
+    }
+
+    /**
+     * Get semanticJson
+     *
+     * @return string $semanticJson
+     */
+    public function getSemanticJson()
+    {
+        return $this->semanticJson;
     }
 
     /**

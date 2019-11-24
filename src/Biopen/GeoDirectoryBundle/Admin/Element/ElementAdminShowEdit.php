@@ -105,6 +105,7 @@ class ElementAdminShowEdit extends ElementAdminList
         ->add('baseJson')
         ->add('privateJson')
         ->add('adminJson')
+        ->add('semanticJson')
       ->end();
 	}
 }

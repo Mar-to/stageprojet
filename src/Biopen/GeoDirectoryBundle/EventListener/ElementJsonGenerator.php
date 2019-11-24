@@ -3,18 +3,36 @@
 namespace Biopen\GeoDirectoryBundle\EventListener;
 
 use Biopen\GeoDirectoryBundle\Document\Element;
+use Biopen\GeoDirectoryBundle\Document\ElementJsonOntology;
 use Biopen\GeoDirectoryBundle\Document\ModerationState;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\Router;
 
 class ElementJsonGenerator
 {
   protected $currElementChangeset;
   protected $config = null;
   protected $options = null;
+  protected $semanticFields = [];
+  protected $router = null;
+
+  public function __construct(Router $router)
+  {
+      $this->router = $router;
+  }
 
   public function getConfig($dm)
   {
     if (!$this->config) $this->config = $dm->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+
+    $formFields = $this->config->getElementFormFields();
+    foreach( $formFields as $key => $field ) {
+      if( isset($field->semantic) && $field->semantic != "" ) {
+          $this->semanticFields[$field->name] = $field->semantic;
+      }
+    }
+
     return $this->config;
   }
 
@@ -115,7 +133,7 @@ class ElementJsonGenerator
 
     // MODIFIED ELEMENT (for pending modification)
     if ($element->getModifiedElement()) {
-        $baseJson .= ', "modifiedElement": ' . $element->getModifiedElement()->getJson(true, false);
+        $baseJson .= ', "modifiedElement": ' . $element->getModifiedElement()->getJson(ElementJsonOntology::Full, true, false);
     }
     $baseJson .= '}';
 
@@ -179,6 +197,24 @@ class ElementJsonGenerator
     if ($element->getModerationState() != 0) $compactJson .= ','. $element->getModerationState();
     $compactJson .= ']';
     $element->setCompactJson($compactJson);
+
+    // -------------------- SEMANTIC JSON ----------------
+
+    $semanticJson = "{";
+    $semanticJson .= '"@id": "' . $this->router->generate('biopen_api_element_get', array('id'=>$element->id, '_format'=>'jsonld'), UrlGeneratorInterface::ABSOLUTE_URL) . '",';
+
+    if ($element->getData()) {
+      foreach ($element->getData() as $key => $value) {
+          if( array_key_exists($key, $this->semanticFields) && $value ) {
+              $semanticJson .= '"' . $this->semanticFields[$key] . '": ' . json_encode($value) . ',';
+          }
+      }
+    }
+
+    $semanticJson = rtrim($semanticJson, ',');
+    $semanticJson .= '}';
+
+    $element->setSemanticJson($semanticJson);
   }
 
   // private function attrChanged($attrs)

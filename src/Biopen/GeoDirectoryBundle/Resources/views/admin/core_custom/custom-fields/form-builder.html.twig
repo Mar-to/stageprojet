@@ -40,6 +40,7 @@
 
       var iconAttr = { label: 'Icone', placeholder: 'Choisissez une icone'  }
       var errorMsgAttrs = { label: "Msg. Erreur", placeholder: "Oups ce texte est un peu long ! // Veuillez renseigner une adresse email valide // ..." }
+      var semanticAttrs = { label: "Champ sémantique" }
       var typeUserAttrs = {
         text: {
           icon: iconAttr,
@@ -51,12 +52,14 @@
               'url': 'Url'
             },
           },
-          errorMsg: errorMsgAttrs
+          errorMsg: errorMsgAttrs,
+          semantic: semanticAttrs
         },
         textarea: {
           icon: iconAttr,
           errorMsg: errorMsgAttrs,
           separator: { label: '' }, // separate important attrs from others
+          semantic: semanticAttrs,
         },
         select: { icon: iconAttr, errorMsg: errorMsgAttrs },
         number: { icon: iconAttr, errorMsg: errorMsgAttrs },
@@ -65,6 +68,7 @@
           icon: iconAttr,
           errorMsg: errorMsgAttrs,
           separator: { label: '' }, // separate important attrs from others
+          semantic: semanticAttrs,
         },
         address: { icon: iconAttr },
         'checkbox-group': {
@@ -83,20 +87,24 @@
           icon: iconAttr,
           errorMsg: errorMsgAttrs,
           separator: { label: '' }, // separate important attrs from others
+          semantic: semanticAttrs
         },
         image: {
           icon: iconAttr,
           errorMsg: errorMsgAttrs,
           separator: { label: '' }, // separate important attrs from others
+          semantic: semanticAttrs
         },
         images: {
           icon: iconAttr,
           separator: { label: '' }, // separate important attrs from others
+          semantic: semanticAttrs
         },
         files: {
           icon: iconAttr,
           accept: { label: "Fichier acceptés", placeholder: ".pdf audio/* .mp3 (séparés par des espaces)"},
           separator: { label: '' }, // separate important attrs from others
+          semantic: semanticAttrs
         }
       };
 

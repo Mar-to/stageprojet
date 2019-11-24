@@ -12,6 +12,7 @@
 
 
 namespace Biopen\GeoDirectoryBundle\Repository;
+use Biopen\GeoDirectoryBundle\Document\ElementJsonOntology;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Biopen\GeoDirectoryBundle\Document\ModerationState;
@@ -46,7 +47,7 @@ class ElementRepository extends DocumentRepository
               ->hydrate($hydrate)->getQuery()->execute()->toArray();
   }
 
-  public function findWhithinBoxes($bounds, $request, $getFullRepresentation, $isAdmin = false)
+  public function findWhithinBoxes($bounds, $request, $ontology, $isAdmin = false)
   {
     $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 
@@ -59,7 +60,7 @@ class ElementRepository extends DocumentRepository
         $qb->addOr($qb->expr()->field('geo')->withinBox((float) $bound[1], (float) $bound[0], (float) $bound[3], (float) $bound[2]));
 
     if ($request) $this->filterWithRequest($qb, $request);
-    $this->selectJson($qb, $getFullRepresentation, $isAdmin);
+    $this->selectJson($qb, $ontology, $isAdmin);
 
     // execute request
     $results = $this->queryToArray($qb);
@@ -135,7 +136,7 @@ class ElementRepository extends DocumentRepository
     return $qb->getQuery()->execute();
   }
 
-  public function findAllPublics($getFullRepresentation, $isAdmin, $request = null)
+  public function findAllPublics($ontology, $isAdmin, $request = null)
   {
     $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 
@@ -143,7 +144,7 @@ class ElementRepository extends DocumentRepository
     $qb->field('moderationState')->equals(ModerationState::NotNeeded);
 
     if ($request) $this->filterWithRequest($qb, $request);
-    $this->selectJson($qb, $getFullRepresentation, $isAdmin);
+    $this->selectJson($qb, $ontology, $isAdmin);
 
     return $this->queryToArray($qb);
   }
@@ -208,17 +209,24 @@ class ElementRepository extends DocumentRepository
     return $qb;
   }
 
-  private function selectJson($qb, $getFullRepresentation, $isAdmin)
+  private function selectJson($qb, $ontology, $isAdmin)
   {
-    // get json representation
-    if ($getFullRepresentation == 'true')
-    {
-      $qb->select(['baseJson', 'privateJson']);
-      if ($isAdmin) $qb->select('adminJson');
-    }
-    else
-    {
-      $qb->select('compactJson');
+    switch($ontology) {
+        case ElementJsonOntology::Full:
+            $qb->select(['baseJson', 'privateJson']);
+            if ($isAdmin) $qb->select('adminJson');
+            break;
+
+        case ElementJsonOntology::Compact:
+            $qb->select('compactJson');
+            break;
+
+        case ElementJsonOntology::Semantic:
+            $qb->select('semanticJson');
+            break;
+
+        default:
+            throw new \Exception('Unknown ontology: ' . $ontology);
     }
   }
 

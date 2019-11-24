@@ -46,7 +46,17 @@ class ConfigurationFormAdmin extends ConfigurationAbstractAdmin
                     ->add('elementFormGeocodingHelp', 'textarea' , 
                         array('required' => false,
                               'label' => "Texte d'aide pour la geolocalisation"))
-                ->end()            
+                ->end()
+            ->end()
+            ->tab('Sémantique')
+                ->with('Sémantique', array('class' => 'col-md-12', "description" => "Définir le contexte sémantique des données permet de plus facilement partager les données, afin qu'on puisse proposer un API sous forme de JSON-LD.<br/>Il vous faut aussi définir le type sémantique pour chaque champ que vous voulez partager dans l'onglet Formulaire de cette page."))
+                    ->add('elementFormSemanticContext', 'textarea',
+                        array('required' => false, 'attr' => ['placeholder' => 'Exemple: https://schema.org'],
+                            'label' => "Contexte sémantique des éléments", 'label_attr' => ['title' => "Vous pouvez définir plusieurs contextes sous format de JSON"]))
+                    ->add('elementFormSemanticType', 'text',
+                        array('required' => false, 'attr' => ['placeholder' => 'Exemple: Place'],
+                            'label' => "Type sémantique des éléments", 'label_attr' => ['title' => "Vous pouvez définir plusieurs types séparés par une virgule"]))
+                ->end()
             ->end()    
             ;
     }

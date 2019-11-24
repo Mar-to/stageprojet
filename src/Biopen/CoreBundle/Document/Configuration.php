@@ -310,6 +310,11 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\Field(type="string") */
     protected $elementFormFieldsJson = "[{\"type\":\"taxonomy\",\"label\":\"Choisissez la ou les catégories par ordre d'importance\",\"name\":\"taxonomy\"},{\"type\":\"separator\",\"label\":\"Séparateur de section\",\"name\":\"separator-1539422234804\"},{\"type\":\"header\",\"subtype\":\"h1\",\"label\":\"Informations\"},{\"type\":\"title\",\"required\":true,\"label\":\"Titre de la fiche\",\"name\":\"name\",\"maxlength\":\"80\",\"icon\":\"gogo-icon-account-circle\"},{\"type\":\"textarea\",\"required\":true,\"label\":\"Description courte\",\"name\":\"description\",\"subtype\":\"textarea\",\"maxlength\":\"250\"},{\"type\":\"textarea\",\"label\":\"Description longue\",\"name\":\"descriptionMore\",\"subtype\":\"textarea\",\"maxlength\":\"600\"},{\"type\":\"address\",\"label\":\"Adresse complète\",\"name\":\"address\",\"icon\":\"gogo-icon-marker-symbol\"},{\"type\":\"separator\",\"label\":\"Séparateur de section\",\"name\":\"separator-1539423917238\"},{\"type\":\"header\",\"subtype\":\"h1\",\"label\":\"Contact (optionnel)\"},{\"type\":\"text\",\"subtype\":\"tel\",\"label\":\"Téléphone\",\"name\":\"telephone\"},{\"type\":\"email\",\"label\":\"Mail\",\"name\":\"email\"},{\"type\":\"text\",\"subtype\":\"url\",\"label\":\"Site web\",\"name\":\"website\"},{\"type\":\"separator\",\"label\":\"Séparateur de section\",\"name\":\"separator-1539424058076\"},{\"type\":\"header\",\"subtype\":\"h1\",\"label\":\"Horaires (optionnel)\"},{\"type\":\"openhours\",\"label\":\"Horaires\",\"name\":\"openhours\"}]";
 
+    /** @MongoDB\Field(type="string") */
+    protected $elementFormSemanticContext;
+
+    /** @MongoDB\Field(type="string") */
+    protected $elementFormSemanticType;
 
     // ----------------------------
     // -------- IMPORTS -----------
@@ -3029,5 +3034,49 @@ class Configuration implements \JsonSerializable
     public function getSearchExcludingWords()
     {
         return str_replace(' ', '', $this->searchExcludingWords);
+    }
+
+    /**
+     * Set elementFormSemanticContext
+     *
+     * @param string $elementFormSemanticContext
+     * @return $this
+     */
+    public function setElementFormSemanticContext($elementFormSemanticContext)
+    {
+        $this->elementFormSemanticContext = $elementFormSemanticContext;
+        return $this;
+    }
+
+    /**
+     * Get elementFormSemanticContext
+     *
+     * @return string $elementFormSemanticContext
+     */
+    public function getElementFormSemanticContext()
+    {
+        return $this->elementFormSemanticContext;
+    }
+
+    /**
+     * Set elementFormSemanticType
+     *
+     * @param string $elementFormSemanticType
+     * @return $this
+     */
+    public function setElementFormSemanticType($elementFormSemanticType)
+    {
+        $this->elementFormSemanticType = $elementFormSemanticType;
+        return $this;
+    }
+
+    /**
+     * Get elementFormSemanticType
+     *
+     * @return string $elementFormSemanticType
+     */
+    public function getElementFormSemanticType()
+    {
+        return $this->elementFormSemanticType;
     }
 }

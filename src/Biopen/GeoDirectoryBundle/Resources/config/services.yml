@@ -48,6 +48,7 @@ services:
 
     biopen.element_json_generator:
         class: Biopen\GeoDirectoryBundle\EventListener\ElementJsonGenerator
+        arguments: [ "@router" ]
         tags:
             - { name: doctrine_mongodb.odm.event_listener, event: preFlush }
 
