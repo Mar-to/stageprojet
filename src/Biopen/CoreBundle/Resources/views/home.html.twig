@@ -4,9 +4,9 @@
 {% set pageName = 'home' %}
 
 {% block stylesheets %}
-  
-  <link rel="stylesheet" href="{{ asset('assets/css/pages.css?ver=' ~ version) }}"> 
-  <link rel="stylesheet" href="{{ asset('assets/css/home.css?ver=' ~ version) }}">   
+
+  <link rel="stylesheet" href="{{ asset('assets/css/pages.css?ver=' ~ version) }}">
+  <link rel="stylesheet" href="{{ asset('assets/css/home.css?ver=' ~ version) }}">
 
 {% endblock %}
 
@@ -14,18 +14,18 @@
 {% block body %}
 
 <div id="home-main-wrapper" class="valign-wrapper">
-	<section id="home-main-container" class="valign">			
+	<section id="home-main-container" class="valign">
 
 		{% if config.logo %}
-			<img src="{{ config.logo.imageUrl }}" id="home-logo"/>	
+			<img src="{{ config.logo.imageUrl }}" id="home-logo"/>
 		{% else %}
 			<h1>{{ config.appName }}</h1>
-		{% endif %}	
+		{% endif %}
 
 		{% if config.appBaseLine %}<h2>{{ config.appBaseline }}</h2>{% endif %}
 
 		<div class="input-field" id="search-bar-container" >
-			<a class="gogo-icon-search waves-effect waves-light" id="search-bar-icon"></a> 
+			<a class="gogo-icon-search waves-effect waves-light" id="search-bar-icon"></a>
 			<a href="annuaire#/carte/autour-de-moi"
 				 class="gogo-icon-locate gogo-h-primary search-icon tooltipped" id="search-geolocalize"
          data-position="left" data-delay="0" data-tooltip="Geolocaliser votre position"></a>
@@ -44,13 +44,13 @@
 			</div>
 
 			<span class="category-field-select input-field">
-		    <select  class="category-select" id="category-select">	   	  
+		    <select  class="category-select" id="category-select">
 		   	  <option disabled selected value="all">Choisissez une catégorie (par défaut : toutes)</option>
-		   	   
+
 		     {% for option in mainOptions %}
 		      	<option value="{{ option.nameShort ? option.nameShort : option.name }}">{{ option.name }}</option>
 		      {% endfor %}
-		    </select>  	
+		    </select>
 	  	</span>
   	{% endif %}
 
@@ -66,8 +66,8 @@
 			<a href="{{ path('biopen_element_add') }}">
 				<button class="btn-secondary btn waves-effect waves-light">Ajouter {{ config.elementDisplayNameIndefinite }}</button>
 			</a>
-		</div>		
-	
+		</div>
+
 	</section>
 
 	{% if listWrappers.count > 0 %}
@@ -92,13 +92,13 @@
 
 
 <section id="section-credits" class="">
-		Propulsed by <a href="https://gitlab.adullact.net/pixelhumain/GoGoCarto" style=\"font-weight:bold;color: #bdc900;" target="_blank"><strong>GoGoCarto</strong></a>
+		Propulsé par <a href="https://gitlab.adullact.net/pixelhumain/GoGoCarto" style=\"font-weight:bold;color: #bdc900;" target="_blank"><strong>GoGoCarto</strong></a>
 </section>
 
 {% endblock %}
 
-{% block javascripts %}  
-	<script src="{{ asset('js/home.js') }}"></script>	
+{% block javascripts %}
+	<script src="{{ asset('js/home.js') }}"></script>
 {% endblock %}
 
 
