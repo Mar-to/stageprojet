@@ -44,7 +44,8 @@ class APIController extends GoGoController
       $imgUrl = $img->getImageUrl('512x512', 'png');
       try {
         if (!$img->isExternalFile()) $imageData = InterventionImage::make($img->calculateFilePath('512x512', 'png'));
-      } catch (\Exception $error) {}
+        else $imageData = InterventionImage::make($imgUrl);
+      } catch (\Exception $error) { }
     }
     if (!$imageData) {
       $imgUrl = $this->getRequest()->getUriForPath('/assets/img/default-icon.png');
