@@ -17,7 +17,7 @@ class ImportAdminController extends Controller
     $showUrl = $this->admin->generateUrl('showData', ['id' => $object->getId()]);
 
     if (count($object->getOntologyMapping()) <= 1) {
-      $this->addFlash('sonata_flash_error', "Un problème semble avoir lieu pendant la lecture des données. Si c'est un fichier CSV, vérifiez que les colonnes sont bien séparées avec des virgules (et non pas avec des point virgules ou des espaces). Si c'est un fichier JSON, vérifiez que le tableau de donnée soit bien à la racine du document. Si ce n'est pas le cas, utilisez l'onglet 'Modifier les données en exécutant du code'");
+      $this->addFlash('sonata_flash_error', "Un problème semble avoir lieu pendant la lecture des données. Si c'est un <b>fichier CSV</b>, vérifiez que les colonnes sont bien <b>séparées avec des virgules</b> (et non pas avec des point virgules ou des espaces) : <a href='https://help.libreoffice.org/Calc/Importing_and_Exporting_CSV_Files/fr'>Cliquez ici pour savoir comment faire</a>. Vérifiez aussi que <b>l'encodage soit en UTF-8</b>. Si c'est un <b>fichier JSON</b>, vérifiez que le <b>tableau de donnée soit bien à la racine du document</b>. Si ce n'est pas le cas, utilisez l'onglet 'Modifier les données en exécutant du code'");
     }
     else if (!in_array("name",array_values($object->getOntologyMapping()))) {
       $this->addFlash('sonata_flash_info', "Merci de remplir le tableau de correspondance des champs. Renseignez au moins le Titre de la fiche");

@@ -125,8 +125,13 @@ class ElementImportMappingService
       $data = $this->mapTaxonomy($data);
     }
 
-    $this->em->persist($import);
-    $this->em->flush();
+    try {
+      $this->em->persist($import);
+      $this->em->flush();
+    } catch (\Exception $e) {
+      // catching corrupt BSON
+      return null;
+    }
 
     return $data;
   }
