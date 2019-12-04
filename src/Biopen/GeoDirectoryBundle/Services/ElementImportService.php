@@ -73,11 +73,7 @@ class ElementImportService
       fclose($handle);
     }
 
-		if (!$data) {
-			$import->setCurrMessage("Impossible d'ouvrir le fichier CSV. Vérifiez que le fichier utilise des virgules comme séparateur");
-			$this->em->flush();
-			return "Cannot open the CSV file";
-		}
+		if (!$data) return [];
 
 		if ($onlyGetData) return $data;
 
@@ -103,7 +99,8 @@ class ElementImportService
   public function collectData($import)
   {
 		$data = $import->getUrl() ? $this->importJson($import, true) : $this->importCsv($import, true);
-  	return $this->mappingService->transform($data, $import);
+    if (!$data) return null;
+    return $this->mappingService->transform($data, $import);
   }
 
 	public function importData($data, $import)

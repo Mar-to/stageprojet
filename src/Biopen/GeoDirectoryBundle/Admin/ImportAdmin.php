@@ -41,7 +41,7 @@ class ImportAdmin extends AbstractAdmin
             ->tab('Général')
                 ->with($title, ['class' => 'col-md-6'])
                     ->add('sourceName', 'text', array('required' => true, 'label' => 'Nom de la source '))
-                    ->add('file', 'file', array('label' => 'Fichier CSV à importer', 'required' => false))
+                    ->add('file', 'file', array('label' => 'Fichier CSV à importer (séparation par virgules, encodage en UTF8)', 'required' => false))
                     ->add('url', 'text', array('label' => "Ou URL vers un API Json", 'required' => false));
         if ($isDynamic)
             $formMapper

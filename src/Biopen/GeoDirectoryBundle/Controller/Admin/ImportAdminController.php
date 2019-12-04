@@ -15,10 +15,16 @@ class ImportAdminController extends Controller
     $result = $this->get('biopen.element_import')->collectData($object);
 
     $showUrl = $this->admin->generateUrl('showData', ['id' => $object->getId()]);
-    if (!in_array("name",array_values($object->getOntologyMapping())))
-      $this->addFlash('sonata_flash_warning', "Merci de remplir le tableau de correspondance des champs. Renseignez au moins le Titre de la fiche");
-    else if (count($result) > 0)
+
+    if (count($object->getOntologyMapping()) <= 1) {
+      $this->addFlash('sonata_flash_error', "Un problème semble avoir lieu pendant la lecture des données. Si c'est un fichier CSV, vérifiez que les colonnes sont bien séparées avec des virgules (et non pas avec des point virgules ou des espaces). Si c'est un fichier JSON, vérifiez que le tableau de donnée soit bien à la racine du document. Si ce n'est pas le cas, utilisez l'onglet 'Modifier les données en exécutant du code'");
+    }
+    else if (!in_array("name",array_values($object->getOntologyMapping()))) {
+      $this->addFlash('sonata_flash_info', "Merci de remplir le tableau de correspondance des champs. Renseignez au moins le Titre de la fiche");
+    }
+    else if (count($result) > 0) {
       $this->addFlash('sonata_flash_success', "Les données ont été chargées avec succès.</br>Voici le résultat obtenu pour le premier élément à importer :<pre>" . print_r(reset($result), true) . '</pre>' . "<a href='$showUrl'>Voir toutes les données</a>");
+    }
     else
       $this->addFlash('sonata_flash_error', "Erreur pendant le chargement des données, le résultat est vide");
     $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]);
@@ -205,12 +211,8 @@ class ImportAdminController extends Controller
           if ($isFormValid && (!$this->isInPreviewMode($request) || $this->isPreviewApproved($request))) {
               try {
                   $object = $this->admin->create($object);
-
-                  $result = $this->get('biopen.element_import')->collectData($object);
-
-                  $this->addFlash('sonata_flash_success', "Les données ont été chargées avec succès. Vous pouvez maintenant compléter les tables de correspondances, puis importer les données.");
-
-                  $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]) . "#tab_3";
+                  // CUSTOM
+                  $url = $this->admin->generateUrl('collect', ['id' => $object->getId()]);
                   return $this->redirect($url);
               } catch (ModelManagerException $e) {
                   $this->handleModelManagerException($e);
