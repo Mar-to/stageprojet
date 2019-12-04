@@ -73,15 +73,20 @@ class ImportAdmin extends AbstractAdmin
                 }
         $formMapper->end();
         $formMapper->tab('Modifier les données en exécutant du code')
-            ->with('Entrez du code qui sera exécuté à la reception des données, avant leur traitement par GoGoCarto', ["description" => "La variable <b>\$data</b> représente le tableau PHP créé à partir des données Csv ou Json. Quelques examples de transformations simple:
+            ->with('Entrez du code qui sera exécuté à la reception des données, avant leur traitement par GoGoCarto', ["description" => "La variable <b>\$data</b> représente le tableau PHP créé à partir des données Csv ou Json. </br>
+<pre>Quelques examples de transformations simple:</pre>
+Si les éléments à importer sont dans une sous propriété appelée 'elements'
 <pre>&lt;?php</br>\$data = \$data['elements'];</pre>
+Ajouter un attribute 'source' à tous les éléments, avec comme valeur 'MySource'
 <pre>&lt;?php</br>foreach(\$data as \$key => \$row) {
     \$data[\$key]['source'] = \"MySource\";
 }</pre>
+Ajouter un attribut en utilisant la valeur d'un autre attribut
 <pre>&lt;?php</br>foreach(\$data as \$key => \$row) {
     \$data[\$key]['latitude'] = \$row['geo']['latitude']);
     \$data[\$key]['longitude'] = \$row['geo']['longitude']);
 }</pre>
+Transformer un attribut
 <pre>&lt;?php</br>foreach(\$data as \$key => \$row) {
     \$data[\$key]['categories'] = array_map(function(\$cat) { return \$cat[0]; }, \$row['categories']);
 }</pre>"])
