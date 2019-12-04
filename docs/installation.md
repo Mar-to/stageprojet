@@ -36,7 +36,7 @@ Installation
 ### Cloning repo (clone dev branch)
 ```
 cd path-to-php-server-folder (default linux /var/www/html, windows c:/wamp/www... )
-git clone https://github.com/pixelhumain/GoGoCarto
+git clone https://gitlab.adullact.net/pixelhumain/GoGoCarto.git
 cd GoGoCarto/
 ```
 

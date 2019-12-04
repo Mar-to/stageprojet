@@ -50,7 +50,7 @@ pecl install mongodb
 pecl install mongo
 sudo apt-get install -y mongodb-org
 
-if grep "extension=mongodb.so" /etc/php5/cli/php.ini 
+if grep "extension=mongodb.so" /etc/php5/cli/php.ini
 then
     echo "extenstion deja configuree";
 else
@@ -75,7 +75,7 @@ curl -L https://npmjs.org/install.sh | sudo sh
 
 # PULL CODE
 cd $WEB_DIR
-git clone -b master https://github.com/pixelhumain/GoGoCarto.git
+git clone -b master https://gitlab.adullact.net/pixelhumain/GoGoCarto.git
 cd GoGoCarto/
 
 chmod 777 /var/log/mongodb/mongod.log
@@ -133,7 +133,7 @@ parameters:
     mailer_user: null
     mailer_password: null
     secret: lijd676jf5657fe56Hyjlkdz
-    router.request_context.host: mywebsite.fr 
+    router.request_context.host: mywebsite.fr
 " > app/config/parameters.yml
 
 php bin/console assets:install --symlink web ;
