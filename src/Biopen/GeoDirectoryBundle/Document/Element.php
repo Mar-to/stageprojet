@@ -994,10 +994,11 @@ class Element
         // Sometime the association between Element and Contribution is broken, and so
         // need to sensure the contribution exists
         // #UglyFix
+        if (!$this->contributions) return [];
         $contribs = [];
         foreach ($this->contributions as $contrib) {
             try {
-                if ($contrib->getType() != null) array_push($contribs, $contrib);
+                if ($contrib->getCreatedAt() != null) array_push($contribs, $contrib);
             } catch (\Exception $e) {
                 $this->removeContribution($contrib);
             }
