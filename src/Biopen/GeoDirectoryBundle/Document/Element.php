@@ -980,7 +980,6 @@ class Element
      */
     public function removeContribution(\Biopen\GeoDirectoryBundle\Document\UserInteractionContribution $contribution)
     {
-        $contribution->removeElement($this);
         $this->contributions->removeElement($contribution);
     }
 
