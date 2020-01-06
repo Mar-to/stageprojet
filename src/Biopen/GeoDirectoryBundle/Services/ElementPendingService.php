@@ -145,8 +145,8 @@ class ElementPendingService
 
    private function sendMailToContributorAfterValidationOrRefusal($element, $isAccepted, $validationType, $message = null)
    {
-      if (!$message && $element->getCurrContribution()) $message = $element->getCurrContribution()->getResolvedMessage();
-      else $message = "";
+      if (!$message && $element->getCurrContribution())
+         $message = $element->getCurrContribution()->getResolvedMessage();
       $this->mailService->sendAutomatedMail($isAccepted ? 'validation' : 'refusal', $element, $message);
    }
 }
