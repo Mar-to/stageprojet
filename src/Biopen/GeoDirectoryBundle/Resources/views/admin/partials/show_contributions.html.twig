@@ -4,23 +4,22 @@
   2: "L'élément ne respecte pas la charte",
   4: "L'élément est référencé plusieurs fois"
   }
-%} 
+%}
 
 {% set labelClass = 'label-danger' %}
 
 <div class="panel-group" style="margin:0" id="accordion" role="tablist" aria-multiselectable="true">
   {% for key, item in admin.subject.getContributionsAndResolvedReports() %}
-    {% if item.type ==  3 %}    
+    {% if item.type ==  3 %}
       <div style="border-top: 10px solid #ecf0f5;padding: 10px;">
         {% include "@BiopenAdmin/partials/display_vote_report_item.html.twig" with {'itemContainer' : false} %}
       </div>
     {% else %}
-      {#<div >#}
       <div class="panel panel-default" style="border-top: 10px solid #ecf0f5;margin-top:0">
         {% include "@BiopenAdmin/partials/show_one_contribution.html.twig" with {'value': item, 'showResolved': true} %}
       </div>
     {% endif %}
-  {% endfor %}   
+  {% endfor %}
 </div>
 
 

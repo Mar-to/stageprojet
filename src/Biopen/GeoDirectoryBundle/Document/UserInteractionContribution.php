@@ -31,7 +31,7 @@ class UserInteractionContribution extends UserInteraction
      *
      * @MongoDB\ReferenceMany(targetDocument="Biopen\GeoDirectoryBundle\Document\UserInteractionVote", cascade={"all"})
      */
-    private $votes = [];  
+    private $votes = [];
 
     /* if a contribution has been accepted or refused, but is not still pending */
     public function isResolved()
@@ -71,7 +71,7 @@ class UserInteractionContribution extends UserInteraction
         $result .= "}";
         return $result;
     }
-    
+
     /**
      * Set status
      *

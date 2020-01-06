@@ -21,17 +21,17 @@ class NewsletterCommand extends GoGoAbstractCommand
     protected function gogoExecute($em, InputInterface $input, OutputInterface $output)
     {
       $usersRepo = $em->getRepository('BiopenCoreBundle:User');
-      
+
       $users = $usersRepo->findNeedsToReceiveNewsletter();
       $nbrUsers = $users->count();
 
       $newsletterService = $this->getContainer()->get('biopen.newsletter_service');
 
       foreach ($users as $key => $user)
-      { 
+      {
          $em->persist($user);
          $nreElements = $newsletterService->sendTo($user);
-         // $this->log('  -> User : ' . $user->getDisplayName() . ', location : ' . $user->getLocation() . ' / ' . $user->getNewsletterRange() . ' km -> Nre Elements : ' .  $nreElements);         
+         // $this->log('  -> User : ' . $user->getDisplayName() . ', location : ' . $user->getLocation() . ' / ' . $user->getNewsletterRange() . ' km -> Nre Elements : ' .  $nreElements);
       }
 
       $em->flush();
