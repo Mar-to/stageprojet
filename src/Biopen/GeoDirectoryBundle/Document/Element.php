@@ -848,7 +848,7 @@ class Element
     private function getArrayFromCollection($collection)
     {
         if ($collection == null) return [];
-        else if (is_array($collection)) return [];
+        else if (is_array($collection)) return $collection;
         else return $collection->toArray();
     }
 
@@ -991,7 +991,18 @@ class Element
      */
     public function getContributions()
     {
-        return $this->contributions;
+        // Sometime the association between Element and Contribution is broken, and so
+        // need to sensure the contribution exists
+        // #UglyFix
+        $contribs = [];
+        foreach ($this->contributions as $contrib) {
+            try {
+                if ($contrib->getType() != null) array_push($contribs, $contrib);
+            } catch (\Exception $e) {
+                $this->removeContribution($contrib);
+            }
+        }
+        return $contribs;
     }
 
     /**

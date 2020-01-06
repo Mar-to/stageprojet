@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Biopen\CoreBundle\Form\UserProfileType;
 use Symfony\Component\Form\FormError;
-use Biopen\GeoDirectoryBundle\Document\Coordinates;   
+use Biopen\GeoDirectoryBundle\Document\Coordinates;
 
 class UserController extends GoGoController
 {
@@ -25,14 +25,14 @@ class UserController extends GoGoController
       $userEmail = $user->getEmail();
 
       $elementsOwned = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->findElementsOwnedBy($userEmail);
-      $elementsOwned = array_filter($elementsOwned->toArray(), function($element) use ($userEmail) { 
-         return !$element->isPending() || $element->getCurrContribution()->getUserEmail() != $userEmail; 
+      $elementsOwned = array_filter($elementsOwned->toArray(), function($element) use ($userEmail) {
+         return !$element->isPending() || $element->getCurrContribution()->getUserEmail() != $userEmail;
       });
 
       $allContribs = $dm->getRepository('BiopenGeoDirectoryBundle:UserInteractionContribution')->findByUserEmail($userEmail);
 
-      $allContribs = array_filter($allContribs, function($interaction) { 
-         return in_array($interaction->getType(), [InteractionType::Add, InteractionType::Edit]); 
+      $allContribs = array_filter($allContribs, function($interaction) {
+         return in_array($interaction->getType(), [InteractionType::Add, InteractionType::Edit]);
       });
       $elementsUserHaveContributed = [];
       $pendingContribs = [];
@@ -40,13 +40,16 @@ class UserController extends GoGoController
          if ($contrib->getStatus() == null) $pendingContribs[] = $contrib;
 
          if ($contrib->countAsValidContributionFrom($userEmail)
-             && !in_array($contrib->getElement(), $elementsUserHaveContributed) 
-             && !in_array($contrib->getElement(), $elementsOwned))
-            array_push($elementsUserHaveContributed, $contrib->getElement());
+             && !in_array($contrib->getElement(), $elementsUserHaveContributed)
+             && !in_array($contrib->getElement(), $elementsOwned)) {
+            try { if ($contrib->getElement()->getName()) {
+               array_push($elementsUserHaveContributed, $contrib->getElement());
+            }} catch (\Exception $e) {}
+         }
       }
 
       usort($pendingContribs, function ($a, $b) { return $b->getTimestamp() - $a->getTimestamp(); });
-      usort($allContribs, function ($a, $b) { return $b->getTimestamp() - $a->getTimestamp(); });  
+      usort($allContribs, function ($a, $b) { return $b->getTimestamp() - $a->getTimestamp(); });
 
       return $this->render('@BiopenCoreBundle/user/contributions/my-contributions.html.twig', array(
          'elementsOwned' => $elementsOwned,
@@ -62,7 +65,7 @@ class UserController extends GoGoController
       $userEmail = $user->getEmail();
 
       $votes = $dm->getRepository('BiopenGeoDirectoryBundle:UserInteractionVote')->findByUserEmail($userEmail);
-      usort($votes, function ($a, $b) { return $b->getTimestamp() - $a->getTimestamp(); });    
+      usort($votes, function ($a, $b) { return $b->getTimestamp() - $a->getTimestamp(); });
 
       return $this->render('@BiopenCoreBundle/user/contributions/votes.html.twig', array('votes' => $votes));
    }
@@ -74,7 +77,7 @@ class UserController extends GoGoController
       $userEmail = $user->getEmail();
 
       $reports = $dm->getRepository('BiopenGeoDirectoryBundle:UserInteractionReport')->findByUserEmail($userEmail);
-      usort($reports, function ($a, $b) { return $b->getTimestamp() - $a->getTimestamp(); });      
+      usort($reports, function ($a, $b) { return $b->getTimestamp() - $a->getTimestamp(); });
 
       return $this->render('@BiopenCoreBundle/user/contributions/reports.html.twig', array('reports' => $reports));
    }
@@ -82,23 +85,23 @@ class UserController extends GoGoController
    public function becomeOwnerAction($id, Request $request)
    {
       $dm = $this->get('doctrine_mongodb')->getManager();
-      $element = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->find($id);      
+      $element = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->find($id);
 
       if (!$element->getUserOwnerEmail()) {
          $user = $this->get('security.context')->getToken()->getUser();
          $userEmail = $user->getEmail();
          $element->setUserOwnerEmail($userEmail);
-         $request->getSession()->getFlashBag()->add('success', "Vous êtes maintenant propriétaire de la fiche " . $element->getName() . " !"); 
+         $request->getSession()->getFlashBag()->add('success', "Vous êtes maintenant propriétaire de la fiche " . $element->getName() . " !");
          $dm->flush();
       }
       else
       {
-         $request->getSession()->getFlashBag()->add('error', "Désolé, cet élément appartient déjà à quelqu'un !");  
+         $request->getSession()->getFlashBag()->add('error', "Désolé, cet élément appartient déjà à quelqu'un !");
       }
 
       return $this->redirectToRoute('biopen_user_contributions');
    }
-    
+
    public function profileAction(Request $request)
    {
       $user = $this->get('security.context')->getToken()->getUser();
@@ -111,36 +114,36 @@ class UserController extends GoGoController
       if (!$user->getNewsletterRange()) $user->setNewsletterRange(50);
 
       if ($form->handleRequest($request)->isValid())
-      {         
+      {
          $alreadyUsedEmail    = ($current_user->getEmail()    != $user->getEmail())    && count($userRepo->findByEmail($user->getEmail())) > 0;
          $alreadyUsedUserName = ($current_user->getUsername() != $user->getUsername()) && count($userRepo->findByUsername($user->getUsername())) > 0;
          $locationSetToReceiveNewsletter = $user->getNewsletterFrequency() > 0 && !$user->getLocation();
          $geocodeError = false;
-         
+
          if ($user->getLocation()) {
              try
              {
                  $geocoded = $this->get('bazinga_geocoder.geocoder')->using('google_maps')->geocode($user->getLocation())->first();
                  $user->setGeo(new Coordinates($geocoded->getLatitude(), $geocoded->getLongitude()));
              }
-             catch (\Exception $error) { $geocodeError = true; } 
-         }                
+             catch (\Exception $error) { $geocodeError = true; }
+         }
 
-         if ($form->isValid() /*&& !$alreadyUsedEmail */&& !$alreadyUsedUserName && !$locationSetToReceiveNewsletter && !$geocodeError) 
+         if ($form->isValid() /*&& !$alreadyUsedEmail */&& !$alreadyUsedUserName && !$locationSetToReceiveNewsletter && !$geocodeError)
          {
             $em->persist($user);
             $em->flush();
             $request->getSession()->getFlashBag()->add('info', "Modifications sauvegardées !");
-         } 
-         else 
+         }
+         else
          {
             // if ($alreadyUsedEmail) $form->get('email')->addError(new FormError('Cet email est déjà utilisé'));
             if ($alreadyUsedUserName) $form->get('username')->addError(new FormError("Ce nom d'utilisateur est déjà pris !"));
             if ($locationSetToReceiveNewsletter) $form->get('location')->addError(new FormError("Si vous voulez recevoir les nouveaux ajouts, vous devez renseigner une adresse"));
             if ($geocodeError) $form->get('location')->addError(new FormError("Impossible de localiser cette adresse"));
          }
-      } 
+      }
 
-      return $this->render('@BiopenCoreBundle/user/profile.html.twig', array('user' => $user, 'form' => $form->createView(), 'config' => $config));        
+      return $this->render('@BiopenCoreBundle/user/profile.html.twig', array('user' => $user, 'form' => $form->createView(), 'config' => $config));
    }
 }

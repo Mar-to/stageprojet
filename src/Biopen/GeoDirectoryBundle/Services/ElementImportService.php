@@ -199,9 +199,9 @@ class ElementImportService
       $deleteQuery = $qb
          ->field('source')->references($import)
          ->field('status')->equals(ElementStatus::DynamicImportTemp);
-
+      // really needed?
       $deletedElementIds = array_keys($deleteQuery->select('id')->hydrate(false)->getQuery()->execute()->toArray());
-      $qb = $this->em->createQueryBuilder(UserInteractionContribution::class);
+      $qb = $this->em->createQueryBuilder(UserInteraction::class);
       $qb->field('element.id')->in($deletedElementIds)->remove()->getQuery()->execute();
 
       $countElemenDeleted = $deleteQuery->remove()->getQuery()->execute()['n'];
