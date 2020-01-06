@@ -23,7 +23,7 @@ class ElementImportOneService
 
 	protected $optionIdsToAddToEachElement = [];
 
-	protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'files', 'owner', 'source', 'openHours'];
+	protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'customFormatedAddress', 'latitude', 'longitude', 'images', 'files', 'owner', 'source', 'openHours'];
 	protected $privateDataProps;
 
 	/**
@@ -121,7 +121,7 @@ class ElementImportOneService
 
 		$element->setOldId($row['id']);
 		$element->setName($row['name']);
-		$address = new PostalAddress($row['streetAddress'], $row['addressLocality'], $row['postalCode'], $row["addressCountry"]);
+		$address = new PostalAddress($row['streetAddress'], $row['addressLocality'], $row['postalCode'], $row["addressCountry"], $row['customFormatedAddress']);
 		$element->setAddress($address);
 
 		$defaultSourceName = $import ? $import->getSourceName() : 'Inconnu';

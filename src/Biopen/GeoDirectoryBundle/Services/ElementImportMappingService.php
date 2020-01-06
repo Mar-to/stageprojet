@@ -80,6 +80,7 @@ class ElementImportMappingService
           else if ($address) {
             if (array_key_exists('streetNumber', $address))    $data[$key]['streetNumber']   =  $address['streetNumber'];
             if (array_key_exists('streetAddress', $address))   $data[$key]['streetAddress']   = $address['streetAddress'];
+            if (array_key_exists('customFormatedAddress', $address))   $data[$key]['customFormatedAddress']   = $address['customFormatedAddress'];
             if (array_key_exists('addressLocality', $address)) $data[$key]['addressLocality'] = $address['addressLocality'];
             if (array_key_exists('postalCode', $address))      $data[$key]['postalCode']      = $address['postalCode'];
             if (array_key_exists('addressCountry', $address))  $data[$key]['addressCountry']  = $address['addressCountry'];
