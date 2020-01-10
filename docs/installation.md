@@ -94,12 +94,12 @@ http://localhost/GoGoCarto/web/app_dev.php/project/initialize
 Updating your install
 ---------------------
 
-Each time you update GoGoCarto code, please run the following commands (first one is most important)
+Each time you want to update GoGoCarto, run the following script
 ```
-php bin/console db:migrate
-gulp build
-php bin/console cache:clear
+sh deploy.sh
 ```
+You can have a look to [the CHANGELOG](../CHANGELOG.md) to know what are the new functionalities
+
 
 Production
 ----------
