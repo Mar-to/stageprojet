@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Biopen\GeoDirectoryBundle\Document\Element;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Biopen\GeoDirectoryBundle\Document\UserInteractionContribution;
+use Biopen\GeoDirectoryBundle\Document\UserInteraction;
 use Biopen\GeoDirectoryBundle\Document\ImportState;
 use Biopen\CoreBundle\Document\GoGoLogImport;
 use Biopen\GeoDirectoryBundle\Document\ModerationState;

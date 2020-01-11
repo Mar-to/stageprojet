@@ -11,10 +11,8 @@
 		"website": "mysite.fr",
 		"description": "oh yeah",
 		"tarara": 452,
-		"categories": [
-			{ "name": "Nature", "index": 5, "description": "balade en forêt"},
-		  { "name": "Numérique", "index": 1}
-		],
+		"categories": ["one", "two"],
+		"categories2": ["orange"],
 		"website": "https:\/\/www.asso-entropie.fr\/",
 		"images": ["https:\/\/www.capoupascap.info\/wp-content\/uploads\/2018\/12\/entropie.png"],
 		"files": ["https:\/\/toto.fr\/wp-content\/file.pdf", "https:\/\/aabjka.fr\/wp-content\/file.pdf"],
@@ -33,7 +31,8 @@
 			"address": "rue Bernard, Tours",
 			"sourceKey":"CapOuPasCap",
 			"updatedAt": "10/08/2019",
-			"categories": [6]
+			"categories": ["one"],
+			"categories2": ["blue"]
 		},
 		{
 			"id":"sa",
@@ -41,7 +40,8 @@
 			"coord":{"latitude":46.18679,"longitude":5.70548},
 			"address": "rue Jacquet, Labrit",
 			"sourceKey":"CapOuPasCap",
-			"categories": [2],
+			"categories": ["two"],
+			"categories2": ["blue", "orange"],
 			"updatedAt": "11/08/2019",
 			"website": "https:\/\/www.asso-cala.fr\/"
 		}

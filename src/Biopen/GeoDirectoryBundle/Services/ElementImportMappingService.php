@@ -110,7 +110,6 @@ class ElementImportMappingService
         unset($data[$key]);
       }
     }
-
     // Ontology
     $this->collectOntology($data, $import);
     $data = $this->mapOntology($data);
@@ -248,23 +247,18 @@ class ElementImportMappingService
   {
     $mapping = $this->import->getOntologyMapping();
     foreach ($data as $key => $row) {
-
+      $newRow = [];
       // First map nested fields
       foreach ($mapping as $search => $replace) {
         $searchKeys = explode('/', $search);
         if (count($searchKeys) == 2) {
           $searchkey = $searchKeys[0]; $subkey = $searchKeys[1];
 
-          if (!in_array($replace, ['/', '']) && isset($data[$key][$searchkey]) && isset($row[$searchkey][$subkey]) && !isset($data[$key][$replace])) {
-            $data[$key][$replace] = $row[$searchkey][$subkey];
-            unset($data[$key][$searchkey][$subkey]);
+          if (!in_array($replace, ['/', '']) && isset($data[$key][$searchkey]) && isset($row[$searchkey][$subkey]))
+          {
+            $newRow = $this->mapAttribute($newRow, $replace, $data[$key][$searchkey][$subkey]);
           }
         }
-      }
-
-      // Then remove non mapped fields
-      foreach ($mapping as $search => $replace) {
-        if (in_array($replace, ['/', ''])) unset($data[$key][$search]);
       }
 
       // Finally map non nested fields
@@ -273,30 +267,45 @@ class ElementImportMappingService
         if (count($searchKeys) == 1) {
           $searchkey = $search;
 
-          if (!in_array($replace, ['/', '']) && isset($data[$key][$searchkey]) && !isset($data[$key][$replace])) {
-            $data[$key][$replace] = $row[$searchkey];
-            unset($data[$key][$searchkey]);
+          if (!in_array($replace, ['/', '']) && isset($data[$key][$searchkey])) {
+            $newRow = $this->mapAttribute($newRow, $replace, $data[$key][$searchkey]);
           }
         }
       }
 
       // add streetNumber into streetAddress
-      if (isset($data[$key]['streetNumber']) && isset($data[$key]['streetAddress'])) {
-        $data[$key]['streetAddress'] = $data[$key]['streetNumber'] . ' ' . $data[$key]['streetAddress'];
-        unset($data[$key]['streetNumber']);
+      if (isset($newRow['streetNumber']) && isset($newRow['streetAddress'])) {
+        $newRow['streetAddress'] = $newRow['streetNumber'] . ' ' . $newRow['streetAddress'];
       }
-      if (isset($data[$key]['fullAddress'])) {
-        $data[$key]['streetAddress'] = $data[$key]['fullAddress'];
-        unset($data[$key]['fullAddress']);
+      if (isset($newRow['fullAddress'])) {
+        $newRow['streetAddress'] = $newRow['fullAddress'];
       }
       // convert lat/long numeric into string
-      if (isset($data[$key]['latitude']) && is_numeric($data[$key]['latitude']))
-        $data[$key]['latitude'] = '' . $data[$key]['latitude'];
-      if (isset($data[$key]['longitude']) && is_numeric($data[$key]['longitude']))
-        $data[$key]['longitude'] = '' . $data[$key]['longitude'];
+      if (isset($newRow['latitude']) && is_numeric($newRow['latitude']))
+        $newRow['latitude'] = '' . $newRow['latitude'];
+      if (isset($newRow['longitude']) && is_numeric($newRow['longitude']))
+        $newRow['longitude'] = '' . $newRow['longitude'];
+
+      $data[$key] = $newRow;
+    }
+    return $data;
+  }
+
+  // map $value inside $newKey attribute
+  private function mapAttribute($newRow, $newKey, $value)
+  {
+    // We allow that multiple keys maps to categories. In this case they will be concatenated
+    if ($newKey == 'categories') {
+      if (is_string($value)) $value = explode(',', $value);
+      $oldVal = isset($newRow[$newKey]) ? $newRow[$newKey] : [];
+      $value = array_merge($oldVal, $value);
     }
 
-    return $data;
+    // replacing existing value only if not set, or if categories because values have been merged
+    if (!isset($newRow[$newKey]) || $newKey == 'categories') {
+      $newRow[$newKey] = $value;
+    }
+    return $newRow;
   }
 
   private function mapTaxonomy($data)
@@ -305,7 +314,6 @@ class ElementImportMappingService
     foreach ($data as $key => $row)
     {
       if (isset($data[$key]['categories'])) {
-        if (is_string($row['categories'])) $row['categories'] = explode(',', $row['categories']);
         $categories = []; $categoriesIds = [];
         foreach ($row['categories'] as $category)
         {
