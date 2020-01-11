@@ -1,3 +1,16 @@
+v2.5.6
+======
+* FEATURE: Service Worker so GoGoCarto works better on mobile
+* FEATURE: Ability to choose multiple attribute to fill the categories
+* BUG: MongoDB Broken associations betwwen Contribution and Elements
+* BUG: Moderation custom message get lost on refuse pending element
+* FEATURE: Import use customFormatedAddress
+* FEATURE: Import handle better bad formats and corrupt data
+* BUG: Fix Element Export from admin
+* FEATURE: Custom style is now also applied to SAAS pages
+* BUG: Prevent merging records where no address and no lat/long is provided
+* FEATURE: Improve Search
+
 v2.5.1
 ======
 * BUG: In Element Import Taxonomy Mapping, all mapping was deleted on save
