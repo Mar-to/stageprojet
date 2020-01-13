@@ -17,9 +17,9 @@ class Option
 {
     /**
      * @var int
-     * @Accessor(getter="getStringId",setter="setId") 
+     * @Accessor(getter="getStringId",setter="setId")
      * @Groups({"semantic"})
-     * @MongoDB\Id(strategy="INCREMENT") 
+     * @MongoDB\Id(strategy="INCREMENT")
      */
     private $id;
 
@@ -31,7 +31,7 @@ class Option
     private $customId;
 
     /**
-     * @var string   
+     * @var string
      * @Groups({"semantic"})
      * @MongoDB\Field(type="string")
      */
@@ -44,7 +44,7 @@ class Option
      * @MongoDB\Field(type="string")
      */
     private $nameShort;
-    
+
     /**
      * @Accessor(getter="getParentOptionId")
      * @Groups({"semantic"})
@@ -56,7 +56,7 @@ class Option
     /**
      * @var int
      * @Exclude
-     * @MongoDB\Field(type="int") 
+     * @MongoDB\Field(type="int")
      */
     private $index;
 
@@ -187,9 +187,16 @@ class Option
         $this->subcategories = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-    public function __toString() 
+    public function __toString()
     {
         return $this->getName();
+    }
+
+    public function allSubcategories()
+    {
+        $result = [];
+
+        return $result;
     }
 
     public function getNameWithParent()
@@ -221,7 +228,7 @@ class Option
     {
         $result = [];
         $parentOption = $option->getParentOption();
-        if ($parentOption) 
+        if ($parentOption)
         {
             $result = $this->recursivelyAddParentOptionId($parentOption);
         }
@@ -240,7 +247,24 @@ class Option
         foreach ($option->getSubcategories() as $categorie) {
             foreach ($categorie->getOptions() as $childOption) {
                $result = array_merge($result, $this->recursivelyAddChilrenOptionIds($childOption));
-            }           
+            }
+        }
+        return $result;
+    }
+
+    public function getAllSubcategoriesIds()
+    {
+        return $this->recursivelyGetSubcategoriesIds($this);
+    }
+
+    private function recursivelyGetSubcategoriesIds($option)
+    {
+        $result = [];
+        foreach ($option->getSubcategories() as $categorie) {
+            $result[] = $categorie->getId();
+            foreach ($categorie->getOptions() as $childOption) {
+               $result = array_merge($result, $this->recursivelyGetSubcategoriesIds($childOption));
+            }
         }
         return $result;
     }
@@ -257,7 +281,7 @@ class Option
         usort( $sortedCategories , function ($a, $b) { return $a->getIndex() - $b->getIndex(); });
         return $sortedCategories;
     }
-    
+
     /**
      * Get id
      *
@@ -278,9 +302,9 @@ class Option
         return $this->customId ?: strval($this->id);
     }
 
-    public function setId() 
-    { 
-        return $this; 
+    public function setId()
+    {
+        return $this;
     }
 
     /**
@@ -567,7 +591,12 @@ class Option
      */
     public function setParent(\Biopen\GeoDirectoryBundle\Document\Category $parent)
     {
-        $this->parent = $parent;
+        if ($parent && in_array($parent->getId(), $this->getAllSubcategoriesIds())) {
+            // Circular reference
+        } else {
+            $this->parent = $parent;
+        }
+
         return $this;
     }
 

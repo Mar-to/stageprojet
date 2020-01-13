@@ -21,7 +21,7 @@ use Knp\Menu\ItemInterface;
 class OptionAdmin extends AbstractAdmin
 {
    protected $baseRouteName = 'admin_biopen_geodirectory_option';
-protected $baseRoutePattern = 'admin_biopen_geodirectory_option';
+   protected $baseRoutePattern = 'admin_biopen_geodirectory_option';
 
    public function createQuery($context = 'list')
 	{
@@ -31,7 +31,7 @@ protected $baseRoutePattern = 'admin_biopen_geodirectory_option';
 
    public function getTemplate($name)
    {
-     switch ($name) {
+      switch ($name) {
          case 'edit': return '@BiopenAdmin/edit/edit_option_category.html.twig';
              break;
          default : return parent::getTemplate($name);
@@ -40,8 +40,13 @@ protected $baseRoutePattern = 'admin_biopen_geodirectory_option';
    }
 
 	protected function configureFormFields(FormMapper $formMapper)
-	{
-	   $formMapper
+   {
+      // prevent circular reference, i.e setting a child as parent
+      $repo = $this->getConfigurationPool()->getContainer()->get('doctrine_mongodb')->getRepository('BiopenGeoDirectoryBundle:Category');
+      $parentQuery = $repo->createQueryBuilder()
+                          ->field('id')->notIn($this->subject->getAllSubcategoriesIds());
+
+      $formMapper
 	   ->tab('Principal')
          ->with('Paramètres principaux', array('class' => 'col-xs-12 col-md-6'))
             ->add('name', null, array('required' => true, 'label' => 'Nom'))
@@ -50,6 +55,7 @@ protected $baseRoutePattern = 'admin_biopen_geodirectory_option';
             ->add('parent', 'sonata_type_model', array(
             'class'=> 'Biopen\GeoDirectoryBundle\Document\Category',
             'required' => true,
+            'query' => $parentQuery,
             'choices_as_values' => true,
             'label' => 'Groupe de Catégorie parent',
             'mapped' => true), array('admin_code' => 'admin.categories.lite_hidden'))

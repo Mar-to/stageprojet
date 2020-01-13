@@ -41,14 +41,20 @@ class CategoryAdmin extends AbstractAdmin
 
 	protected function configureFormFields(FormMapper $formMapper)
 	{
-	  $formMapper
+	  // prevent circular reference, i.e setting a child as parent
+    $repo = $this->getConfigurationPool()->getContainer()->get('doctrine_mongodb')->getRepository('BiopenGeoDirectoryBundle:Option');
+    $parentQuery = $repo->createQueryBuilder()
+                        ->field('id')->notIn($this->subject->getAllOptionsIds());
+
+    $formMapper
 	  ->with('Paramètres principaux', array('class' => 'col-xs-12 col-md-6'))
 		  	->add('name', null, array('required' => true, 'label' => 'Nom du groupe'))
 		  	->add('pickingOptionText', null, array('required' => true, 'label' => 'Texte à afficher dans le formulaire : Choisissez ....'))
 		  	->add('parent', 'sonata_type_model', array(
 		  		'class'=> 'Biopen\GeoDirectoryBundle\Document\Option',
 		  		'required' => false,
-            'choices_as_values' => true,
+          'query' => $parentQuery,
+          'choices_as_values' => true,
 		  		'label' => 'Catégorie parente'), array('admin_code' => 'admin.option_hidden'))
         ->add('isMandatory', null, array('required' => false, 'label' => "Choix obligatoire", 'label_attr' => ['title'=>"Une catégorie de ce groupe doit être obligatoirement selectionnée"]))
         ->add('singleOption', null, array('required' => false, 'label' => 'Choix unique', 'label_attr' => ['title'=>"Une seule catégorie est selectionnable à la fois"]))

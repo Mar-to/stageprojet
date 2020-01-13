@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation\Accessor;
 
 /**
  * Category
- * @MongoDB\HasLifecycleCallbacks 
+ * @MongoDB\HasLifecycleCallbacks
  * @MongoDB\Document(repositoryClass="Biopen\GeoDirectoryBundle\Repository\CategoryRepository")
  */
 class Category
@@ -16,7 +16,7 @@ class Category
     /**
      * @var int
      *  @Exclude
-     * @MongoDB\Id(strategy="INCREMENT") 
+     * @MongoDB\Id(strategy="INCREMENT")
      */
     private $id;
 
@@ -32,7 +32,7 @@ class Category
      * @Exclude(if="object.getNameShort() == object.getName()")
      * @MongoDB\Field(type="string")
      */
-    private $nameShort;    
+    private $nameShort;
 
     /**
      * @MongoDB\ReferenceOne(targetDocument="Biopen\GeoDirectoryBundle\Document\Option", inversedBy="subcategories")
@@ -150,7 +150,7 @@ class Category
     * @Exclude(if="object.getOptionsCount() == 0")
     * @MongoDB\ReferenceMany(targetDocument="Biopen\GeoDirectoryBundle\Document\Option", mappedBy="parent", cascade={"persist", "remove"}, sort={"index"="ASC"})
     */
-    private $options; 
+    private $options;
 
 
     public function __construct()
@@ -158,7 +158,7 @@ class Category
         $this->options = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-    public function __toString() 
+    public function __toString()
     {
         $parentName = $this->getParent() ? $this->getParent()->getName() . '/' : '';
         return "(Groupe) " . $parentName . $this->getName();
@@ -183,7 +183,24 @@ class Category
         usort( $sortedOptions , function ($a, $b) { return $a->getIndex() - $b->getIndex(); });
         return $sortedOptions;
     }
-    
+
+    public function getAllOptionsIds()
+    {
+        return $this->recursivelyGetOptionsIds($this);
+    }
+
+    private function recursivelyGetOptionsIds($category)
+    {
+        $result = [];
+        foreach ($category->getOptions() as $option) {
+            $result[] = $option->getId();
+            foreach ($option->getSubcategories() as $childCategory) {
+               $result = array_merge($result, $this->recursivelyGetOptionsIds($childCategory));
+            }
+        }
+        return $result;
+    }
+
     /**
      * Get id
      *
@@ -334,7 +351,7 @@ class Category
     {
         return $this->enableDescription;
     }
-    
+
     /**
      * Set pickingOptionText
      *
@@ -409,11 +426,15 @@ class Category
      */
     public function setParent($parent, $updateParent = true)
     {
-        // clearing old parent
-        if ($updateParent && $this->parent) $this->parent->removeSubcategory($this, false);
-        
-        $this->parent = $parent;
-        if ($updateParent && $parent) $parent->addSubcategory($this, false);
+        if ($parent && in_array($parent->getId(), $this->getAllOptionsIds())) {
+            // Circular reference
+        } else {
+            // clearing old parent
+            if ($updateParent && $this->parent) $this->parent->removeSubcategory($this, false);
+
+            $this->parent = $parent;
+            if ($updateParent && $parent) $parent->addSubcategory($this, false);
+        }
 
         return $this;
     }
