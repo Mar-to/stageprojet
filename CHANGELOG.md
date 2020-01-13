@@ -1,3 +1,7 @@
+v2.5.7
+======
+* BUG: Prevent circular reference between categories and options
+
 v2.5.6
 ======
 * FEATURE: Service Worker so GoGoCarto works better on mobile
