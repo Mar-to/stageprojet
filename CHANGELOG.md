@@ -1,3 +1,7 @@
+v2.5.8
+======
+* BUG: Import Categories with space at beginning or the end
+
 v2.5.7
 ======
 * BUG: Prevent circular reference between categories and options

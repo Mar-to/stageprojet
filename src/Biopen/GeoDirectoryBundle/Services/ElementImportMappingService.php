@@ -318,6 +318,7 @@ class ElementImportMappingService
         foreach ($row['categories'] as $category)
         {
           $val = is_array($category) ? $category['name'] : $category;
+          $val = ltrim(rtrim($val));
           if (isset($mapping[$val]) && $mapping[$val])
           {
             foreach ($mapping[$val] as $mappedCategory) {
