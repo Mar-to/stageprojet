@@ -42,7 +42,12 @@ class ElementFormController extends GoGoController
 
 		$element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($id);
 
-		if ( $element->getStatus() > ElementStatus::PendingAdd && $element->getStatus() != ElementStatus::DynamicImport
+		if (!$element)
+		{
+			$request->getSession()->getFlashBag()->add('error', "L'élément demandé n'existe pas...");
+			return $this->redirectToRoute('biopen_directory');
+		}
+		else if ( $element->getStatus() > ElementStatus::PendingAdd && $element->getStatus() != ElementStatus::DynamicImport
 			|| $this->container->get('biopen.config_service')->isUserAllowed('directModeration')
 			|| ($element->isPending() && $element->getRandomHash() == $request->get('hash')))
 		{
