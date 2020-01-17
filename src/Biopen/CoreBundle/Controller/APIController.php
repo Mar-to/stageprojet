@@ -52,7 +52,9 @@ class APIController extends GoGoController
       if ($this->container->get('kernel')->getEnvironment() == 'dev') {
         $imgUrl = str_replace('app_dev.php/', '', $imgUrl);
       }
-      $imageData = InterventionImage::make($imgUrl);
+      try {
+        $imageData = InterventionImage::make($imgUrl);
+      } catch (\Exception $error) { }
     }
 
     $icon = [ "src" => $imgUrl ];
