@@ -40,7 +40,7 @@ gulp.task('scriptsElementForm', function() {
 gulp.task('scriptsLibs', function() {
   gulp.src(['node_modules/gogocarto-js/dist/gogocarto.js'])
       .pipe(gulp.dest('web/js'));
-  return gulp.src(['src/Biopen/GeoDirectoryBundle/Resources/js/libs/**/*.js', 
+  return gulp.src(['src/Biopen/GeoDirectoryBundle/Resources/js/libs/**/*.js',
                    'src/Biopen/CoreBundle/Resources/js/libs/**/*.js',
                    'src/Biopen/CoreBundle/Resources/js/init-sw.js',
                    'web/bundles/fosjsrouting/js/router.js',
@@ -55,7 +55,7 @@ gulp.task('service-worker', () => {
         swDest: 'web/sw.js',
         globDirectory: 'web',
         globPatterns: [
-            '+(assets|js|templates)\/**\/*.{js,css,html,png}',
+            '+(assets|js|templates)\/**\/*.{js,css,html,png, woff, woff2}',
             'offline.html'
         ],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024
@@ -71,7 +71,7 @@ gulp.task('sass', function () {
                   'src/Biopen/CoreBundle/Resources/scss/**/*.scss',
                   'src/Biopen/SaasBundle/Resources/scss/**/*.scss'])
     .pipe(sass()
-    .on('error', sass.logError))    
+    .on('error', sass.logError))
     .pipe(gulp.dest('web/assets/css'));
 });
 
@@ -135,16 +135,16 @@ gulp.task('watch', function() {
   //livereload.listen();
   // Watch .scss files
   gulp.watch(['src/Biopen/**/Resources/scss/**/*.scss'],['sass']);
-  
-  gulp.watch(['src/Biopen/GeoDirectoryBundle/Resources/js/element-form/**/*.js'], 
+
+  gulp.watch(['src/Biopen/GeoDirectoryBundle/Resources/js/element-form/**/*.js'],
               ['scriptsElementForm']);
 
-  gulp.watch(['src/Biopen/GeoDirectoryBundle/Resources/js/**/*.js', '!src/Biopen/GeoDirectoryBundle/Resources/js/element-form/**/*.js'], 
+  gulp.watch(['src/Biopen/GeoDirectoryBundle/Resources/js/**/*.js', '!src/Biopen/GeoDirectoryBundle/Resources/js/element-form/**/*.js'],
               ['scriptsExternalPages']);
 
-  gulp.watch(['node_modules/gogocarto-js/dist/**/*'], 
+  gulp.watch(['node_modules/gogocarto-js/dist/**/*'],
               ['gogocarto_assets']);
-  
+
   gulp.watch(['src/Biopen/GeoDirectoryBundle/Resources/js/libs/**/*.js','src/Biopen/CoreBundle/Resources/js/libs/**/*.js','node_modules/gogocarto-js/dist/gogocarto.js'], ['scriptsLibs']);
 
   gulp.watch(['src/Biopen/CoreBundle/Resources/js/home.js'], ['scriptsHome']);
