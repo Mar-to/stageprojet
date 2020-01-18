@@ -11,7 +11,7 @@ bazinga_geocoder:
         openstreetmap:
             locale:               fr
 
-ivory_ck_editor:
+fos_ck_editor:
     default_config: full
     configs:
         full:

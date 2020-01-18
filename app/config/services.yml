@@ -23,5 +23,5 @@ services:
     custom.sonata.security.handler.role:
         class: Application\Sonata\UserBundle\Security\CustomRoleSecurityHandler
         arguments:
-            - @security.authorization_checker
+            - "@security.authorization_checker"
             - [ROLE_SUPER_ADMIN]

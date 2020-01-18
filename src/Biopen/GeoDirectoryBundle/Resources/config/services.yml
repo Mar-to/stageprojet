@@ -7,15 +7,15 @@ services:
 
     biopen.element_vote_service:
        class: Biopen\GeoDirectoryBundle\Services\ElementVoteService
-       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.context", "@biopen.config_service", "@biopen.element_pending_service" ]
+       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.token_storage", "@biopen.config_service", "@biopen.element_pending_service" ]
 
     biopen.element_action_service:
        class: Biopen\GeoDirectoryBundle\Services\ElementActionService
-       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.context", "@biopen.mail_service", "@biopen.element_pending_service", "@biopen.user_interaction_service" ]
+       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.token_storage", "@biopen.mail_service", "@biopen.element_pending_service", "@biopen.user_interaction_service" ]
 
     biopen.element_pending_service:
        class: Biopen\GeoDirectoryBundle\Services\ElementPendingService
-       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.context", "@biopen.mail_service", "@biopen.user_interaction_service" ]
+       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.token_storage", "@biopen.mail_service", "@biopen.user_interaction_service" ]
 
     biopen.element_form_service:
        class: Biopen\GeoDirectoryBundle\Services\ElementFormService
@@ -31,11 +31,11 @@ services:
 
     biopen.user_interaction_service:
        class: Biopen\GeoDirectoryBundle\Services\UserInteractionService
-       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.context" ]
+       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.token_storage" ]
 
     biopen.webhook_service:
       class: Biopen\GeoDirectoryBundle\Services\WebhookService
-      arguments: [ "@doctrine.odm.mongoDB.document_manager", "@router", "@security.context", "%base_url%", "%base_path%" ]
+      arguments: [ "@doctrine.odm.mongoDB.document_manager", "@router", "@security.token_storage", "%base_url%", "%base_path%" ]
 
     biopen.taxonomy_json_generator:
         class: Biopen\GeoDirectoryBundle\EventListener\TaxonomyJsonGenerator
@@ -81,5 +81,5 @@ services:
 
     biopen.gogocartojs_service:
        class: Biopen\GeoDirectoryBundle\Services\GoGoCartoJsService
-       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.context", "@router", "@session", "%base_protocol%" ]
+       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.token_storage", "@router", "@session", "%base_protocol%" ]
        scope: request

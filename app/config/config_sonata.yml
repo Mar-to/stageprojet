@@ -13,9 +13,10 @@ sonata_block:
 sonata_doctrine_mongo_db_admin:
     templates:
         form:
-            - @BiopenAdmin/core_custom/form_admin_fields.html.twig
+            - "@BiopenAdmin/core_custom/form_admin_fields.html.twig"
 
 sonata_formatter:
+    default_formatter: "text"
     formatters:
         markdown:
             service: sonata.formatter.text.markdown
@@ -68,7 +69,7 @@ sonata_admin:
     templates:
         # default global templates
         layout:  SonataAdminBundle::layout.html.twig
-        edit:    @BiopenAdmin/core_custom/base_edit.html.twig
+        edit:    "@BiopenAdmin/core_custom/base_edit.html.twig"
     dashboard:
         blocks:
             # display a dashboard block
