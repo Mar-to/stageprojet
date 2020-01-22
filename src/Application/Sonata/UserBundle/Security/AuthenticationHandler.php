@@ -1,7 +1,7 @@
 <?php
 
 namespace Application\Sonata\UserBundle\Security;
- 
+
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\RouterInterface;
@@ -9,17 +9,16 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Security\Http\Logout\LogoutSuccessHandlerInterface;
-use Symfony\Component\Security\Core\SecurityContext;
- 
+use Symfony\Component\Security\Core\Security;
+
 class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface, LogoutSuccessHandlerInterface
 {
 	private $router;
 	private $session;
- 
+
 	/**
 	 * Constructor
 	 *
@@ -27,13 +26,13 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
 	 * @param 	RouterInterface $router
 	 * @param 	Session $session
 	 */
-	public function __construct( RouterInterface $router, Session $session, SecurityContext $securityContext )
+	public function __construct( RouterInterface $router, Session $session, $securityToken )
 	{
 		$this->router  = $router;
 		$this->session = $session;
-		$this->securityContext = $securityContext;
+		$this->securityToken = $securityToken;
 	}
- 
+
 	/**
 	 * onAuthenticationSuccess
  	 *
@@ -46,40 +45,40 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
 	{
 		// if AJAX login
 		if ( $request->isXmlHttpRequest() ) {
-			$user = $this->securityContext->getToken()->getUser(); 
+			$user = $this->securityToken->getToken()->getUser();
 			$redirectionUrl = '';
-			if ( $this->session->get('_security.main.target_path' ) ) { 
-				$redirectionUrl = $this->session->get( '_security.main.target_path' ); 
+			if ( $this->session->get('_security.main.target_path' ) ) {
+				$redirectionUrl = $this->session->get( '_security.main.target_path' );
 			}
-			$array = array( 'success' => true, 
+			$array = array( 'success' => true,
 								 'redirectionUrl' => $redirectionUrl,
-								 'roles' => $user->getRoles(), 
-								 'username' => $user->getUsername(), 
+								 'roles' => $user->getRoles(),
+								 'username' => $user->getUsername(),
 								 'email' => $user->getEmail()); // data to return via JSON
-			
+
 			$response = new Response( json_encode( $array ) );
 			$response->headers->set( 'Content-Type', 'application/json' );
- 
+
 			return $response;
- 
-		// if form login 
+
+		// if form login
 		} else {
- 
+
 			if ( $this->session->get('_security.main.target_path' ) ) {
- 
+
 				$url = $this->session->get( '_security.main.target_path' );
- 
+
 			} else {
- 
+
 				$url = $this->router->generate( 'biopen_homepage' );
- 
+
 			} // end if
- 
+
 			return new RedirectResponse( $url );
- 
+
 		}
 	}
- 
+
 	/**
 	 * onAuthenticationFailure
 	 *
@@ -92,24 +91,24 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
 	{
 		// if AJAX login
 		if ( $request->isXmlHttpRequest() ) {
- 
+
 			$array = array( 'success' => false, 'message' => $exception->getMessage() ); // data to return via JSON
 			$response = new Response( json_encode( $array ) );
 			$response->headers->set( 'Content-Type', 'application/json' );
- 
+
 			return $response;
- 
-		// if form login 
+
+		// if form login
 		} else {
- 
+
 			// set authentication exception to session
-			$request->getSession()->set(SecurityContextInterface::AUTHENTICATION_ERROR, $exception);
- 
+			$request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
+
 			return new RedirectResponse( $this->router->generate( 'login_route' ) );
 		}
 	}
 
-	public function onLogoutSuccess(Request $request) 
+	public function onLogoutSuccess(Request $request)
 	{
 	  $this->session->remove("userEmail");
 	  return new Response('{"success": true}');

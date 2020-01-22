@@ -18,7 +18,7 @@ use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Biopen\GeoDirectoryBundle\Document\ModerationState;
 use Biopen\GeoDirectoryBundle\Document\UserInteractionVote;
 use Biopen\GeoDirectoryBundle\Document\VoteValue;
-use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\Security\Core\Security;
 use Biopen\CoreBundle\Services\ConfigurationService;
 use Biopen\GeoDirectoryBundle\Services\ElementPendingService;
 use Biopen\GeoDirectoryBundle\Services\ValidationType;
@@ -28,7 +28,7 @@ class ElementVoteService
 	/**
      * Constructor
      */
-    public function __construct(DocumentManager $documentManager, SecurityContext $securityContext, ConfigurationService $confService, ElementPendingService $elementPendingService)
+    public function __construct(DocumentManager $documentManager, $securityContext, ConfigurationService $confService, ElementPendingService $elementPendingService)
     {
         $this->em = $documentManager;
         $this->user = $securityContext->getToken() ? $securityContext->getToken()->getUser() : null;

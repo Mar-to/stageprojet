@@ -2,9 +2,9 @@
 namespace Biopen\CoreBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Symfony\Component\Security\Core\SecurityContext;
- 
-class ConfigurationService 
+use Symfony\Component\Security\Core\Security;
+
+class ConfigurationService
 {
     protected $em;
     protected $securityContext;
@@ -13,7 +13,7 @@ class ConfigurationService
 	/**
 	* Constructor
 	*/
-	public function __construct(DocumentManager $documentManager, SecurityContext $securityContext)
+	public function __construct(DocumentManager $documentManager, $securityContext)
 	{
 	   $this->em = $documentManager;
 	   $this->securityContext = $securityContext;
@@ -21,10 +21,10 @@ class ConfigurationService
 	}
 
 	public function isUserAllowed($featureName, $request = null, $email = null)
-	{        
+	{
         if ($email === null && $request !== null) $email = $request->get('userEmail');
 
-        $user = $this->securityContext->getToken()->getUser(); 
+        $user = $this->securityContext->getToken()->getUser();
 
         if ($user == 'anon.') $user = null;
 

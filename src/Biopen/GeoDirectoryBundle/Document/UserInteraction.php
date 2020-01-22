@@ -123,9 +123,10 @@ class UserInteraction
 
     public function updateUserInformation($securityContext, $email = null, $directModerationWithHash = false)
     {
-        if ($securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED'))
+        $user = $securityContext->getToken() ? $securityContext->getToken()->getUser() : null;
+        $user = is_object($user) ? $user : null;
+        if ($user)
         {
-            $user = $securityContext->getToken()->getUser();
             $this->setUserEmail($user->getEmail());
             $this->setUserRole($user->isAdmin() ? UserRoles::Admin : UserRoles::Loggued);
         }
@@ -144,9 +145,10 @@ class UserInteraction
 
     public function updateResolvedBy($securityContext, $email = null, $directModerationWithHash = false)
     {
-        if ($securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED'))
+        $user = $securityContext->getToken() ? $securityContext->getToken()->getUser() : null;
+        $user = is_object($user) ? $user : null;
+        if ($user)
         {
-            $user = $securityContext->getToken()->getUser();
             $this->setResolvedBy($user->getEmail());
         }
         else

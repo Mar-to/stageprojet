@@ -3,12 +3,12 @@
 namespace Biopen\GeoDirectoryBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class GoGoCartoJsService
 {
-  public function __construct(DocumentManager $documentManager, SecurityContext $securityContext, $router, $session, $base_protocol)
+  public function __construct(DocumentManager $documentManager, $securityContext, $router, $session, $base_protocol)
   {
     $this->odm = $documentManager;
     $this->securityContext = $securityContext;
@@ -28,17 +28,17 @@ class GoGoCartoJsService
 
     $config = $this->odm->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
 
-    $user = $this->securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED') ? $this->securityContext->getToken()->getUser() : null;
+    $user = $this->securityContext->getToken() ? $this->securityContext->getToken()->getUser() : null;
 
-    $roles = $user ? $user->getRoles() : [];
-    $userGogocartoRole = $user && $user->isAdmin() ? 'admin' : (in_array('ROLE_USER', $roles) ? 'user' : 'anonymous');
+    $roles = is_object($user) ? $user->getRoles() : [];
+    $userGogocartoRole = is_object($user) && $user->isAdmin() ? 'admin' : (in_array('ROLE_USER', $roles) ? 'user' : 'anonymous');
     $userGogocartoRole = [$userGogocartoRole];
-    $userEmail = $user ? $user->getEmail() : $this->session->get('userEmail');
+    $userEmail = is_object($user) ? $user->getEmail() : $this->session->get('userEmail');
 
     $allowedStamps = [];
     if ($config->getStampFeature()->getActive())
     {
-        $allowedStamps = $user ? $user->getAllowedStamps()->toArray() : [];
+        $allowedStamps = is_object($user) ? $user->getAllowedStamps()->toArray() : [];
         foreach ($allowedStamps as $stamp) {
             $result = $elementsRep->findStampedWithId($stamp->getId());
             $elementIds = [];

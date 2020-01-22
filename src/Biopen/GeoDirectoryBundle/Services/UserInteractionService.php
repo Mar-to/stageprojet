@@ -3,7 +3,7 @@
 namespace Biopen\GeoDirectoryBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\Security\Core\Security;
 use Biopen\GeoDirectoryBundle\Document\Webhook;
 use Biopen\GeoDirectoryBundle\Document\WebhookPost;
 use Biopen\GeoDirectoryBundle\Document\UserInteractionContribution;
@@ -19,7 +19,7 @@ class UserInteractionService
    /**
    * Constructor
    */
-   public function __construct(DocumentManager $documentManager, SecurityContext $securityContext)
+   public function __construct(DocumentManager $documentManager, $securityContext)
    {
       $this->em = $documentManager;
       $this->securityContext = $securityContext;

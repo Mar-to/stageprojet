@@ -15,7 +15,7 @@ services:
 
     biopen.element_pending_service:
        class: Biopen\GeoDirectoryBundle\Services\ElementPendingService
-       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@security.token_storage", "@biopen.mail_service", "@biopen.user_interaction_service" ]
+       arguments: [ "@doctrine.odm.mongoDB.document_manager", "@biopen.mail_service", "@biopen.user_interaction_service" ]
 
     biopen.element_form_service:
        class: Biopen\GeoDirectoryBundle\Services\ElementFormService

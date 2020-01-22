@@ -5,14 +5,13 @@ use Sonata\AdminBundle\Security\Handler\RoleSecurityHandler as RoleSecurityHandl
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
-use Symfony\Component\Security\Core\SecurityContextInterface;
 use Sonata\AdminBundle\Security\Handler\SecurityHandlerInterface;
 
 
 class CustomRoleSecurityHandler implements SecurityHandlerInterface
 {
     /**
-     * @var AuthorizationCheckerInterface|SecurityContextInterface
+     * @var AuthorizationCheckerInterface
      */
     protected $authorizationChecker;
 
@@ -24,13 +23,13 @@ class CustomRoleSecurityHandler implements SecurityHandlerInterface
     /**
      * NEXT_MAJOR: Go back to signature class check when bumping requirements to SF 2.6+.
      *
-     * @param AuthorizationCheckerInterface|SecurityContextInterface $authorizationChecker
+     * @param AuthorizationCheckerInterface $authorizationChecker
      * @param array                                                  $superAdminRoles
      */
     public function __construct($authorizationChecker, array $superAdminRoles)
     {
-        if (!$authorizationChecker instanceof AuthorizationCheckerInterface && !$authorizationChecker instanceof SecurityContextInterface) {
-            throw new \InvalidArgumentException('Argument 1 should be an instance of Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface or Symfony\Component\Security\Core\SecurityContextInterface');
+        if (!$authorizationChecker instanceof AuthorizationCheckerInterface) {
+            throw new \InvalidArgumentException('Argument 1 should be an instance of Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface');
         }
 
         $this->authorizationChecker = $authorizationChecker;

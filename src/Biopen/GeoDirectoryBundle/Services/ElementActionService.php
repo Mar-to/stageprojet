@@ -9,43 +9,43 @@
  * @license    MIT License
  * @Last Modified time: 2018-06-17 19:57:54
  */
- 
+
 
 namespace Biopen\GeoDirectoryBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\Security\Core\Security;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Biopen\GeoDirectoryBundle\Document\ModerationState;
 use Biopen\GeoDirectoryBundle\Document\UserInteractionContribution;
 use Biopen\GeoDirectoryBundle\Services\ElementPendingService;
 use Biopen\GeoDirectoryBundle\Services\ValidationType;
-use Biopen\CoreBundle\Services\MailService;  
+use Biopen\CoreBundle\Services\MailService;
 use Biopen\GeoDirectoryBundle\Services\UserInteractionService;
 
 // strange bug importing this class does not work, so redeclare it here
 abstract class InteractType
 {
-    const Deleted = -1;   
+    const Deleted = -1;
     const Add = 0;
     const Edit = 1;
-    const Vote = 2;  
+    const Vote = 2;
     const Report = 3;
-    const Import = 4; 
-    const Restored = 5; 
-    const ModerationResolved = 6; 
+    const Import = 4;
+    const Restored = 5;
+    const ModerationResolved = 6;
 }
 
 /**
 * Service used to handle to resolution of pending Elements
 **/
 class ElementActionService
-{  
+{
    protected $preventAddingContribution = false;
    /**
    * Constructor
    */
-   public function __construct(DocumentManager $documentManager, SecurityContext $securityContext, MailService $mailService, ElementPendingService $elementPendingService, UserInteractionService $interactionService)
+   public function __construct(DocumentManager $documentManager, $securityContext, MailService $mailService, ElementPendingService $elementPendingService, UserInteractionService $interactionService)
    {
       $this->em = $documentManager;
       $this->securityContext = $securityContext;
@@ -57,7 +57,7 @@ class ElementActionService
    public function add($element, $sendMail = true, $message = null)
    {
       $this->addContribution($element, $message, InteractType::Add, ElementStatus::AddedByAdmin);
-      $element->setStatus(ElementStatus::AddedByAdmin); 
+      $element->setStatus(ElementStatus::AddedByAdmin);
       if($sendMail) $this->mailService->sendAutomatedMail('add', $element, $message);
       $element->updateTimestamp();
    }
@@ -74,8 +74,8 @@ class ElementActionService
       $status = $modifiedByOwner ? ElementStatus::ModifiedByOwner : ElementStatus::ModifiedByAdmin;
       $status = $directModerationWithHash ? ElementStatus::ModifiedFromHash : $status;
       $this->addContribution($element, $message, InteractType::Edit, $status, $directModerationWithHash);
-      $element->setStatus($status); 
-      if (!$modifiedByOwner) $this->resolveReports($element, $message);      
+      $element->setStatus($status);
+      if (!$modifiedByOwner) $this->resolveReports($element, $message);
       $element->updateTimestamp();
    }
 
@@ -95,17 +95,17 @@ class ElementActionService
    {
       $this->elementPendingService->resolve($element, $isAccepted, $validationType, $message);
       $element->updateTimestamp();
-   }   
+   }
 
    public function delete($element, $sendMail = true, $message = null)
    {
       if($sendMail) $this->mailService->sendAutomatedMail('delete', $element, $message);
       // do not add contribution for elements already deleted
       if ($element->isVisible()) $this->addContribution($element, $message, InteractType::Deleted, ElementStatus::Deleted);
-      
+
       $newStatus = $element->isPotentialDuplicate() ? ElementStatus::Duplicate : ElementStatus::Deleted;
-      $element->setStatus($newStatus); 
-      $this->resolveReports($element, $message);      
+      $element->setStatus($newStatus);
+      $this->resolveReports($element, $message);
       $element->updateTimestamp();
    }
 
@@ -119,10 +119,10 @@ class ElementActionService
    }
 
    public function resolveReports($element, $message = '', $addContribution = false)
-   {    
+   {
       $reports = $element->getUnresolvedReports();
       if (count($reports) > 0)
-         foreach ($reports as $key => $report) 
+         foreach ($reports as $key => $report)
          {
             $report->setResolvedMessage($message);
             $report->updateResolvedBy($this->securityContext);
@@ -133,7 +133,7 @@ class ElementActionService
          $this->addContribution($element, $message, InteractType::ModerationResolved, $element->getStatus());
 
       // Dealing with potential duplicates
-      if ($element->getModerationState() == ModerationState::PotentialDuplicate) 
+      if ($element->getModerationState() == ModerationState::PotentialDuplicate)
       {
          if ($element->getIsDuplicateNode()) {
             $element->setIsDuplicateNode(false);
@@ -143,12 +143,12 @@ class ElementActionService
             foreach ($potentialOwners as $key => $owner) {
                $this->em->persist($owner);
                $owner->removePotentialDuplicate($element);
-            } 
-         }         
-      }   
+            }
+         }
+      }
 
       $element->updateTimestamp();
-      $element->setModerationState(ModerationState::NotNeeded);            
+      $element->setModerationState(ModerationState::NotNeeded);
    }
 
    public function setPreventAddingContribution($bool)
@@ -162,7 +162,7 @@ class ElementActionService
       if ($this->preventAddingContribution) return;
       // clear contributions with same type that have not been dispatched yet
       if ($element->getContributions())
-         foreach ($element->getContributions() as $contribution) { 
+         foreach ($element->getContributions() as $contribution) {
             if ($contribution->getType() == $interactType && $contribution->getWebhookPosts()) $contribution->clearWebhookPosts();
          }
       $contribution = $this->interactionService->createContribution($message, $interactType, $status, $directModerationWithHash);

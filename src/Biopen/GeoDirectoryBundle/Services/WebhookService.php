@@ -19,7 +19,7 @@ use http\Exception\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Router;
-use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\Security\Core\Security;
 use Biopen\GeoDirectoryBundle\Document\UserInteractionContribution;
 
 class WebhookService
@@ -28,7 +28,7 @@ class WebhookService
 
 	protected $router;
 
-    public function __construct(DocumentManager $documentManager, Router $router, SecurityContext $securityContext, $baseUrl, $basePath)
+    public function __construct(DocumentManager $documentManager, Router $router, $securityContext, $baseUrl, $basePath)
     {
     	 $this->em = $documentManager;
     	 $this->router = $router;
@@ -44,7 +44,7 @@ class WebhookService
     {
         $contributions = $this->em->createQueryBuilder(UserInteractionContribution::class)
         ->field('status')->exists(true)
-        ->field('webhookPosts.nextAttemptAt')->lte(new \DateTime())        
+        ->field('webhookPosts.nextAttemptAt')->lte(new \DateTime())
         ->limit($limit)
         ->getQuery()->execute();
 
@@ -55,27 +55,27 @@ class WebhookService
         $postsToProceed = [];
 
         // PREPARE EACH POST (calculate data, url...)
-        foreach ($contributions as $contribution) 
-        {          
+        foreach ($contributions as $contribution)
+        {
             $data = $this->calculateData($contribution);
-            foreach($contribution->getWebhookPosts() as $webhookPost) 
+            foreach($contribution->getWebhookPosts() as $webhookPost)
             {
-                if (!$webhookPost->getStatus()) 
+                if (!$webhookPost->getStatus())
                 {
                     $webhook = $webhookPost->getWebhook();
-                    $webhookPost->setUrl($webhook->getUrl());                   
+                    $webhookPost->setUrl($webhook->getUrl());
                     $jsonData = json_encode($this->formatData($webhook->getFormat(), $data));
                     $webhookPost->setData($jsonData);
                     $postsToProceed[] = $webhookPost;
                     $contributionsToProceed[] = $contribution;
-                }                    
-            }  
-        }      
+                }
+            }
+        }
 
         // CREATE POST REQUESTS
         $requests = function() use($client, $postsToProceed) {
             foreach($postsToProceed as $post) yield new \GuzzleHttp\Psr7\Request('POST', $post->getUrl() , [], $post->getData() );
-        };        
+        };
 
         // SEND REQUEST CONCURRENTLY AND HANDLE RESULTS
         $pool = new Pool($client, $requests(), [
@@ -89,15 +89,15 @@ class WebhookService
                 $post = $postsToProceed[$index];
                 $attemps = $post->incrementNumAttempts();
                 if ($attemps < 6) {
-                    // After first try, wait 5m, 25m, 2h, 10h, 2d 
-                    $intervalInMinutes = pow(5, $attemps); 
-                    $interval = new \DateInterval("PT{$intervalInMinutes}M"); 
+                    // After first try, wait 5m, 25m, 2h, 10h, 2d
+                    $intervalInMinutes = pow(5, $attemps);
+                    $interval = new \DateInterval("PT{$intervalInMinutes}M");
                     $now = new \DateTime();
                     $post->setNextAttemptAt($now->add($interval));
-                } else {                    
+                } else {
                     $post->setStatus('failed');
                     $post->setNextAttemptAt(new \DateTime('3000-01-01'));
-                }                
+                }
             },
         ]);
 
@@ -114,7 +114,7 @@ class WebhookService
     private function calculateData($contribution)
     {
         // STANDRD CONTIRBUTION
-        if ($contribution->getElement()) 
+        if ($contribution->getElement())
         {
             $element = $contribution->getElement();
             $this->em->refresh($element);
@@ -129,7 +129,7 @@ class WebhookService
             $data = ['ids' => $contribution->getElementIds()];
         }
 
-        $mappingType = [InteractionType::Deleted => 'delete', InteractionType::Add => 'add',     InteractionType::Edit => 'edit', 
+        $mappingType = [InteractionType::Deleted => 'delete', InteractionType::Add => 'add',     InteractionType::Edit => 'edit',
                         InteractionType::Import => 'add',     InteractionType::Restored => 'add'];
         $result = [
             'action' => $mappingType[$contribution->getType()],
@@ -169,7 +169,7 @@ class WebhookService
     }
 
     private function getBotIcon()
-    {       
+    {
         /** @var ConfImage $img */
         $img = $this->config->getFavicon() ? $this->config->getFavicon() : $this->config->getLogo();
 

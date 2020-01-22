@@ -14,7 +14,7 @@
 namespace Biopen\GeoDirectoryBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\Security\Core\Security;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Biopen\GeoDirectoryBundle\Document\UserInteractionContribution;
 use Biopen\CoreBundle\Services\MailService;
@@ -34,10 +34,9 @@ class ElementPendingService
    /**
    * Constructor
    */
-   public function __construct(DocumentManager $documentManager, SecurityContext $securityContext, MailService $mailService, UserInteractionService $interactionService)
+   public function __construct(DocumentManager $documentManager, MailService $mailService, UserInteractionService $interactionService)
    {
       $this->em = $documentManager;
-      $this->securityContext = $securityContext;
       $this->mailService = $mailService;
       $this->interactionService = $interactionService;
    }
