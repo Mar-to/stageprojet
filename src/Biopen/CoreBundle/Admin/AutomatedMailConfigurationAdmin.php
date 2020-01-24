@@ -12,6 +12,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
+use Sonata\FormatterBundle\Form\Type\SimpleFormatterType;
 
 class AutomatedMailConfigurationAdmin extends AbstractAdmin
 {
@@ -20,10 +21,10 @@ class AutomatedMailConfigurationAdmin extends AbstractAdmin
         $formMapper
             ->add('active', null, ['required'=>false, 'label' => "Activé"])
             ->add('subject', null, ['required'=>false, 'label' => "Objet du message"])
-            ->add('content', 'sonata_simple_formatter_type', array(
+            ->add('content', SimpleFormatterType::class, array(
                 'format' => 'richhtml',
                 'ckeditor_context' => 'full',
-                'required'=>false, 
+                'required'=>false,
                 'label' => "Contenu du message"
             ));
     }

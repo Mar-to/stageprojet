@@ -16,7 +16,7 @@ sonata_doctrine_mongo_db_admin:
             - "@BiopenAdmin/core_custom/form_admin_fields.html.twig"
 
 sonata_formatter:
-    default_formatter: "text"
+    default_formatter: text
     formatters:
         markdown:
             service: sonata.formatter.text.markdown

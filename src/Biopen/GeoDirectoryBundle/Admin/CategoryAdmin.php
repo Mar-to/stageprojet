@@ -17,6 +17,8 @@ use Biopen\GeoDirectoryBundle\Document\CategoryStatus;
 use Biopen\GeoDirectoryBundle\Document\ModerationState;
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Knp\Menu\ItemInterface;
+use Sonata\AdminBundle\Form\Type\ModelType;
+use Sonata\AdminBundle\Form\Type\CollectionType;
 
 class CategoryAdmin extends AbstractAdmin
 {
@@ -50,7 +52,7 @@ class CategoryAdmin extends AbstractAdmin
 	  ->with('Paramètres principaux', array('class' => 'col-xs-12 col-md-6'))
 		  	->add('name', null, array('required' => true, 'label' => 'Nom du groupe'))
 		  	->add('pickingOptionText', null, array('required' => true, 'label' => 'Texte à afficher dans le formulaire : Choisissez ....'))
-		  	->add('parent', 'sonata_type_model', array(
+		  	->add('parent', ModelType::class, array(
 		  		'class'=> 'Biopen\GeoDirectoryBundle\Document\Option',
 		  		'required' => false,
           'query' => $parentQuery,
@@ -72,16 +74,17 @@ class CategoryAdmin extends AbstractAdmin
          ->add('displayInInfoBar', null, array('required' => false, 'label' => "Dans la fiche détail", 'label_attr' => ['title'=>"Le nom du groupe ne sera pas affiché, mais les catégories le seront"]))
          ->add('displayInForm', null, array('required' => false, 'label' => "Dans le formulaire", 'label_attr' => ['title'=>"Ni le groupe ni les catégories ne seront affichés dans le formulaire"]))
       ->end()
-		->with('Catégories contenues dans ce groupe', array('class' => 'col-xs-12 sub-options-container'))
-			->add('isFixture', 'text', ['attr' => ['class' => 'gogo-sort-options'], 'label_attr' => ['style' => 'display:none']])
-      ->add('options', 'sonata_type_collection', array('by_reference' => false, 'type_options' => array('delete' => false), 'label_attr'=> ['style'=> 'display:none']), array(
-                'edit' => 'inline',
-                'inline' => 'table',
-                'label' => '',
-                'admin_code'    => 'admin.option.lite_hidden',
-                //'sortable' => 'index',
-            ))
-		->end();
+		// ->with('Catégories contenues dans ce groupe', array('class' => 'col-xs-12 sub-options-container'))
+		// 	->add('isFixture', 'text', ['attr' => ['class' => 'gogo-sort-options'], 'label_attr' => ['style' => 'display:none']])
+  //     ->add('options', CollectionType::class, array('by_reference' => false, 'allow_add' => true, 'label_attr'=> ['style'=> 'display:none']), array(
+  //               'edit' => 'inline',
+  //               'inline' => 'table',
+  //               'label' => '',
+  //               'admin_code' => 'admin.option.lite_hidden',
+  //               //'sortable' => 'index',
+  //           ))
+		// ->end()
+    ;
 	}
 
 	protected function configureListFields(ListMapper $listMapper)

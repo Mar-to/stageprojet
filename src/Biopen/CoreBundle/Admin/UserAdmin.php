@@ -17,6 +17,8 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Sonata\AdminBundle\Form\Type\ModelType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 class UserAdmin extends AbstractAdmin
 {
@@ -114,7 +116,7 @@ class UserAdmin extends AbstractAdmin
         $filterMapper
             ->add('id')
             ->add('username')
-            ->add('locked')
+            // ->add('locked')
             ->add('newsletterFrequency', 'doctrine_mongo_callback', array(
                 'label' => 'Reception newsletter',
                 'field_type' => 'checkbox',
@@ -191,7 +193,7 @@ class UserAdmin extends AbstractAdmin
         $userGenderType = 'sonata_user_gender';
         $localeType = 'locale';
         $timezoneType = 'timezone';
-        $modelType = 'sonata_type_model';
+        $modelType = ModelType::class;
         $securityRolesType = 'sonata_security_roles';
 
         $formMapper
@@ -210,10 +212,10 @@ class UserAdmin extends AbstractAdmin
                     ))
                 ->end()
                 ->with('Status')
-                    ->add('locked', null, array('required' => false))
-                    ->add('expired', null, array('required' => false))
-                    ->add('enabled', null, array('required' => false))
-                    ->add('credentialsExpired', null, array('required' => false))
+                    ->add('locked', CheckboxType::class, array('required' => false))
+                    ->add('expired', CheckboxType::class, array('required' => false))
+                    ->add('enabled', CheckboxType::class, array('required' => false))
+                    ->add('credentialsExpired', CheckboxType::class, array('required' => false))
                 ->end()
                 ->with('Groups')
                     ->add('groups', $modelType, array(

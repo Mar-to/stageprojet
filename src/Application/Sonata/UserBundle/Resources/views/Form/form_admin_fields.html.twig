@@ -43,7 +43,7 @@ file that was distributed with this source code.
                 {% set firstRole = roles_group|first %}
                 {% if 'ROLE_ADMIN_' in firstRole.label or 'ROLE_SONATA_USER_ADMIN_' in firstRole.label %}
                     {% set title = firstRole.label|split('ROLE_ADMIN_')|last|split('ROLE_SONATA_USER_ADMIN_')|last %}
-                    {% set title = title|replace('_', ' ')|slice(0,-5) %}
+                    {% set title = title|replace({'_': ' '})|slice(0,-5) %}
                     {% set hidden = 'HIDDEN' in title %}
 
                     {% if title in ["GENERAL CONFIG", "ELEMENTS", "PROJECT"]%}<hr>{% endif %}

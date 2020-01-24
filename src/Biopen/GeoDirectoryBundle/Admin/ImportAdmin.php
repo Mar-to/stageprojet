@@ -8,6 +8,7 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
+use Sonata\AdminBundle\Form\Type\ModelType;
 
 class ImportAdmin extends AbstractAdmin
 {
@@ -52,7 +53,7 @@ class ImportAdmin extends AbstractAdmin
                 ->with("Autres options", ['box_class' => 'box box-default', 'class' => 'col-md-6'])
                     ->add('geocodeIfNecessary', null, array('required' => false, 'label' => 'Géocoder les élements sans latitude ni longitude à partir de leur adresse'))
                     ->add('createMissingOptions', null, array('required' => false, 'label' => 'Créer les catégories manquantes', 'label_attr' => ['title' => "Si un élément importé a une catégorie qui n'existe pas encore sur votre carte, elle sera automatiquement crée"]))
-                    ->add('optionsToAddToEachElement', 'sonata_type_model', array(
+                    ->add('optionsToAddToEachElement', ModelType::class, array(
                         'class'=> 'Biopen\GeoDirectoryBundle\Document\Option',
                         'required' => false,
                         'choices_as_values' => true,

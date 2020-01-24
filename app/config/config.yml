@@ -68,10 +68,7 @@ twig:
         "%kernel.root_dir%/../web": RootDir
         "%kernel.root_dir%/../src/Biopen/SaasBundle/Resources/views": BiopenSaasBundle
     form_themes:
-        - 'SonataFormatterBundle:Form:formatter.html.twig'
-    # form:
-    #     resources:
-    #         - 'SonataFormatterBundle:Form:formatter.html.twig'
+        - '@SonataFormatter/Form/formatter.html.twig'
 
 # Doctrine Configuration
 doctrine:

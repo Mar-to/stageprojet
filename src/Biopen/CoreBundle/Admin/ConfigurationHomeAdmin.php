@@ -12,6 +12,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
+use Sonata\AdminBundle\Form\Type\ModelType;
 
 class ConfigurationHomeAdmin extends ConfigurationAbstractAdmin
 {
@@ -24,7 +25,7 @@ class ConfigurationHomeAdmin extends ConfigurationAbstractAdmin
         $imagesOptions = array(
             'class'=> 'Biopen\CoreBundle\Document\ConfImage',
             'placeholder' => "Séléctionnez une image déjà importée, ou ajoutez en une !",
-            'required' => false, 
+            'required' => false,
             'choices_as_values' => true,
             'label' => 'Logo',
             'mapped' => true
@@ -37,7 +38,7 @@ class ConfigurationHomeAdmin extends ConfigurationAbstractAdmin
         $featureFormTypeOption = ['edit' => 'inline'];
         $formMapper
             ->add('activateHomePage', null, array('label' => "Activer la page d'accueil", 'required' => false))
-            ->add('backgroundImage', 'sonata_type_model', array_replace($imagesOptions,['label' => 'Image de fond (le nom du fichier ne doit pas contenir d\'espaces ou de caractères spéciaux']))
+            ->add('backgroundImage', ModelType::class, array_replace($imagesOptions,['label' => 'Image de fond (le nom du fichier ne doit pas contenir d\'espaces ou de caractères spéciaux']))
             ->add('home.displayCategoriesToPick', 'checkbox', array('label' => "Afficher les catégories principales selectionnables pour la recherche", 'required' => false))
             ->add('home.addElementHintText', 'text', array('label' => "Texte au dessus du bouton \"Ajouter un élément\"", 'required' => false, 'attr' => ['placeholder' => "Exemple: Aidez nous à renrichir la base de donnée en ajoutant un élément !"]))
             ->add('home.seeMoreButtonText', 'text', array('label' => "Texte pour inviter à scroller (si des bandeaux de la page d'accueil existent)", 'required' => false, 'attr' => ['placeholder' => "Exemple: Plus d'informations"]))

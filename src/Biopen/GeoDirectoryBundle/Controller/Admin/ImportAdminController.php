@@ -171,7 +171,8 @@ class ImportAdminController extends Controller
 
     $view = $form->createView();
     // set the theme for the current Admin Form
-    $this->get('twig')->getExtension('form')->renderer->setTheme($view, $this->admin->getFormTheme());
+    $this->get('twig')->getRuntime(\Symfony\Component\Form\FormRenderer::class)
+             ->setTheme($view, $this->admin->getFormTheme());
 
     return $this->render($this->admin->getTemplate('edit'), array(
       'action' => 'edit',
@@ -242,7 +243,8 @@ class ImportAdminController extends Controller
       $view = $form->createView();
 
       // set the theme for the current Admin Form
-      $this->get('twig')->getExtension('form')->renderer->setTheme($view, $this->admin->getFormTheme());
+      $this->get('twig')->getRuntime(\Symfony\Component\Form\FormRenderer::class)
+             ->setTheme($view, $this->admin->getFormTheme());
 
       return $this->render($this->admin->getTemplate($templateKey), array(
           'action' => 'create',

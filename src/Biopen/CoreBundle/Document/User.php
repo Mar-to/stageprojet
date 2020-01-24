@@ -451,6 +451,18 @@ class User extends BaseUser
     }
 
     /**
+     * Set Enabled
+     *
+     * @param boolean $salt
+     * @return $this
+     */
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
+        return $this;
+    }
+
+    /**
      * Set salt
      *
      * @param string $salt
@@ -473,6 +485,18 @@ class User extends BaseUser
     }
 
     /**
+     * Set Locked
+     *
+     * @param boolean $salt
+     * @return $this
+     */
+    public function setLocked($locked)
+    {
+        $this->locked = $locked;
+        return $this;
+    }
+
+    /**
      * Get expired
      *
      * @return boolean $expired
@@ -480,6 +504,18 @@ class User extends BaseUser
     public function getExpired()
     {
         return $this->expired;
+    }
+
+    /**
+     * Set Expired
+     *
+     * @param boolean $salt
+     * @return $this
+     */
+    public function setExpired($expired)
+    {
+        $this->expired = $expired;
+        return $this;
     }
 
     /**
@@ -491,6 +527,19 @@ class User extends BaseUser
     {
         return $this->credentialsExpired;
     }
+
+    /**
+     * Set CredentialsExpired
+     *
+     * @param boolean $salt
+     * @return $this
+     */
+    public function setCredentialsExpired($credentialsExpired)
+    {
+        $this->credentialsExpired = $credentialsExpired;
+        return $this;
+    }
+
 
     /**
      * Set contributionsCount

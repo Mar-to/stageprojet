@@ -12,6 +12,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
+use Sonata\AdminBundle\Form\Type\ModelType;
 
 class ConfigurationAdmin extends ConfigurationAbstractAdmin
 {
@@ -38,16 +39,16 @@ class ConfigurationAdmin extends ConfigurationAbstractAdmin
         $formMapper
             ->with('Le site', array('class' => 'col-md-6', "description" => '<div class="iframe-container"><iframe height="110" sandbox="allow-same-origin allow-scripts" src="https://video.colibris-outilslibres.org/videos/embed/fc7d3784-7bd1-4f3a-b915-ab6daefdd52d" frameborder="0" allowfullscreen></iframe></div>'))
                 ->add('appName', null, array('label' => 'Nom du site'))
-                ->add('appNameShort', null, array('label' => 'Nom Court (utilisé par les téléphones)', 'required' => false, 'max_length' => 12))
+                ->add('appNameShort', null, array('label' => 'Nom Court (utilisé par les téléphones, 12 caractères max.)', 'required' => false))
                 ->add('appBaseline', null, array('label' => 'Description du site (baseline)','required' => false))
                 ->add('appTags', null, array('label' => 'Mot clés pour le référencement (séparés par une virgule)', 'required' => false))
                 ->add('dataLicenseUrl', null, array('label' => 'Url de la licence qui protège vos données', 'required' => false))
             ->end()
             ->with('Images générales', array('class' => 'col-md-6'))
-                ->add('logo', 'sonata_type_model', $imagesOptions)
-                ->add('logoInline', 'sonata_type_model', array_replace($imagesOptions,['label' => 'Logo pour la barre de menu']))
-                ->add('socialShareImage', 'sonata_type_model', array_replace($imagesOptions,['label' => "Image à afficher lors d'un partage sur les réseaux sociaux"]))
-                ->add('favicon', 'sonata_type_model', array_replace($imagesOptions,['label' => 'Favicon']))
+                ->add('logo', ModelType::class, $imagesOptions)
+                ->add('logoInline', ModelType::class, array_replace($imagesOptions,['label' => 'Logo pour la barre de menu']))
+                ->add('socialShareImage', ModelType::class, array_replace($imagesOptions,['label' => "Image à afficher lors d'un partage sur les réseaux sociaux"]))
+                ->add('favicon', ModelType::class, array_replace($imagesOptions,['label' => 'Favicon']))
             ->end()
             ->with('Fonctions principales', array('class' => 'col-md-6'))
                 ->add('activateHomePage', null, array('label' => "Activer la page d'accueil", 'required' => false))

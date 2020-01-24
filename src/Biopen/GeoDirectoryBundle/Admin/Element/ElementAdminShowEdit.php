@@ -16,6 +16,7 @@ use Sonata\AdminBundle\Show\ShowMapper;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Biopen\GeoDirectoryBundle\Document\ModerationState;
 use Vich\UploaderBundle\Form\Type\VichImageType;
+use Sonata\AdminBundle\Form\Type\ModelType;
 
 class ElementAdminShowEdit extends ElementAdminList
 {
@@ -27,7 +28,7 @@ class ElementAdminShowEdit extends ElementAdminList
       ->add('userOwnerEmail', 'text', array('required' => false, 'label' => "Email de l'utilisateur propriétaire de cette fiche"))
       // ->add('images', 'sonata_type_collection', array('by_reference' => true, 'type_options' => array('delete' => true)),
       //    array('edit' => 'inline', 'inline' => 'table'))
-      // ->add('stamps', 'sonata_type_model', array(
+      // ->add('stamps', ModelType::class, array(
       //       'label' => "Etiquettes",
       //       'required' => false,
       //       'choices_as_values' => true,

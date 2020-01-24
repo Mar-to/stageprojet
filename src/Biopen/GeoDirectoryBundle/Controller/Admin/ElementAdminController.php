@@ -35,7 +35,7 @@ class ElementAdminController extends ElementAdminBulkController
         return $this->redirect($this->admin->generateUrl('list', array('filter' => $this->admin->getFilterParameters())));
     }
 
-    public function showEditAction($id = null) 
+    public function showEditAction($id = null)
     {
         $request = $this->getRequest();
 
@@ -56,8 +56,9 @@ class ElementAdminController extends ElementAdminBulkController
         $view = $form->createView();
 
         // set the theme for the current Admin Form
-        $this->get('twig')->getExtension('form')->renderer->setTheme($view, $this->admin->getFormTheme());
-        
+        $this->get('twig')->getRuntime(\Symfony\Component\Form\FormRenderer::class)
+             ->setTheme($view, $this->admin->getFormTheme());
+
         return $this->render('@BiopenAdmin/edit/edit_element.html.twig', array(
             'action' => 'edit',
             'form' => $view,
@@ -106,17 +107,17 @@ class ElementAdminController extends ElementAdminBulkController
                         $this->container->get('biopen.element_json_generator')->updateJsonRepresentation($object, $dm);
                     }
                     elseif ($object->isPending() && ($request->get('submit_accept') || $request->get('submit_refuse')))
-                    {                        
-                        $elementActionService->resolve($object, $request->get('submit_accept'), ValidationType::Admin, $message);                    
-                    }                    
+                    {
+                        $elementActionService->resolve($object, $request->get('submit_accept'), ValidationType::Admin, $message);
+                    }
                     else
-                    {      
+                    {
                         $sendMail = $request->get('send_mail');
 
                         if ($request->get('submit_delete'))  { $elementActionService->delete($object, $sendMail, $message); }
                         else if ($request->get('submit_restore')) { $elementActionService->restore($object, $sendMail, $message); }
                         else { $elementActionService->edit($object, $sendMail, $message); }
-                    }                    
+                    }
 
                     $object = $this->admin->update($object);
 
@@ -129,7 +130,7 @@ class ElementAdminController extends ElementAdminBulkController
                         )
                     );
 
-                    if ($request->get('submit_redirect')) 
+                    if ($request->get('submit_redirect'))
                         return new RedirectResponse(
                             $this->admin->generateUrl('list')
                         );

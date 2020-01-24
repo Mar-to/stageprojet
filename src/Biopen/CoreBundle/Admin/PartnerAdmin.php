@@ -12,6 +12,8 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
+use Sonata\FormatterBundle\Form\Type\SimpleFormatterType;
+use Sonata\AdminBundle\Form\Type\ModelType;
 
 class PartnerAdmin extends AbstractAdmin
 {
@@ -25,13 +27,13 @@ class PartnerAdmin extends AbstractAdmin
     {
         $formMapper
             ->add('name', 'text', ['required' => false])
-            ->add('content', 'sonata_simple_formatter_type', array(
+            ->add('content', SimpleFormatterType::class, array(
     			    'format' => 'richhtml', 'required' => false, 'ckeditor_context' => 'full',
     			))
-            ->add('logo', 'sonata_type_model', array(
-                'class'=> 'Biopen\CoreBundle\Document\PartnerImage', 
+            ->add('logo', ModelType::class, array(
+                'class'=> 'Biopen\CoreBundle\Document\PartnerImage',
                 'placeholder' => "Séléctionnez une image déjà importée, ou ajoutez en une !",
-                'required' => false, 
+                'required' => false,
                 'choices_as_values' => true,
                 'label' => 'Logo',
                 'mapped' => true))

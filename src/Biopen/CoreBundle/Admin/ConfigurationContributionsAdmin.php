@@ -12,6 +12,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
+use Sonata\FormatterBundle\Form\Type\SimpleFormatterType;
 
 class ConfigurationContributionsAdmin extends ConfigurationAbstractAdmin
 {
@@ -44,7 +45,7 @@ class ConfigurationContributionsAdmin extends ConfigurationAbstractAdmin
                 ->add('minVoteToForceChangeStatus', null, ['required'=>false, 'label' => "Nombre votes pour valider/refuser automatiquement, sans attendre de jours minimum"])
             ->end()
             ->with('Textes')
-                ->add('collaborativeModerationExplanations', 'sonata_simple_formatter_type', array(
+                ->add('collaborativeModerationExplanations', SimpleFormatterType::class, array(
                         'format' => 'richhtml',
                         'label' => 'Explications au sujet de la modération collaborative',
                         'ckeditor_context' => 'full',

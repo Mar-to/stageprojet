@@ -12,6 +12,8 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
+use Sonata\FormatterBundle\Form\Type\SimpleFormatterType;
+use Sonata\AdminBundle\Form\Type\ModelType;
 
 class ConfigurationMapAdmin extends ConfigurationAbstractAdmin
 {
@@ -31,7 +33,7 @@ class ConfigurationMapAdmin extends ConfigurationAbstractAdmin
         $formMapper
             ->tab('Paramètres de la carte')
                 ->with('La carte')
-                    ->add('defaultTileLayer', 'sonata_type_model', array(
+                    ->add('defaultTileLayer', ModelType::class, array(
                             'class'=> 'Biopen\CoreBundle\Document\TileLayer',
                             'required' => true,
                             'choices_as_values' => true,
@@ -87,7 +89,7 @@ class ConfigurationMapAdmin extends ConfigurationAbstractAdmin
             ->tab('Message personnalisé')
                 ->with('Message personnalisé à faire apparaitre dans un coin de la carte', ['class' => 'gogo-feature'])
                     ->add('customPopupFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)
-                    ->add('customPopupText', 'sonata_simple_formatter_type', array(
+                    ->add('customPopupText', SimpleFormatterType::class, array(
                             'format' => 'richhtml',
                             'label' => 'Texte à afficher (Exemple: "Ce site est encore en version bêta !")',
                             'label_attr' => ['style' => 'margin-top: 20px'],

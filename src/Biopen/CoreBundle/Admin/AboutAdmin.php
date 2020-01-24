@@ -12,6 +12,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
+use Sonata\FormatterBundle\Form\Type\SimpleFormatterType;
 
 class AboutAdmin extends AbstractAdmin
 {
@@ -24,7 +25,7 @@ class AboutAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper->add('name', 'text');
-        $formMapper->add('content', 'sonata_simple_formatter_type', array(
+        $formMapper->add('content', SimpleFormatterType::class, array(
 			    'format' => 'richhtml', 'ckeditor_context' => 'full'
 			));
     }

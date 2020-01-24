@@ -17,6 +17,7 @@ use Biopen\GeoDirectoryBundle\Document\CategoryStatus;
 use Biopen\GeoDirectoryBundle\Document\ModerationState;
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Knp\Menu\ItemInterface;
+use Sonata\AdminBundle\Form\Type\ModelType;
 
 class OptionAdmin extends AbstractAdmin
 {
@@ -52,7 +53,7 @@ class OptionAdmin extends AbstractAdmin
             ->add('name', null, array('required' => true, 'label' => 'Nom'))
             ->add('color', 'text', array('required' => false, 'label' => 'Couleur', 'attr' => ['class' => 'gogo-color-picker']))
             ->add('icon', null, array('required' => false, 'label' => 'Icone', 'attr' => ['class' => 'gogo-icon-picker']))
-            ->add('parent', 'sonata_type_model', array(
+            ->add('parent', ModelType::class, array(
             'class'=> 'Biopen\GeoDirectoryBundle\Document\Category',
             'required' => true,
             'query' => $parentQuery,
@@ -69,14 +70,14 @@ class OptionAdmin extends AbstractAdmin
             ->add('displayInInfoBar', null, array('required' => false, 'label' => "Dans la fiche détail"))
             ->add('displayInForm', null, array('required' => false, 'label' => "Dans le formulaire"))
          ->end()
-         ->with('Sous groupes', array('class' => 'col-xs-12 sub-categories-container'))
-            ->add('subcategories', 'sonata_type_collection', array('by_reference' => false, 'type_options' => ['delete' => false], 'label_attr'=> ['style'=> 'display:none']),
-               array(
-               'edit' => 'inline',
-               'inline' => 'table',
-               'admin_code' => 'admin.categories.lite_hidden'
-               ))
-         ->end()
+         // ->with('Sous groupes', array('class' => 'col-xs-12 sub-categories-container'))
+         //    ->add('subcategories', 'sonata_type_collection', array('by_reference' => false, 'label_attr'=> ['style'=> 'display:none']),
+         //       array(
+         //       'edit' => 'inline',
+         //       'inline' => 'table',
+         //       'admin_code' => 'admin.categories.lite_hidden'
+         //       ))
+         // ->end()
 		->end()
       ->tab("Configuration avancée")
          ->with('Paramètres secondaires', array('class' => 'col-xs-12 col-md-6', 'box_class' => 'box'))
