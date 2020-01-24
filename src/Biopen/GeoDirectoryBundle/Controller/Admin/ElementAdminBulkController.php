@@ -126,7 +126,7 @@ class ElementAdminBulkController extends Controller
                        ->field('element.id')->in($elementIds)
                        ->field('isResolved')->set(true)
                        ->field('resolvedMessage')->set($comment)
-                       ->field('resolvedBy')->set($this->container->get('security.context')->getToken()->getUser()->getEmail())
+                       ->field('resolvedBy')->set($this->container->get('security.token_storage')->getToken()->getUser()->getEmail())
                        ->field('updatedAt')->set(new \DateTime())
                        ->getQuery()->execute();
                 }

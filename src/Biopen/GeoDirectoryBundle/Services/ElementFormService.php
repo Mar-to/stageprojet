@@ -9,7 +9,7 @@
  * @license    MIT License
  * @Last Modified time: 2018-06-06 11:27:49
  */
- 
+
 
 namespace Biopen\GeoDirectoryBundle\Services;
 
@@ -17,7 +17,7 @@ use Biopen\GeoDirectoryBundle\Document\OptionValue;
 use Biopen\GeoDirectoryBundle\Services\ElementActionService;
 
 class ElementFormService
-{	
+{
 	/**
      * Constructor
      */
@@ -29,7 +29,7 @@ class ElementFormService
     public function handleFormSubmission($element, $request, $editMode, $userEmail, $isAllowedDirectModeration, $originalElement, $em)
     {
         $request = $request->request;
-
+        dump($request);
         $this->updateOptionsValues($element, $request);
         $this->updateCustomData($element, $request, $em);
 
@@ -37,13 +37,13 @@ class ElementFormService
         // calculate this before calling "updateOwner" because we want to check the old value of userOwnerEmail
         $isPendingModif = $this->isPendingModification($editMode, $isAllowedDirectModeration || $isMinorModif, $request);
 
-        $this->updateOwner($element, $request, $userEmail);           
-        
+        $this->updateOwner($element, $request, $userEmail);
+
         if ($isPendingModif)
-        {                   
+        {
             $updatedElement = $this->elementActionService->savePendingModification($element);
-        } 
-        else $updatedElement = $element;           
+        }
+        else $updatedElement = $element;
 
         return [$updatedElement, $isMinorModif];
     }
@@ -51,7 +51,7 @@ class ElementFormService
     private function isPendingModification($editMode, $isAllowedDirectModeration, $request)
     {
         return $editMode && (!$isAllowedDirectModeration || $request->get('dont-validate'));
-    }  
+    }
 
     // when user only make a minor modification, we don't want to go through moderation
     // Here is a function to detect minor changes
@@ -59,9 +59,9 @@ class ElementFormService
     {
         $uow = $em->getUnitOfWork();
         $uow->computeChangeSets();
-        $changeset = $uow->getDocumentChangeSet($element); 
+        $changeset = $uow->getDocumentChangeSet($element);
         $attributesChanged = array_keys($changeset);
-                        
+
         $sameOptionValues = $element->getOptionIds() == $originalElement->getOptionIds();
         $nonImportantAttributes = ['geo', 'openHours'];
         foreach ($attributesChanged as $index => $attribute) {
@@ -70,7 +70,7 @@ class ElementFormService
            }
         }
         return count($attributesChanged) == 0;
-    }  
+    }
 
     private function updateOptionsValues($element, $request)
     {
@@ -94,7 +94,7 @@ class ElementFormService
     {
         $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
         $privateProp = $config->getApi()->getPublicApiPrivateProperties();
-        
+
         $element->setCustomData($request->get('data'), $privateProp);
     }
 
@@ -109,12 +109,12 @@ class ElementFormService
                 $webSiteUrl = 'http://' . ltrim($webSiteUrl, '/');
             }
             $element->setWebsite($webSiteUrl);
-        }    
+        }
     }
 
     private function updateOwner($element, $request, $userEmail)
     {
         if ($request->get('owning')) $element->setUserOwnerEmail($userEmail);
         else $element->setUserOwnerEmail(null);
-    }    
+    }
 }

@@ -26,7 +26,7 @@ class UploadDirectoryNamer implements DirectoryNamerInterface
       "default_file" => '/default'
    ];
 
-   public function directoryName($object, PropertyMapping $mapping)
+   public function directoryName($object, PropertyMapping $mapping) : string
    {
       $name = $this->getDirectoryPathFromKey($object->getVichUploadFileKey());
       return $name;

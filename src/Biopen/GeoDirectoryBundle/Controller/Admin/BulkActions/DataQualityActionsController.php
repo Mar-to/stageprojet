@@ -2,6 +2,7 @@
 
 namespace Biopen\GeoDirectoryBundle\Controller\Admin\BulkActions;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class DataQualityActionsController extends BulkActionsAbstractController
 {
@@ -23,7 +24,7 @@ class DataQualityActionsController extends BulkActionsAbstractController
       $geo->setLongitude( $geo->getLongitude());
    }
 
-   public function fixsMissingCitiesAction(Request $request)
+   public function fixsMissingCitiesAction(Request $request, SessionInterface $session)
    {
       $em = $this->get('doctrine_mongodb')->getManager();
       $qb = $em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
@@ -32,93 +33,21 @@ class DataQualityActionsController extends BulkActionsAbstractController
          ->addOr($qb->expr()->field('sourceKey')->equals('PDCN'))
          ->getQuery()
          ->execute();
-      
+
       $geocoder = $this->get('bazinga_geocoder.geocoder')->using('google_maps');
-      try 
+      try
       {
          foreach($elements as $element) {
             $result = $geocoder->geocode($element->getAddress())->first();
             $element->setCity($result->getLocality());
-            $element->setStreetAddress($result->getStreetNumber() . ' ' . $result->getStreetName());  
-         }      
+            $element->setStreetAddress($result->getStreetNumber() . ' ' . $result->getStreetName());
+         }
       }
-      catch (\Exception $error) { }  
-      
-      $em->flush(); 
+      catch (\Exception $error) { }
 
-      $request->getSession()->getFlashBag()->add('success', count($elements) . " éléments  ont été réparés");
+      $em->flush();
+
+      $session->getFlashBag()->add('success', count($elements) . " éléments  ont été réparés");
       return $this->redirectToIndex();
    }
-
-   // public function fixsCircuitsCourtAction()
-   // {
-   //    $em = $this->get('doctrine_mongodb')->getManager();
-   //    $optionRepo = $em->getRepository('BiopenGeoDirectoryBundle:Option');      
-      
-   //    $ciricuitCourtId = $optionRepo->findOneByName('Circuit courts')->getId();
-   //    $producteurOption = $optionRepo->findOneByName('Producteur/Artisan');
-   //    $producteurId = $producteurOption->getId();
-   //    $amapId = $optionRepo->findOneByName('AMAP/Paniers')->getId(); 
-
-   //    $qb = $em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
-
-   //    // ----------------------------------------------------------------
-   //    // Adding a type of "Circout court" for all elements who don't have
-   //    // ----------------------------------------------------------------
-
-   //    $qb->field('optionValues.optionId')->in([$ciricuitCourtId])
-   //      ->field('optionValues.optionId')->notIn([$producteurId, $amapId]); 
-
-   //    $elementsWithoutCircuitCourtType = $qb->getQuery()->execute()->toArray(); 
-
-   //    foreach ($elementsWithoutCircuitCourtType as $key => $element) 
-   //    {
-   //      $optionValue = new OptionValue();
-   //      $optionValue->setOptionId($producteurId); 
-   //      $optionValue->setIndex(0);
-   //      $element->addOptionValue($optionValue);      
-   //    }
-
-   //    $em->flush();  
-
-   //    // ----------------------------------------------------------------------------
-   //    // Adding a product (other) for all elements in "Circuit courts" who don't have
-   //    // ----------------------------------------------------------------------------
-
-   //    $catRepo = $em->getRepository('BiopenGeoDirectoryBundle:Category');   
-   //    $productsCategroy = $catRepo->findOneByName('Produits');
-
-   //    $to_id_func = function($value) {
-   //       return $value->getId();
-   //    };
-
-   //    $productsOptions = $productsCategroy->getOptions()->toArray();
-   //    $productionsOptionIds = array_map($to_id_func, $productsOptions);        
-
-   //    $equalOtherProduct_func = function($value) {
-   //       return $value->getName() == "Autre";
-   //    };
-
-   //    $otherProductOptionId = array_values(array_filter($productsOptions, $equalOtherProduct_func))[0]->getId();
-
-   //    $qb->field('optionValues.optionId')->in([$amapId, $producteurId]) 
-   //      ->field('optionValues.optionId')->notIn($productionsOptionIds);  
-   //    $elementsWithoutProducts = $qb->getQuery()->execute()->toArray();  
-
-   //    foreach ($elementsWithoutProducts as $key => $element) 
-   //    {
-   //      $optionValue = new OptionValue();
-   //      $optionValue->setOptionId($otherProductOptionId); 
-   //      $optionValue->setIndex(0);
-   //      $element->addOptionValue($optionValue);      
-   //    }
-
-   //    $em->flush(); 
-
-   //    return new Response(count($elementsWithoutCircuitCourtType) . " éléments sans type de CircuitCourt ont été réparés.</br>" .
-   //       count($elementsWithoutProducts) . " éléments sans produits ont été réparés.");      
-   // }
-
-
-
 }

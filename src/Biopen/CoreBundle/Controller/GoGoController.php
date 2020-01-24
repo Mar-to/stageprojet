@@ -3,7 +3,7 @@
 namespace Biopen\CoreBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Response; 
+use Symfony\Component\HttpFoundation\Response;
 
 class GoGoController extends Controller
 {
@@ -18,5 +18,10 @@ class GoGoController extends Controller
       $parameters['countPartners'] = $countPartners;
 
       return parent::render($view, $parameters, $response);
+   }
+
+   public function publicGenerateUrl($route, $params)
+   {
+      return parent::generateUrl($route, $params);
    }
 }

@@ -12,6 +12,7 @@ use Biopen\GeoDirectoryBundle\Document\UserRoles;
 use Biopen\GeoDirectoryBundle\Document\OptionValue;
 use Biopen\GeoDirectoryBundle\Document\UserInteractionContribution;
 use Biopen\GeoDirectoryBundle\Document\InteractionType;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class BulkActionsAbstractController extends Controller
 {
@@ -21,7 +22,7 @@ class BulkActionsAbstractController extends Controller
     protected $batchSize = 1000;
     protected $automaticRedirection = true;
 
-    protected function elementsBulkAction($functionToExecute, $request)
+    protected function elementsBulkAction($functionToExecute, $request, SessionInterface $session)
     {
         $elementsLeft = null;
         $elementLeftCount = 0;
@@ -34,18 +35,18 @@ class BulkActionsAbstractController extends Controller
         $this->optionList = $optionsRepo->createQueryBuilder()->hydrate(false)->getQuery()->execute()->toArray();
 
         if (!$this->fromBeginning && $request->get('batchFromStep')) $batchFromStep = $request->get('batchFromStep');
-        else $batchFromStep = 0;    
+        else $batchFromStep = 0;
 
-        $count = $elementRepo->findAllElements(null, $batchFromStep, true); 
+        $count = $elementRepo->findAllElements(null, $batchFromStep, true);
         $elementsToProcceedCount = 0;
         if ($count > $this->batchSize)
-        {            
+        {
             $batchLastStep = $batchFromStep + $this->batchSize;
             $isStillElementsToProceed = true;
             $elementsToProcceedCount =  $count - $this->batchSize;
-        }   
+        }
         else
-        {            
+        {
             $batchLastStep = $batchFromStep + $count;
         }
 
@@ -53,9 +54,9 @@ class BulkActionsAbstractController extends Controller
 
         $i = 0;
         $renderedViews = [];
-        foreach ($elements as $key => $element) 
+        foreach ($elements as $key => $element)
         {
-           $view = $this->$functionToExecute($element, $em);  
+           $view = $this->$functionToExecute($element, $em);
            if ($view) $renderedViews[] = $view;
 
            if ((++$i % 100) == 0) {
@@ -65,28 +66,28 @@ class BulkActionsAbstractController extends Controller
         }
 
         $em->flush();
-        $em->clear(); 
+        $em->clear();
 
         $redirectionRoute = $this->generateUrl($this->getRequest()->get('_route'), ['batchFromStep' => $batchLastStep]);
         if ($isStillElementsToProceed && $this->automaticRedirection) return $this->redirect($redirectionRoute);
-        
+
         if ($this->automaticRedirection) {
-            $request->getSession()->getFlashBag()->add('success', "Tous les éléments ont été traité avec succès");
+            $session->getFlashBag()->add('success', "Tous les éléments ont été traité avec succès");
             return $this->redirectToIndex();
         }
 
         return $this->render('@BiopenAdmin/pages/bulks/bulk_abstract.html.twig', array(
-            'isStillElementsToProceed' => $isStillElementsToProceed, 
+            'isStillElementsToProceed' => $isStillElementsToProceed,
             'renderedViews' => $renderedViews,
             'firstId' => $batchFromStep,
             'lastId' => $batchLastStep,
             'elementsToProcceedCount' => $elementsToProcceedCount,
             'redirectionRoute' => $redirectionRoute,
-            'title' => $this->title ? $this->title : $functionToExecute));        
-    }  
+            'title' => $this->title ? $this->title : $functionToExecute));
+    }
 
     protected function redirectToIndex()
-    {        
+    {
         return $this->redirect($this->generateUrl("biopen_bulk_actions_index"));
-    }  
+    }
 }

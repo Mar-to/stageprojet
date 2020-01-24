@@ -29,9 +29,9 @@ class RegistrationFormHandler
     protected $tokenGenerator;
     protected $geocoder;
 
-    public function __construct(Request $request, UserManagerInterface $userManager, MailerInterface $mailer, TokenGeneratorInterface $tokenGenerator, $geocoder)
+    public function __construct($requestStack, UserManagerInterface $userManager, MailerInterface $mailer, TokenGeneratorInterface $tokenGenerator, $geocoder)
     {
-        $this->request = $request;
+        $this->request = $request_stack->getCurrentRequest();
         $this->userManager = $userManager;
         $this->mailer = $mailer;
         $this->tokenGenerator = $tokenGenerator;
@@ -51,7 +51,7 @@ class RegistrationFormHandler
         if ('POST' === $this->request->getMethod()) {
             $form->handleRequest($this->request);
             $user = $form->getData();
-            
+
             $usersSameEmail = $this->userManager->findUserByEmail($user->getEmail());
             $alreadyUsedEmail = $usersSameEmail === null ? false : count($usersSameEmail) > 1;
 
@@ -67,15 +67,15 @@ class RegistrationFormHandler
                     $geocoded = $this->geocoder->using('google_maps')->geocode($user->getLocation())->first();
                     $user->setGeo(new Coordinates($geocoded->getLatitude(), $geocoded->getLongitude()));
                 }
-                catch (\Exception $error) { $geocodeError = true; } 
-            }                
+                catch (\Exception $error) { $geocodeError = true; }
+            }
 
-            if ($form->isValid() && !$alreadyUsedEmail && !$alreadyUsedUserName && !$locoationSetToReceiveNewsletter && !$geocodeError) 
+            if ($form->isValid() && !$alreadyUsedEmail && !$alreadyUsedUserName && !$locoationSetToReceiveNewsletter && !$geocodeError)
             {
                 $this->onSuccess($user, $confirmation);
                 return true;
-            } 
-            else 
+            }
+            else
             {
                if ($alreadyUsedEmail) $form->get('email')->addError(new FormError('Cet email est déjà utilisé'));
                if ($alreadyUsedUserName) $form->get('username')->addError(new FormError("Ce nom d'utilisateur est déjà pris !"));

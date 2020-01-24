@@ -22,14 +22,14 @@ class APIController extends GoGoController
   **/
   public function getElementsAction(Request $request, $id = null, $_format = 'json')
   {
-    $em = $this->get('doctrine_mongodb')->getManager();     
+    $em = $this->get('doctrine_mongodb')->getManager();
 
-    $jsonLdRequest = $this->isJsonLdRequest($request, $_format); 
+    $jsonLdRequest = $this->isJsonLdRequest($request, $_format);
     $token = $request->get('token');
     $ontology = $request->get('ontology') ? strtolower($request->get('ontology')) : "gogofull";
     $fullRepresentation =  $jsonLdRequest || $ontology != "gogocompact";
-    $elementId = $id ? $id : $request->get('id');     
-    $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();  
+    $elementId = $id ? $id : $request->get('id');
+    $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
     $protectWithToken = $config->getApi()->getProtectPublicApiWithToken();
     $apiUiUrl = $this->generateUrl('biopen_api_ui', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
@@ -38,47 +38,47 @@ class APIController extends GoGoController
       $isAdmin = $this->isUserAdmin();
       $includePrivateFields = true;
     }
-    elseif (!$protectWithToken || $token) // otherwise API can be protected by user token 
+    elseif (!$protectWithToken || $token) // otherwise API can be protected by user token
     {
       if ($protectWithToken)
       {
         $user = $em->getRepository('BiopenCoreBundle:User')->findOneByToken($token);
         if (!$user) {
-          $response = "The token you provided does not correspond to any existing user. Please visit " . $apiUiUrl; 
+          $response = "The token you provided does not correspond to any existing user. Please visit " . $apiUiUrl;
           return $this->createResponse($response, $config);
         }
       }
       $isAdmin = false;
       $includePrivateFields = false;
-    } 
+    }
     else
-    {      
-      $response = "You need to provide a token to access to this API. Please visit " . $apiUiUrl; 
+    {
+      $response = "You need to provide a token to access to this API. Please visit " . $apiUiUrl;
       return $this->createResponse($response, $config);
-    }    
+    }
 
-    $elementRepo = $em->getRepository('BiopenGeoDirectoryBundle:Element');   
+    $elementRepo = $em->getRepository('BiopenGeoDirectoryBundle:Element');
 
-    if ($elementId) 
+    if ($elementId)
     {
       $element = $elementRepo->findOneBy(array('id' => $elementId));
       $elementsJson = $element ? $element->getJson($includePrivateFields, $isAdmin) : null;
     }
-    else 
+    else
     {
       if ($request->get('bounds'))
       {
         $boxes = [];
         $bounds = explode( ';' , $request->get('bounds'));
         foreach ($bounds as $key => $bound) $boxes[] = explode( ',' , $bound);
-        $elementsFromDB = $elementRepo->findWhithinBoxes($boxes, $request, $fullRepresentation, $isAdmin);          
-      } 
+        $elementsFromDB = $elementRepo->findWhithinBoxes($boxes, $request, $fullRepresentation, $isAdmin);
+      }
       else
       {
         $elementsFromDB = $elementRepo->findAllPublics($fullRepresentation, $isAdmin, $request);
-      }  
-      $elementsJson = $this->encodeElementArrayToJsonArray($elementsFromDB, $fullRepresentation, $isAdmin, $includePrivateFields);        
-    }   
+      }
+      $elementsJson = $this->encodeElementArrayToJsonArray($elementsFromDB, $fullRepresentation, $isAdmin, $includePrivateFields);
+    }
 
     $status = 200;
     if (!$elementsJson)
@@ -97,9 +97,9 @@ class APIController extends GoGoController
     {
       $responseJson = '{
         "licence": "' . $config->getDataLicenseUrl() . '",
-        "ontology":"'. $ontology . '"';        
+        "ontology":"'. $ontology . '"';
 
-      if (!$fullRepresentation) 
+      if (!$fullRepresentation)
       {
         $mapping = ['id', $config->getMarker()->getFieldsUsedByTemplate(), 'latitude', 'longitude', 'status', 'moderationState'];
         $responseJson .= ', "mapping":' . json_encode($mapping);
@@ -110,10 +110,10 @@ class APIController extends GoGoController
 
     // TODO count how much a user is using the API
     // $responseSize = strlen($elementsJson);
-    // $date = date('d/m/Y'); 
-    
+    // $date = date('d/m/Y');
+
     return $this->createResponse($responseJson, $config, $status);
-  }    
+  }
 
   public function getTaxonomyAction(Request $request, $id = null, $_format = 'json')
   {
@@ -133,7 +133,7 @@ class APIController extends GoGoController
     else
     {
       $dataJson = $em->getRepository('BiopenGeoDirectoryBundle:Taxonomy')->findTaxonomyJson($jsonLdRequest);
-    }    
+    }
 
     if ($jsonLdRequest)
       $responseJson = '{
@@ -143,7 +143,7 @@ class APIController extends GoGoController
     else
       $responseJson = $dataJson;
 
-    $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();  
+    $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
     return $this->createResponse($responseJson, $config);
   }
 
@@ -159,7 +159,7 @@ class APIController extends GoGoController
     $serializer = $this->get('jms_serializer');
     $responseJson = $serializer->serialize($result, 'json');
 
-    $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();  
+    $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
     return $this->createResponse($responseJson, $config);
   }
 
@@ -180,59 +180,58 @@ class APIController extends GoGoController
   public function getElementsFromTextAction(Request $request)
   {
     $em = $this->get('doctrine_mongodb')->getManager();
-    
+
     $isAdmin = $this->isUserAdmin();
 
     $elements = $em->getRepository('BiopenGeoDirectoryBundle:Element')->findElementsWithText($request->get('text'), true, $isAdmin);
 
     $elementsJson = $this->encodeElementArrayToJsonArray($elements, true, $isAdmin, true);
     $responseJson = '{ "data":'. $elementsJson . ', "ontology" : "gogofull"}';
-    
-    $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();  
+
+    $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
     return $this->createResponse($responseJson, $config);
   }
 
-  private function isUserAdmin() 
+  private function isUserAdmin()
   {
-    $securityContext = $this->container->get('security.context');
-    if ($securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED'))
+    if ($this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED'))
     {
-      $user = $securityContext->getToken()->getUser(); 
+      $user = $this->getUser();
       $isAdmin = $user && $user->isAdmin();
       return $isAdmin;
     }
-    return false;    
+    return false;
   }
 
   private function encodeElementArrayToJsonArray($array, $fullRepresentation, $isAdmin = false, $includePrivateFields = false)
   {
-    $elementsJson = '['; 
-    foreach ($array as $key => $value) 
-    { 
-      if ($fullRepresentation == 'true') 
+    $elementsJson = '[';
+    foreach ($array as $key => $value)
+    {
+      if ($fullRepresentation == 'true')
       {
-        $elementJson = $value['baseJson']; 
+        $elementJson = $value['baseJson'];
         if ($includePrivateFields && $value['privateJson'] != '{}') {
           $elementJson = substr($elementJson , 0, -1) . ',' . substr($value['privateJson'],1);
         }
         if ($isAdmin && $value['adminJson'] != '{}') {
           $elementJson = substr($elementJson , 0, -1) . ',' . substr($value['adminJson'],1);
-        }        
+        }
         if (key_exists('score', $value)) {
           // remove first '{'
           $elementJson = substr($elementJson, 1);
           $elementJson = '{"searchScore" : ' . $value['score'] . ',' . $elementJson;
         }
-      } 
-      else $elementJson = $value['compactJson'];      
+      }
+      else $elementJson = $value['compactJson'];
       $elementsJson .=  $elementJson .  ',';
-    }   
+    }
 
-    $elementsJson = rtrim($elementsJson,",") . ']'; 
+    $elementsJson = rtrim($elementsJson,",") . ']';
     return $elementsJson;
   }
 
-  public function getGoGoCartoJsConfigurationAction() 
+  public function getGoGoCartoJsConfigurationAction()
   {
     $odm = $this->get('doctrine_mongodb')->getManager();
     $config = $odm->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
@@ -242,4 +241,3 @@ class APIController extends GoGoController
     return $this->createResponse(json_encode($gogocartoConf), $config);
   }
 }
-  

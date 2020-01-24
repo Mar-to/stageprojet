@@ -22,6 +22,7 @@ use Symfony\Component\Security\Core\Exception\AccountStatusException;
 
 use Application\Sonata\UserBundle\Form\Type\RegistrationFormType;
 use Biopen\CoreBundle\Document\User;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
  * This class is inspired from the FOS RegistrationController.
@@ -33,27 +34,27 @@ class RegistrationFOSUser1Controller extends Controller
     /**
      * @return RedirectResponse|Response
      */
-    public function registerAction(Request $request = null)
+    public function registerAction(Request $request = null, SessionInterface $session)
     {
-        $odm = $this->get('doctrine_mongodb')->getManager();        
+        $odm = $this->get('doctrine_mongodb')->getManager();
         $config = $odm->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
         if (!$config->getUser()->getEnableRegistration()) {
-            $request->getSession()->getFlashBag()->add('error', "Désolé, vous n'êtes pas autorisé à créer un compte.");
+            $session->getFlashBag()->add('error', "Désolé, vous n'êtes pas autorisé à créer un compte.");
             return $this->redirectToRoute('biopen_directory');
         }
 
         $user = $this->getUser();
 
         if ($user instanceof UserInterface) {
-            $this->get('session')->getFlashBag()->set('sonata_user_error', 'sonata_user_already_authenticated');
+            $session->getFlashBag()->set('sonata_user_error', 'sonata_user_already_authenticated');
 
             return $this->redirect($this->generateUrl('sonata_user_profile_show'));
         }
-        
+
         $form = $this->get('form.factory')->create(RegistrationFormType::class, new User());
         $formHandler = $this->get('biopen.registration.form.handler');
 
-        
+
         $confirmationEnabled = $config->getUser()->getSendConfirmationEmail();
 
         $process = $formHandler->process($form, $confirmationEnabled);

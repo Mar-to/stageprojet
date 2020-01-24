@@ -6,26 +6,26 @@ use Symfony\Component\HttpFoundation\Response;
 use Biopen\CoreBundle\Controller\GoGoController;
 use Intervention\Image\ImageManagerStatic as InterventionImage;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class APIController extends GoGoController
 {
-  public function apiUiAction()
+  public function apiUiAction(SessionInterface $session)
   {
     $em = $this->get('doctrine_mongodb')->getManager();
     $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
     $protectPublicApiWithToken = $config->getApi()->getProtectPublicApiWithToken();
 
-    $securityContext = $this->get('security.context');
-    $userLoggued = $securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED');
+    $userLoggued = $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED');
 
     if ($protectPublicApiWithToken && !$userLoggued) {
-      $this->getRequest()->getSession()->set('_security.main.target_path', 'api');
+      $session->set('_security.main.target_path', 'api');
       return $this->redirectToRoute('fos_user_security_login');
     }
 
     if ($protectPublicApiWithToken)
     {
-      $user = $securityContext->getToken()->getUser();
+      $user = $this->getUser();
       if (!$user->getToken()) { $user->createToken(); $em->flush(); }
     }
 

@@ -3,6 +3,7 @@
 namespace Biopen\GeoDirectoryBundle\Controller\Admin\BulkActions;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class DbMigrationsActionsController extends BulkActionsAbstractController
 {
@@ -16,7 +17,7 @@ class DbMigrationsActionsController extends BulkActionsAbstractController
       $element->updateRandomHash();
    }
 
-   public function generateTokenAction(Request $request)
+   public function generateTokenAction(Request $request, SessionInterface $session)
    {
       $em = $this->get('doctrine_mongodb')->getManager();
       $users = $em->getRepository('BiopenCoreBundle:User')->findAll();
@@ -33,7 +34,7 @@ class DbMigrationsActionsController extends BulkActionsAbstractController
       $em->flush();
       $em->clear();
 
-      $request->getSession()->getFlashBag()->add('success', "Les éléments ont été mis à jours avec succès.");
+      $session->getFlashBag()->add('success', "Les éléments ont été mis à jours avec succès.");
       return $this->redirectToIndex();
    }
 

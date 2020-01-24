@@ -10,6 +10,7 @@ use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Biopen\CoreBundle\Form\UserProfileType;
 use Symfony\Component\Form\FormError;
 use Biopen\GeoDirectoryBundle\Document\Coordinates;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class UserController extends GoGoController
 {
@@ -21,7 +22,7 @@ class UserController extends GoGoController
    public function contributionsAction()
    {
       $dm = $this->get('doctrine_mongodb')->getManager();
-      $user = $this->get('security.context')->getToken()->getUser();
+      $user = $this->getUser();
       $userEmail = $user->getEmail();
 
       $elementsOwned = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->findElementsOwnedBy($userEmail);
@@ -61,7 +62,7 @@ class UserController extends GoGoController
    public function votesAction()
    {
       $dm = $this->get('doctrine_mongodb')->getManager();
-      $user = $this->get('security.context')->getToken()->getUser();
+      $user = $this->getUser();
       $userEmail = $user->getEmail();
 
       $votes = $dm->getRepository('BiopenGeoDirectoryBundle:UserInteractionVote')->findByUserEmail($userEmail);
@@ -73,7 +74,7 @@ class UserController extends GoGoController
    public function reportsAction()
    {
       $dm = $this->get('doctrine_mongodb')->getManager();
-      $user = $this->get('security.context')->getToken()->getUser();
+      $user = $this->getUser();
       $userEmail = $user->getEmail();
 
       $reports = $dm->getRepository('BiopenGeoDirectoryBundle:UserInteractionReport')->findByUserEmail($userEmail);
@@ -82,29 +83,29 @@ class UserController extends GoGoController
       return $this->render('@BiopenCoreBundle/user/contributions/reports.html.twig', array('reports' => $reports));
    }
 
-   public function becomeOwnerAction($id, Request $request)
+   public function becomeOwnerAction($id, Request $request, SessionInterface $session)
    {
       $dm = $this->get('doctrine_mongodb')->getManager();
       $element = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->find($id);
 
       if (!$element->getUserOwnerEmail()) {
-         $user = $this->get('security.context')->getToken()->getUser();
+         $user = $this->getUser();
          $userEmail = $user->getEmail();
          $element->setUserOwnerEmail($userEmail);
-         $request->getSession()->getFlashBag()->add('success', "Vous êtes maintenant propriétaire de la fiche " . $element->getName() . " !");
+         $session->getFlashBag()->add('success', "Vous êtes maintenant propriétaire de la fiche " . $element->getName() . " !");
          $dm->flush();
       }
       else
       {
-         $request->getSession()->getFlashBag()->add('error', "Désolé, cet élément appartient déjà à quelqu'un !");
+         $session->getFlashBag()->add('error', "Désolé, cet élément appartient déjà à quelqu'un !");
       }
 
       return $this->redirectToRoute('biopen_user_contributions');
    }
 
-   public function profileAction(Request $request)
+   public function profileAction(Request $request, SessionInterface $session)
    {
-      $user = $this->get('security.context')->getToken()->getUser();
+      $user = $this->getUser();
       $current_user = clone $user;
       $form = $this->get('form.factory')->create(UserProfileType::class, $user);
       $em = $this->get('doctrine_mongodb')->getManager();
@@ -133,7 +134,7 @@ class UserController extends GoGoController
          {
             $em->persist($user);
             $em->flush();
-            $request->getSession()->getFlashBag()->add('info', "Modifications sauvegardées !");
+            $session->getFlashBag()->add('info', "Modifications sauvegardées !");
          }
          else
          {

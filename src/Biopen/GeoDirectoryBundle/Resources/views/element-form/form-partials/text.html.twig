@@ -42,14 +42,14 @@
   {% endif %}
 
   {# NAME #}
-  {% set baseName = field.type == "title" ? "biopen_elementbundle_element" : "data" %}
+  {% set baseName = field.type == "title" ? "element" : "data" %}
   {% set fieldName = field.type == "email" ? 'email' : field.name %}
-  
+
   {# TYPE #}
   {% set inputType = field.subtype is defined ? field.subtype : field.type == "number" ? "number" : "text" %}
   {% set inputType = field.type == "email" ? 'email' : inputType %}
   {% set inputType = field.type == "image" ? 'url' : inputType %}
-  
+
   {# VALUE #}
   {% set inputValue = elementValue %}
   {% if field.type == "title" %}{% set inputValue = element.name %}{% endif %}
@@ -66,11 +66,11 @@
     {% set inputClass = inputClass ~ " materialize-textarea" %}
     <textarea
   {% else %}
-    <input type="{{ inputType }}"  
+    <input type="{{ inputType }}"
   {% endif %}
      name="{{ baseName }}[{{fieldName}}]" id="input-{{ field.name }}" class="{{ inputClass }}"
-      {% if inputValue %} value="{{ inputValue }}"{% endif %} 
-      {% if field.placeholder is defined %} placeholder="{{ field.placeholder }}"{% endif %} 
+      {% if inputValue %} value="{{ inputValue }}"{% endif %}
+      {% if field.placeholder is defined %} placeholder="{{ field.placeholder }}"{% endif %}
       {% if field.maxlength is defined %} length="{{ field.maxlength }}"{% endif %}
   {% if field.type == "textarea" %}
     ></textarea>
@@ -83,7 +83,7 @@
 
   {% if field.type == "date" %}
   <script>
-    document.addEventListener("DOMContentLoaded", function(event) { 
+    document.addEventListener("DOMContentLoaded", function(event) {
       // See documentation for all options https://uxsolutions.github.io/bootstrap-datepicker
       $("#input-{{ field.name }}").datepicker({
         format: "dd/mm/yyyy",

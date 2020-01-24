@@ -102,7 +102,7 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
 		} else {
 
 			// set authentication exception to session
-			$request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
+			$this->session->set(Security::AUTHENTICATION_ERROR, $exception);
 
 			return new RedirectResponse( $this->router->generate( 'login_route' ) );
 		}

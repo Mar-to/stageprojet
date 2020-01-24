@@ -3,10 +3,11 @@
 namespace Biopen\GeoDirectoryBundle\Controller\Admin\BulkActions;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class DataUpdateActionsController extends BulkActionsAbstractController
 {
-   public function updateGamificationAction(Request $request)
+   public function updateGamificationAction(Request $request, SessionInterface $session)
    {
       $em = $this->get('doctrine_mongodb')->getManager();
       $qb = $em->createQueryBuilder('BiopenCoreBundle:User');
@@ -30,7 +31,7 @@ class DataUpdateActionsController extends BulkActionsAbstractController
       $em->flush();
       $em->clear();
 
-      $request->getSession()->getFlashBag()->add('success', count($users) . " utilisateurs ont été mis à jour");
+      $session->getFlashBag()->add('success', count($users) . " utilisateurs ont été mis à jour");
       return $this->redirect($this->generateUrl('admin_biopen_core_user_list'));
    }
 }

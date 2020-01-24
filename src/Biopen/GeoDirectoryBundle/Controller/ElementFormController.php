@@ -20,6 +20,7 @@ use Biopen\GeoDirectoryBundle\Document\Element;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Biopen\GeoDirectoryBundle\Form\ElementType;
 use Biopen\CoreBundle\Document\User;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 
@@ -29,14 +30,14 @@ use joshtronic\LoremIpsum;
 
 class ElementFormController extends GoGoController
 {
-	public function addAction(Request $request)
+	public function addAction(Request $request, SessionInterface $session)
 	{
 		$em = $this->get('doctrine_mongodb')->getManager();
 
-		return $this->renderForm(new Element(), false, $request, $em);
+		return $this->renderForm(new Element(), false, $request, $session, $em);
   	}
 
-	public function editAction($id, Request $request)
+	public function editAction($id, Request $request, SessionInterface $session)
 	{
 		$em = $this->get('doctrine_mongodb')->getManager();
 
@@ -44,33 +45,31 @@ class ElementFormController extends GoGoController
 
 		if (!$element)
 		{
-			$request->getSession()->getFlashBag()->add('error', "L'élément demandé n'existe pas...");
+			$session->getFlashBag()->add('error', "L'élément demandé n'existe pas...");
 			return $this->redirectToRoute('biopen_directory');
 		}
 		else if ( $element->getStatus() > ElementStatus::PendingAdd && $element->getStatus() != ElementStatus::DynamicImport
 			|| $this->container->get('biopen.config_service')->isUserAllowed('directModeration')
 			|| ($element->isPending() && $element->getRandomHash() == $request->get('hash')))
 		{
-			return $this->renderForm($element, true, $request, $em);
+			return $this->renderForm($element, true, $request, $session, $em);
 		}
 		else
 		{
-			$request->getSession()->getFlashBag()->add('error', "Désolé, vous n'êtes pas autorisé à modifier cet élement !");
+			$session->getFlashBag()->add('error', "Désolé, vous n'êtes pas autorisé à modifier cet élement !");
 			return $this->redirectToRoute('biopen_directory');
 		}
 	}
 
 	// render for both Add and Edit actions
-	private function renderForm($element, $editMode, $request, $em)
+	private function renderForm($element, $editMode, $request, $session, $em)
 	{
 		if (null === $element) {
 		  throw new NotFoundHttpException("Cet élément n'existe pas.");
 		}
 
 		$addOrEditComplete = false;
-		$securityContext = $this->container->get('security.context');
 		$userRoles = [];
-		$session = $this->getRequest()->getSession();
 		$configService = $this->container->get('biopen.config_service');
 		$addEditName = $editMode ? 'edit' : 'add';
 
@@ -110,10 +109,10 @@ class ElementFormController extends GoGoController
 		// depending on authentification type (account or just giving email) we fill some variables
 		else
 		{
-			if ($securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED'))
+			if ($this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED'))
 			{
 				$userType = "loggued";
-				$user = $this->get('security.context')->getToken()->getUser();
+				$user = $this->getUser();
 				$userRoles = $user->getRoles();
 				$userEmail = $user->getEmail();
 			}
@@ -240,7 +239,7 @@ class ElementFormController extends GoGoController
 				$em->persist($user);
 
 				$text = 'Votre compte a bien été créé ! Vous pouvez maintenant compléter <a href="'. $this->generateUrl('biopen_user_profile') .'" >votre profil</a> !';
-				$request->getSession()->getFlashBag()->add('success', $text);
+				$session->getFlashBag()->add('success', $text);
 
 				$this->authenticateUser($user);
 			}
@@ -276,7 +275,7 @@ class ElementFormController extends GoGoController
 				$noticeText .= "</br>Votre contribution est pour l'instant en attente de validation, <a class='validation-process' onclick=\"$('#popup-collaborative-explanation').openModal()\">cliquez ici</a> pour en savoir plus sur le processus de modération collaborative !";
 			}
 
-			if ($securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED') || $session->has('userEmail'))
+			if ($this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED') || $session->has('userEmail'))
 				$noticeText .= '</br>Retrouvez et modifiez vos contributions sur la page <a href="'.$this->generateUrl('biopen_user_contributions').'">Mes Contributions</a>';
 
 			$isAllowedPending = $configService->isUserAllowed('pending');
@@ -284,7 +283,7 @@ class ElementFormController extends GoGoController
 			$showResultLink = $submitOption == 'stayonform' && ($isAllowedDirectModeration || $isAllowedPending);
 			if ($showResultLink) $noticeText .= '</br><a href="' . $elementShowOnMapUrl . '">Voir le résultat sur la carte</a>';
 
-			$request->getSession()->getFlashBag()->add('success', $noticeText);
+			$session->getFlashBag()->add('success', $noticeText);
 
 			if ($submitOption != 'stayonform' && !$recopyInfo) return $this->redirect($elementShowOnMapUrl);
 
@@ -301,10 +300,10 @@ class ElementFormController extends GoGoController
 			$addOrEditComplete = true;
 		}
 
-		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED') && !$session->has('userEmail') && !$addOrEditComplete)
+		if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED') && !$session->has('userEmail') && !$addOrEditComplete)
 		{
 			$flashMessage = "Vous êtes actuellement en mode \"Anonyme\"</br> Connectez-vous pour augmenter notre confiance dans vos contributions !";
-			$request->getSession()->getFlashBag()->add('notice', $flashMessage);
+			$session->getFlashBag()->add('notice', $flashMessage);
 		}
 
  		$mainCategories = $em->getRepository('BiopenGeoDirectoryBundle:Category')->findRootCategories();
@@ -333,10 +332,9 @@ class ElementFormController extends GoGoController
   }
 
 	// when submitting new element, check it's not yet existing
-	public function checkDuplicatesAction(Request $request)
+	public function checkDuplicatesAction(Request $request, SessionInterface $session)
 	{
 		$em = $this->get('doctrine_mongodb')->getManager();
-		$session = $this->getRequest()->getSession();
 
 		// a form with just a submit button
 		$checkDuplicatesForm = $this->get('form.factory')->createNamedBuilder('duplicates', 'form')->getForm();
