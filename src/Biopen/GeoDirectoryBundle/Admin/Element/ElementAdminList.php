@@ -15,10 +15,11 @@ use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Biopen\GeoDirectoryBundle\Document\ModerationState;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class ElementAdminList extends ElementAdminFilters
 {
-   public function getTemplate($name) 
+   public function getTemplate($name)
    {
      switch ($name) {
          case 'list': return '@BiopenAdmin/list/base_list_custom_batch.html.twig';
@@ -31,7 +32,7 @@ class ElementAdminList extends ElementAdminFilters
    public function createQuery($context = 'list')
    {
        $query = parent::createQuery($context);
-       // not display the modified version 
+       // not display the modified version
        $query->field('status')->notEqual(ElementStatus::ModifiedPendingVersion);
        return $query;
    }
@@ -46,8 +47,8 @@ class ElementAdminList extends ElementAdminFilters
    protected function configureListFields(ListMapper $listMapper)
    {
      $listMapper
-         ->add('name', null,  array('editable' => false, 'template' => '@BiopenAdmin/partials/list_name.html.twig'))       
-         ->add('status', 'choice', [
+         ->add('name', null,  array('editable' => false, 'template' => '@BiopenAdmin/partials/list_name.html.twig'))
+         ->add('status', ChoiceType::class, [
                'choices'=> $this->statusChoices,
                'editable'=>true,
                'template' => '@BiopenAdmin/partials/list_choice_status.html.twig'
@@ -55,13 +56,13 @@ class ElementAdminList extends ElementAdminFilters
          ->add('updatedAt','date', array("format" => "d/m/Y"))
          ->add('sourceKey', null, array('label' => 'Source'))
          ->add('optionValues', null, [
-               'template' => '@BiopenAdmin/partials/list_option_values.html.twig', 
+               'template' => '@BiopenAdmin/partials/list_option_values.html.twig',
                'header_style' => 'width: 250px',
                'collapse' => true,
                'choices' => $this->optionList,
                'label' => 'Catégories'
             ])
-         ->add('moderationState', 'choice', [
+         ->add('moderationState', ChoiceType::class, [
                'label' => "Modération",
                'choices'=> $this->moderationChoices,
                'editable'=>true,
@@ -69,7 +70,7 @@ class ElementAdminList extends ElementAdminFilters
                ])
          // use fake attribute createdAt, we then access full object inside template
          ->add('createdAt', null, array('template' => '@BiopenAdmin/partials/list_votes.html.twig', 'label' => 'Votes'))
-         
+
          ->add('_action', 'actions', array(
              'actions' => array(
                  'show-edit' => array('template' => '@BiopenAdmin/partials/list__action_show_edit.html.twig'),
@@ -79,17 +80,17 @@ class ElementAdminList extends ElementAdminFilters
                  'redirect-edit' => array('template' => '@BiopenAdmin/partials/list__action_redirect_edit.html.twig')
              )
          ));
-   }   
+   }
 
    public function configureBatchActions($actions)
    {
       $actions = [];
-      $actions['validation'] = $this->createBatchConfig('Valider', 'validation');   
+      $actions['validation'] = $this->createBatchConfig('Valider', 'validation');
       $actions['refusal'] = $this->createBatchConfig('Refuser', 'refusal');
       $actions['softDelete'] = $this->createBatchConfig('Supprimer (changement de status)', 'softDelete');
       $actions['restore'] = $this->createBatchConfig('Restaurer', 'restore');
       $actions['resolveReports'] = $this->createBatchConfig('Résoudre la modération', 'resolveReports');
-      
+
       $actions['sendMail'] = array(
          'label' => 'Envoyer un mail',
          'ask_confirmation' => false,

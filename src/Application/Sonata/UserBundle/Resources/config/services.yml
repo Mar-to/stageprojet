@@ -1,16 +1,19 @@
 services:
   biopen_user.gamification:
     class: Application\Sonata\UserBundle\Services\GamificationService
+    public: true
     arguments: [ "@doctrine.odm.mongodb.document_manager" ]
 
   biopen_user.registration.form.type:
     class: Application\Sonata\UserBundle\Form\Type\RegistrationFormType
+    public: true
     arguments: [ "%fos_user.model.user.class%" ]
     tags:
       - { name: "form.type", alias: "biopen_user_registration"}
 
   biopen.registration.form.handler:
     class: Application\Sonata\UserBundle\Form\Handler\RegistrationFormHandler
+    public: true
     arguments:
       - "@request_stack"
       - "@fos_user.user_manager"

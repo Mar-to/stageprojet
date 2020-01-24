@@ -19,6 +19,8 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\AdminBundle\Form\Type\ModelType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Sonata\UserBundle\Form\Type\SecurityRolesType;
 
 class UserAdmin extends AbstractAdmin
 {
@@ -42,10 +44,7 @@ class UserAdmin extends AbstractAdmin
             ->add('contributionsCount', null, ['label' => 'Contributions'])
             ->add('votesCount', null, ['label' => 'Votes'])
             ->add('reportsCount', null, ['label' => 'Signalements'])
-            // ->add('enabled', null, array('editable' => true))
-            // ->add('locked', null, array('editable' => true))
             ->add('createdAt','date', array("format" => "d/m/Y"))
-
         ;
 
         if ($this->isGranted('ROLE_ALLOWED_TO_SWITCH')) {
@@ -116,10 +115,9 @@ class UserAdmin extends AbstractAdmin
         $filterMapper
             ->add('id')
             ->add('username')
-            // ->add('locked')
             ->add('newsletterFrequency', 'doctrine_mongo_callback', array(
                 'label' => 'Reception newsletter',
-                'field_type' => 'checkbox',
+                'field_type' => CheckboxType::class,
                 'callback' => function($queryBuilder, $alias, $field, $value) {
                     if (!$value || !$value['value']) { return; }
                     $queryBuilder->field('newsletterFrequency')->gt(0);
@@ -187,26 +185,18 @@ class UserAdmin extends AbstractAdmin
 
         $now = new \DateTime();
 
-        $textType = 'text';
-        $datePickerType = 'sonata_type_date_picker';
-        $urlType = 'url';
-        $userGenderType = 'sonata_user_gender';
-        $localeType = 'locale';
-        $timezoneType = 'timezone';
         $modelType = ModelType::class;
-        $securityRolesType = 'sonata_security_roles';
 
         $formMapper
             ->tab('User')
                 ->with('General')
                     ->add('username')
                     ->add('email')
-                    ->add('plainPassword', $textType, array(
+                    ->add('plainPassword', PasswordType::class, array(
                         'required' => (!$this->getSubject() || is_null($this->getSubject()->getId())),
                     ))
                     ->add('allowedStamps', $modelType, array(
                         'required' => false,
-                        'choices_as_values' => true,
                         'expanded' => false,
                         'multiple' => true,
                     ))
@@ -220,7 +210,6 @@ class UserAdmin extends AbstractAdmin
                 ->with('Groups')
                     ->add('groups', $modelType, array(
                         'required' => false,
-                        'choices_as_values' => true,
                         'expanded' => true,
                         'multiple' => true,
                     ))
@@ -228,7 +217,7 @@ class UserAdmin extends AbstractAdmin
             ->end()
             ->tab('Security')
                 ->with('Roles')
-                    ->add('realRoles', $securityRolesType, array(
+                    ->add('realRoles', SecurityRolesType::class, array(
                         'label' => false,
                         'expanded' => true,
                         'multiple' => true,

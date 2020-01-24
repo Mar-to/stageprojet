@@ -9,19 +9,20 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Vich\UploaderBundle\Form\Type\VichImageType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 class ImageAdmin extends AbstractAdmin
 {
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('file', 'file', array('label' => 'Fichier à importer', 'required' => false))
+            ->add('file', FileType::class, array('label' => 'Fichier à importer', 'required' => false))
             ->add('externalImageUrl', null, array('label' => 'Lien vers une image externe', 'required' => false))
         ;
     }
 
     protected function configureShowFields(ShowMapper $show)
-    { 
+    {
         $show->add('fileName');
     }
 

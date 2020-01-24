@@ -17,6 +17,8 @@ use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Biopen\GeoDirectoryBundle\Document\ModerationState;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 use Sonata\AdminBundle\Form\Type\ModelType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class ElementAdminShowEdit extends ElementAdminList
 {
@@ -24,17 +26,8 @@ class ElementAdminShowEdit extends ElementAdminList
 	{
 	  $formMapper
 	  ->with('Informations générales', array())
-		  ->add('name', 'text')
-      ->add('userOwnerEmail', 'text', array('required' => false, 'label' => "Email de l'utilisateur propriétaire de cette fiche"))
-      // ->add('images', 'sonata_type_collection', array('by_reference' => true, 'type_options' => array('delete' => true)),
-      //    array('edit' => 'inline', 'inline' => 'table'))
-      // ->add('stamps', ModelType::class, array(
-      //       'label' => "Etiquettes",
-      //       'required' => false,
-      //       'choices_as_values' => true,
-      //       'expanded' => false,
-      //       'multiple' => true,
-      //   ))
+		  ->add('name')
+      ->add('userOwnerEmail', EmailType::class, array('required' => false, 'label' => "Email de l'utilisateur propriétaire de cette fiche"))
 		->end();
 	}
 
@@ -51,13 +44,13 @@ class ElementAdminShowEdit extends ElementAdminList
     else
     {
       $show->with('Status', array('class' => $statusClass))
-         ->add('status', 'choice', [ 'choices'=> $this->statusChoices ])->end();
+         ->add('status', ChoiceType::class, [ 'choices'=> $this->statusChoices ])->end();
     }
 
     if ($needModeration) {
       $show
        ->with('Modération', array('class' => 'col-md-6 col-sm-12'))
-        ->add('moderationState', 'choice', [
+        ->add('moderationState', ChoiceType::class, [
             'label' => 'Moderation',
                'choices'=> $this->moderationChoices,
                'template' => '@BiopenAdmin/partials/show_choice_moderation.html.twig'
@@ -73,7 +66,7 @@ class ElementAdminShowEdit extends ElementAdminList
             'template' => '@BiopenAdmin/partials/show_option_values.html.twig',
             'choices' => $this->optionList,
             'label' => 'Catégories' ])
-        ->add('email', 'text', array('label' => 'Email de contact'))
+        ->add('email', EmailType::class, array('label' => 'Email de contact'))
         ->add('images', null, array('template' => '@BiopenAdmin/partials/show_element_images.html.twig'))
         ->add('randomHash')
         ->add('oldId', null, array('label' => 'Id dans la base de données importée'))

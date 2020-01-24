@@ -15,6 +15,8 @@ use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Biopen\GeoDirectoryBundle\Document\ModerationState;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 class ElementAdminFilters extends ElementAdminAbstract
 {
@@ -29,7 +31,7 @@ class ElementAdminFilters extends ElementAdminAbstract
     $datagridMapper
       ->add('name')
       ->add('status', 'doctrine_mongo_choice', array(),
-        'choice',
+        ChoiceType::class,
         array(
             'choices' => $this->statusChoices,
            'expanded' => false,
@@ -44,7 +46,7 @@ class ElementAdminFilters extends ElementAdminAbstract
                     $queryBuilder->field('status')->gt(ElementStatus::PendingAdd)->notEqual(ElementStatus::DynamicImport);
                     return true;
                 },
-                'field_type' => 'checkbox'
+                'field_type' => CheckboxType::class
             ))
       ->add('pending', 'doctrine_mongo_callback', array(
                 'label' => 'En attente',
@@ -54,7 +56,7 @@ class ElementAdminFilters extends ElementAdminAbstract
                     $queryBuilder->field('status')->in(array(ElementStatus::PendingModification,ElementStatus::PendingAdd));
                     return true;
                 },
-                'field_type' => 'checkbox'
+                'field_type' => CheckboxType::class
             ))
       ->add('moderationNeeded', 'doctrine_mongo_callback', array(
             'label' => 'Modération Nécessaire',
@@ -65,34 +67,16 @@ class ElementAdminFilters extends ElementAdminAbstract
                     $queryBuilder->field('status')->gte(ElementStatus::PendingModification);
                     return true;
                 },
-                'field_type' => 'checkbox'
+                'field_type' => CheckboxType::class
             ))
       ->add('moderationState', 'doctrine_mongo_choice', array('label' => 'Type de Modération'),
-          'choice',
+          ChoiceType::class,
           array(
-              'choices' => $this->moderationChoices,
+             'choices' => $this->moderationChoices,
              'expanded' => false,
              'multiple' => false
             )
           )
-      // ->add('reportsIn', 'doctrine_mongo_callback', array(
-      //          'label' => "Type d'erreurs signalées",
-      //          'callback' => function($queryBuilder, $alias, $field, $value) {
-      //               if (!$value || !$value['value']) { return; }
-      //               dump($value['value']);
-      //               $queryBuilder->field('moderationState')->equals(ModerationState::ReportsSubmitted);
-      //               $queryBuilder->where("function() { return (this.reports.filter( function(r) { return (r.value != 4); }).length > 0); }");
-      //               return true;
-      //           },
-      //           'field_type' => 'choice',
-      //           'field_options' =>
-      //            array(
-      //                'choices' => $this->reportsValuesChoice,
-      //                'expanded' => false,
-      //                'multiple' => true
-      //               )
-      //          )
-      //       )
       ->add('optionValuesAll', 'doctrine_mongo_callback', array(
                'label' => 'Catégories (contient toutes)',
                'callback' => function($queryBuilder, $alias, $field, $value) {
@@ -100,7 +84,7 @@ class ElementAdminFilters extends ElementAdminAbstract
                     $queryBuilder->field('optionValues.optionId')->all($value['value']);
                     return true;
                 },
-                'field_type' => 'choice',
+                'field_type' => ChoiceType::class,
                 'field_options' =>
                  array(
                      'choices' => $this->optionsChoices,
@@ -116,7 +100,7 @@ class ElementAdminFilters extends ElementAdminAbstract
                     $queryBuilder->field('optionValues.optionId')->in($value['value']);
                     return true;
                 },
-                'field_type' => 'choice',
+                'field_type' => ChoiceType::class,
                 'field_options' =>
                  array(
                      'choices' => $this->optionsChoices,
@@ -132,7 +116,7 @@ class ElementAdminFilters extends ElementAdminAbstract
                     $queryBuilder->field('optionValues.optionId')->notIn($value['value']);
                     return true;
                 },
-                'field_type' => 'choice',
+                'field_type' => ChoiceType::class,
                 'field_options' =>
                  array(
                      'choices' => $this->optionsChoices,

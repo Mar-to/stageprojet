@@ -4,7 +4,9 @@ biopen_homepage:
 
 biopen_homepage_force:
     path:     /home
-    defaults: { _controller: BiopenCoreBundle:Core:home, force:true }
+    controller: BiopenCoreBundle:Core:home
+    defaults:
+        force: true
 
 biopen_partners:
     path: /qui-sommes-nous

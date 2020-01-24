@@ -26,7 +26,6 @@ class ConfigurationHomeAdmin extends ConfigurationAbstractAdmin
             'class'=> 'Biopen\CoreBundle\Document\ConfImage',
             'placeholder' => "Séléctionnez une image déjà importée, ou ajoutez en une !",
             'required' => false,
-            'choices_as_values' => true,
             'label' => 'Logo',
             'mapped' => true
         );

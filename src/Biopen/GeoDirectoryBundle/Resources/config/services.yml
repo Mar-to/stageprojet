@@ -1,44 +1,54 @@
 services:
     biopen.form.element:
         class: Biopen\GeoDirectoryBundle\Form\ElementType
+        public: true
         arguments: [ "@doctrine.odm.mongodb.document_manager" ]
         tags:
             - { name: form.type }
 
     biopen.element_vote_service:
+       public: true
        class: Biopen\GeoDirectoryBundle\Services\ElementVoteService
        arguments: [ "@doctrine.odm.mongodb.document_manager", "@security.token_storage", "@biopen.config_service", "@biopen.element_pending_service" ]
 
     biopen.element_action_service:
        class: Biopen\GeoDirectoryBundle\Services\ElementActionService
+       public: true
        arguments: [ "@doctrine.odm.mongodb.document_manager", "@security.token_storage", "@biopen.mail_service", "@biopen.element_pending_service", "@biopen.user_interaction_service" ]
 
     biopen.element_pending_service:
        class: Biopen\GeoDirectoryBundle\Services\ElementPendingService
+       public: true
        arguments: [ "@doctrine.odm.mongodb.document_manager", "@biopen.mail_service", "@biopen.user_interaction_service" ]
 
     biopen.element_form_service:
        class: Biopen\GeoDirectoryBundle\Services\ElementFormService
+       public: true
        arguments: [ "@biopen.element_action_service" ]
 
     biopen.element_duplicates_service:
+       public: true
        class: Biopen\GeoDirectoryBundle\Services\ElementDuplicatesService
        arguments: [ "@doctrine.odm.mongodb.document_manager" ]
 
     biopen.random_creation_service:
        class: Biopen\GeoDirectoryBundle\Services\RandomCreationService
+       public: true
        arguments: [ "@doctrine.odm.mongodb.document_manager" ]
 
     biopen.user_interaction_service:
        class: Biopen\GeoDirectoryBundle\Services\UserInteractionService
+       public: true
        arguments: [ "@doctrine.odm.mongodb.document_manager", "@security.token_storage" ]
 
     biopen.webhook_service:
       class: Biopen\GeoDirectoryBundle\Services\WebhookService
+      public: true
       arguments: [ "@doctrine.odm.mongodb.document_manager", "@router", "@security.token_storage", "%base_url%", "%base_path%" ]
 
     biopen.taxonomy_json_generator:
         class: Biopen\GeoDirectoryBundle\EventListener\TaxonomyJsonGenerator
+        public: true
         arguments: [ '@jms_serializer' ]
         tags:
             - { name: doctrine_mongodb.odm.event_listener, event: postPersist }
@@ -48,11 +58,13 @@ services:
 
     biopen.element_json_generator:
         class: Biopen\GeoDirectoryBundle\EventListener\ElementJsonGenerator
+        public: true
         tags:
             - { name: doctrine_mongodb.odm.event_listener, event: preFlush }
 
     biopen.db_integrity:
         class: Biopen\GeoDirectoryBundle\EventListener\DatabaseIntegrityWatcher
+        public: true
         arguments: ["@biopen.async"]
         tags:
             - { name: doctrine_mongodb.odm.event_listener, event: preRemove }
@@ -61,6 +73,7 @@ services:
 
     biopen.element_import:
        class: Biopen\GeoDirectoryBundle\Services\ElementImportService
+       public: true
        arguments:
           - "@doctrine.odm.mongodb.document_manager"
           - '@biopen.element_import_one'
@@ -69,6 +82,7 @@ services:
 
     biopen.element_import_one:
        class: Biopen\GeoDirectoryBundle\Services\ElementImportOneService
+       public: true
        arguments:
           - "@doctrine.odm.mongodb.document_manager"
           - '@bazinga_geocoder.geocoder'
@@ -76,9 +90,11 @@ services:
 
     biopen.element_import_mapping:
        class: Biopen\GeoDirectoryBundle\Services\ElementImportMappingService
+       public: true
        arguments:
           - "@doctrine.odm.mongodb.document_manager"
 
     biopen.gogocartojs_service:
        class: Biopen\GeoDirectoryBundle\Services\GoGoCartoJsService
+       public: true
        arguments: [ "@doctrine.odm.mongodb.document_manager", "@security.token_storage", "@router", "@session", "%base_protocol%" ]

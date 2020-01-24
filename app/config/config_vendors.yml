@@ -1,15 +1,17 @@
-fos_js_routing:
-    routes_to_expose: []
-
 bazinga_geocoder:
     providers:
         google_maps:
             locale:               fr
-            region:               null
-            use_ssl:              true
-            api_key:              AIzaSyBgah9u8A21CdN6O_fN80Op-4zcLJ0EwXk
-        openstreetmap:
-            locale:               fr
+            factory: Bazinga\GeocoderBundle\ProviderFactory\GoogleMapsFactory
+            options:
+                # httplug_client: '@httplug.client' # When using HTTPlugBundle
+                # region: 'Sweden'
+                api_key: 'AIzaSyBgah9u8A21CdN6O_fN80Op-4zcLJ0EwXk'
+            # region:               null
+            # use_ssl:              true
+            # api_key:
+        # openstreetmap:
+        #     locale:               fr
 
 fos_ck_editor:
     default_config: full

@@ -24,19 +24,20 @@ class WrapperAdmin extends AbstractAdmin
 
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $formMapper->add('title', 'text');
+        $formMapper->add('title', null);
         $formMapper->add('content', SimpleFormatterType::class, array(
                 'format' => 'richhtml',
                 'label' => 'Contenu du bandeau',
                 'required' => false,
                 'ckeditor_context' => 'full',
             ));
-        $formMapper->add('rawContent', 'textarea', array(
+        $formMapper->add('rawContent', null, array(
                 'label' => 'Contenu en raw html (optionel)',
                 'required' => false,
+                'attr' => ['class' => 'gogo-code-editor', 'format' => 'html', 'height' => '150']
             ));
-        $formMapper->add('textColor', 'text', ['required' => false, 'attr' => ['class' => 'gogo-color-picker']]);
-        $formMapper->add('backgroundColor', 'text', ['required' => false, 'attr' => ['class' => 'gogo-color-picker']]);
+        $formMapper->add('textColor', null, ['required' => false, 'attr' => ['class' => 'gogo-color-picker']]);
+        $formMapper->add('backgroundColor', null, ['required' => false, 'attr' => ['class' => 'gogo-color-picker']]);
     }
 
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)

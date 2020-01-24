@@ -26,7 +26,7 @@ class PartnerAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('name', 'text', ['required' => false])
+            ->add('name', null, ['required' => false])
             ->add('content', SimpleFormatterType::class, array(
     			    'format' => 'richhtml', 'required' => false, 'ckeditor_context' => 'full',
     			))
@@ -34,10 +34,9 @@ class PartnerAdmin extends AbstractAdmin
                 'class'=> 'Biopen\CoreBundle\Document\PartnerImage',
                 'placeholder' => "Séléctionnez une image déjà importée, ou ajoutez en une !",
                 'required' => false,
-                'choices_as_values' => true,
                 'label' => 'Logo',
                 'mapped' => true))
-            ->add('websiteUrl', 'text', ['required' => false]);
+            ->add('websiteUrl', null, ['required' => false]);
     }
 
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)

@@ -24,6 +24,3 @@ biopen_bulk_actions:
 biopen_duplicates:
     resource: "@BiopenGeoDirectoryBundle/Resources/config/routing-duplicates.yml"
     prefix: /duplicates
-
-fos_js_routing:
-    resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"

@@ -2,12 +2,12 @@
 
 namespace Biopen\CoreBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
-class GoGoController extends Controller
+class GoGoController extends AbstractController
 {
-   public function render($view, array $parameters = array(), Response $response = null)
+   public function render(string $view, array $parameters = [], Response $response = null): Response
    {
       $em = $this->get('doctrine_mongodb')->getManager();
       $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();

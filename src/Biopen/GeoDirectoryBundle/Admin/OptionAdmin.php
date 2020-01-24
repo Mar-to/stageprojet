@@ -54,12 +54,11 @@ class OptionAdmin extends AbstractAdmin
             ->add('color', 'text', array('required' => false, 'label' => 'Couleur', 'attr' => ['class' => 'gogo-color-picker']))
             ->add('icon', null, array('required' => false, 'label' => 'Icone', 'attr' => ['class' => 'gogo-icon-picker']))
             ->add('parent', ModelType::class, array(
-            'class'=> 'Biopen\GeoDirectoryBundle\Document\Category',
-            'required' => true,
-            'query' => $parentQuery,
-            'choices_as_values' => true,
-            'label' => 'Groupe de Catégorie parent',
-            'mapped' => true), array('admin_code' => 'admin.categories.lite_hidden'))
+              'class'=> 'Biopen\GeoDirectoryBundle\Document\Category',
+              'required' => true,
+              'query' => $parentQuery,
+              'label' => 'Groupe de Catégorie parent',
+              'mapped' => true), array('admin_code' => 'admin.categories.lite_hidden'))
          ->end()
          ->with('Paramètres secondaires', array('class' => 'col-xs-12 col-md-6', 'box_class' => 'box'))
             ->add('useIconForMarker', null, array('required' => false, 'label' => "Utiliser l'icone de cette catégorie pour le marqueur", 'label_attr' => ['title'=>"Le marqueur affichera toutes icones de chaque catégorie ayant cette option activée. Les icones seront classées par ordre de selection des catégories dans le formulaire"]))

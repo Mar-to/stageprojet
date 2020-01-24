@@ -40,6 +40,7 @@ security:
         main:
             pattern:             .*
             context:             user
+            logout_on_user_change: true
             form_login:
                 provider:       fos_userbundle
                 login_path:     /login

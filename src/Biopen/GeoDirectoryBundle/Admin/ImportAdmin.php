@@ -9,6 +9,8 @@ use Sonata\AdminBundle\Route\RouteCollection;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Form\Type\ModelType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 
 class ImportAdmin extends AbstractAdmin
 {
@@ -41,13 +43,13 @@ class ImportAdmin extends AbstractAdmin
         $formMapper
             ->tab('Général')
                 ->with($title, ['class' => 'col-md-6'])
-                    ->add('sourceName', 'text', array('required' => true, 'label' => 'Nom de la source '))
-                    ->add('file', 'file', array('label' => 'Fichier CSV à importer (séparation par virgules, encodage en UTF8)', 'required' => false))
-                    ->add('url', 'text', array('label' => "Ou URL vers un API Json", 'required' => false));
+                    ->add('sourceName', null, array('required' => true, 'label' => 'Nom de la source '))
+                    ->add('file', FileType::class, array('label' => 'Fichier CSV à importer (séparation par virgules, encodage en UTF8)', 'required' => false))
+                    ->add('url', UrlType::class, array('label' => "Ou URL vers un API Json", 'required' => false));
         if ($isDynamic)
             $formMapper
                     ->add('refreshFrequencyInDays', null, array('required' => false, 'label' => "Fréquence de mise à jours des données en jours (laisser vide pour ne jamais mettre à jour automatiquement"))
-                    ->add('idsToIgnore', 'text', array('required' => false, 'attr' => ['class' => 'gogo-display-array'], 'label' => "Liste des IDs qui seront ignorées lors de l'import", 'label_attr' => ['title' => "Pour ignorer un élément, supprimer le (définitivement) et il ne sera plus jamais importé. Si vous supprimez un élément dynamiquement importé juste en changeant son status (soft delete), l'élément sera quand meme importé mais conservera son status supprimé. Vous pourrez donc à tout moment restaurer cet élement pour le voir apparaitre de nouveau"]));
+                    ->add('idsToIgnore', null, array('required' => false, 'attr' => ['class' => 'gogo-display-array'], 'label' => "Liste des IDs qui seront ignorées lors de l'import", 'label_attr' => ['title' => "Pour ignorer un élément, supprimer le (définitivement) et il ne sera plus jamais importé. Si vous supprimez un élément dynamiquement importé juste en changeant son status (soft delete), l'élément sera quand meme importé mais conservera son status supprimé. Vous pourrez donc à tout moment restaurer cet élement pour le voir apparaitre de nouveau"]));
         $formMapper
                 ->end()
                 ->with("Autres options", ['box_class' => 'box box-default', 'class' => 'col-md-6'])
@@ -56,7 +58,6 @@ class ImportAdmin extends AbstractAdmin
                     ->add('optionsToAddToEachElement', ModelType::class, array(
                         'class'=> 'Biopen\GeoDirectoryBundle\Document\Option',
                         'required' => false,
-                        'choices_as_values' => true,
                         'multiple' => true,
                         'btn_add' => false,
                         'label' => 'Catégories à ajouter à chaque élément importé'), array('admin_code' => 'admin.option_hidden'))
@@ -69,7 +70,7 @@ class ImportAdmin extends AbstractAdmin
                 if ($this->getSubject()->getId())
                 {
                     $formMapper->with('Historique', array('class' => 'col-sm-12'))
-                        ->add('logs', 'hidden', array('attr' => ['class' => 'gogo-display-logs'], 'mapped' => false))
+                        ->add('logs', null, array('attr' => ['class' => 'gogo-display-logs'], 'mapped' => false))
                     ->end();
                 }
         $formMapper->end();
@@ -91,7 +92,7 @@ Transformer un attribut
 <pre>&lt;?php</br>foreach(\$data as \$key => \$row) {
     \$data[\$key]['categories'] = array_map(function(\$cat) { return \$cat[0]; }, \$row['categories']);
 }</pre>"])
-                ->add('customCode', 'text', array('label' => 'Code PHP qui sera exécuté', 'attr' => ['class' => 'gogo-code-editor', 'format' => 'php', 'height' => '500'], 'required' => false))
+                ->add('customCode', null, array('label' => 'Code PHP qui sera exécuté', 'attr' => ['class' => 'gogo-code-editor', 'format' => 'php', 'height' => '500'], 'required' => false))
             ->end()
         ->end();
 
@@ -102,7 +103,7 @@ Transformer un attribut
             $formMapper
                 ->tab($title)
                     ->with('Transformer les données à importer')
-                        ->add('ontologyMapping', 'hidden', array('attr' => ['class' => 'gogo-mapping-ontology', 'data-form-props' => $formProperties, 'data-props' => $elementProperties]))
+                        ->add('ontologyMapping', null, array('attr' => ['class' => 'gogo-mapping-ontology', 'data-form-props' => $formProperties, 'data-props' => $elementProperties]))
                     ->end()
                 ->end();
             if (count($this->getSubject()->getOntologyMapping()) > 0)
@@ -111,7 +112,7 @@ Transformer un attribut
                 if ($this->getSubject()->getNewTaxonomyToMap()) $title .= ' <label class="label label-info">Nouvelles catégories</label>';
                 $formMapper->tab($title)
                     ->with('Faites correspondre les catégories')
-                        ->add('taxonomyMapping', 'hidden', array('attr' => ['class' => 'gogo-mapping-taxonomy', 'data-options' => $optionsList]))
+                        ->add('taxonomyMapping', null, array('attr' => ['class' => 'gogo-mapping-taxonomy', 'data-options' => $optionsList]))
                     ->end()
                 ->end();
             }

@@ -36,7 +36,6 @@ class ConfigurationMapAdmin extends ConfigurationAbstractAdmin
                     ->add('defaultTileLayer', ModelType::class, array(
                             'class'=> 'Biopen\CoreBundle\Document\TileLayer',
                             'required' => true,
-                            'choices_as_values' => true,
                             'label' => 'Fond de carte par défaut (enregistez pour voir apparaitre le fond délectionné sur la carte ci-dessous)'))
                     ->add('defaultViewPicker', 'hidden', array('mapped' => false, 'attr' => [
                                                         'class' => 'gogo-viewport-picker',

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Biopen\CoreBundle\Form;
 
@@ -23,14 +23,13 @@ class UserProfileType extends AbstractType
       $builder->add('username')
               ->add('email', EmailType::class, array('required' => true))
               ->add('newsletterFrequency', ChoiceType::class, [
-                   'choices'  => array(                       
+                   'choices'  => array(
                        'Chaque semaine' => 1,
                        'Chaque mois' => 2,
                        'Jamais' => 0,
                    ),
                    'expanded' => true,  'multiple' => false,
-                   'required' => false, 'placeholder' => false,
-                   'choices_as_values' => true ])
+                   'required' => false, 'placeholder' => false ])
               ->add('location',TextType::class, ['required' => false] )
               ->add('newsletterRange', RangeType::class, [
                    'required' => false,
@@ -40,7 +39,7 @@ class UserProfileType extends AbstractType
                    )
                   ]);
   }
-  
+
   /**
    * @param OptionsResolver $resolver
    */

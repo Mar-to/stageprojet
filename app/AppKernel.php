@@ -16,10 +16,8 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
-            new Symfony\Bundle\AsseticBundle\AsseticBundle(),
-            new Bazinga\Bundle\GeocoderBundle\BazingaGeocoderBundle(),
+            new Bazinga\GeocoderBundle\BazingaGeocoderBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle(),
-            new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
 
             new Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
             new Pix\SortableBehaviorBundle\PixSortableBehaviorBundle(),
@@ -48,16 +46,14 @@ class AppKernel extends Kernel
             new Ob\HighchartsBundle\ObHighchartsBundle(),
             new Vich\UploaderBundle\VichUploaderBundle(),
             new Sentry\SentryBundle\SentryBundle(),
+            new Http\HttplugBundle\HttplugBundle()
 
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
-            $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
-            $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
             $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
-            $bundles[] = new CoreSphere\ConsoleBundle\CoreSphereConsoleBundle();
         }
 
         return $bundles;

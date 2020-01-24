@@ -164,7 +164,8 @@ class ElementFormController extends GoGoController
 		$checkDuplicateOk = $request->query->get('checkDuplicate') && $session->has('elementWaitingForDuplicateCheck');
 
 		//  If form submitted with valid values
-		if ($elementForm->handleRequest($request)->isValid() || $checkDuplicateOk)
+		$elementForm->handleRequest($request);
+		if ($elementForm->isSubmitted() && $elementForm->isValid() || $checkDuplicateOk)
 		{
 			// if checkDuplicate process is done
 			if ($checkDuplicateOk)

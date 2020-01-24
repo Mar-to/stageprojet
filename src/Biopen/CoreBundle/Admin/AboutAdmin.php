@@ -24,7 +24,7 @@ class AboutAdmin extends AbstractAdmin
 
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $formMapper->add('name', 'text');
+        $formMapper->add('name');
         $formMapper->add('content', SimpleFormatterType::class, array(
 			    'format' => 'richhtml', 'ckeditor_context' => 'full'
 			));

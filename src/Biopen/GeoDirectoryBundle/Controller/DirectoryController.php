@@ -19,8 +19,6 @@ class DirectoryController extends GoGoController
 {
   public function renderAction(Request $request)
   {
-    // If Url is like annuaire/#fiche/element/50 with a jsonld header, return the element json instead
-
     $gogoConfig = $this->get('biopen.gogocartojs_service')->getConfig();
     return $this->render('BiopenGeoDirectoryBundle:directory:directory.html.twig', array('gogoConfig' => $gogoConfig));
   }

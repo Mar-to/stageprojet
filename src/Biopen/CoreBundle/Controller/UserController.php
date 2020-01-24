@@ -114,7 +114,8 @@ class UserController extends GoGoController
 
       if (!$user->getNewsletterRange()) $user->setNewsletterRange(50);
 
-      if ($form->handleRequest($request)->isValid())
+      $form->handleRequest($request);
+      if ($form->isSubmitted() && $form->isValid())
       {
          $alreadyUsedEmail    = ($current_user->getEmail()    != $user->getEmail())    && count($userRepo->findByEmail($user->getEmail())) > 0;
          $alreadyUsedUserName = ($current_user->getUsername() != $user->getUsername()) && count($userRepo->findByUsername($user->getUsername())) > 0;

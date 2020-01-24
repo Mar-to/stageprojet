@@ -1,31 +1,37 @@
 services:
   my_user_provider:
         class: Application\Sonata\UserBundle\Security\FOSUBUserProvider
+        public: true
         arguments: ["@fos_user.user_manager",{facebook: facebookUid, gplus: gplusUid, communs: communsUid}]
 
   biopen.authentication_handler:
       class: Application\Sonata\UserBundle\Security\AuthenticationHandler
-      public: false
+      public: true
       arguments: [ '@router', '@session', "@security.token_storage"]
 
   biopen.config_service:
     class: Biopen\CoreBundle\Services\ConfigurationService
+    public: true
     arguments: [ "@doctrine.odm.mongodb.document_manager", "@security.token_storage" ]
 
   biopen.mail_service:
     class: Biopen\CoreBundle\Services\MailService
+    public: true
     arguments: [ "@doctrine.odm.mongodb.document_manager", "@mailer", "@router", "@twig", "%base_url%", "%base_path%", "%use_as_saas%", "%mailer_user%", "%instance_name%" ]
 
   biopen.newsletter_service:
     class: Biopen\CoreBundle\Services\NewsletterService
+    public: true
     arguments: [ "@doctrine.odm.mongodb.document_manager", "@biopen.mail_service" ]
 
   biopen.upload_directory_namer:
     class: Biopen\CoreBundle\Services\UploadDirectoryNamer
+    public: true
     arguments: []
 
   biopen.image_resizer:
     class: Biopen\CoreBundle\EventListener\ImageResizer
+    public: true
     arguments:
         - '%image_resize_width%'
     tags:
@@ -33,12 +39,14 @@ services:
 
   biopen.config_listener:
     class: Biopen\CoreBundle\EventListener\ConfigurationListener
+    public: true
     tags:
         - { name: doctrine_mongodb.odm.event_listener, event: preUpdate }
     arguments: [ "@biopen.async" ]
 
   biopen.async.factory:
     class: Biopen\CoreBundle\Services\AsyncServiceFactory
+    public: true
     arguments:
         - '@filesystem'
         - '%kernel.root_dir%'
@@ -47,4 +55,5 @@ services:
 
   biopen.async:
     class: Biopen\CoreBundle\Services\AsyncService
+    public: true
     factory: 'biopen.async.factory:createAsyncService'

@@ -28,7 +28,7 @@ class WebhookAdmin extends AbstractAdmin
                 ),
                 'expanded' => false,  'multiple' => false,
                 'required' => true, 'placeholder' => false,
-                'choices_as_values' => true ])
+                ])
             ->add('url', 'text');
     }
 

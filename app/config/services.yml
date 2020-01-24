@@ -1,26 +1,32 @@
 services:
+
     jms_serializer.naming_strategy_camelCase:
+        public: true
         class: 'JMS\Serializer\Naming\IdenticalPropertyNamingStrategy'
 
     jms_serializer.naming_strategy:
+        public: true
         class: 'JMS\Serializer\Naming\SerializedNameAnnotationStrategy'
         arguments : ['@jms_serializer.naming_strategy_camelCase']
 
     jms_serializer.expression_language:
+        public: true
         class: 'Symfony\Component\ExpressionLanguage\ExpressionLanguage'
 
     jms_serializer.expression_evaluator:
+        public: true
         class: 'JMS\Serializer\Expression\ExpressionEvaluator'
         arguments : ['@jms_serializer.expression_language']
 
     app.twig_extension:
         class: Application\Twig\AppExtension
-        public: false
+        public: true
         arguments: [ "@doctrine.odm.mongodb.document_manager" ]
         tags:
             - { name: twig.extension }
 
     custom.sonata.security.handler.role:
+        public: true
         class: Application\Sonata\UserBundle\Security\CustomRoleSecurityHandler
         arguments:
             - "@security.authorization_checker"
