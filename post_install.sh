@@ -16,7 +16,8 @@ php bin/console doctrine:mongodb:fixtures:load
 # This doesn't work at the moment
 # php bin/console app:elements:generate 200
 
-# Make the var directories writeable
-chmod 777 -R var/cache
-chmod 777 -R var/logs
-chmod 777 -R var/sessions
+# Make the var directories writeable by Apache
+chown -R www-data var/cache
+chown -R www-data var/logs
+chown -R www-data var/sessions
+chown -R www-data web/uploads

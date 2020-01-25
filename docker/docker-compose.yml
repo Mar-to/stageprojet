@@ -10,6 +10,7 @@ services:
       - /var/www/var/cache
       - /var/www/var/logs
       - /var/www/var/sessions
+      - /var/www/web/uploads
     ports:
       - "80:80"
     links:
