@@ -10,15 +10,6 @@ var gulp = require('gulp'),
     notifier = require('node-notifier'),
     workboxBuild = require('workbox-build');
 
-function handleError(err) {
-  console.log(err.toString());
-  notifier.notify({
-  'title': 'Gulp worflow',
-  'message': 'Typescript error'
-  });
-  this.emit('end');
-}
-
 gulp.task("scriptsHome", function () {
    return gulp.src(['src/Biopen/CoreBundle/Resources/js/home.js'])
     .pipe(concat('home.js'))
@@ -131,8 +122,6 @@ gulp.task('images', function() {
 
 
 gulp.task('watch', function() {
-
-  //livereload.listen();
   // Watch .scss files
   gulp.watch(['src/Biopen/**/Resources/scss/**/*.scss'],['sass']);
 
@@ -150,8 +139,6 @@ gulp.task('watch', function() {
   gulp.watch(['src/Biopen/CoreBundle/Resources/js/home.js'], ['scriptsHome']);
   // Watch image files
   //gulp.watch('src/img/*', ['images']);
-
-
 });
 
 gulp.task('clean', function(cb) {

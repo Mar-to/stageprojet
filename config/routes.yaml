@@ -1,0 +1,19 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+
+saas:
+    resource: "../src/Saas/Resources/config/routing.yml"
+    prefix:   /
+
+biopen_core:
+    resource: "../src/Core/Resources/config/routing.yml"
+    prefix:   /
+
+biopen_geo_directory:
+    resource: "../src/GeoDirectory/Resources/config/routing.yml"
+    prefix:   /
+
+other:
+    path: /{arg1}/{arg2}/{arg3}/{arg4}/{arg5}/{arg6}
+    defaults: { _controller: BiopenCoreBundle:Core:home, arg1: '', arg2: '', arg3: '', arg4: '', arg5: '', arg6: '' }

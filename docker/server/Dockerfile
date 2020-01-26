@@ -2,7 +2,7 @@ FROM php:7.3-apache
 
 RUN apt-get update
 RUN apt-get install --yes cron g++ gettext libicu-dev openssl libc-client-dev libkrb5-dev libxml2-dev libfreetype6-dev libgd-dev libmcrypt-dev bzip2 libbz2-dev libtidy-dev libcurl4-openssl-dev libz-dev libmemcached-dev libxslt-dev gnupg nano git
-RUN apt-get -y install libzip-dev
+RUN apt-get -y install libzip-dev libsodium23
 
 # PHP Configuration
 RUN docker-php-ext-install bcmath
@@ -17,7 +17,6 @@ RUN docker-php-ext-install gettext
 RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl
 RUN docker-php-ext-install imap
 RUN docker-php-ext-install intl
-# RUN docker-php-ext-install mcrypt
 RUN docker-php-ext-install soap
 RUN docker-php-ext-install tidy
 RUN docker-php-ext-install xmlrpc
@@ -27,8 +26,11 @@ RUN docker-php-ext-install xsl
 RUN docker-php-ext-install zip
 RUN docker-php-ext-configure hash --with-mhash
 
+RUN printf "\n" | pecl install libsodium \
+     && docker-php-ext-enable sodium
+
 # MongoDB extension
-RUN pecl install mongodb \
+RUN printf "\n" | pecl install mongodb \
      && docker-php-ext-enable mongodb
 
 # Imagemagick

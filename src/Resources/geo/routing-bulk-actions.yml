@@ -1,0 +1,66 @@
+biopen_bulk_actions_index:
+    path: /index
+    defaults: { _controller: App\Controller\Admin\BulkActions\BulkCoreController::indexAction }
+
+# ----------
+# MODERATION
+# ----------
+biopen_bulk_actions_delete_element_reported:
+    path:     /deleteElementReportedAsNoMoreExisting
+    defaults: { _controller: App\Controller\Admin\BulkActions\ModerationActionsController::deleteElementReportedAsNoMoreExistingAction }
+
+# -----------
+# DATA UPDATE
+# -----------
+biopen_bulk_actions_update_gamification:
+    path:     /updateGamification
+    defaults: { _controller: App\Controller\Admin\BulkActions\DataUpdateActionsController::updateGamificationAction }
+
+# ----------
+# DUPLICATES
+# ----------
+biopen_bulk_actions_detect_duplicates:
+    path:     /detectDuplicates
+    defaults: { _controller: App\Controller\Admin\BulkActions\DuplicatesActionsController::detectDuplicatesAction }
+
+# ------------
+# DATA QUALITY
+# ------------
+biopen_bulk_actions_fixs_mail_address:
+    path:     /fixsEmailAddresses
+    defaults: { _controller: App\Controller\Admin\BulkActions\DataQualityActionsController::fixsEmailAddressesAction }
+
+biopen_bulk_actions_fixs_cicuits_court:
+    path:     /fixsCircuitsCourts
+    defaults: { _controller: App\Controller\Admin\BulkActions\DataQualityActionsController::fixsCircuitsCourtAction }
+
+biopen_bulk_actions_fix_cities:
+    path:     /fixsMissingCities
+    defaults: { _controller: App\Controller\Admin\BulkActions\DataQualityActionsController::fixsMissingCitiesAction }
+
+# ----------
+# MIGRATIONS
+# ----------
+biopen_bulk_actions_random_hash:
+    path:     /generateRandomHash
+    defaults: { _controller: App\Controller\Admin\BulkActions\DbMigrationsActionsController::generateRandomHashAction }
+
+biopen_bulk_actions_add_import_contribution:
+    path:     /addImportContribution
+    defaults: { _controller: App\Controller\Admin\BulkActions\DbMigrationsActionsController::addImportContributionAction }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

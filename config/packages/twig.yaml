@@ -1,0 +1,24 @@
+twig:
+    default_path: '%kernel.project_dir%/templates'
+    debug: '%kernel.debug%'
+    strict_variables: '%kernel.debug%'
+    exception_controller: null
+
+    globals:
+        version: '%app.version%'
+        base_url: '%env(base_url)%'
+        use_as_saas: '%env(use_as_saas)%'
+        base_path: '%env(base_path)%'
+        contact_email: '%env(contact_email)%'
+        oauth_communs: '%env(oauth_communs_id)%'
+        oauth_google: '%env(oauth_google_id)%'
+        oauth_facebook: '%env(oauth_facebook_id)%'
+    paths:
+        "%kernel.root_dir%/../templates/geo-directory/": BiopenGeoDirectory
+        "%kernel.root_dir%/../templates/geo-directory/admin": BiopenAdmin
+        "%kernel.root_dir%/../templates/core": BiopenCoreBundle
+        "%kernel.root_dir%/../templates/bundles/SonataUserBundle": UserBundle
+        "%kernel.root_dir%/../web": RootDir
+        "%kernel.root_dir%/../templates/saas": BiopenSaasBundle
+    form_themes:
+        - '@SonataFormatter/Form/formatter.html.twig'

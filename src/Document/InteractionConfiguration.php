@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Document;
+
+use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use App\Document\FeatureConfiguration;
+
+
+/** @MongoDB\EmbeddedDocument */
+class InteractionConfiguration extends FeatureConfiguration
+{
+    /** @MongoDB\Field(type="bool") */
+    public $allow_role_anonymous_with_mail;
+
+    public function __construct($active = false, $iframe = false, $anon = false, $anonMail = false, $user = false, $admin = false)
+    {
+        parent::__construct($active, $iframe, $anon, $user, $admin);
+        $this->setAllowRoleAnonymousWithMail($anonMail);
+    }
+
+    public function getAllowedRoles()
+    {
+        $roles = parent::getAllowedRoles();
+        if ($this->getAllowRoleAnonymousWithMail()) $roles[] = 'anonymous_with_mail';
+        return $roles;
+    }
+
+    public function isAllowed($user, $iframe, $userEmail = null)
+    {
+        if (!$this->getActive() || !$this->getActiveInIframe() && $iframe) return false;
+        return parent::isAllowed($user, $iframe) ||
+                !$user && $userEmail && $this->getAllowRoleAnonymousWithMail();
+    }
+
+    public function isOnlyAllowedForAdmin()
+    {
+        return $this->getAllowRoleAdmin() && !( $this->getAllowRoleUser() || $this->getAllowRoleAnonymous() || $this->getAllowRoleAnonymousWithMail());
+    }
+
+    /**
+     * Set allowRoleAnonymousWithMail
+     *
+     * @param bool $allowRoleAnonymousWithMail
+     * @return $this
+     */
+    public function setAllowRoleAnonymousWithMail($allowRoleAnonymousWithMail)
+    {
+        $this->allow_role_anonymous_with_mail = $allowRoleAnonymousWithMail;
+        return $this;
+    }
+    public function setAllow_role_anonymous_with_mail($value) { return $this->setAllowRoleAnonymousWithMail($value); }
+
+    /**
+     * Get allowRoleAnonymousWithMail
+     *
+     * @return bool $allowRoleAnonymousWithMail
+     */
+    public function getAllowRoleAnonymousWithMail()
+    {
+        return $this->allow_role_anonymous_with_mail;
+    }
+}

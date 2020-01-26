@@ -1,21 +1,4 @@
-/app/config/parameters.yml
-/app/config/parameters.yml.dist
-/build/
-/phpunit.xml
-/var/*
-!/var/cache
-/var/cache/*
-!var/cache/.gitkeep
-!/var/logs
-/var/logs/*
-!var/logs/.gitkeep
-!/var/sessions
-/var/sessions/*
-!var/sessions/.gitkeep
-!var/SymfonyRequirements.php
-/vendor/
-/web/bundles/
-/web/assets/css/*
+/web/css/*
 /web/js/*
 /web/sw.js
 /node_modules/
@@ -23,13 +6,18 @@
 /TODO
 .sass-cache
 *.DS_Store
-/composer.phar
 ssh_password
 /web/uploads/*
 *.csv
-/web/assets/images/*
-pdcn-home-script\.js
 *~
-TODO_MULTI_INSTANCE
 .idea
 /web/matomo/
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/web/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
