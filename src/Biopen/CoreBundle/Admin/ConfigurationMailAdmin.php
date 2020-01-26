@@ -12,6 +12,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
+use Sonata\AdminBundle\Form\Type\AdminType;
 
 class ConfigurationMailAdmin extends ConfigurationAbstractAdmin
 {
@@ -30,9 +31,9 @@ class ConfigurationMailAdmin extends ConfigurationAbstractAdmin
         $mailStyle = array('class' => 'col-md-12 col-lg-6');
         $featureFormOption = ['delete' => false, 'required'=> false, 'label_attr'=> ['style'=> 'display:none']];
         $featureFormTypeOption = ['edit' => 'inline'];
-        $formMapper            
+        $formMapper
             ->tab('Mails auto pour les ' . $config->getElementDisplayNamePlural())
-                ->with("Informations concernant les mails automatiques", array('box_class' => 'box box-danger', 
+                ->with("Informations concernant les mails automatiques", array('box_class' => 'box box-danger',
                     'description' => '
                      <div class="text-and-iframe-container">
                      <div class="iframe-container-aside"><iframe height="200" sandbox="allow-same-origin allow-scripts" src="https://video.colibris-outilslibres.org/videos/embed/d5d007ec-e5c6-4a50-ab66-572e35e8905a" frameborder="0" allowfullscreen></iframe></div>
@@ -45,18 +46,18 @@ class ConfigurationMailAdmin extends ConfigurationAbstractAdmin
                     <li>{{ directEditElementUniqueUrl }} l'adresse unique pour éditer directement l'élément sans être admin</li>
                     <li>{{ customMessage }} le message personnel qui a été rédigé par les admins (uniquement lors de la suppression)</li></br>
                     </div>
-                    Vous pouvez également utiliser ces variables dans les contenus spéciaux de l'éditeur de texte. Par example dans le champs URL de la popup 
+                    Vous pouvez également utiliser ces variables dans les contenus spéciaux de l'éditeur de texte. Par example dans le champs URL de la popup
                     qui s'ouvre lorsqu'on clique sur d'ajouter un lien.</br>
                     <b>Une fois le mail sauvegardé</b>, vous pouvez cliquer sur les boutons <b>TESTER</b> pour visualiser le rendu"))->end()
                 ->with("Lors d'un ajout" . $this->getEmailTestLink($router, 'add'), $mailStyle)
-                    ->add('addMail','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
+                    ->add('addMail',AdminType::class, $featureFormOption, $featureFormTypeOption)->end()
                 ->with("Lors d'une modification" . $this->getEmailTestLink($router, 'edit'), $mailStyle)
-                    ->add('editMail','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
+                    ->add('editMail',AdminType::class, $featureFormOption, $featureFormTypeOption)->end()
                 ->with("Lors d'une suppression" . $this->getEmailTestLink($router, 'delete'), $mailStyle)
-                    ->add('deleteMail','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
+                    ->add('deleteMail',AdminType::class, $featureFormOption, $featureFormTypeOption)->end()
             ->end()
             ->tab('Mails auto pour les contributeurs')
-                ->with("Informations concernant les mails automatiques", array('box_class' => 'box box-danger', 
+                ->with("Informations concernant les mails automatiques", array('box_class' => 'box box-danger',
                     'description' => "Ces mails sont envoyés automatiquement aux contributeurs lorsque leurs contributions sont acceptées, refusées etc...</br>
                     Il est possible d'inclure les variables suivantes dans les messages (en conservant les '{{}}' ) : </br>
                     <li>{{ element }} le nom de " . $config->getElementDisplayNameDefinite() . "</li>
@@ -66,18 +67,18 @@ class ConfigurationMailAdmin extends ConfigurationAbstractAdmin
                     <li>{{ homeUrl }} l'adresse de la page d'accueil du site</li>
                     <li>{{ userContributionsUrl }} l'adresse de la page \"Mes contributions\"</li>
                     <li>{{ customMessage }} le message personnel qui a été rédigé par les admins (uniquement lors d'un refus')</li></br>
-                    Vous pouvez également utiliser ces variables dans les contenus spéciaux de l'éditeur de texte. Par example dans le champs URL de la popup 
+                    Vous pouvez également utiliser ces variables dans les contenus spéciaux de l'éditeur de texte. Par example dans le champs URL de la popup
                     qui s'ouvre lorsqu'on clique sur d'ajouter un lien.</br>
-                    <b>Une fois le mail sauvegardé</b>, vous pouvez cliquer sur les boutons <b>TESTER</b> pour visualiser le rendu"))->end()                
+                    <b>Une fois le mail sauvegardé</b>, vous pouvez cliquer sur les boutons <b>TESTER</b> pour visualiser le rendu"))->end()
                 ->with("Lors d'une validation" . $this->getEmailTestLink($router, 'validation'), $mailStyle)
-                    ->add('validationMail','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
+                    ->add('validationMail',AdminType::class, $featureFormOption, $featureFormTypeOption)->end()
                 ->with("Lors d'un refus" . $this->getEmailTestLink($router, 'refusal'), $mailStyle)
-                    ->add('refusalMail','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
+                    ->add('refusalMail',AdminType::class, $featureFormOption, $featureFormTypeOption)->end()
                 ->with("Lors d'un signalement pris en compte" . $this->getEmailTestLink($router, 'refusal'), $mailStyle)
-                    ->add('reportResolvedMail','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
+                    ->add('reportResolvedMail',AdminType::class, $featureFormOption, $featureFormTypeOption)->end()
             ->end()
             ->tab('Newsletter')
-                ->with("Informations concernant lanewsletter", array('box_class' => 'box box-danger', 
+                ->with("Informations concernant lanewsletter", array('box_class' => 'box box-danger',
                     'description' => "Ce mail est envoyé automatiquement aux utilisateurs y ayant souscrit. Il donne la liste des derniers éléments ajoutés dans une zone
                     géographique determinée</br></br>
                     <b>Il est nécessaire d'inclure la variable <u>{{ newElements }}</u> et/ou <u>{{ pendingElements }}</u></b> qui seront respectivement remplacées par la liste des nouveaux élements et des nouveaux élements en attente de validation</br></br>
@@ -87,11 +88,11 @@ class ConfigurationMailAdmin extends ConfigurationAbstractAdmin
                     <li>{{ userProfileUrl }} l'adresse de la page \"Mes paramètres\" dans l'espace utilisateur</li>
                     <li>{{ showOnMapBtn }} un bouton pour renvoyer vers la carte centrée sur la position de l'utilisateur</li>
                     </br>
-                    <b>Une fois le mail sauvegardé</b>, vous pouvez cliquer sur le bouton <b>TESTER</b> pour visualiser le rendu"))->end()                
+                    <b>Une fois le mail sauvegardé</b>, vous pouvez cliquer sur le bouton <b>TESTER</b> pour visualiser le rendu"))->end()
                 ->with("Newsletter" . $this->getEmailTestLink($router, 'newsletter'), array('class' => 'col-md-12'))
-                    ->add('newsletterMail','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
+                    ->add('newsletterMail',AdminType::class, $featureFormOption, $featureFormTypeOption)->end()
             ->end()
-        ;            
+        ;
     }
 
     private function getEmailTestLink($router, $mailType)

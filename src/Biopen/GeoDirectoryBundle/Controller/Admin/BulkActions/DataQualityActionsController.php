@@ -6,7 +6,10 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class DataQualityActionsController extends BulkActionsAbstractController
 {
-   public function fixsEmailAddressesAction(Request $request) { return $this->elementsBulkAction('fixsEmailAddresses', $request); }
+   public function fixsEmailAddressesAction(Request $request, SessionInterface $session)
+   {
+      return $this->elementsBulkAction('fixsEmailAddresses', $request, $session);
+   }
    public function fixsEmailAddresses($element)
    {
       $actualMail = $element->getEmail();
@@ -16,7 +19,10 @@ class DataQualityActionsController extends BulkActionsAbstractController
       }
    }
 
-   public function fixsCoordinatesDigitsAction(Request $request) { return $this->elementsBulkAction('fixsCoordinatesDigits', $request); }
+   public function fixsCoordinatesDigitsAction(Request $request, SessionInterface $session)
+   {
+      return $this->elementsBulkAction('fixsCoordinatesDigits', $request, $session);
+   }
    public function fixsCoordinatesDigits($element)
    {
       $geo = $element->getGeo();

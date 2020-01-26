@@ -12,6 +12,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 
 class TileLayerAdmin extends AbstractAdmin
 {
@@ -24,9 +25,9 @@ class TileLayerAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('name', 'text')
-            ->add('url', 'text')
-            ->add('attribution', 'text');
+            ->add('name')
+            ->add('url', UrlType::class)
+            ->add('attribution');
     }
 
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)

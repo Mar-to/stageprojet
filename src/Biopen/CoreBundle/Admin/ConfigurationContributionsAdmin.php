@@ -13,6 +13,7 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\FormatterBundle\Form\Type\SimpleFormatterType;
+use Sonata\AdminBundle\Form\Type\AdminType;
 
 class ConfigurationContributionsAdmin extends ConfigurationAbstractAdmin
 {
@@ -28,15 +29,15 @@ class ConfigurationContributionsAdmin extends ConfigurationAbstractAdmin
 
         $formMapper
             ->with('Pouvoir ajouter un élément', $contributionStyle)
-                ->add('addFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
+                ->add('addFeature',AdminType::class, $featureFormOption, $featureFormTypeOption)->end()
             ->with('Pouvoir editer un élément', $contributionStyle)
-                ->add('editFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
+                ->add('editFeature',AdminType::class, $featureFormOption, $featureFormTypeOption)->end()
             ->with('Pouvoir supprimer un élément', $contributionStyle)
-                ->add('deleteFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
+                ->add('deleteFeature',AdminType::class, $featureFormOption, $featureFormTypeOption)->end()
             ->with('Modération directe', $contributionStyle)
-                ->add('directModerationFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
+                ->add('directModerationFeature',AdminType::class, $featureFormOption, $featureFormTypeOption)->end()
             ->with('Modération collaborative (pouvoir voter)', ['class' => 'col-md-6 col-lg-4 gogo-feature collaborative-feature'])
-                ->add('collaborativeModerationFeature','sonata_type_admin', $featureFormOption, $featureFormTypeOption)->end()
+                ->add('collaborativeModerationFeature',AdminType::class, $featureFormOption, $featureFormTypeOption)->end()
             ->with('Paramètres pour la modération collaborative' , array('class' => 'col-md-4 collaborative-moderation-box'))
                 ->add('minVoteToChangeStatus', null, ['required'=>false, 'label' => "Nombre votes pour valider/refuser automatiquement"])
                 ->add('maxOppositeVoteTolerated', null, ['required'=>false, 'label' => "Nombres maximum de vos contradictoires tolérés"])

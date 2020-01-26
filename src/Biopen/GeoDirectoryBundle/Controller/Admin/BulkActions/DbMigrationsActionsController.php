@@ -7,11 +7,10 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class DbMigrationsActionsController extends BulkActionsAbstractController
 {
-   public function generateRandomHashAction(Request $request)
+   public function generateRandomHashAction(Request $request, SessionInterface $session)
    {
-      return $this->elementsBulkAction('generateRandomHash', $request);
+      return $this->elementsBulkAction('generateRandomHash', $request, $session);
    }
-
    public function generateRandomHash($element)
    {
       $element->updateRandomHash();
@@ -38,11 +37,10 @@ class DbMigrationsActionsController extends BulkActionsAbstractController
       return $this->redirectToIndex();
    }
 
-   public function addImportContributionAction(Request $request)
+   public function addImportContributionAction(Request $request, SessionInterface $session)
    {
-      return $this->elementsBulkAction('addImportContribution', $request);
+      return $this->elementsBulkAction('addImportContribution', $request, $session);
    }
-
    public function addImportContribution($element)
    {
       $contribution = new UserInteractionContribution();

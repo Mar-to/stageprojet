@@ -12,6 +12,10 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Sonata\AdminBundle\Form\Type\AdminType;
 
 class ConfigurationInfoBarAdmin extends ConfigurationAbstractAdmin
 {
@@ -27,8 +31,8 @@ class ConfigurationInfoBarAdmin extends ConfigurationAbstractAdmin
         $apiProperties = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->findAllCustomProperties();
         $propertiesText = implode($apiProperties, ',');
 
-        $formMapper  
-            ->tab("Fiche détail")          
+        $formMapper
+            ->tab("Fiche détail")
                 ->with("Contenu de la Fiche détail (panneau qui s'affiche lors d'un click sur un marker)",
                         ["description" => "<div class='text-and-iframe-container'><div class='iframe-container-aside' style='margin-top: 0'><iframe height='200' sandbox='allow-same-origin allow-scripts' src='https://video.colibris-outilslibres.org/videos/embed/354086c4-e826-44ad-b44a-475e517c3af6' frameborder='0' allowfullscreen></iframe></div>
                         <p style='margin-top: 10px'>Vous pouvez utiliser <a href='https://guides.github.com/features/mastering-markdown/#syntax'>la syntaxe mardown</a> et <a href='https://mozilla.github.io/nunjucks/'>la syntaxe nunjucks (pour des utilisations avancée)</a></p>
@@ -39,27 +43,27 @@ class ConfigurationInfoBarAdmin extends ConfigurationAbstractAdmin
                           Contenu de la fiche détail
                           <span class='btn btn-primary' id='generate-body-template' onclick='generateBodyTemplate()'>Générer automatiquement le contenu de la fiche détail</span>
                         </h2>"])
-                     
-                    ->add('infobar.headerTemplateUseMarkdown', 'checkbox', array('label' => 'Utiliser la syntaxe markdown pour le header (sinon uniquement la syntaxe Nunjucks)', 'attr' => ['class' => 'use-markdown'], 'required' => false))
-                    ->add('infobar.headerTemplate', 'text', array('label' => 'En tête de la fiche (header)', 'attr' => ['class' => 'gogo-code-editor', 'format' => 'twig', 'height' => '200'], 'required' => false))
-                    ->add('infobar.bodyTemplateUseMarkdown', 'checkbox', array('label' => 'Utiliser la syntaxe markdown pour le body (sinon uniquement la syntaxe Nunjucks)', 'attr' => ['class' => 'use-markdown'], 'required' => false))
-                    ->add('infobar.bodyTemplate', 'text', array('label' => 'Corps de la fiche (body)', 'attr' => ['class' => 'gogo-code-editor', 'data-id' => 'body-template', 'format' => 'twig', 'height' => '500'], 'required' => false))       
+
+                    ->add('infobar.headerTemplateUseMarkdown', CheckboxType::class, array('label' => 'Utiliser la syntaxe markdown pour le header (sinon uniquement la syntaxe Nunjucks)', 'attr' => ['class' => 'use-markdown'], 'required' => false))
+                    ->add('infobar.headerTemplate', null, array('label' => 'En tête de la fiche (header)', 'attr' => ['class' => 'gogo-code-editor', 'format' => 'twig', 'height' => '200'], 'required' => false))
+                    ->add('infobar.bodyTemplateUseMarkdown', CheckboxType::class, array('label' => 'Utiliser la syntaxe markdown pour le body (sinon uniquement la syntaxe Nunjucks)', 'attr' => ['class' => 'use-markdown'], 'required' => false))
+                    ->add('infobar.bodyTemplate', null, array('label' => 'Corps de la fiche (body)', 'attr' => ['class' => 'gogo-code-editor', 'data-id' => 'body-template', 'format' => 'twig', 'height' => '500'], 'required' => false))
                 ->end()
             ->end()
             ->tab('Liste des Champs disponibles (aide)')
                 ->with('')
-                    ->add('elementFormFieldsJson', 'hidden', array('attr' => ['class' => 'gogo-form-fields', 'dataproperties' => $propertiesText]))
+                    ->add('elementFormFieldsJson', HiddenType::class, array('attr' => ['class' => 'gogo-form-fields', 'dataproperties' => $propertiesText]))
                 ->end()
             ->end()
             ->tab('Autres paramètres')
                 ->with('Paramètres')
-                    ->add('infobar.width', 'number', array('label' => "Largeur de la fiche détail (en pixels, par défaut : 540)", 'required' => false))
+                    ->add('infobar.width', IntegerType::class, array('label' => "Largeur de la fiche détail (en pixels, par défaut : 540)", 'required' => false))
                 ->end()
-                ->with("Masquer l'email de contact en le remplacant par un bouton \"Envoyer un email\"", 
+                ->with("Masquer l'email de contact en le remplacant par un bouton \"Envoyer un email\"",
                         ["description" => "<i>Cela permet par exemple d'éviter que des personnes récupèrent tous les emails pour des fin commerciales</i>"])
-                    ->add('sendMailFeature','sonata_type_admin', $featureFormOption, ['edit' => 'inline'])
-                ->end()   
+                    ->add('sendMailFeature',AdminType::class, $featureFormOption, ['edit' => 'inline'])
+                ->end()
             ->end()
-        ;            
+        ;
     }
 }

@@ -13,6 +13,7 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Form\Type\ModelType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 class ConfigurationHomeAdmin extends ConfigurationAbstractAdmin
 {
@@ -38,9 +39,9 @@ class ConfigurationHomeAdmin extends ConfigurationAbstractAdmin
         $formMapper
             ->add('activateHomePage', null, array('label' => "Activer la page d'accueil", 'required' => false))
             ->add('backgroundImage', ModelType::class, array_replace($imagesOptions,['label' => 'Image de fond (le nom du fichier ne doit pas contenir d\'espaces ou de caractères spéciaux']))
-            ->add('home.displayCategoriesToPick', 'checkbox', array('label' => "Afficher les catégories principales selectionnables pour la recherche", 'required' => false))
-            ->add('home.addElementHintText', 'text', array('label' => "Texte au dessus du bouton \"Ajouter un élément\"", 'required' => false, 'attr' => ['placeholder' => "Exemple: Aidez nous à renrichir la base de donnée en ajoutant un élément !"]))
-            ->add('home.seeMoreButtonText', 'text', array('label' => "Texte pour inviter à scroller (si des bandeaux de la page d'accueil existent)", 'required' => false, 'attr' => ['placeholder' => "Exemple: Plus d'informations"]))
+            ->add('home.displayCategoriesToPick', CheckboxType::class, array('label' => "Afficher les catégories principales selectionnables pour la recherche", 'required' => false))
+            ->add('home.addElementHintText', null, array('label' => "Texte au dessus du bouton \"Ajouter un élément\"", 'required' => false, 'attr' => ['placeholder' => "Exemple: Aidez nous à renrichir la base de donnée en ajoutant un élément !"]))
+            ->add('home.seeMoreButtonText', null, array('label' => "Texte pour inviter à scroller (si des bandeaux de la page d'accueil existent)", 'required' => false, 'attr' => ['placeholder' => "Exemple: Plus d'informations"]))
         ;
     }
 }

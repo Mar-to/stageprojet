@@ -51,7 +51,7 @@ class OptionAdmin extends AbstractAdmin
 	   ->tab('Principal')
          ->with('Paramètres principaux', array('class' => 'col-xs-12 col-md-6'))
             ->add('name', null, array('required' => true, 'label' => 'Nom'))
-            ->add('color', 'text', array('required' => false, 'label' => 'Couleur', 'attr' => ['class' => 'gogo-color-picker']))
+            ->add('color', null, array('required' => false, 'label' => 'Couleur', 'attr' => ['class' => 'gogo-color-picker']))
             ->add('icon', null, array('required' => false, 'label' => 'Icone', 'attr' => ['class' => 'gogo-icon-picker']))
             ->add('parent', ModelType::class, array(
               'class'=> 'Biopen\GeoDirectoryBundle\Document\Category',
@@ -81,8 +81,8 @@ class OptionAdmin extends AbstractAdmin
       ->tab("Configuration avancée")
          ->with('Paramètres secondaires', array('class' => 'col-xs-12 col-md-6', 'box_class' => 'box'))
             ->add('nameShort', null, array('required' => false, 'label' => 'Nom (version courte)', 'label_attr' => ['title'=>"La version courte est utilisée dans le menu, car souvent on manque de place"]))
-            ->add('customId', 'text', array('required' => false, 'label' => "Id personnalisée", 'label_attr' => ['title'=>"Lors de l'import d'éléments, on va comparer le nom des catégories de l'élément importé avec le nom des catégorie de votre carte. On va aussi comparer avec les Ids personnalisés"]))
-            ->add('softColor', 'text', array('required' => false, 'label' => 'Couleur adoucie', 'attr' => ['class' => 'gogo-color-picker'], 'label_attr' => ['title'=>"Certaines couleurs convienent bien pour le marqueur (un peu flashy), mais pas trop pour les aplat comme pour le header de la fiche détail. Dans ce cas là, la version \"adoucie\" est utilisée si ellle a été renseignée"]))
+            ->add('customId', null, array('required' => false, 'label' => "Id personnalisée", 'label_attr' => ['title'=>"Lors de l'import d'éléments, on va comparer le nom des catégories de l'élément importé avec le nom des catégorie de votre carte. On va aussi comparer avec les Ids personnalisés"]))
+            ->add('softColor', null, array('required' => false, 'label' => 'Couleur adoucie', 'attr' => ['class' => 'gogo-color-picker'], 'label_attr' => ['title'=>"Certaines couleurs convienent bien pour le marqueur (un peu flashy), mais pas trop pour les aplat comme pour le header de la fiche détail. Dans ce cas là, la version \"adoucie\" est utilisée si ellle a été renseignée"]))
             ->add('textHelper', null, array('required' => false, 'label' => "Message d'aide pour décrire rapidement cette catégorie", 'label_attr' => ['title'=>"Il sera affiché dans le menu et dans le formulaire"]))
             ->add('url', null, array('required' => false, 'label' => "Url vers une page externe", 'label_attr' => ['title'=>"Dans la fiche détail, une petite icone apâraitra à côté de la catégorie avec un lein vers cette url externe. Cela peut être pas exemple une age d'un wiki pour décrire cette catégorie"]))
             ->add('index', null, array('required' => false, 'label' => 'Position (pour classer les catégories)'))

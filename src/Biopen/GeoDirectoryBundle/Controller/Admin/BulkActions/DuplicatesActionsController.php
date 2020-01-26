@@ -3,6 +3,7 @@
 namespace Biopen\GeoDirectoryBundle\Controller\Admin\BulkActions;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Biopen\GeoDirectoryBundle\Document\Element;
 use Biopen\GeoDirectoryBundle\Document\ElementStatus;
 use Biopen\GeoDirectoryBundle\Document\UserInteractionReport;
@@ -16,16 +17,15 @@ class DuplicatesActionsController extends BulkActionsAbstractController
    protected $duplicateService;
    protected $elementActionService;
 
-   public function detectDuplicatesAction(Request $request)
+   public function detectDuplicatesAction(Request $request, SessionInterface $session)
    {
       $this->title = "Détection des doublons";
       $this->automaticRedirection = false;
       $this->batchSize = 2000;
       $this->duplicateService = $this->get("biopen.element_duplicates_service");
       $this->elementActionService = $this->get("biopen.element_action_service");
-      return $this->elementsBulkAction('detectDuplicates', $request);
+      return $this->elementsBulkAction('detectDuplicates', $request, $session);
    }
-
    public function detectDuplicates($element, $em)
    {
       if ($element->getStatus() >= ElementStatus::PendingModification

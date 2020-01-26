@@ -12,7 +12,6 @@ use Biopen\GeoDirectoryBundle\Document\UserRoles;
 use Biopen\GeoDirectoryBundle\Document\OptionValue;
 use Biopen\GeoDirectoryBundle\Document\UserInteractionContribution;
 use Biopen\GeoDirectoryBundle\Document\InteractionType;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class BulkActionsAbstractController extends Controller
 {
@@ -22,7 +21,7 @@ class BulkActionsAbstractController extends Controller
     protected $batchSize = 1000;
     protected $automaticRedirection = true;
 
-    protected function elementsBulkAction($functionToExecute, $request, SessionInterface $session)
+    protected function elementsBulkAction($functionToExecute, $request, $session)
     {
         $elementsLeft = null;
         $elementLeftCount = 0;
@@ -68,7 +67,7 @@ class BulkActionsAbstractController extends Controller
         $em->flush();
         $em->clear();
 
-        $redirectionRoute = $this->generateUrl($this->getRequest()->get('_route'), ['batchFromStep' => $batchLastStep]);
+        $redirectionRoute = $this->generateUrl($request->get('_route'), ['batchFromStep' => $batchLastStep]);
         if ($isStillElementsToProceed && $this->automaticRedirection) return $this->redirect($redirectionRoute);
 
         if ($this->automaticRedirection) {

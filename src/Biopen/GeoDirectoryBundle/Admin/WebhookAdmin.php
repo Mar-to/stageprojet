@@ -8,6 +8,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 
 class WebhookAdmin extends AbstractAdmin
 {
@@ -29,7 +30,7 @@ class WebhookAdmin extends AbstractAdmin
                 'expanded' => false,  'multiple' => false,
                 'required' => true, 'placeholder' => false,
                 ])
-            ->add('url', 'text');
+            ->add('url', UrlType::class);
     }
 
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
