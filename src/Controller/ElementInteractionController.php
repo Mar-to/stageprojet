@@ -35,9 +35,9 @@ class ElementInteractionController extends Controller
         if (!$request->get('elementId') || $request->get('value') === null)
             return $this->returnResponse(false,"Les paramètres du vote sont incomplets");
 
-        $em = $this->get('doctrine_mongodb')->getManager();
+        $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));
+        $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
 
         $resultMessage = $this->get('biopen.element_vote_service')
                          ->voteForElement($element, $request->get('value'), $request->get('comment'), $request->get('userEmail'));
@@ -54,9 +54,9 @@ class ElementInteractionController extends Controller
         if (!$request->get('elementId') || $request->get('value') === null || !$request->get('userEmail'))
             return $this->returnResponse(false,"Les paramètres du signalement sont incomplets");
 
-        $em = $this->get('doctrine_mongodb')->getManager();
+        $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));
+        $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
 
         $report = new UserInteractionReport();
         $report->setValue($request->get('value'));
@@ -68,8 +68,8 @@ class ElementInteractionController extends Controller
 
         $element->updateTimestamp();
 
-        $em->persist($element);
-        $em->flush();
+        $dm->persist($element);
+        $dm->flush();
 
         return $this->returnResponse(true, "Merci, votre signalement a bien été enregistré !");
     }
@@ -83,14 +83,14 @@ class ElementInteractionController extends Controller
         if (!$request->get('elementId'))
             return $this->returnResponse(false,"Les paramètres sont incomplets");
 
-        $em = $this->get('doctrine_mongodb')->getManager();
-        $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));
-        $em->persist($element);
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
+        $dm->persist($element);
 
         $elementActionService = $this->container->get('biopen.element_action_service');
         $elementActionService->delete($element, true, $request->get('message'));
 
-        $em->flush();
+        $dm->flush();
 
         return $this->returnResponse(true, "L'élément a bien été supprimé");
     }
@@ -104,14 +104,14 @@ class ElementInteractionController extends Controller
         if (!$request->get('elementId'))
             return $this->returnResponse(false,"Les paramètres sont incomplets");
 
-        $em = $this->get('doctrine_mongodb')->getManager();
-        $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
 
         $elementActionService = $this->container->get('biopen.element_action_service');
         $elementActionService->resolveReports($element, $request->get('comment'), true);
 
-        $em->persist($element);
-        $em->flush();
+        $dm->persist($element);
+        $dm->flush();
 
         return $this->returnResponse(true, "L'élément a bien été modéré");
     }
@@ -125,8 +125,8 @@ class ElementInteractionController extends Controller
         if (!$request->get('elementId') || !$request->get('subject') || !$request->get('content') || !$request->get('userEmail'))
             return $this->returnResponse(false,"Les paramètres sont incomplets");
 
-        $em = $this->get('doctrine_mongodb')->getManager();
-        $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
 
         $user = $this->getUser();
 
@@ -153,9 +153,9 @@ class ElementInteractionController extends Controller
         if (!$request->get('stampId') || $request->get('value') === null || !$request->get('elementId'))
             return $this->returnResponse(false,"Les paramètres sont incomplets");
 
-        $em = $this->get('doctrine_mongodb')->getManager();
-        $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));
-        $stamp = $em->getRepository('BiopenGeoDirectoryBundle:Stamp')->find($request->get('stampId'));
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
+        $stamp = $dm->getRepository('App\Document\Stamp')->find($request->get('stampId'));
         $user = $this->getUser();
 
         if (!in_array($stamp, $user->getAllowedStamps()->toArray()))  return $this->returnResponse(false,"Vous n'êtes pas autorisé à utiliser cette étiquette");
@@ -167,8 +167,8 @@ class ElementInteractionController extends Controller
         else
             $element->removeStamp($stamp);
 
-        $em->persist($element);
-        $em->flush();
+        $dm->persist($element);
+        $dm->flush();
 
         return $this->returnResponse(true, "L'étiquette a bien été modifiée", $element->getStampIds());
     }
@@ -182,8 +182,8 @@ class ElementInteractionController extends Controller
         $serializer = $this->container->get('jms_serializer');
         $responseJson = $serializer->serialize($response, 'json');
 
-        $em = $this->get('doctrine_mongodb')->getManager();
-        $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
 
         $response = new Response($responseJson);
         if ($config->getApi()->getInternalApiAuthorizedDomains())

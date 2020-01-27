@@ -17,9 +17,9 @@ class CategoryAdminController extends Controller
     {
         $this->admin->checkAccess('list');
 
-        $em = $this->get('doctrine_mongodb')->getManager();
-        $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
-        $rootCategories = $em->getRepository('BiopenGeoDirectoryBundle:Category')->findRootCategories();
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $rootCategories = $dm->getRepository('App\Document\Category')->findRootCategories();
 
         return $this->render('@BiopenAdmin/list/tree_category.html.twig', array(
             'categories' => $rootCategories, 'config' => $config

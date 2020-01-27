@@ -23,7 +23,7 @@ class ElementImportMappingService
   protected $import;
   protected $createMissingOptions;
   protected $parentCategoryIdToCreateMissingOptions;
-  protected $em;
+  protected $dm;
   protected $ontologyMapping;
   protected $allNewFields;
   protected $existingProps;
@@ -50,7 +50,7 @@ class ElementImportMappingService
   {
     $this->import = $import;
     $this->createMissingOptions = $import->getCreateMissingOptions();
-    $parent = $import->getParentCategoryToCreateOptions() ?: $this->em->getRepository('BiopenGeoDirectoryBundle:Category')->findOneByIsRootCategory(true);
+    $parent = $import->getParentCategoryToCreateOptions() ?: $this->em->getRepository('App\Document\Category')->findOneByIsRootCategory(true);
     $this->parentCategoryIdToCreateMissingOptions = $parent ? $parent->getId() : null;
 
     // Execute custom code (the <?php is used to have proper code highliting in text editor, we remove it before executing)
@@ -140,7 +140,7 @@ class ElementImportMappingService
   {
     $this->ontologyMapping = $import->getOntologyMapping();
     $this->allNewFields = [];
-    $props = $this->em->getRepository('BiopenGeoDirectoryBundle:Element')->findAllCustomProperties();
+    $props = $this->em->getRepository('App\Document\Element')->findAllCustomProperties();
     $props = array_merge($this->coreFields, $props);
     $this->existingProps = [];
     foreach ($props as $prop) {
@@ -359,7 +359,7 @@ class ElementImportMappingService
 
   private function createOptionsMappingTable($options = null)
   {
-    if ($options === null) $options = $this->em->getRepository('BiopenGeoDirectoryBundle:Option')->findAll();
+    if ($options === null) $options = $this->em->getRepository('App\Document\Option')->findAll();
 
     foreach($options as $option)
     {
@@ -379,7 +379,7 @@ class ElementImportMappingService
   {
     if ($this->parentCategoryIdToCreateMissingOptions)
     {
-      $parent = $this->em->getRepository('BiopenGeoDirectoryBundle:Category')->find($this->parentCategoryIdToCreateMissingOptions);
+      $parent = $this->em->getRepository('App\Document\Category')->find($this->parentCategoryIdToCreateMissingOptions);
     }
     else
     {

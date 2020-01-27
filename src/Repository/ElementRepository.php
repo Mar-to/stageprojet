@@ -187,7 +187,7 @@ class ElementRepository extends DocumentRepository
 
   private function queryText($qb, $text)
   {
-    $config = $this->getDocumentManager()->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+    $config = $this->getDocumentManager()->getRepository('App\Document\Configuration')->findConfiguration();
     if ($config->getSearchExcludingWords())
       $text = $text . ' --' . str_replace(',', ' --', $config->getSearchExcludingWords());
     // remove words smaller than two letters
@@ -304,7 +304,7 @@ class ElementRepository extends DocumentRepository
   {
     $formProperties = [];
     $propTypeToIgnore = ['separator', 'header', 'address', 'title', 'email', 'taxonomy', 'openhours'];
-    $config = $this->getDocumentManager()->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+    $config = $this->getDocumentManager()->getRepository('App\Document\Configuration')->findConfiguration();
     foreach ($config->getElementFormFields() as $key => $field) {
       if (property_exists($field, 'name') && !in_array($field->type, $propTypeToIgnore))
         $formProperties[] = $field->name;

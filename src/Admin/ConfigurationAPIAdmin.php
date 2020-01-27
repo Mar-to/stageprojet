@@ -25,7 +25,7 @@ class ConfigurationAPIAdmin extends ConfigurationAbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $dm = $this->getConfigurationPool()->getContainer()->get('doctrine_mongodb');
-        $apiProperties = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->findAllCustomProperties();
+        $apiProperties = $dm->getRepository('App\Document\Element')->findAllCustomProperties();
 
         $apiPropertiesChanged = [];
         foreach ($apiProperties as $key => $value) {

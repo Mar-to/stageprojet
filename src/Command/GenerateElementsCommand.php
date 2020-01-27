@@ -21,7 +21,7 @@ class GenerateElementsCommand extends GoGoAbstractCommand
     ;
     }
 
-    protected function gogoExecute($em, InputInterface $input, OutputInterface $output)
+    protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
     {
       $this->output = $output;
 

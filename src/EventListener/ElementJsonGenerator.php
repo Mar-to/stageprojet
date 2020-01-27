@@ -14,14 +14,14 @@ class ElementJsonGenerator
 
   public function getConfig($dm)
   {
-    if (!$this->config) $this->config = $dm->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+    if (!$this->config) $this->config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
     return $this->config;
   }
 
   public function getOptions($dm)
   {
     // load all options so we don't need to do a query on each element being modified
-    if (!$this->options) $this->options = $dm->getRepository('BiopenGeoDirectoryBundle:Option')->createQueryBuilder()
+    if (!$this->options) $this->options = $dm->getRepository('App\Document\Option')->createQueryBuilder()
                                              ->select('name')->hydrate(false)->getQuery()->execute()->toArray();
     return $this->options;
   }

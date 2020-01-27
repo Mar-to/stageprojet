@@ -27,10 +27,10 @@ class BulkActionsAbstractController extends Controller
         $elementLeftCount = 0;
         $isStillElementsToProceed = false;
 
-        $em = $this->get('doctrine_mongodb')->getManager();
-        $elementRepo = $em->getRepository('BiopenGeoDirectoryBundle:Element');
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $elementRepo = $dm->getRepository('App\Document\Element');
 
-        $optionsRepo = $em->getRepository('BiopenGeoDirectoryBundle:Option');
+        $optionsRepo = $dm->getRepository('App\Document\Option');
         $this->optionList = $optionsRepo->createQueryBuilder()->hydrate(false)->getQuery()->execute()->toArray();
 
         if (!$this->fromBeginning && $request->get('batchFromStep')) $batchFromStep = $request->get('batchFromStep');
@@ -55,17 +55,17 @@ class BulkActionsAbstractController extends Controller
         $renderedViews = [];
         foreach ($elements as $key => $element)
         {
-           $view = $this->$functionToExecute($element, $em);
+           $view = $this->$functionToExecute($element, $dm);
            if ($view) $renderedViews[] = $view;
 
            if ((++$i % 100) == 0) {
-                $em->flush();
-                $em->clear();
+                $dm->flush();
+                $dm->clear();
             }
         }
 
-        $em->flush();
-        $em->clear();
+        $dm->flush();
+        $dm->clear();
 
         $redirectionRoute = $this->generateUrl($request->get('_route'), ['batchFromStep' => $batchLastStep]);
         if ($isStillElementsToProceed && $this->automaticRedirection) return $this->redirect($redirectionRoute);

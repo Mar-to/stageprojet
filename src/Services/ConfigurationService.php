@@ -6,7 +6,7 @@ use Symfony\Component\Security\Core\Security;
 
 class ConfigurationService
 {
-    protected $em;
+    protected $dm;
     protected $securityContext;
     protected $config;
 
@@ -17,12 +17,12 @@ class ConfigurationService
 	{
 	   $this->em = $documentManager;
 	   $this->securityContext = $securityContext;
-       $this->config = $this->em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+       $this->config = $this->em->getRepository('App\Document\Configuration')->findConfiguration();
 	}
 
-	public function isUserAllowed($featureName, $request = null, $email = null)
+	public function isUserAllowed($featureName, $request = null, $dmail = null)
 	{
-        if ($email === null && $request !== null) $email = $request->get('userEmail');
+        if ($dmail === null && $request !== null) $dmail = $request->get('userEmail');
 
         $user = $this->securityContext->getToken()->getUser();
 
@@ -31,7 +31,7 @@ class ConfigurationService
         $feature = $this->getFeatureConfig($featureName);
 
         // CHECK USER IS ALLOWED
-        return $feature->isAllowed($user, $request ? $request->get('iframe') : false, $email);
+        return $feature->isAllowed($user, $request ? $request->get('iframe') : false, $dmail);
     }
 
     public function getConfig()

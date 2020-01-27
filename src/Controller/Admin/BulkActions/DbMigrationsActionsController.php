@@ -18,20 +18,20 @@ class DbMigrationsActionsController extends BulkActionsAbstractController
 
    public function generateTokenAction(Request $request, SessionInterface $session)
    {
-      $em = $this->get('doctrine_mongodb')->getManager();
-      $users = $em->getRepository('BiopenCoreBundle:User')->findAll();
+      $dm = $this->get('doctrine_mongodb')->getManager();
+      $users = $dm->getRepository('App\Document\User')->findAll();
 
       $i = 0;
       foreach ($users as $key => $user)
       {
          $user->createToken();
          if ((++$i % 100) == 0) {
-            $em->flush();
-            $em->clear();
+            $dm->flush();
+            $dm->clear();
          }
       }
-      $em->flush();
-      $em->clear();
+      $dm->flush();
+      $dm->clear();
 
       $session->getFlashBag()->add('success', "Les éléments ont été mis à jours avec succès.");
       return $this->redirectToIndex();

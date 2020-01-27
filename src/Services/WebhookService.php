@@ -24,7 +24,7 @@ use App\Document\UserInteractionContribution;
 
 class WebhookService
 {
-	protected $em;
+	protected $dm;
 
 	protected $router;
 

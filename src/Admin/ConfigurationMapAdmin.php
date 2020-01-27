@@ -31,8 +31,8 @@ class ConfigurationMapAdmin extends ConfigurationAbstractAdmin
         $featureFormOption = ['delete' => false, 'required'=> false, 'label_attr'=> ['style'=> 'display:none']];
         $featureFormTypeOption = ['edit' => 'inline'];
         $container = $this->getConfigurationPool()->getContainer();
-        $em = $container->get('doctrine_mongodb')->getManager();
-        $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+        $dm = $container->get('doctrine_mongodb')->getManager();
+        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
 
         $formMapper
             ->tab('Paramètres de la carte')

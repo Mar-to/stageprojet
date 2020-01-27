@@ -20,13 +20,13 @@ class ElementsRemoveOptionsCommand extends GoGoAbstractCommand
        ;
     }
 
-    protected function gogoExecute($em, InputInterface $input, OutputInterface $output)
+    protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
     {
       try {
         $this->log("Elements remove options begin, options ids to remove : " . $input->getArgument('ids'));
         $optionsIdDeleted = array_map(function($string) { return (int) $string; }, explode(',', $input->getArgument('ids')));
 
-        $qb = $em->getRepository('BiopenGeoDirectoryBundle:Element')->createQueryBuilder();
+        $qb = $dm->getRepository('App\Document\Element')->createQueryBuilder();
         $elements = $qb->field('optionValues.optionId')->in($optionsIdDeleted)->getQuery()->execute();
         $this->log($elements->count() . ' element to proceed');
 
@@ -43,12 +43,12 @@ class ElementsRemoveOptionsCommand extends GoGoAbstractCommand
             if (count($element->getOptionValues()) == 0) $element->setModerationState(ModerationState::NoOptionProvided);
 
             if ((++$i % 100) == 0) {
-              $em->flush();
-              $em->clear();
+              $dm->flush();
+              $dm->clear();
             }
           }
-          $em->flush();
-          $em->clear();
+          $dm->flush();
+          $dm->clear();
         }
 
         $this->log('All options successfully removed');

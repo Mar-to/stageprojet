@@ -19,14 +19,14 @@ class GoGoCartoJsService
 
   public function getConfig()
   {
-    $taxonomyRep = $this->odm->getRepository('BiopenGeoDirectoryBundle:Taxonomy');
-    $elementsRep = $this->odm->getRepository('BiopenGeoDirectoryBundle:Element');
+    $taxonomyRep = $this->odm->getRepository('App\Document\Taxonomy');
+    $elementsRep = $this->odm->getRepository('App\Document\Element');
 
-    $tileLayers = $this->odm->getRepository('BiopenCoreBundle:TileLayer')->findAll();
+    $tileLayers = $this->odm->getRepository('App\Document\TileLayer')->findAll();
 
     $taxonomyJson = $taxonomyRep->findTaxonomyJson();
 
-    $config = $this->odm->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+    $config = $this->odm->getRepository('App\Document\Configuration')->findConfiguration();
 
     $user = $this->securityContext->getToken() ? $this->securityContext->getToken()->getUser() : null;
 

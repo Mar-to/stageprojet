@@ -57,9 +57,9 @@ class ImportAdminController extends Controller
 
     $object->setCurrState(ImportState::Started);
     $object->setCurrMessage("En attente...");
-    $em = $this->get('doctrine_mongodb')->getManager();
-    $em->persist($object);
-    $em->flush();
+    $dm = $this->get('doctrine_mongodb')->getManager();
+    $dm->persist($object);
+    $dm->flush();
 
     if ($request->get('direct'))
       $result = $this->get('biopen.element_import')->startImport($object);

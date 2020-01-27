@@ -33,7 +33,7 @@ class ConfigurationAdmin extends ConfigurationAbstractAdmin
         $featureFormTypeOption = ['edit' => 'inline'];
 
         $dm = $this->getConfigurationPool()->getContainer()->get('doctrine_mongodb');
-        $apiProperties = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->findAllCustomProperties();
+        $apiProperties = $dm->getRepository('App\Document\Element')->findAllCustomProperties();
 
         $formMapper
             ->with('Le site', array('class' => 'col-md-6', "description" => '<div class="iframe-container"><iframe height="110" sandbox="allow-same-origin allow-scripts" src="https://video.colibris-outilslibres.org/videos/embed/fc7d3784-7bd1-4f3a-b915-ab6daefdd52d" frameborder="0" allowfullscreen></iframe></div>'))

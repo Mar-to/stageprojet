@@ -13,9 +13,9 @@ class ConfigurationAdminController extends Controller
 {
   public function listAction()
   {
-    $em = $this->get('doctrine_mongodb')->getManager();
+    $dm = $this->get('doctrine_mongodb')->getManager();
 
-    $configuration = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+    $configuration = $dm->getRepository('App\Document\Configuration')->findConfiguration();
 
     if ($configuration)
        return $this->redirect($this->admin->generateUrl('edit', ['id' => $configuration->getId()]));

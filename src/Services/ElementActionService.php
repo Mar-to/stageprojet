@@ -66,7 +66,7 @@ class ElementActionService
    {
       if ($element->getStatus() == ElementStatus::ModifiedPendingVersion)
       {
-         $element = $this->em->getRepository('BiopenGeoDirectoryBundle:Element')->findOriginalElementOfModifiedPendingVersion($element);
+         $element = $this->em->getRepository('App\Document\Element')->findOriginalElementOfModifiedPendingVersion($element);
          $this->resolve($element, true, ValidationType::Admin, $message);
       }
       else if ($sendMail) $this->mailService->sendAutomatedMail('edit', $element, $message);
@@ -139,7 +139,7 @@ class ElementActionService
             $element->setIsDuplicateNode(false);
             $element->clearPotentialDuplicates();
          } else {
-            $potentialOwners = $this->em->getRepository('BiopenGeoDirectoryBundle:Element')->findPotentialDuplicateOwner($element);
+            $potentialOwners = $this->em->getRepository('App\Document\Element')->findPotentialDuplicateOwner($element);
             foreach ($potentialOwners as $key => $owner) {
                $this->em->persist($owner);
                $owner->removePotentialDuplicate($element);

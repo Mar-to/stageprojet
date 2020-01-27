@@ -19,6 +19,7 @@ use App\Document\Taxonomy;
 use App\Document\Category;
 use App\Document\Option;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ProjectController extends AbstractSaasController
 {
@@ -37,7 +38,7 @@ class ProjectController extends AbstractSaasController
 
     protected function generateUrlForProject($project, $route = 'biopen_homepage')
     {
-        return 'http://' . $project->getDomainName() . '.' . $this->container->getParameter('base_url') . $this->generateUrl($route);
+        return 'http://' . $project->getDomainName() . '.' . $this->getParameter('base_url') . $this->generateUrl($route);
     }
 
     public function createAction(Request $request)
@@ -128,19 +129,22 @@ class ProjectController extends AbstractSaasController
             return $this->redirect($url);
         }
 
-        $config = $odm->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+        $config = $odm->getRepository('App\Document\Configuration')->findConfiguration();
 
         return $this->render('@BiopenSaasBundle/projects/create.html.twig', ['form' => $projectForm->createView(), 'config' => $config]);
     }
 
+    /**
+     * @Route("/projects", name="biopen_saas_home")
+     */
     public function homeAction()
     {
         if (!$this->isAuthorized()) return $this->redirectToRoute('biopen_homepage');
 
         $odm = $this->get('doctrine_mongodb')->getManager();
-        $repository = $odm->getRepository('BiopenSaasBundle:Project');
+        $repository = $odm->getRepository('App\Document\Project');
 
-        $config = $odm->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+        $config = $odm->getRepository('App\Document\Configuration')->findConfiguration();
 
         $projects = $repository->findBy([], ['dataSize' => 'DESC']);
 
@@ -154,7 +158,7 @@ class ProjectController extends AbstractSaasController
     public function initializeAction(Request $request)
     {
         $odm = $this->get('doctrine_mongodb')->getManager();
-        $users = $odm->getRepository('BiopenCoreBundle:User')->findAll();
+        $users = $odm->getRepository('App\Document\User')->findAll();
         if (count($users) > 0) return $this->redirectToRoute('biopen_homepage');
 
         $userManager = $this->container->get('fos_user.user_manager');
@@ -179,7 +183,7 @@ class ProjectController extends AbstractSaasController
             return $response;
         }
 
-        $config = $odm->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+        $config = $odm->getRepository('App\Document\Configuration')->findConfiguration();
         return $this->render('@BiopenSaasBundle/projects/initialize.html.twig', ['form' => $form->createView(), 'config' => $config]);
     }
 
@@ -187,7 +191,7 @@ class ProjectController extends AbstractSaasController
     {
         try {
             $this->get('fos_user.security.login_manager')->loginUser(
-                $this->container->getParameter('fos_user.firewall_name'),
+                $this->getParameter('fos_user.firewall_name'),
                 $user,
                 $response
             );

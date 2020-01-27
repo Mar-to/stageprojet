@@ -24,14 +24,14 @@ class APIController extends GoGoController
   **/
   public function getElementsAction(Request $request, $id = null, $_format = 'json')
   {
-    $em = $this->get('doctrine_mongodb')->getManager();
+    $dm = $this->get('doctrine_mongodb')->getManager();
 
     $jsonLdRequest = $this->isJsonLdRequest($request, $_format);
     $token = $request->get('token');
     $ontology = $request->get('ontology') ? strtolower($request->get('ontology')) : "gogofull";
     $fullRepresentation =  $jsonLdRequest || $ontology != "gogocompact";
     $elementId = $id ? $id : $request->get('id');
-    $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+    $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
     $protectWithToken = $config->getApi()->getProtectPublicApiWithToken();
     $apiUiUrl = $this->generateUrl('biopen_api_ui', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
@@ -44,7 +44,7 @@ class APIController extends GoGoController
     {
       if ($protectWithToken)
       {
-        $user = $em->getRepository('BiopenCoreBundle:User')->findOneByToken($token);
+        $user = $dm->getRepository('App\Document\User')->findOneByToken($token);
         if (!$user) {
           $response = "The token you provided does not correspond to any existing user. Please visit " . $apiUiUrl;
           return $this->createResponse($response, $config);
@@ -59,7 +59,7 @@ class APIController extends GoGoController
       return $this->createResponse($response, $config);
     }
 
-    $elementRepo = $em->getRepository('BiopenGeoDirectoryBundle:Element');
+    $elementRepo = $dm->getRepository('App\Document\Element');
 
     if ($elementId)
     {
@@ -119,7 +119,7 @@ class APIController extends GoGoController
 
   public function getTaxonomyAction(Request $request, $id = null, $_format = 'json')
   {
-    $em = $this->get('doctrine_mongodb')->getManager();
+    $dm = $this->get('doctrine_mongodb')->getManager();
 
     $optionId = $id ? $id : $request->get('id');
     $jsonLdRequest = $this->isJsonLdRequest($request, $_format);
@@ -127,14 +127,14 @@ class APIController extends GoGoController
     if ($optionId)
     {
       $serializer = $this->get('jms_serializer');
-      $option = $em->getRepository('BiopenGeoDirectoryBundle:Option')->findOneBy(array('id' => $optionId));
+      $option = $dm->getRepository('App\Document\Option')->findOneBy(array('id' => $optionId));
       $serializationContext = $jsonLdRequest ? SerializationContext::create()->setGroups(['semantic']) : null;
       $dataJson = $serializer->serialize($option, 'json', $serializationContext);
       if ($jsonLdRequest) $dataJson = '[' . $dataJson . ']';
     }
     else
     {
-      $dataJson = $em->getRepository('BiopenGeoDirectoryBundle:Taxonomy')->findTaxonomyJson($jsonLdRequest);
+      $dataJson = $dm->getRepository('App\Document\Taxonomy')->findTaxonomyJson($jsonLdRequest);
     }
 
     if ($jsonLdRequest)
@@ -145,14 +145,14 @@ class APIController extends GoGoController
     else
       $responseJson = $dataJson;
 
-    $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+    $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
     return $this->createResponse($responseJson, $config);
   }
 
   public function getTaxonomyMappingAction(Request $request, $id = null, $_format = 'json')
   {
-    $em = $this->get('doctrine_mongodb')->getManager();
-    $options = $em->getRepository('BiopenGeoDirectoryBundle:Option')->findAll();
+    $dm = $this->get('doctrine_mongodb')->getManager();
+    $options = $dm->getRepository('App\Document\Option')->findAll();
     $result = [];
     foreach ($options as $key => $option) {
       $result[$option->getId()] = $option;
@@ -161,7 +161,7 @@ class APIController extends GoGoController
     $serializer = $this->get('jms_serializer');
     $responseJson = $serializer->serialize($result, 'json');
 
-    $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+    $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
     return $this->createResponse($responseJson, $config);
   }
 
@@ -181,16 +181,16 @@ class APIController extends GoGoController
 
   public function getElementsFromTextAction(Request $request)
   {
-    $em = $this->get('doctrine_mongodb')->getManager();
+    $dm = $this->get('doctrine_mongodb')->getManager();
 
     $isAdmin = $this->isUserAdmin();
 
-    $elements = $em->getRepository('BiopenGeoDirectoryBundle:Element')->findElementsWithText($request->get('text'), true, $isAdmin);
+    $elements = $dm->getRepository('App\Document\Element')->findElementsWithText($request->get('text'), true, $isAdmin);
 
     $elementsJson = $this->encodeElementArrayToJsonArray($elements, true, $isAdmin, true);
     $responseJson = '{ "data":'. $elementsJson . ', "ontology" : "gogofull"}';
 
-    $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+    $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
     return $this->createResponse($responseJson, $config);
   }
 
@@ -236,7 +236,7 @@ class APIController extends GoGoController
   public function getGoGoCartoJsConfigurationAction()
   {
     $odm = $this->get('doctrine_mongodb')->getManager();
-    $config = $odm->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+    $config = $odm->getRepository('App\Document\Configuration')->findConfiguration();
 
     $gogocartoConf = $this->get('biopen.gogocartojs_service')->getConfig();
 
@@ -245,8 +245,8 @@ class APIController extends GoGoController
 
   public function apiUiAction(SessionInterface $session)
   {
-    $em = $this->get('doctrine_mongodb')->getManager();
-    $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+    $dm = $this->get('doctrine_mongodb')->getManager();
+    $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
     $protectPublicApiWithToken = $config->getApi()->getProtectPublicApiWithToken();
 
     $userLoggued = $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED');
@@ -259,17 +259,17 @@ class APIController extends GoGoController
     if ($protectPublicApiWithToken)
     {
       $user = $this->getUser();
-      if (!$user->getToken()) { $user->createToken(); $em->flush(); }
+      if (!$user->getToken()) { $user->createToken(); $dm->flush(); }
     }
 
-    $options = $em->getRepository('BiopenGeoDirectoryBundle:Option')->findAll();
+    $options = $dm->getRepository('App\Document\Option')->findAll();
     return $this->render('BiopenCoreBundle:api:api-ui.html.twig', array('options' => $options));
   }
 
   public function getManifestAction()
   {
-    $em = $this->get('doctrine_mongodb')->getManager();
-    $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+    $dm = $this->get('doctrine_mongodb')->getManager();
+    $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
     $img = $config->getFavicon() ? $config->getFavicon() : $config->getLogo();
     $imageData = null;
 
@@ -313,11 +313,11 @@ class APIController extends GoGoController
 
   public function getProjectInfoAction()
   {
-    $em = $this->get('doctrine_mongodb')->getManager();
-    $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+    $dm = $this->get('doctrine_mongodb')->getManager();
+    $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
     $img = $config->getSocialShareImage() ? $config->getSocialShareImage() : $config->getLogo();
     $imageUrl = $img ? $img->getImageUrl() : null;
-    $dataSize = $em->getRepository('BiopenGeoDirectoryBundle:Element')->findVisibles(true);
+    $dataSize = $dm->getRepository('App\Document\Element')->findVisibles(true);
 
     $responseArray = array(
       "name" => $config->getAppName(),
@@ -333,11 +333,11 @@ class APIController extends GoGoController
   public function getConfigurationAction()
   {
     $odm = $this->get('doctrine_mongodb')->getManager();
-    $config = $odm->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+    $config = $odm->getRepository('App\Document\Configuration')->findConfiguration();
     $defaultTileLayer = $config->getDefaultTileLayer()->getName();
     $config = json_decode(json_encode($config));
 
-    $tileLayers = $odm->getRepository('BiopenCoreBundle:TileLayer')->findAll();
+    $tileLayers = $odm->getRepository('App\Document\TileLayer')->findAll();
 
     $config->defaultTileLayer = $defaultTileLayer;
     $config->tileLayers = $tileLayers;
@@ -349,7 +349,7 @@ class APIController extends GoGoController
   public function hideLogAction($id)
   {
     $odm = $this->get('doctrine_mongodb')->getManager();
-    $log = $odm->getRepository('BiopenCoreBundle:GoGoLog')->find($id);
+    $log = $odm->getRepository('App\Document\GoGoLog')->find($id);
     $log->setHidden(true);
     $odm->flush();
     $response = new Response(json_encode(['success' => true]));

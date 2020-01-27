@@ -26,11 +26,11 @@ class UserInteractionService
       $this->webhooks = $this->em->getRepository(Webhook::class)->findAll();
    }
 
-   public function createContribution($message, $interactType, $status, $directModerationWithHash = false, $email = null)
+   public function createContribution($message, $interactType, $status, $directModerationWithHash = false, $dmail = null)
    {
       $contribution = new UserInteractionContribution();
       $contribution->setType($interactType);
-      $contribution->updateUserInformation($this->securityContext, $email, $directModerationWithHash);
+      $contribution->updateUserInformation($this->securityContext, $dmail, $directModerationWithHash);
       $contribution->setResolvedMessage($message);
 
       // pending contribution does not have status

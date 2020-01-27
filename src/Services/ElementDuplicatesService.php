@@ -19,7 +19,7 @@ class ElementDuplicatesService
 
    public function checkForDuplicates($element, $includeDeleted = false, $hydrate = false, $distance = 1, $maxResults = 10)
    {
-      $elements = $this->em->getRepository('BiopenGeoDirectoryBundle:Element')->findDuplicatesFor(
+      $elements = $this->em->getRepository('App\Document\Element')->findDuplicatesFor(
          $element,
          $distance,
          $maxResults,

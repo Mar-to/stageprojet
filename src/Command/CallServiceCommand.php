@@ -31,7 +31,7 @@ class CallServiceCommand extends GoGoAbstractCommand
     /**
      * @inheritdoc
      */
-    protected function gogoExecute($em, InputInterface $input, OutputInterface $output)
+    protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
     {
         $logger = $this->getContainer()->get('logger');
 

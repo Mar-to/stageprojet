@@ -26,14 +26,14 @@ class ElementFormService
         $this->elementActionService = $elementActionService;
     }
 
-    public function handleFormSubmission($element, $request, $editMode, $userEmail, $isAllowedDirectModeration, $originalElement, $em)
+    public function handleFormSubmission($element, $request, $editMode, $userEmail, $isAllowedDirectModeration, $originalElement, $dm)
     {
         $request = $request->request;
         dump($request);
         $this->updateOptionsValues($element, $request);
-        $this->updateCustomData($element, $request, $em);
+        $this->updateCustomData($element, $request, $dm);
 
-        $isMinorModif = $editMode ? $this->isMinorModification($element, $originalElement, $em) : false;
+        $isMinorModif = $editMode ? $this->isMinorModification($element, $originalElement, $dm) : false;
         // calculate this before calling "updateOwner" because we want to check the old value of userOwnerEmail
         $isPendingModif = $this->isPendingModification($editMode, $isAllowedDirectModeration || $isMinorModif, $request);
 
@@ -55,9 +55,9 @@ class ElementFormService
 
     // when user only make a minor modification, we don't want to go through moderation
     // Here is a function to detect minor changes
-    private function isMinorModification($element, $originalElement, $em)
+    private function isMinorModification($element, $originalElement, $dm)
     {
-        $uow = $em->getUnitOfWork();
+        $uow = $dm->getUnitOfWork();
         $uow->computeChangeSets();
         $changeset = $uow->getDocumentChangeSet($element);
         $attributesChanged = array_keys($changeset);
@@ -90,9 +90,9 @@ class ElementFormService
         }
     }
 
-    private function updateCustomData($element, $request, $em)
+    private function updateCustomData($element, $request, $dm)
     {
-        $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
         $privateProp = $config->getApi()->getPublicApiPrivateProperties();
 
         $element->setCustomData($request->get('data'), $privateProp);

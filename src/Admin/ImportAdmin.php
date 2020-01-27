@@ -30,11 +30,11 @@ class ImportAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $dm = $this->getConfigurationPool()->getContainer()->get('doctrine_mongodb');
-        $repo = $dm->getRepository('BiopenGeoDirectoryBundle:Element');
+        $repo = $dm->getRepository('App\Document\Element');
         $formProperties = json_encode($repo->findFormProperties());
         $elementProperties = json_encode($repo->findDataCustomProperties());
 
-        $taxonomy = $dm->getRepository('BiopenGeoDirectoryBundle:Taxonomy')->findTaxonomy();
+        $taxonomy = $dm->getRepository('App\Document\Taxonomy')->findTaxonomy();
         $optionsList = $taxonomy->getTaxonomyJson();
 
         $isDynamic = $this->getSubject()->isDynamicImport();
@@ -148,7 +148,7 @@ Transformer un attribut
     protected function configureListFields(ListMapper $listMapper)
     {
         $dm = $this->getConfigurationPool()->getContainer()->get('doctrine_mongodb');
-        $deletedElementsCount = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->findDeletedElementsByImportIdCount();
+        $deletedElementsCount = $dm->getRepository('App\Document\Element')->findDeletedElementsByImportIdCount();
         $isDynamic = $this->getClass() == "App\Document\ImportDynamic";
 
         $listMapper

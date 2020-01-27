@@ -26,7 +26,7 @@ class DuplicatesActionsController extends BulkActionsAbstractController
       $this->elementActionService = $this->get("biopen.element_action_service");
       return $this->elementsBulkAction('detectDuplicates', $request, $session);
    }
-   public function detectDuplicates($element, $em)
+   public function detectDuplicates($element, $dm)
    {
       if ($element->getStatus() >= ElementStatus::PendingModification
           && !array_key_exists($element->getId(), $this->duplicatesFound)

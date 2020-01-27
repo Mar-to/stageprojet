@@ -6,7 +6,7 @@ use App\Services\MailService;
 
 class NewsletterService
 {
-    protected $em;
+    protected $dm;
     protected $elementRepo;
     protected $mailService;
     protected $config;
@@ -18,7 +18,7 @@ class NewsletterService
    {
       $this->em = $documentManager;
       $this->mailService = $mailService;
-      $this->elementRepo = $this->em->getRepository('BiopenGeoDirectoryBundle:Element');
+      $this->elementRepo = $this->em->getRepository('App\Document\Element');
    }
 
    public function sendTo($user)

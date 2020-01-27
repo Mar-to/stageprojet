@@ -18,7 +18,7 @@ class ElementAdmin extends ElementAdminShowEdit
 	public function getExportFields()
   {
     $container = $this->getConfigurationPool()->getContainer();
-    $em = $container->get('doctrine_mongodb')->getManager();
+    $dm = $container->get('doctrine_mongodb')->getManager();
     $basicFields = [
       'id' => 'id',
       'name' => 'name',
@@ -30,7 +30,7 @@ class ElementAdmin extends ElementAdminShowEdit
       'postalCode' => 'address.postalCode',
       'addressCountry' => 'address.addressCountry'
     ];
-    $publicProperties = $em->getRepository('BiopenGeoDirectoryBundle:Element')->findAllCustomProperties($onlypublic = true);
+    $publicProperties = $dm->getRepository('App\Document\Element')->findAllCustomProperties($onlypublic = true);
     $customFields = [];
     foreach ($publicProperties as $key => $prop) {
       $customFields[$prop] = 'data';

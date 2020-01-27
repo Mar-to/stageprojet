@@ -21,11 +21,11 @@ class AddMessageCommand extends GoGoAbstractCommand
              ->setDescription('Update datatabse each time after code update');
     }
 
-    protected function gogoExecute($em, InputInterface $input, OutputInterface $output)
+    protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
     {
         $log = new GoGoLogUpdate('info', $input->getArgument('message'));
 
-        $em->persist($log);
-        $em->flush();
+        $dm->persist($log);
+        $dm->flush();
     }
 }

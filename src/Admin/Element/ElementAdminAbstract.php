@@ -68,7 +68,7 @@ class ElementAdminAbstract extends AbstractAdmin
   {
     parent::initialize();
 
-    $repo = $this->getConfigurationPool()->getContainer()->get('doctrine_mongodb')->getRepository('BiopenGeoDirectoryBundle:Option');
+    $repo = $this->getConfigurationPool()->getContainer()->get('doctrine_mongodb')->getRepository('App\Document\Option');
     $this->optionList = $repo->createQueryBuilder()->hydrate(false)->getQuery()->execute()->toArray();
 
     foreach ($this->optionList as $key => $value) {

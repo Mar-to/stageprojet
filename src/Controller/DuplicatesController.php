@@ -21,12 +21,12 @@ class DuplicatesController extends GoGoController
    public function indexAction()
    {
       $dm = $this->get('doctrine_mongodb')->getManager();
-      $options = $dm->getRepository('BiopenGeoDirectoryBundle:Option')->findAll();
+      $options = $dm->getRepository('App\Document\Option')->findAll();
       $optionsNames = [];
       foreach($options as $option) $optionsNames[$option->getId()] = $option->getName();
 
-      $duplicatesNodeCount = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->findDuplicatesNodes(null, true);
-      $duplicatesNode = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->findDuplicatesNodes(DuplicatesController::DUPLICATE_BATH_SIZE)->toArray();
+      $duplicatesNodeCount = $dm->getRepository('App\Document\Element')->findDuplicatesNodes(null, true);
+      $duplicatesNode = $dm->getRepository('App\Document\Element')->findDuplicatesNodes(DuplicatesController::DUPLICATE_BATH_SIZE)->toArray();
 
       $leftDuplicatesToProceedCount = max($duplicatesNodeCount - DuplicatesController::DUPLICATE_BATH_SIZE, 0);
 
@@ -57,8 +57,8 @@ class DuplicatesController extends GoGoController
             if (!$request->get('elementId'))
                 return $this->returnResponse(false,"Les paramètres sont incomplets");
 
-            $em = $this->get('doctrine_mongodb')->getManager();
-            $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($request->get('elementId'));
+            $dm = $this->get('doctrine_mongodb')->getManager();
+            $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
 
             $elementActionService = $this->container->get('biopen.element_action_service');
 
@@ -77,7 +77,7 @@ class DuplicatesController extends GoGoController
                 $elementActionService->resolveReports($duplicate, 'Marqué comme non doublon', true);
               }
               $element->clearPotentialDuplicates();
-              $em->flush();
+              $dm->flush();
             }
 
             return new Response("Les éléments ont bien été marqués comme non doublons");

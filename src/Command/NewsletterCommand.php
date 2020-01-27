@@ -18,9 +18,9 @@ class NewsletterCommand extends GoGoAbstractCommand
     ;
     }
 
-    protected function gogoExecute($em, InputInterface $input, OutputInterface $output)
+    protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
     {
-      $usersRepo = $em->getRepository('BiopenCoreBundle:User');
+      $usersRepo = $dm->getRepository('App\Document\User');
 
       $users = $usersRepo->findNeedsToReceiveNewsletter();
       $nbrUsers = $users->count();
@@ -29,12 +29,12 @@ class NewsletterCommand extends GoGoAbstractCommand
 
       foreach ($users as $key => $user)
       {
-         $em->persist($user);
+         $dm->persist($user);
          $nreElements = $newsletterService->sendTo($user);
          // $this->log('  -> User : ' . $user->getDisplayName() . ', location : ' . $user->getLocation() . ' / ' . $user->getNewsletterRange() . ' km -> Nre Elements : ' .  $nreElements);
       }
 
-      $em->flush();
+      $dm->flush();
       $this->log('Nombre newsletter envoyées : ' . $nbrUsers);
     }
 }

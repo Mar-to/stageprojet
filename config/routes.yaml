@@ -1,19 +1,35 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+biopen_homepage:
+   path: /
+   controller: App\Controller\CoreController::homeAction
 
-saas:
-    resource: "../src/Saas/Resources/config/routing.yml"
-    prefix:   /
+biopen_api_manifest:
+    path:     /manifest.{_format}
+    defaults: { _controller: App\Controller\APIController::getManifestAction, _format: json }
+    requirements:
+        methods: GET
+        _format: json
 
-biopen_core:
-    resource: "../src/Core/Resources/config/routing.yml"
-    prefix:   /
+biopen_directory:
+    path:     /annuaire
+    defaults: { _controller: DirectoryController::renderAction }
+    options:
+      expose: true
 
-biopen_geo_directory:
-    resource: "../src/GeoDirectory/Resources/config/routing.yml"
-    prefix:   /
+biopen_element_add:
+    path:     /add
+    defaults: { _controller: ElementFormController::addAction }
+# saas:
+#     resource: "../src/Saas/Resources/config/routing.yml"
+#     prefix:   /
 
-other:
-    path: /{arg1}/{arg2}/{arg3}/{arg4}/{arg5}/{arg6}
-    defaults: { _controller: BiopenCoreBundle:Core:home, arg1: '', arg2: '', arg3: '', arg4: '', arg5: '', arg6: '' }
+# biopen_core:
+#     resource: "../src/Core/Resources/config/routing.yml"
+#     prefix:   /
+
+# biopen_geo_directory:
+#     resource: "../src/GeoDirectory/Resources/config/routing.yml"
+#     prefix:   /
+
+# other:
+#     path: /{arg1}/{arg2}/{arg3}/{arg4}/{arg5}/{arg6}
+#     defaults: { _controller: BiopenCoreBundle:Core:home, arg1: '', arg2: '', arg3: '', arg4: '', arg5: '', arg6: '' }

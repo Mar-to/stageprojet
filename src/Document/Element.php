@@ -172,7 +172,7 @@ class Element
      * @var string
      * @MongoDB\Field(type="string") @MongoDB\Index
      */
-    private $email;
+    private $dmail;
 
     /**
      * @var \stdClass
@@ -1447,19 +1447,19 @@ class Element
         /**
      * Set email
      *
-     * @param string $email
+     * @param string $dmail
      * @return $this
      */
-    public function setEmail($email)
+    public function setEmail($dmail)
     {
-        $this->email = $email;
+        $this->email = $dmail;
         return $this;
     }
 
     /**
      * Get email
      *
-     * @return string $email
+     * @return string $dmail
      */
     public function getEmail()
     {

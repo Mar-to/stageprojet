@@ -28,7 +28,7 @@ class ConfigurationInfoBarAdmin extends ConfigurationAbstractAdmin
         $featureFormOption = ['delete' => false, 'required'=> false, 'label_attr'=> ['style'=> 'display:none']];
 
         $dm = $this->getConfigurationPool()->getContainer()->get('doctrine_mongodb');
-        $apiProperties = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->findAllCustomProperties();
+        $apiProperties = $dm->getRepository('App\Document\Element')->findAllCustomProperties();
         $propertiesText = implode($apiProperties, ',');
 
         $formMapper

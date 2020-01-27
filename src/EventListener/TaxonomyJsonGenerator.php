@@ -82,12 +82,12 @@ class TaxonomyJsonGenerator
 
 	public function updateTaxonomy($dm)
 	{
-    $taxonomy = $dm->getRepository('BiopenGeoDirectoryBundle:Taxonomy')->findTaxonomy();
+    $taxonomy = $dm->getRepository('App\Document\Taxonomy')->findTaxonomy();
 		if (!$taxonomy || $taxonomy->preventUpdate) return false;
     $taxonomy->preventUpdate = true;
 
-		$rootCategories = $dm->getRepository('BiopenGeoDirectoryBundle:Category')->findRootCategories();
-		$options = $dm->getRepository('BiopenGeoDirectoryBundle:Option')->findAll();
+		$rootCategories = $dm->getRepository('App\Document\Category')->findRootCategories();
+		$options = $dm->getRepository('App\Document\Option')->findAll();
 
 		if (count($rootCategories) == 0) {
       $optionsJson = "[]";

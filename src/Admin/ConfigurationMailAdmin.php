@@ -22,7 +22,7 @@ class ConfigurationMailAdmin extends ConfigurationAbstractAdmin
 
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $repo = $this->getConfigurationPool()->getContainer()->get('doctrine_mongodb')->getRepository('BiopenCoreBundle:Configuration');
+        $repo = $this->getConfigurationPool()->getContainer()->get('doctrine_mongodb')->getRepository('App\Document\Configuration');
         $config = $repo->findConfiguration();
         $router = $this->getConfigurationPool()->getContainer()->get('router');
 

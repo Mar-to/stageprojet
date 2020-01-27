@@ -10,6 +10,7 @@ parameters:
     router.request_context.host: '%env(base_url)%'
     router.request_context.base_url: '%env(base_path)%'
     mailer_user: "none" # To be changed
+    use_as_saas: '%env(use_as_saas)%'
 
 services:
     # default configuration for services in *this* file

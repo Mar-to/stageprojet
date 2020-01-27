@@ -21,7 +21,7 @@ use App\Document\ElementStatus;
 
 class ChartBlockService extends AbstractBlockService
 {
-	protected $em;
+	protected $dm;
 	protected $mongoDateStart;
 	protected $mongoDateEnd;
 	protected $dateStart;

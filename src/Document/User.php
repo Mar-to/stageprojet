@@ -114,13 +114,13 @@ class User extends BaseUser
      * @var string
      * @MongoDB\Field(type="string")
      */
-    protected $email;
+    protected $dmail;
 
     /**
      * @var string
      * @MongoDB\Field(type="string")
      */
-    protected $emailCanonical;
+    protected $dmailCanonical;
 
     /**
      * @var boolean

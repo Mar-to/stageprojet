@@ -64,22 +64,22 @@ class MailTestController extends Controller
 
   private function draftTest($mailType)
   {
-     $em = $this->get('doctrine_mongodb')->getManager();
+     $dm = $this->get('doctrine_mongodb')->getManager();
      $options = null;
 
      if ($mailType == 'newsletter')
      {
-        $element = $em->getRepository('BiopenCoreBundle:User')->findOneByEnabled(true);
+        $element = $dm->getRepository('App\Document\User')->findOneByEnabled(true);
         $element->setLocation('bordeaux');
         $element->setGeo(new Coordinates(44.876,-0.512));
-        $qb = $em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+        $qb = $dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
         $qb->field('status')->gte(ElementStatus::AdminRefused);
         $qb->field('moderationState')->notIn(array(ModerationState::GeolocError, ModerationState::NoOptionProvided));
         $options = $qb->limit(30)->getQuery()->execute();
      }
      else
      {
-      $element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->findVisibles()->getSingleResult();
+      $element = $dm->getRepository('App\Document\Element')->findVisibles()->getSingleResult();
      }
 
      if (!$element) return null;

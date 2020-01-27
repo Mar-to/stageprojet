@@ -20,17 +20,17 @@ class UpdateElementsJsonCommand extends GoGoAbstractCommand
         ->setDescription('Calculate again all the element json representation');
     }
 
-    protected function gogoExecute($em, InputInterface $input, OutputInterface $output)
+    protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
     {
       try {
 
         if ($input->getArgument('ids') == "all")
         {
-            $elements = $em->getRepository('BiopenGeoDirectoryBundle:Element')->findAllElements();
+            $elements = $dm->getRepository('App\Document\Element')->findAllElements();
         }
         else
         {
-            $qb = $em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+            $qb = $dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
             $qb->field('id')->in(explode(',',$input->getArgument('ids')));
             $elements = $qb->getQuery()->execute();
         }
@@ -43,19 +43,19 @@ class UpdateElementsJsonCommand extends GoGoAbstractCommand
         $i = 0;
         foreach ($elements as $key => $element)
         {
-            $elemntJsonService->updateJsonRepresentation($element, $em);
+            $elemntJsonService->updateJsonRepresentation($element, $dm);
 
             if ((++$i % 100) == 0) {
-                $em->flush();
-                $em->clear();
+                $dm->flush();
+                $dm->clear();
             }
             if (($i % 1000) == 0) {
                 $this->log($i . ' / ' . $count . ' elements completed...');
             }
         }
 
-        $em->flush();
-        $em->clear();
+        $dm->flush();
+        $dm->clear();
 
         $this->log('All elements successfully updated');
 

@@ -19,10 +19,10 @@ class CheckExternalSourceToUpdateCommand extends GoGoAbstractCommand
         ->setDescription('Check for updating external sources');
     }
 
-    protected function gogoExecute($em, InputInterface $input, OutputInterface $output)
+    protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
     {
 
-      $qb = $em->createQueryBuilder('BiopenGeoDirectoryBundle:ImportDynamic');
+      $qb = $dm->createQueryBuilder('BiopenGeoDirectoryBundle:ImportDynamic');
 
       $dynamicImports = $qb->field('refreshFrequencyInDays')->gt(0)
                 ->field('nextRefresh')->lte(new \DateTime())

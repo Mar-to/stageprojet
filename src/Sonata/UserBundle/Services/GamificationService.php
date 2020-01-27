@@ -20,9 +20,9 @@ class GamificationService {
 
    public function __construct(DocumentManager $documentManager)
    {
-      $this->contribsRepo = $documentManager->getRepository('BiopenGeoDirectoryBundle:UserInteractionContribution');
-      $this->votesRepo = $documentManager->getRepository('BiopenGeoDirectoryBundle:UserInteractionVote');
-      $this->reportsRepo = $documentManager->getRepository('BiopenGeoDirectoryBundle:UserInteractionReport');
+      $this->contribsRepo = $documentManager->getRepository('App\Document\UserInteractionContribution');
+      $this->votesRepo = $documentManager->getRepository('App\Document\UserInteractionVote');
+      $this->reportsRepo = $documentManager->getRepository('App\Document\UserInteractionReport');
    }
 
    public function updateGamification($user)

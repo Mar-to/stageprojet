@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controller\Admin;
+
 use App\Document\UserInteraction;
 use App\Document\UserInteractionContribution;
 use Sonata\AdminBundle\Controller\CRUDController as Controller;
@@ -13,15 +14,6 @@ use App\Document\ElementStatus;
 use App\Document\Import;
 use App\Document\ModerationState;
 
-abstract class InteractType
-{
-    const Deleted = -1;
-    const Add = 0;
-    const Edit = 1;
-    const Import = 4;
-    const Restored = 5;
-    const ModerationResolved = 6;
-}
 
 class ElementAdminBulkController extends Controller
 {
@@ -174,7 +166,7 @@ class ElementAdminBulkController extends Controller
     // BATCH HARD DELETE
     public function batchActionDelete(ProxyQueryInterface $selectedModelQuery)
     {
-        $em = $this->get('doctrine_mongodb')->getManager();
+        $dm = $this->get('doctrine_mongodb')->getManager();
 
         // Add contribution for webhook - Get elements visible, no need to add a contirbution if element where already soft deleted for example
         $selectedModels = clone $selectedModelQuery;
@@ -183,7 +175,7 @@ class ElementAdminBulkController extends Controller
             $interactionService = $this->container->get('biopen.user_interaction_service');
             $contribution = $interactionService->createContribution(null, InteractType::Deleted, ElementStatus::Deleted);
             $contribution->setElementIds($elementIds);
-            $em->persist($contribution);
+            $dm->persist($contribution);
         }
 
         // Add element id to ignore to sources
@@ -196,7 +188,7 @@ class ElementAdminBulkController extends Controller
 
         foreach ($elementsIdsGroupedBySource as $value) {
             $elementIdsForCurrSource = explode(',', $value['value']);
-            $qb = $em->createQueryBuilder(Import::class);
+            $qb = $dm->createQueryBuilder(Import::class);
             $qb->updateOne()
                ->field('id')->equals($value['_id'])
                ->field('idsToIgnore')->addToSet($qb->expr()->each($elementIdsForCurrSource))
@@ -205,8 +197,8 @@ class ElementAdminBulkController extends Controller
 
         // Perform remove
         $selectedModelQuery->remove()->getQuery()->execute();
-        $em->createQueryBuilder(UserInteractionContribution::class)->field('element.id')->in($elementIds)->remove()->getQuery()->execute();
-        $em->flush();
+        $dm->createQueryBuilder(UserInteractionContribution::class)->field('element.id')->in($elementIds)->remove()->getQuery()->execute();
+        $dm->flush();
 
         return new RedirectResponse($this->admin->generateUrl('list', array('filter' => $this->admin->getFilterParameters())));
     }

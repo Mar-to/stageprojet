@@ -59,19 +59,19 @@ class MigrationCommand extends GoGoAbstractCommand
              ->setDescription('Update datatabse each time after code update');
     }
 
-    protected function gogoExecute($em, InputInterface $input, OutputInterface $output)
+    protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
     {
-        $migrationState = $em->createQueryBuilder('BiopenCoreBundle:MigrationState')->getQuery()->getSingleResult();
+        $migrationState = $dm->createQueryBuilder('BiopenCoreBundle:MigrationState')->getQuery()->getSingleResult();
         if ($migrationState == null) // Meaning the migration state was not yet in the place in the code
         {
             $migrationState = new MigrationState();
-            $em->persist($migrationState);
+            $dm->persist($migrationState);
         }
 
         try {
             // Collecting the Database to be updated
             $dbs = ['gogocarto_default'];
-            $dbNames = $em->createQueryBuilder('BiopenSaasBundle:Project')->select('domainName')->hydrate(false)->getQuery()->execute()->toArray();
+            $dbNames = $dm->createQueryBuilder('BiopenSaasBundle:Project')->select('domainName')->hydrate(false)->getQuery()->execute()->toArray();
             foreach ($dbNames as $object) { $dbs[] = $object['domainName']; }
 
             if (count($this->migrations) > $migrationState->getMigrationIndex()) {
@@ -128,7 +128,7 @@ class MigrationCommand extends GoGoAbstractCommand
         $migrationState->setMigrationIndex(count($this->migrations));
         $migrationState->setCommandsIndex(count($this->commands));
         $migrationState->setMessagesIndex(count($this->messages));
-        $em->flush();
+        $dm->flush();
     }
 
     private function runMongoCommand($db, $command)

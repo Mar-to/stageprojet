@@ -32,16 +32,16 @@ class ElementFormController extends GoGoController
 {
 	public function addAction(Request $request, SessionInterface $session)
 	{
-		$em = $this->get('doctrine_mongodb')->getManager();
+		$dm = $this->get('doctrine_mongodb')->getManager();
 
-		return $this->renderForm(new Element(), false, $request, $session, $em);
+		return $this->renderForm(new Element(), false, $request, $session, $dm);
   	}
 
 	public function editAction($id, Request $request, SessionInterface $session)
 	{
-		$em = $this->get('doctrine_mongodb')->getManager();
+		$dm = $this->get('doctrine_mongodb')->getManager();
 
-		$element = $em->getRepository('BiopenGeoDirectoryBundle:Element')->find($id);
+		$element = $dm->getRepository('App\Document\Element')->find($id);
 
 		if (!$element)
 		{
@@ -52,7 +52,7 @@ class ElementFormController extends GoGoController
 			|| $this->container->get('biopen.config_service')->isUserAllowed('directModeration')
 			|| ($element->isPending() && $element->getRandomHash() == $request->get('hash')))
 		{
-			return $this->renderForm($element, true, $request, $session, $em);
+			return $this->renderForm($element, true, $request, $session, $dm);
 		}
 		else
 		{
@@ -62,7 +62,7 @@ class ElementFormController extends GoGoController
 	}
 
 	// render for both Add and Edit actions
-	private function renderForm($element, $editMode, $request, $session, $em)
+	private function renderForm($element, $editMode, $request, $session, $dm)
 	{
 		if (null === $element) {
 		  throw new NotFoundHttpException("Cet élément n'existe pas.");
@@ -87,12 +87,12 @@ class ElementFormController extends GoGoController
 			->getForm();
 
 			$userEmail = $request->request->get('user')['email'];
-			$emailAlreadyUsed = false;
+			$dmailAlreadyUsed = false;
 			if ($userEmail) {
-				$othersUsers = $em->getRepository('BiopenCoreBundle:User')->findByEmail($userEmail);
-				$emailAlreadyUsed = count($othersUsers) > 0;
+				$othersUsers = $dm->getRepository('App\Document\User')->findByEmail($userEmail);
+				$dmailAlreadyUsed = count($othersUsers) > 0;
 			}
-			if ($loginform->handleRequest($request)->isValid() && !$emailAlreadyUsed)
+			if ($loginform->handleRequest($request)->isValid() && !$dmailAlreadyUsed)
 			{
 				$session->set('userEmail', $userEmail);
 				$userType = "email";
@@ -101,7 +101,7 @@ class ElementFormController extends GoGoController
 			{
 				return $this->render('@BiopenGeoDirectory/element-form/contributor-login.html.twig', array(
 					'loginForm' => $loginform->createView(),
-					'emailAlreadyUsed' => $emailAlreadyUsed,
+					'emailAlreadyUsed' => $dmailAlreadyUsed,
 					'config' => $configService->getConfig(),
 					'featureConfig' => $configService->getFeatureConfig($addEditName)));
 			}
@@ -193,7 +193,7 @@ class ElementFormController extends GoGoController
 				else $needToCheckDuplicates = false;
 
 				// custom handling form (creating OptionValues for example)
-				list($element, $isMinorModification) = $this->get("biopen.element_form_service")->handleFormSubmission($element, $request, $editMode, $userEmail, $isAllowedDirectModeration, $originalElement, $em);
+				list($element, $isMinorModification) = $this->get("biopen.element_form_service")->handleFormSubmission($element, $request, $editMode, $userEmail, $isAllowedDirectModeration, $originalElement, $dm);
 
 				if ($needToCheckDuplicates)
 				{
@@ -209,7 +209,7 @@ class ElementFormController extends GoGoController
 				}
 			}
 
-			$em->persist($element);
+			$dm->persist($element);
 
 			// getting the variables from POST or from session (in case of checkDuplicate process)
 			$sendMail = $request->request->has('send_mail') ? $request->request->get('send_mail') : $session->get('sendMail');
@@ -237,7 +237,7 @@ class ElementFormController extends GoGoController
 
 				// Update the user
 				$userManager->updateUser($user, true);
-				$em->persist($user);
+				$dm->persist($user);
 
 				$text = 'Votre compte a bien été créé ! Vous pouvez maintenant compléter <a href="'. $this->generateUrl('biopen_user_profile') .'" >votre profil</a> !';
 				$session->getFlashBag()->add('success', $text);
@@ -261,8 +261,8 @@ class ElementFormController extends GoGoController
 			  }
 			}
 
-			$em->persist($element);
-			$em->flush();
+			$dm->persist($element);
+			$dm->flush();
 
 			$elementToUse = $editMode ? $realElement : $element;
 			$elementShowOnMapUrl = $elementToUse->getShowUrlFromController($this);
@@ -307,7 +307,7 @@ class ElementFormController extends GoGoController
 			$session->getFlashBag()->add('notice', $flashMessage);
 		}
 
- 		$mainCategories = $em->getRepository('BiopenGeoDirectoryBundle:Category')->findRootCategories();
+ 		$mainCategories = $dm->getRepository('App\Document\Category')->findRootCategories();
 
 		return $this->render('@BiopenGeoDirectory/element-form/element-form.html.twig',
 					array(
@@ -335,7 +335,7 @@ class ElementFormController extends GoGoController
 	// when submitting new element, check it's not yet existing
 	public function checkDuplicatesAction(Request $request, SessionInterface $session)
 	{
-		$em = $this->get('doctrine_mongodb')->getManager();
+		$dm = $this->get('doctrine_mongodb')->getManager();
 
 		// a form with just a submit button
 		$checkDuplicatesForm = $this->get('form.factory')->createNamedBuilder('duplicates', 'form')->getForm();
@@ -362,7 +362,7 @@ class ElementFormController extends GoGoController
   {
     try {
       $this->container->get('fos_user.security.login_manager')->loginUser(
-            $this->container->getParameter('fos_user.firewall_name'),
+            $this->getParameter('fos_user.firewall_name'),
             $user, null);
     } catch (AccountStatusException $ex) {
         // We simply do not authenticate users which do not pass the user
@@ -403,7 +403,7 @@ class ElementFormController extends GoGoController
 		$maxFileSize = min($max_upload, $max_post, $memory_limit);
 
 		if ($key) {
-			$appMaxsize = $this->container->getParameter($key."_max_filesize");
+			$appMaxsize = $this->getParameter($key."_max_filesize");
 			$maxFileSize = min($maxFileSize, $normalize($appMaxsize));
 		}
 		return $maxFileSize;

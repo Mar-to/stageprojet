@@ -49,11 +49,11 @@ class AppExtension extends AbstractExtension
 
     public function getNewMessagesCount()
     {
-        return count($this->dm->getRepository('BiopenCoreBundle:GoGoLog')->findBy(['type' => 'update', 'hidden' => false]));
+        return count($this->dm->getRepository('App\Document\GoGoLog')->findBy(['type' => 'update', 'hidden' => false]));
     }
 
     public function getErrorsCount()
     {
-        return count($this->dm->getRepository('BiopenCoreBundle:GoGoLog')->findBy(['level' => 'error', 'hidden' => false]));
+        return count($this->dm->getRepository('App\Document\GoGoLog')->findBy(['level' => 'error', 'hidden' => false]));
     }
 }

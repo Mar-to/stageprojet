@@ -13,7 +13,7 @@ use App\Document\ModerationState;
 
 class ElementImportService
 {
-	private $em;
+	private $dm;
 
 	protected $countElementCreated = 0;
 	protected $countElementUpdated = 0;
@@ -168,7 +168,7 @@ class ElementImportService
 			   $this->em->flush();
 			   $this->em->clear();
 			   // After flush, we need to get again the import from the DB to avoid doctrine raising errors
-			   $import = $this->em->getRepository('BiopenGeoDirectoryBundle:Import')->find($import->getId());
+			   $import = $this->em->getRepository('App\Document\Import')->find($import->getId());
 			   $this->em->persist($import);
 			}
 		}
@@ -177,7 +177,7 @@ class ElementImportService
 		$this->em->clear();
 
     $this->taxonomyJsonGenerator->updateTaxonomy($this->em);
-		$import = $this->em->getRepository('BiopenGeoDirectoryBundle:Import')->find($import->getId());
+		$import = $this->em->getRepository('App\Document\Import')->find($import->getId());
 		$this->em->persist($import);
 
 		$countElemenDeleted = 0;

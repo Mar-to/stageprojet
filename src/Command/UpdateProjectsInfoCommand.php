@@ -22,7 +22,7 @@ class UpdateProjectsInfoCommand extends ContainerAwareCommand
    protected function execute(InputInterface $input, OutputInterface $output)
    {
       $odm = $this->getContainer()->get('doctrine_mongodb')->getManager();
-      $projects = $odm->getRepository('BiopenSaasBundle:Project')->findAll();
+      $projects = $odm->getRepository('App\Document\Project')->findAll();
 
       $logger = $this->getContainer()->get('monolog.logger.commands');
       $logger->info("Updating projects informations. " . count($projects) . " projects to update");

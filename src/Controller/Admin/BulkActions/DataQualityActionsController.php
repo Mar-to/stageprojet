@@ -32,8 +32,8 @@ class DataQualityActionsController extends BulkActionsAbstractController
 
    public function fixsMissingCitiesAction(Request $request, SessionInterface $session)
    {
-      $em = $this->get('doctrine_mongodb')->getManager();
-      $qb = $em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+      $dm = $this->get('doctrine_mongodb')->getManager();
+      $qb = $dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
       $elements = $qb
          ->addOr($qb->expr()->field('city')->equals(''))
          ->addOr($qb->expr()->field('sourceKey')->equals('PDCN'))
@@ -51,7 +51,7 @@ class DataQualityActionsController extends BulkActionsAbstractController
       }
       catch (\Exception $error) { }
 
-      $em->flush();
+      $dm->flush();
 
       $session->getFlashBag()->add('success', count($elements) . " éléments  ont été réparés");
       return $this->redirectToIndex();

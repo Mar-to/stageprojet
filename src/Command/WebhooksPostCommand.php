@@ -17,7 +17,7 @@ class WebhooksPostCommand extends GoGoAbstractCommand
         ->setDescription('Post the queued data to the given webhooks');
     }
 
-    protected function gogoExecute($em, InputInterface $input, OutputInterface $output)
+    protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
     {
         /** @var WebhookService $webhookService */
         $webhookService = $this->getContainer()->get('biopen.webhook_service');

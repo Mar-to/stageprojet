@@ -9,22 +9,22 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class MailService
 {
-    protected $em;
+    protected $dm;
     protected $config;
     protected $mailer;
     protected $router;
     protected $twig;
     protected $baseUrl;
-    protected $email;
+    protected $dmail;
     protected $instanceName;
 
 	/**
 	* Constructor
 	*/
-	public function __construct(DocumentManager $documentManager, $mailer, $router, $twig, $baseUrl, $basePath, $sass, $email, $instanceName)
+	public function __construct(DocumentManager $documentManager, $mailer, $router, $twig, $baseUrl, $basePath, $sass, $dmail, $instanceName)
 	{
 	   $this->em = $documentManager;
-       $this->config = $this->em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+       $this->config = $this->em->getRepository('App\Document\Configuration')->findConfiguration();
        $this->mailer = $mailer;
        $this->router = $router;
        $this->twig = $twig;
@@ -32,7 +32,7 @@ class MailService
        $this->baseUrl = 'http://';
        if ($sass) $this->baseUrl .= $this->config->getDbName() . '.';
        $this->baseUrl .= $baseUrl;
-       $this->email = $email;
+       $this->email = $dmail;
        $this->instanceName = $instanceName;
 	}
 

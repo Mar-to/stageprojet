@@ -43,7 +43,7 @@ class RegistrationFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $textType = 'Symfony\Component\Form\Extension\Core\Type\TextType';
-        $emailType = 'Symfony\Component\Form\Extension\Core\Type\EmailType';
+        $dmailType = 'Symfony\Component\Form\Extension\Core\Type\EmailType';
         $repeatedType = 'Symfony\Component\Form\Extension\Core\Type\RepeatedType';
         $passwordType = 'Symfony\Component\Form\Extension\Core\Type\PasswordType';
         $choiceType = 'Symfony\Component\Form\Extension\Core\Type\ChoiceType';
@@ -54,7 +54,7 @@ class RegistrationFormType extends AbstractType
                 'label' => 'form.username',
                 'translation_domain' => 'SonataUserBundle',
             ], $this->mergeOptions))
-            ->add('email', $emailType, array_merge([
+            ->add('email', $dmailType, array_merge([
                 'label' => 'form.email',
                 'translation_domain' => 'SonataUserBundle',
             ], $this->mergeOptions))

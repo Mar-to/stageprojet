@@ -9,8 +9,8 @@ class DataUpdateActionsController extends BulkActionsAbstractController
 {
    public function updateGamificationAction(Request $request, SessionInterface $session)
    {
-      $em = $this->get('doctrine_mongodb')->getManager();
-      $qb = $em->createQueryBuilder('BiopenCoreBundle:User');
+      $dm = $this->get('doctrine_mongodb')->getManager();
+      $qb = $dm->createQueryBuilder('BiopenCoreBundle:User');
       $qb->field('email')->notEqual(null);
       $query = $qb->getQuery();
       $users = $query->execute();
@@ -23,13 +23,13 @@ class DataUpdateActionsController extends BulkActionsAbstractController
          $gamificationService->updateGamification($user);
 
          if ((++$i % 100) == 0) {
-            $em->flush();
-            $em->clear();
+            $dm->flush();
+            $dm->clear();
          }
       }
 
-      $em->flush();
-      $em->clear();
+      $dm->flush();
+      $dm->clear();
 
       $session->getFlashBag()->add('success', count($users) . " utilisateurs ont été mis à jour");
       return $this->redirect($this->generateUrl('admin_biopen_core_user_list'));

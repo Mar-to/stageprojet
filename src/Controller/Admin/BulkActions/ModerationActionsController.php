@@ -9,8 +9,8 @@ class ModerationActionsController extends BulkActionsAbstractController
 {
    public function deleteElementReportedAsNoMoreExistingAction(Request $request, SessionInterface $session)
    {
-      $em = $this->get('doctrine_mongodb')->getManager();
-      $repo = $em->getRepository('BiopenGeoDirectoryBundle:Element');
+      $dm = $this->get('doctrine_mongodb')->getManager();
+      $repo = $dm->getRepository('App\Document\Element');
       $elements = $repo->findModerationNeeded(false, 1);
 
       $actionService = $this->get('biopen.element_action_service');
@@ -26,13 +26,13 @@ class ModerationActionsController extends BulkActionsAbstractController
           $count++;
          }
          if ((++$i % 100) == 0) {
-            $em->flush();
-            $em->clear();
+            $dm->flush();
+            $dm->clear();
          }
       }
 
-      $em->flush();
-      $em->clear();
+      $dm->flush();
+      $dm->clear();
 
       $session->getFlashBag()->add('success', $count . " éléments ont été supprimés");
       return $this->redirectToIndex();

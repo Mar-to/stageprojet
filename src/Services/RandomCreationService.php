@@ -27,7 +27,7 @@ use joshtronic\LoremIpsum;
 class RandomCreationService
 {
 
-	protected $em;
+	protected $dm;
 
 	/**
      * Constructor
@@ -83,7 +83,7 @@ class RandomCreationService
 	    $lngSpan = $NElng - $SOlng;
 	    $latSpan = $NElat - $SOlat;
 
-	    $mainCategories = $this->em->getRepository('BiopenGeoDirectoryBundle:Category')->findRootCategories();
+	    $mainCategories = $this->em->getRepository('App\Document\Category')->findRootCategories();
 
 	    $lipsum = new LoremIpsum();
 

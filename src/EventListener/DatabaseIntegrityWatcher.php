@@ -33,7 +33,7 @@ class DatabaseIntegrityWatcher
 		if ($document instanceof Group)
 		{
 			$group = $document;
-			$qb = $dm->getRepository('BiopenCoreBundle:User')->createQueryBuilder();
+			$qb = $dm->getRepository('App\Document\User')->createQueryBuilder();
       $users = $qb->field('groups.id')->in([$group->getId()])->getQuery()->execute();
       if ($users->count() > 0)
       {
@@ -46,7 +46,7 @@ class DatabaseIntegrityWatcher
 		else if ($document instanceof Import || $document instanceof ImportDynamic)
 		{
 			$import = $document;
-			$qb = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->createQueryBuilder();
+			$qb = $dm->getRepository('App\Document\Element')->createQueryBuilder();
       $elements = $qb->remove()->field('source')->references($import)->getQuery()->execute();
 		}
 		else if ($document instanceof Webhook)

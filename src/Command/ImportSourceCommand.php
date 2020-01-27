@@ -20,13 +20,13 @@ class ImportSourceCommand extends GoGoAbstractCommand
         ->addArgument('sourceNameOrImportId', InputArgument::REQUIRED, 'The name of the source');
     }
 
-    protected function gogoExecute($em, InputInterface $input, OutputInterface $output)
+    protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
     {
       try {
         $this->output = $output;
         $sourceNameOrId = $input->getArgument('sourceNameOrImportId');
-        $import = $em->getRepository('BiopenGeoDirectoryBundle:Import')->find($sourceNameOrId);
-        if (!$import) $import = $em->getRepository('BiopenGeoDirectoryBundle:Import')->findOneBySourceName($sourceNameOrId);
+        $import = $dm->getRepository('App\Document\Import')->find($sourceNameOrId);
+        if (!$import) $import = $dm->getRepository('App\Document\Import')->findOneBySourceName($sourceNameOrId);
         if (!$import)
         {
           $message = "ERREUR pendant l'import : Aucune source avec pour nom ou id " . $input->getArgument('sourceNameOrImportId') . " n'existe dans la base de donnée " . $input->getArgument('dbname');

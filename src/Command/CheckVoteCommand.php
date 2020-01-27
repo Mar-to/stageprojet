@@ -20,9 +20,9 @@ class CheckVoteCommand extends GoGoAbstractCommand
     ;
     }
 
-    protected function gogoExecute($em, InputInterface $input, OutputInterface $output)
+    protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
     {
-      $elementRepo = $em->getRepository('BiopenGeoDirectoryBundle:Element');
+      $elementRepo = $dm->getRepository('App\Document\Element');
       $elements = $elementRepo->findPendings();
 
       $voteService = $this->getContainer()->get('biopen.element_vote_service');
@@ -30,10 +30,10 @@ class CheckVoteCommand extends GoGoAbstractCommand
       foreach ($elements as $key => $element)
       {
           $voteService->checkVotes($element);
-          $em->persist($element);
+          $dm->persist($element);
       }
 
-      $em->flush();
+      $dm->flush();
 
       $output->writeln('Nombre elements checkés : ' . count($elements));
     }

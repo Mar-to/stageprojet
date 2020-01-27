@@ -17,7 +17,7 @@ use App\Document\ElementFile;
 
 class ElementImportOneService
 {
-	private $em;
+	private $dm;
 	private $geocoder;
 	private $interactionService;
 
@@ -45,7 +45,7 @@ class ElementImportOneService
     }
 
     // Getting the private field of the custom data
-    $config = $this->em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+    $config = $this->em->getRepository('App\Document\Configuration')->findConfiguration();
     $this->privateDataProps = $config->getApi()->getPublicApiPrivateProperties();
   }
 

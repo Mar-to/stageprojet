@@ -25,12 +25,12 @@ class UserController extends GoGoController
       $user = $this->getUser();
       $userEmail = $user->getEmail();
 
-      $elementsOwned = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->findElementsOwnedBy($userEmail);
+      $elementsOwned = $dm->getRepository('App\Document\Element')->findElementsOwnedBy($userEmail);
       $elementsOwned = array_filter($elementsOwned->toArray(), function($element) use ($userEmail) {
          return !$element->isPending() || $element->getCurrContribution()->getUserEmail() != $userEmail;
       });
 
-      $allContribs = $dm->getRepository('BiopenGeoDirectoryBundle:UserInteractionContribution')->findByUserEmail($userEmail);
+      $allContribs = $dm->getRepository('App\Document\UserInteractionContribution')->findByUserEmail($userEmail);
 
       $allContribs = array_filter($allContribs, function($interaction) {
          return in_array($interaction->getType(), [InteractionType::Add, InteractionType::Edit]);
@@ -65,7 +65,7 @@ class UserController extends GoGoController
       $user = $this->getUser();
       $userEmail = $user->getEmail();
 
-      $votes = $dm->getRepository('BiopenGeoDirectoryBundle:UserInteractionVote')->findByUserEmail($userEmail);
+      $votes = $dm->getRepository('App\Document\UserInteractionVote')->findByUserEmail($userEmail);
       usort($votes, function ($a, $b) { return $b->getTimestamp() - $a->getTimestamp(); });
 
       return $this->render('@BiopenCoreBundle/user/contributions/votes.html.twig', array('votes' => $votes));
@@ -77,7 +77,7 @@ class UserController extends GoGoController
       $user = $this->getUser();
       $userEmail = $user->getEmail();
 
-      $reports = $dm->getRepository('BiopenGeoDirectoryBundle:UserInteractionReport')->findByUserEmail($userEmail);
+      $reports = $dm->getRepository('App\Document\UserInteractionReport')->findByUserEmail($userEmail);
       usort($reports, function ($a, $b) { return $b->getTimestamp() - $a->getTimestamp(); });
 
       return $this->render('@BiopenCoreBundle/user/contributions/reports.html.twig', array('reports' => $reports));
@@ -86,7 +86,7 @@ class UserController extends GoGoController
    public function becomeOwnerAction($id, Request $request, SessionInterface $session)
    {
       $dm = $this->get('doctrine_mongodb')->getManager();
-      $element = $dm->getRepository('BiopenGeoDirectoryBundle:Element')->find($id);
+      $element = $dm->getRepository('App\Document\Element')->find($id);
 
       if (!$element->getUserOwnerEmail()) {
          $user = $this->getUser();
@@ -108,9 +108,9 @@ class UserController extends GoGoController
       $user = $this->getUser();
       $current_user = clone $user;
       $form = $this->get('form.factory')->create(UserProfileType::class, $user);
-      $em = $this->get('doctrine_mongodb')->getManager();
-      $userRepo = $em->getRepository('BiopenCoreBundle:User');
-      $config = $em->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+      $dm = $this->get('doctrine_mongodb')->getManager();
+      $userRepo = $dm->getRepository('App\Document\User');
+      $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
 
       if (!$user->getNewsletterRange()) $user->setNewsletterRange(50);
 
@@ -133,8 +133,8 @@ class UserController extends GoGoController
 
          if ($form->isValid() /*&& !$alreadyUsedEmail */&& !$alreadyUsedUserName && !$locationSetToReceiveNewsletter && !$geocodeError)
          {
-            $em->persist($user);
-            $em->flush();
+            $dm->persist($user);
+            $dm->flush();
             $session->getFlashBag()->add('info', "Modifications sauvegardées !");
          }
          else

@@ -34,7 +34,7 @@ class ImportController extends Controller
 
     public function availableOptionsAction()
     {
-        $options = $this->get('doctrine_mongodb')->getManager()->getRepository('BiopenGeoDirectoryBundle:Option')->findAll();
+        $options = $this->get('doctrine_mongodb')->getManager()->getRepository('App\Document\Option')->findAll();
         $bottomOptions = array_filter($options, function($option) { return $option->getSubcategoriesCount() == 0;});
         $optionsNames = array_map(function($option) { return $option->getNameWithParent(); }, $bottomOptions);
 
@@ -43,8 +43,8 @@ class ImportController extends Controller
 
     public function currStateAction($id)
     {
-        $em = $this->get('doctrine_mongodb')->getManager();
-        $import = $em->getRepository('BiopenGeoDirectoryBundle:Import')->find($id);
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $import = $dm->getRepository('App\Document\Import')->find($id);
         $responseArray = array(
             "state" => $import->getCurrState(),
             "message" => $import->getCurrMessage()

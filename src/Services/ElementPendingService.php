@@ -71,7 +71,7 @@ class ElementPendingService
       $element->reset();
       $this->em->refresh($element);
       $id = $element->getId();
-      $oldElement = $this->em->getRepository('BiopenGeoDirectoryBundle:Element')->find($id);
+      $oldElement = $this->em->getRepository('App\Document\Element')->find($id);
 
       $this->em->persist($modifiedElement);
       $oldElement->setModifiedElement($modifiedElement);

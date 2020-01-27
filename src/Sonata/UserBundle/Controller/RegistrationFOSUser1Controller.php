@@ -37,7 +37,7 @@ class RegistrationFOSUser1Controller extends Controller
     public function registerAction(Request $request = null, SessionInterface $session)
     {
         $odm = $this->get('doctrine_mongodb')->getManager();
-        $config = $odm->getRepository('BiopenCoreBundle:Configuration')->findConfiguration();
+        $config = $odm->getRepository('App\Document\Configuration')->findConfiguration();
         if (!$config->getUser()->getEnableRegistration()) {
             $session->getFlashBag()->add('error', "Désolé, vous n'êtes pas autorisé à créer un compte.");
             return $this->redirectToRoute('biopen_directory');
@@ -115,12 +115,12 @@ class RegistrationFOSUser1Controller extends Controller
      */
     public function checkEmailAction()
     {
-        $email = $this->get('session')->get('fos_user_send_confirmation_email/email');
+        $dmail = $this->get('session')->get('fos_user_send_confirmation_email/email');
         $this->get('session')->remove('fos_user_send_confirmation_email/email');
-        $user = $this->get('fos_user.user_manager')->findUserByEmail($email);
+        $user = $this->get('fos_user.user_manager')->findUserByEmail($dmail);
 
         if (null === $user) {
-            throw new NotFoundHttpException(sprintf('The user with email "%s" does not exist', $email));
+            throw new NotFoundHttpException(sprintf('The user with email "%s" does not exist', $dmail));
         }
 
         return $this->render('FOSUserBundle:Registration:checkEmail.html.'.$this->getEngine(), [
@@ -150,10 +150,10 @@ class RegistrationFOSUser1Controller extends Controller
         $user->setLastLogin(new \DateTime());
 
         $this->get('fos_user.user_manager')->updateUser($user);
-        if ($redirectRoute = $this->container->getParameter('sonata.user.register.confirm.redirect_route')) {
+        if ($redirectRoute = $this->getParameter('sonata.user.register.confirm.redirect_route')) {
             $response = $this->redirect($this->generateUrl(
                 $redirectRoute,
-                $this->container->getParameter('sonata.user.register.confirm.redirect_route_params')
+                $this->getParameter('sonata.user.register.confirm.redirect_route_params')
             ));
         } else {
             $response = $this->redirect($this->generateUrl('fos_user_registration_confirmed'));
@@ -193,7 +193,7 @@ class RegistrationFOSUser1Controller extends Controller
     {
         try {
             $this->get('fos_user.security.login_manager')->loginUser(
-                $this->container->getParameter('fos_user.firewall_name'),
+                $this->getParameter('fos_user.firewall_name'),
                 $user,
                 $response
             );
@@ -217,6 +217,6 @@ class RegistrationFOSUser1Controller extends Controller
      */
     protected function getEngine()
     {
-        return $this->container->getParameter('fos_user.template.engine');
+        return $this->getParameter('fos_user.template.engine');
     }
 }
