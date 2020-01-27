@@ -1,35 +1,125 @@
+# ------------------------------------------------------
+# OTHERS ROUTES CAN BE FOUND INSIDE routes/gogo_**.yaml
+# ------------------------------------------------------
 biopen_homepage:
-   path: /
-   controller: App\Controller\CoreController::homeAction
+    path:     /
+    defaults: { _controller: App\Controller\CoreController::homeAction }
 
-biopen_api_manifest:
-    path:     /manifest.{_format}
-    defaults: { _controller: App\Controller\APIController::getManifestAction, _format: json }
-    requirements:
-        methods: GET
-        _format: json
+biopen_homepage_force:
+    path:     /home
+    controller: App\Controller\CoreController::homeAction
+    defaults:
+        force: true
 
 biopen_directory:
     path:     /annuaire
-    defaults: { _controller: DirectoryController::renderAction }
-    options:
-      expose: true
+    defaults: { _controller: App\Controller\DirectoryController::renderAction }
 
+biopen_directory_showElement:
+    path:     /annuaire#/fiche/element/{id}
+    defaults: { _controller: App\Controller\DirectoryController::renderAction }
+
+biopen_partners:
+    path: /qui-sommes-nous
+    defaults: { _controller: App\Controller\CoreController::partnersAction }
+
+# ELEMENT CRUD
 biopen_element_add:
-    path:     /add
-    defaults: { _controller: ElementFormController::addAction }
-# saas:
-#     resource: "../src/Saas/Resources/config/routing.yml"
-#     prefix:   /
+    path:     /elements/add
+    defaults: { _controller: App\Controller\ElementFormController::addAction }
 
-# biopen_core:
-#     resource: "../src/Core/Resources/config/routing.yml"
-#     prefix:   /
+biopen_element_edit:
+    path:     /elements/edit/{id}
+    defaults: { _controller: App\Controller\ElementFormController::editAction }
 
-# biopen_geo_directory:
-#     resource: "../src/GeoDirectory/Resources/config/routing.yml"
-#     prefix:   /
+biopen_element_check_duplicate:
+    path:     /elements/check-doublons
+    defaults: { _controller: App\Controller\ElementFormController::checkDuplicatesAction }
 
-# other:
-#     path: /{arg1}/{arg2}/{arg3}/{arg4}/{arg5}/{arg6}
-#     defaults: { _controller: BiopenCoreBundle:Core:home, arg1: '', arg2: '', arg3: '', arg4: '', arg5: '', arg6: '' }
+# ELEMENT INTERACTIONS
+biopen_vote_for_element:
+    path:     /interact/vote
+    defaults: { _controller: App\Controller\ElementInteractionController::vote }
+    requirements:
+        methods: POST
+
+biopen_report_error_for_element:
+    path:     /interact/report
+    defaults: { _controller: App\Controller\ElementInteractionController::reportError }
+    requirements:
+        methods: POST
+
+biopen_delete_element:
+    path:     /interact/delete
+    defaults: { _controller: App\Controller\ElementInteractionController::delete }
+    requirements:
+        methods: POST
+
+biopen_resolve_reports_element:
+    path:     /interact/resolve-reports
+    defaults: { _controller: App\Controller\ElementInteractionController::resolveReportsAction }
+    requirements:
+        methods: POST
+
+biopen_element_send_mail:
+    path:     /interact/sendMail
+    defaults: { _controller: App\Controller\ElementInteractionController::sendMailAction }
+    requirements:
+        methods: POST
+
+biopen_element_stamp:
+    path:     /interact/stamp
+    defaults: { _controller: App\Controller\ElementInteractionController::stampAction }
+    requirements:
+        methods: POST
+
+# USERS
+biopen_user_space:
+    path: /user/mon-espace
+    defaults: { _controller: App\Controller\UserController::userSpaceAction }
+
+biopen_user_profile:
+    path: /user/profile
+    defaults: { _controller: App\Controller\UserController::profileAction }
+
+biopen_user_contributions:
+    path: /user/contributions
+    defaults: { _controller: App\Controller\UserController::contributionsAction }
+
+biopen_user_votes:
+    path: /user/votes
+    defaults: { _controller: App\Controller\UserController::votesAction }
+
+biopen_user_reports:
+    path: /user/reports
+    defaults: { _controller: App\Controller\UserController::reportsAction }
+
+biopen_user_become_owner:
+    path: /user/become-owner/{id}
+    defaults: { _controller: App\Controller\UserController::becomeOwnerAction }
+
+# SAAS
+biopen_saas_new_project:
+    path: project/new
+    defaults: { _controller: App\Controller\ProjectController::createAction }
+
+biopen_saas_initialize_project:
+    path: project/initialize
+    defaults: { _controller: App\Controller\ProjectController::initializeAction }
+
+biopen_saas_home:
+    path: projects
+    defaults: { _controller: App\Controller\ProjectController::homeAction }
+
+biopen_project_delete_my_project:
+    path: admin/delete-my-project
+    defaults: { _controller: App\Controller\ProjectController::deleteCurrProjectAction }
+
+biopen_project_delete_saas_record:
+    path: project/delete/{dbName}
+    defaults: { _controller: App\Controller\ProjectController::deleteSaasRecordAction }
+
+# HANDLE BAD URLS
+other:
+    path: /{arg1}/{arg2}/{arg3}/{arg4}/{arg5}/{arg6}
+    defaults: { _controller: App\Controller\CoreController::homeAction, arg1: '', arg2: '', arg3: '', arg4: '', arg5: '', arg6: '' }

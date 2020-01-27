@@ -1,9 +1,0 @@
-biopen_directory:
-    path:     /annuaire
-    defaults: { _controller: BiopenGeoDirectoryBundle:Directory:render }
-    options:
-      expose: true
-
-biopen_directory_showElement:
-    path:     /annuaire#/fiche/element/{id}
-    defaults: { _controller: BiopenGeoDirectoryBundle:Directory:render }

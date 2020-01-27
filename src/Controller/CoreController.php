@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 class CoreController extends GoGoController
 {
-
     public function homeAction($force = true, DocumentManager $dm)
     {
         $sassHelper = new SaasHelper();

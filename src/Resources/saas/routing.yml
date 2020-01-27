@@ -1,20 +1,2 @@
-biopen_saas_new_project:
-    path: project/new
-    defaults: { _controller: BiopenSaasBundle:Project:create }
 
-biopen_saas_initialize_project:
-    path: project/initialize
-    defaults: { _controller: BiopenSaasBundle:Project:initialize }
-
-biopen_saas_home:
-    path: projects
-    defaults: { _controller: BiopenSaasBundle:Project:home }
-
-biopen_project_delete_my_project:
-    path: admin/delete-my-project
-    defaults: { _controller: BiopenSaasBundle:Project:deleteCurrProject }
-
-biopen_project_delete_saas_record:
-    path: project/delete/{dbName}
-    defaults: { _controller: BiopenSaasBundle:Project:deleteSaasRecord }
 
