@@ -33,6 +33,9 @@ RUN printf "\n" | pecl install libsodium \
 RUN printf "\n" | pecl install mongodb \
      && docker-php-ext-enable mongodb
 
+RUN printf "\n" | pecl install xdebug \
+     && docker-php-ext-enable xdebug
+
 # Imagemagick
 RUN apt-get install --yes libmagickwand-dev libmagickcore-dev imagemagick
 RUN printf "\n" | pecl install imagick
@@ -71,3 +74,11 @@ RUN rm -R /var/www/html
 WORKDIR /var/www
 
 RUN apt-get install unzip
+
+# Add following to /usr/local/etc/php/conf.d/custom-php-conf.ini to activate xdebug
+# zend_extension=/usr/local/lib/php/extensions/no-debug-non-zts-20180731/xdebug.so#
+# xdebug.remote_enable=1
+# xdebug.remote_handler=dbgp
+# xdebug.remote_host=127.0.0.1
+# xdebug.remote_port=9000
+# xdebug.remote_log="/var/log/xdebug/xdebug.log"
