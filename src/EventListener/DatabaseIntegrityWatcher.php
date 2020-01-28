@@ -8,7 +8,7 @@
 namespace App\EventListener;
 
 use App\Document\Element;
-use Application\Sonata\UserBundle\Document\Group;
+use App\Application\Sonata\UserBundle\Document\Group;
 use App\Document\Option;
 use App\Document\ImportDynamic;
 use App\Document\Import;

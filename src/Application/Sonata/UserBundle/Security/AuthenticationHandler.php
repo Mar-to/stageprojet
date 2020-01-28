@@ -1,6 +1,6 @@
 <?php
 
-namespace Application\Sonata\UserBundle\Security;
+namespace App\Application\Sonata\UserBundle\Security;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;

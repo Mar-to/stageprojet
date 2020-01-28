@@ -13,7 +13,7 @@ fos_user:
         sender_name:    "%env(instance_name)%"
 
     group:
-        group_class:   Application\Sonata\UserBundle\Document\Group
+        group_class:   App\Application\Sonata\UserBundle\Document\Group
         group_manager: sonata.user.mongodb.group_manager                    # If you're using doctrine orm (use sonata.user.mongodb.group_manager for mongodb)
 
     service:

@@ -38,7 +38,7 @@
         "knplabs/knp-menu": "~2.3",
         "knplabs/knp-menu-bundle": "^2.2",
         "sonata-project/exporter" : "^1.7",
-        "sonata-project/easy-extends-bundle":"^2.1",
+        "sonata-project/easy-extends-bundle":"^2.2",
         "hwi/oauth-bundle": "^0.6",
         "ob/highcharts-bundle": "^1.6",
         "vich/uploader-bundle": "^1.4",

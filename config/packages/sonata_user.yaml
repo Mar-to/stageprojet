@@ -4,7 +4,7 @@ sonata_user:
     manager_type: mongodb # can be orm or mongodb
     class:                  # Entity Classes
         user:               App\Document\User
-        group:              Application\Sonata\UserBundle\Document\Group
+        group:              App\Application\Sonata\UserBundle\Document\Group
 
     admin:                  # Admin Classes
         user:

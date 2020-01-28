@@ -7,7 +7,7 @@
  * @Last Modified time: 2018-02-11 13:06:59
  */
 
-namespace Application\Sonata\UserBundle\Services;
+namespace App\Application\Sonata\UserBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use App\Document\UserInteractionReport;

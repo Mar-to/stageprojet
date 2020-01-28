@@ -8,7 +8,7 @@
 namespace App\Admin\Element;
 
 // custom iterator
-use Application\Sonata\Exporter\Source\DoctrineODMQuerySourceIterator;
+use App\Application\Sonata\Exporter\Source\DoctrineODMQuerySourceIterator;
 use Sonata\DoctrineMongoDBAdminBundle\Datagrid\ProxyQuery;
 
 // There is a chain of inherance to split ElementAdmin in different files

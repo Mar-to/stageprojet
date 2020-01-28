@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Application\Sonata\UserBundle\Controller;
+namespace App\Application\Sonata\UserBundle\Controller;
 
 use FOS\UserBundle\Model\UserInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\AccountStatusException;
 
-use Application\Sonata\UserBundle\Form\Type\RegistrationFormType;
+use App\Application\Sonata\UserBundle\Form\Type\RegistrationFormType;
 use App\Document\User;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 

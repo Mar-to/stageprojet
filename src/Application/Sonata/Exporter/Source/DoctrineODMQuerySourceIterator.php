@@ -14,7 +14,7 @@
     in the source iterator. I've been modified the getValue method so I can use a hash, using the label as a key. See ElementAdmin.php
     to see ho it is used
 */
-namespace Application\Sonata\Exporter\Source;
+namespace App\Application\Sonata\Exporter\Source;
 
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
@@ -150,7 +150,7 @@ class DoctrineODMQuerySourceIterator implements SourceIteratorInterface
      * @return null|string
      */
     protected function getValue($value, $name)
-    {        
+    {
         if (is_array($value)) {
             $value = array_key_exists($name, $value) ? $value[$name] : null;
         } elseif ($value instanceof \Traversable) {

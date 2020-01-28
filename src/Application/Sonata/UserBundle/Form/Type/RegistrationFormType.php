@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Application\Sonata\UserBundle\Form\Type;
+namespace App\Application\Sonata\UserBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

@@ -1,5 +1,5 @@
 <?php
-namespace Application\Sonata\UserBundle\Security;
+namespace App\Application\Sonata\UserBundle\Security;
 
 use Sonata\AdminBundle\Security\Handler\RoleSecurityHandler as RoleSecurityHandler;
 use Sonata\AdminBundle\Admin\AdminInterface;

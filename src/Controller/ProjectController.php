@@ -11,7 +11,7 @@ use App\Command\GoGoMainCommand;
 use Symfony\Component\HttpFoundation\Response;
 use App\Document\Configuration;
 use App\DataFixtures\MongoDB\LoadTileLayers;
-use Application\Sonata\UserBundle\Form\Type\RegistrationFormType;
+use App\Application\Sonata\UserBundle\Form\Type\RegistrationFormType;
 use App\Document\User;
 use FOS\UserBundle\Model\UserInterface;
 use App\DataFixtures\MongoDB\LoadConfiguration;
