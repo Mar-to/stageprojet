@@ -231,7 +231,7 @@ class UserAdmin extends AbstractAdmin
     public function getTemplate($name)
    {
      switch ($name) {
-         case 'list': return '@BiopenAdmin/list/list_user.html.twig';
+         case 'list': return 'admin/list/list_user.html.twig';
              break;
          default : return parent::getTemplate($name);
              break;

@@ -21,7 +21,7 @@ class CategoryAdminController extends Controller
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
         $rootCategories = $dm->getRepository('App\Document\Category')->findRootCategories();
 
-        return $this->render('@BiopenAdmin/list/tree_category.html.twig', array(
+        return $this->render('admin/list/tree_category.html.twig', array(
             'categories' => $rootCategories, 'config' => $config
         ), null);
     }

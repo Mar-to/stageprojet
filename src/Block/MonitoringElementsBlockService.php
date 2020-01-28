@@ -64,7 +64,7 @@ class MonitoringElementsBlockService extends AbstractBlockService
 	    // merge settings
 	    $settings = $blockContext->getSettings();
 
-	    return $this->renderResponse('@BiopenAdmin/blocks/block_monitoring.html.twig', array(
+	    return $this->renderResponse('admin/blocks/block_monitoring.html.twig', array(
 	        'block'     => $blockContext->getBlock(),
 	        'settings'  => $settings,
 	        'pendingCount' => $pendings,

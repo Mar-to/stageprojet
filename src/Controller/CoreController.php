@@ -29,7 +29,7 @@ class CoreController extends GoGoController
 
         $this->get('session')->clear();
 
-        return $this->render('@BiopenCoreBundle/home.html.twig', array(
+        return $this->render('home.html.twig', array(
             'listWrappers' => $listWrappers,
             'mainOptions' => $mainOptions,
             'config' => $config));
@@ -43,7 +43,7 @@ class CoreController extends GoGoController
         $parameters['config'] = $config;
         $parameters['listAbouts'] = $listAbouts;
         $parameters['countPartners'] = $countPartners;
-        return $this->render('@BiopenCoreBundle/header.html.twig', array(
+        return $this->render('header.html.twig', array(
             "title" => $title,
             "config" => $config,
             "listAbouts" => $listAbouts,
@@ -59,12 +59,12 @@ class CoreController extends GoGoController
 
         $listPartners = $repository->findAllOrderedByPosition();
 
-        return $this->render('@BiopenCoreBundle/partners.html.twig', array('listPartners' => $listPartners));
+        return $this->render('partners.html.twig', array('listPartners' => $listPartners));
     }
 
     public function helpAction()
     {
-        return $this->render('@BiopenAdmin/pages/help.html.twig');
+        return $this->render('admin/pages/help.html.twig');
     }
 
 }

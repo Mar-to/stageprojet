@@ -123,7 +123,7 @@ class MailService
     public function draftTemplate($content, $template = 'base')
     {
         return $this->twig->render(
-                '@BiopenCoreBundle/emails/layout.html.twig',
+                'emails/layout.html.twig',
                 array('content' => $content, 'config' => $this->config, 'homeUrl' => $this->generateRoute('biopen_homepage'))
             );
     }
@@ -210,15 +210,15 @@ class MailService
         $pendingElements = array_filter($elements, function($el) { return $el->isPending(); });
         $newElements     = array_filter($elements, function($el) { return !$el->isPending(); });
 
-        $pendingElementsHtml = $this->twig->render('@BiopenCoreBundle/emails/newsletter-new-elements.html.twig',
+        $pendingElementsHtml = $this->twig->render('emails/newsletter-new-elements.html.twig',
             array('elements' => $pendingElements, 'config' => $this->config, 'baseUrl' => $this->baseUrl)
         );
 
-        $newElementsHtml = $this->twig->render('@BiopenCoreBundle/emails/newsletter-new-elements.html.twig',
+        $newElementsHtml = $this->twig->render('emails/newsletter-new-elements.html.twig',
             array('elements' => $newElements, 'config' => $this->config, 'baseUrl' => $this->baseUrl)
         );
 
-        $showOnMapBtnHtml = $this->twig->render('@BiopenCoreBundle/emails/newsletter-show-on-map-button.html.twig',
+        $showOnMapBtnHtml = $this->twig->render('emails/newsletter-show-on-map-button.html.twig',
             array('config' => $this->config, 'user' => $user, 'directoryUrl' => $this->generateRoute('biopen_directory'))
         );
 

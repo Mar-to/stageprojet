@@ -59,7 +59,7 @@ class ElementAdminController extends ElementAdminBulkController
         $this->get('twig')->getRuntime(\Symfony\Component\Form\FormRenderer::class)
              ->setTheme($view, $this->admin->getFormTheme());
 
-        return $this->render('@BiopenAdmin/edit/edit_element.html.twig', array(
+        return $this->render('admin/edit/edit_element.html.twig', array(
             'action' => 'edit',
             'form' => $view,
             'object' => $object,

@@ -1,0 +1,49 @@
+{% extends 'SonataDoctrineMongoDBAdminBundle:Form:form_admin_fields.html.twig' %}
+
+{% block sonata_admin_mongo_collection %}
+    {% include 'admin/core_custom/custom-fields/edit_mongo_collection.html.twig' %}
+{% endblock %}
+
+{#
+  Here we can create custom fields renderer in the Admin
+  An easy way to achieve custom field is to use a dedicate class like
+  ->add('elementFormFieldsJson', 'hidden', array('attr' => ['class' => 'gogo-form-builder']))
+#}
+{% block form_widget_simple %}
+    {% set attr_class = attr.class|default('') %}
+    {# File #}
+    {% if type|default('null') == 'file' %}
+      {% include 'admin/core_custom/custom-fields/file.html.twig' %}
+    {# Form Builder #}
+    {% elseif attr_class == "gogo-form-builder" %}
+      {% include 'admin/core_custom/custom-fields/form-builder.html.twig' %}
+    {% elseif attr_class == "gogo-form-fields" %}
+      {% include 'admin/partials/show_element_form_fields.html.twig' %}
+    {% elseif attr_class == "gogo-viewport-picker" %}
+      {% include 'admin/core_custom/custom-fields/viewport-picker.html.twig' %}
+    {% elseif attr_class == "gogo-color-picker" %}
+      {% include 'admin/core_custom/custom-fields/color-picker.html.twig' %}
+    {% elseif attr_class == "gogo-font-picker" %}
+      {% include 'admin/core_custom/custom-fields/font-picker.html.twig' %}
+    {% elseif attr_class == "gogo-icon-picker" %}
+      {% include 'admin/core_custom/custom-fields/icon-picker.html.twig' %}
+    {% elseif attr_class == "gogo-api-list" %}
+      {% include 'admin/core_custom/custom-fields/api-list.html.twig' %}
+    {% elseif attr_class == "gogo-code-editor" %}
+      {% include 'admin/core_custom/custom-fields/ace-code-editor.html.twig' %}
+    {% elseif attr_class == "gogo-display-array" %}
+      {% include 'admin/core_custom/custom-fields/display-array.html.twig' %}
+    {% elseif attr_class == "gogo-display-logs" %}
+      {% include 'admin/core_custom/custom-fields/display-logs.html.twig' %}
+    {% elseif attr_class == "gogo-sort-options" %}
+      {% include 'admin/core_custom/custom-fields/sort-options.html.twig' %}
+    {% elseif attr_class == "gogo-mapping-taxonomy" %}
+      {% include 'admin/core_custom/custom-fields/mapping-taxonomy.html.twig' %}
+    {% elseif attr_class == "gogo-mapping-ontology" %}
+      {% include 'admin/core_custom/custom-fields/mapping-ontology.html.twig' %}
+    {% else %}
+      {% set attr = attr|merge({'class': attr_class ~ ' form-control'}) %}
+      {{ parent() }}
+    {% endif %}
+{% endblock form_widget_simple %}
+

@@ -1,0 +1,41 @@
+{% extends 'admin/pages/page_layout.html.twig' %}
+
+{% block breadcrumb %}
+  <li><a href={{ path('biopen_bulk_actions_index') }}>Bulk actions</a></li>
+  <li class="active">{{ title }}</li>
+{% endblock breadcrumb %}
+
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block page_content %}
+
+  <h3 style="margin-top: 0;margin-bottom: 20px;">Analyse des éléments de {{ firstId }} à {{ lastId }}</h3>
+
+  {% if isStillElementsToProceed %}
+    <a class="btn btn-primary" href='{{ redirectionRoute }}'>Continuer à traiter les éléments suivants (encore {{ elementsToProcceedCount }} à traiter)</a>
+  {% else %}
+    <div class="alert alert-success">Tous les éléments ont été traités avec succès</div>
+  {% endif %}
+
+{% endblock %}
+
+{% block page_content_after %}
+
+  {% for partialView in renderedViews %}
+    {{ partialView.content | raw }}
+  {% endfor %}
+
+  <style>
+  .bulk-duplicate h4 { margin-bottom:15px; }
+  .bulk-duplicate li { margin-bottom: 20px; }
+  .bulk-duplicate .duplicate-name { margin-right: 10px; }
+  .bulk-duplicate .element-description { margin-left: 28px; margin-top: 5px; }
+  </style>
+
+{% endblock %}
+
+
+
+
+
+

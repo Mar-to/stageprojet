@@ -16,7 +16,7 @@ class UserController extends GoGoController
 {
    public function userSpaceAction()
    {
-      return $this->render('@BiopenCoreBundle/user/user-space.html.twig');
+      return $this->render('user/user-space.html.twig');
    }
 
    public function contributionsAction()
@@ -52,7 +52,7 @@ class UserController extends GoGoController
       usort($pendingContribs, function ($a, $b) { return $b->getTimestamp() - $a->getTimestamp(); });
       usort($allContribs, function ($a, $b) { return $b->getTimestamp() - $a->getTimestamp(); });
 
-      return $this->render('@BiopenCoreBundle/user/contributions/my-contributions.html.twig', array(
+      return $this->render('user/contributions/my-contributions.html.twig', array(
          'elementsOwned' => $elementsOwned,
          'elementsUserHaveContributed' => $elementsUserHaveContributed,
          'pendingContributions' => $pendingContribs,
@@ -68,7 +68,7 @@ class UserController extends GoGoController
       $votes = $dm->getRepository('App\Document\UserInteractionVote')->findByUserEmail($userEmail);
       usort($votes, function ($a, $b) { return $b->getTimestamp() - $a->getTimestamp(); });
 
-      return $this->render('@BiopenCoreBundle/user/contributions/votes.html.twig', array('votes' => $votes));
+      return $this->render('user/contributions/votes.html.twig', array('votes' => $votes));
    }
 
    public function reportsAction()
@@ -80,7 +80,7 @@ class UserController extends GoGoController
       $reports = $dm->getRepository('App\Document\UserInteractionReport')->findByUserEmail($userEmail);
       usort($reports, function ($a, $b) { return $b->getTimestamp() - $a->getTimestamp(); });
 
-      return $this->render('@BiopenCoreBundle/user/contributions/reports.html.twig', array('reports' => $reports));
+      return $this->render('user/contributions/reports.html.twig', array('reports' => $reports));
    }
 
    public function becomeOwnerAction($id, Request $request, SessionInterface $session)
@@ -146,6 +146,6 @@ class UserController extends GoGoController
          }
       }
 
-      return $this->render('@BiopenCoreBundle/user/profile.html.twig', array('user' => $user, 'form' => $form->createView(), 'config' => $config));
+      return $this->render('user/profile.html.twig', array('user' => $user, 'form' => $form->createView(), 'config' => $config));
    }
 }

@@ -6,4 +6,4 @@ sonata_core:
 sonata_doctrine_mongo_db_admin:
     templates:
         form:
-            - "@BiopenAdmin/core_custom/form_admin_fields.html.twig"
+            - "admin/core_custom/form_admin_fields.html.twig"

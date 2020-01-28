@@ -14,7 +14,7 @@ class ConfigurationAbstractAdmin extends AbstractAdmin
     {
         switch ($name) {
             // overwrite edit template so we hide delete button in actions menu
-            case 'edit': return '@BiopenAdmin/edit/edit_configuration.html.twig';
+            case 'edit': return 'admin/edit/edit_configuration.html.twig';
             break;
             default : return parent::getTemplate($name);
             break;

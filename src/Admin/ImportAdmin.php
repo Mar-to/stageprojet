@@ -18,9 +18,9 @@ class ImportAdmin extends AbstractAdmin
     {
         $isDynamic = $this->getClass() == "App\Document\ImportDynamic";
         switch ($name) {
-            case 'edit': return '@BiopenAdmin/edit/edit_import.html.twig';
+            case 'edit': return 'admin/edit/edit_import.html.twig';
             break;
-            case 'list': return $isDynamic ? '@BiopenAdmin/list/list_import_dynamic.html.twig' : '@BiopenAdmin/list/list_import.html.twig';
+            case 'list': return $isDynamic ? 'admin/list/list_import_dynamic.html.twig' : 'admin/list/list_import.html.twig';
             break;
             default : return parent::getTemplate($name);
             break;
@@ -154,21 +154,21 @@ Transformer un attribut
         $listMapper
             ->addIdentifier('sourceName', null, array('label' => 'Nom de la source'))
             // Total count
-            ->add('logs', null, array('label' => "Nombre d'éléments", 'template' => '@BiopenAdmin/partials/import/list_total_count.html.twig'))
+            ->add('logs', null, array('label' => "Nombre d'éléments", 'template' => 'admin/partials/import/list_total_count.html.twig'))
             // non visibles count
             ;
         if ($isDynamic)
             $listMapper
-            ->add('idsToIgnore', null, array('label' => "Infos", 'template' => '@BiopenAdmin/partials/import/list_non_visibles_count.html.twig', 'choices' => $deletedElementsCount))
-            ->add('refreshFrequencyInDays', null, array('label' => 'Mise à jour', 'template' => '@BiopenAdmin/partials/import/list_refresh_frequency.html.twig'));
+            ->add('idsToIgnore', null, array('label' => "Infos", 'template' => 'admin/partials/import/list_non_visibles_count.html.twig', 'choices' => $deletedElementsCount))
+            ->add('refreshFrequencyInDays', null, array('label' => 'Mise à jour', 'template' => 'admin/partials/import/list_refresh_frequency.html.twig'));
 
         $listMapper
-            ->add('lastRefresh', null, array('label' => 'Dernier import', 'template' => '@BiopenAdmin/partials/import/list_last_refresh.html.twig'))
+            ->add('lastRefresh', null, array('label' => 'Dernier import', 'template' => 'admin/partials/import/list_last_refresh.html.twig'))
             ->add('_action', 'actions', array(
                 'actions' => array(
                     'edit' => array(),
                     'delete' => array(),
-                    'refresh' => array('template' => '@BiopenAdmin/partials/list__action_refresh.html.twig'),
+                    'refresh' => array('template' => 'admin/partials/list__action_refresh.html.twig'),
                 )
             ))
         ;

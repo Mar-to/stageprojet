@@ -22,7 +22,7 @@ class ElementAdminList extends ElementAdminFilters
    public function getTemplate($name)
    {
      switch ($name) {
-         case 'list': return '@BiopenAdmin/list/base_list_custom_batch.html.twig';
+         case 'list': return 'admin/list/base_list_custom_batch.html.twig';
              break;
          default : return parent::getTemplate($name);
              break;
@@ -47,16 +47,16 @@ class ElementAdminList extends ElementAdminFilters
    protected function configureListFields(ListMapper $listMapper)
    {
      $listMapper
-         ->add('name', null,  array('editable' => false, 'template' => '@BiopenAdmin/partials/list_name.html.twig'))
+         ->add('name', null,  array('editable' => false, 'template' => 'admin/partials/list_name.html.twig'))
          ->add('status', ChoiceType::class, [
                'choices'=> $this->statusChoices,
                'editable'=>true,
-               'template' => '@BiopenAdmin/partials/list_choice_status.html.twig'
+               'template' => 'admin/partials/list_choice_status.html.twig'
                ])
          ->add('updatedAt','date', array("format" => "d/m/Y"))
          ->add('sourceKey', null, array('label' => 'Source'))
          ->add('optionValues', null, [
-               'template' => '@BiopenAdmin/partials/list_option_values.html.twig',
+               'template' => 'admin/partials/list_option_values.html.twig',
                'header_style' => 'width: 250px',
                'collapse' => true,
                'choices' => $this->optionList,
@@ -66,18 +66,18 @@ class ElementAdminList extends ElementAdminFilters
                'label' => "Modération",
                'choices'=> $this->moderationChoices,
                'editable'=>true,
-               'template' => '@BiopenAdmin/partials/list_choice_moderation.html.twig'
+               'template' => 'admin/partials/list_choice_moderation.html.twig'
                ])
          // use fake attribute createdAt, we then access full object inside template
-         ->add('createdAt', null, array('template' => '@BiopenAdmin/partials/list_votes.html.twig', 'label' => 'Votes'))
+         ->add('createdAt', null, array('template' => 'admin/partials/list_votes.html.twig', 'label' => 'Votes'))
 
          ->add('_action', 'actions', array(
              'actions' => array(
-                 'show-edit' => array('template' => '@BiopenAdmin/partials/list__action_show_edit.html.twig'),
-                 //'edit' => array('template' => '@BiopenAdmin/partials/list__action_edit.html.twig'),
-                 //'delete' => array('template' => '@BiopenAdmin/partials/list__action_delete.html.twig'),
-                 'redirect-show' => array('template' => '@BiopenAdmin/partials/list__action_redirect_show.html.twig'),
-                 'redirect-edit' => array('template' => '@BiopenAdmin/partials/list__action_redirect_edit.html.twig')
+                 'show-edit' => array('template' => 'admin/partials/list__action_show_edit.html.twig'),
+                 //'edit' => array('template' => 'admin/partials/list__action_edit.html.twig'),
+                 //'delete' => array('template' => 'admin/partials/list__action_delete.html.twig'),
+                 'redirect-show' => array('template' => 'admin/partials/list__action_redirect_show.html.twig'),
+                 'redirect-edit' => array('template' => 'admin/partials/list__action_redirect_edit.html.twig')
              )
          ));
    }

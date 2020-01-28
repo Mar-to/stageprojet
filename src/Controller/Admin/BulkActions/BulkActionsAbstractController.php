@@ -75,7 +75,7 @@ class BulkActionsAbstractController extends Controller
             return $this->redirectToIndex();
         }
 
-        return $this->render('@BiopenAdmin/pages/bulks/bulk_abstract.html.twig', array(
+        return $this->render('admin/pages/bulks/bulk_abstract.html.twig', array(
             'isStillElementsToProceed' => $isStillElementsToProceed,
             'renderedViews' => $renderedViews,
             'firstId' => $batchFromStep,

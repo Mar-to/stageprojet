@@ -10,6 +10,6 @@ class BulkCoreController extends Controller
 {
    public function indexAction()
    {
-      return $this->render('@BiopenAdmin/pages/bulks/bulk_index.html.twig');
+      return $this->render('admin/pages/bulks/bulk_index.html.twig');
    }
 }

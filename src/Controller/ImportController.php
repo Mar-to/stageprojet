@@ -29,7 +29,7 @@ class ImportController extends Controller
     {
         $lastElementCreated = $this->get('biopen.random_creation_service')->generate($nombre, $generateVote);
 
-        return $this->render('@BiopenAdmin/pages/help.html.twig');
+        return $this->render('admin/pages/help.html.twig');
     }
 
     public function availableOptionsAction()

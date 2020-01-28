@@ -131,7 +131,7 @@ class ProjectController extends AbstractSaasController
 
         $config = $odm->getRepository('App\Document\Configuration')->findConfiguration();
 
-        return $this->render('@BiopenSaasBundle/projects/create.html.twig', ['form' => $projectForm->createView(), 'config' => $config]);
+        return $this->render('saas/projects/create.html.twig', ['form' => $projectForm->createView(), 'config' => $config]);
     }
 
     /**
@@ -152,7 +152,7 @@ class ProjectController extends AbstractSaasController
             $project->setHomeUrl($this->generateUrlForProject($project));
         }
 
-        return $this->render('@BiopenSaasBundle/home.html.twig', array('projects' => $projects, 'config' => $config));
+        return $this->render('saas/home.html.twig', array('projects' => $projects, 'config' => $config));
     }
 
     public function initializeAction(Request $request)
@@ -184,7 +184,7 @@ class ProjectController extends AbstractSaasController
         }
 
         $config = $odm->getRepository('App\Document\Configuration')->findConfiguration();
-        return $this->render('@BiopenSaasBundle/projects/initialize.html.twig', ['form' => $form->createView(), 'config' => $config]);
+        return $this->render('saas/projects/initialize.html.twig', ['form' => $form->createView(), 'config' => $config]);
     }
 
     protected function authenticateUser(UserInterface $user, Response $response)

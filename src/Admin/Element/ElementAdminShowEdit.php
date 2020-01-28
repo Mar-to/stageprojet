@@ -39,7 +39,7 @@ class ElementAdminShowEdit extends ElementAdminList
     {
       $show
        ->with('En attente', array('class' => $statusClass))
-         ->add('currContribution', null, array('template' => '@BiopenAdmin/partials/show_one_contribution.html.twig'))->end();
+         ->add('currContribution', null, array('template' => 'admin/partials/show_one_contribution.html.twig'))->end();
     }
     else
     {
@@ -53,9 +53,9 @@ class ElementAdminShowEdit extends ElementAdminList
         ->add('moderationState', ChoiceType::class, [
             'label' => 'Moderation',
                'choices'=> $this->moderationChoices,
-               'template' => '@BiopenAdmin/partials/show_choice_moderation.html.twig'
+               'template' => 'admin/partials/show_choice_moderation.html.twig'
                ])
-        ->add('reports', null, array('template' => '@BiopenAdmin/partials/show_pending_reports.html.twig', 'label' => 'Signalements'))
+        ->add('reports', null, array('template' => 'admin/partials/show_pending_reports.html.twig', 'label' => 'Signalements'))
        ->end();
     }
 
@@ -63,11 +63,11 @@ class ElementAdminShowEdit extends ElementAdminList
       ->with('Autre infos', array('class' => 'col-md-6 col-sm-12'))
         ->add('id')
         ->add('optionValues', null, [
-            'template' => '@BiopenAdmin/partials/show_option_values.html.twig',
+            'template' => 'admin/partials/show_option_values.html.twig',
             'choices' => $this->optionList,
             'label' => 'Catégories' ])
         ->add('email', EmailType::class, array('label' => 'Email de contact'))
-        ->add('images', null, array('template' => '@BiopenAdmin/partials/show_element_images.html.twig'))
+        ->add('images', null, array('template' => 'admin/partials/show_element_images.html.twig'))
         ->add('randomHash')
         ->add('oldId', null, array('label' => 'Id dans la base de données importée'))
         ->add('sourceKey', null, array('label' => 'Source'))
@@ -86,11 +86,11 @@ class ElementAdminShowEdit extends ElementAdminList
       ->end()
 
       ->with('Champs personnalisés', array('class' => 'col-md-12 col-sm-12'))
-        ->add('data',  null, array('template' => '@BiopenAdmin/partials/show_element_data.html.twig'))
+        ->add('data',  null, array('template' => 'admin/partials/show_element_data.html.twig'))
       ->end()
 
       ->with('Historique des contributions', array('class' => 'col-sm-12'))
-        ->add('contributions', null, array('template' => '@BiopenAdmin/partials/show_contributions.html.twig'))
+        ->add('contributions', null, array('template' => 'admin/partials/show_contributions.html.twig'))
       ->end();
 
     $show

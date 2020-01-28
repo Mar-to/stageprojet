@@ -33,7 +33,7 @@ class OptionAdmin extends AbstractAdmin
    public function getTemplate($name)
    {
       switch ($name) {
-         case 'edit': return '@BiopenAdmin/edit/edit_option_category.html.twig';
+         case 'edit': return 'admin/edit/edit_option_category.html.twig';
              break;
          default : return parent::getTemplate($name);
              break;

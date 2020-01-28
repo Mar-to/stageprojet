@@ -65,7 +65,7 @@ class RecentElementsBlockService extends AbstractAdminBlockService
             'title' => 'Derniers elements',
             'class' => '',
             'filterStatus' => 0,
-            'template' => '@BiopenAdmin/blocks/block_recent_elements.html.twig',
+            'template' => 'admin/blocks/block_recent_elements.html.twig',
         ));
     }
     /**

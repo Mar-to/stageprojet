@@ -28,7 +28,7 @@ class ProjectAdmin extends AbstractAdmin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->add('name', null,  array('template' => '@BiopenAdmin/partials/list_project_name.html.twig'))
+            ->add('name', null,  array('template' => 'admin/partials/list_project_name.html.twig'))
             ->add('domainName')
             ->add('description')
             ->add('dataSize')

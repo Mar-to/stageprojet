@@ -1,0 +1,31 @@
+{% extends "page-layout.html.twig" %}
+
+{% set pageName = 'directory' %}
+{% set navTitle = "La carte" %}
+
+{% block title %}{% endblock %}
+
+{# Stylessheets #}
+{% block page_stylesheets %}
+
+{% endblock %}
+
+{# BODY CONTENT #}
+{% block body_content %}
+
+  <div id="directory-container"></div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+  <script>
+
+    $(document).ready(function()
+    {
+        carto = goGoCarto('#directory-container', {{ gogoConfig | json_encode | raw }});
+    });
+
+  </script>
+
+{% endblock %}

@@ -1,4 +1,4 @@
-{% extends "@BiopenCoreBundle/page-layout.html.twig" %}
+{% extends "page-layout.html.twig" %}
 
 {% block body_content %}
 <section>
@@ -7,10 +7,10 @@
 </section>
 {% endblock body_content %}
 
-{% block page_stylesheets %}  
-  <link rel="stylesheet" href="{{ asset('assets/css/element-form.css?ver=' ~ version) }}"> 
+{% block page_stylesheets %}
+  <link rel="stylesheet" href="{{ asset('assets/css/element-form.css?ver=' ~ version) }}">
 {% endblock %}
 
 {% block page_javascripts %}
-  <script src="{{ asset('js/element-form.js?ver=' ~ version) }}"></script> 
+  <script src="{{ asset('js/element-form.js?ver=' ~ version) }}"></script>
 {% endblock %}

@@ -99,7 +99,7 @@ class ElementFormController extends GoGoController
 			}
 			else
 			{
-				return $this->render('@BiopenGeoDirectory/element-form/contributor-login.html.twig', array(
+				return $this->render('element-form/contributor-login.html.twig', array(
 					'loginForm' => $loginform->createView(),
 					'emailAlreadyUsed' => $dmailAlreadyUsed,
 					'config' => $configService->getConfig(),
@@ -309,7 +309,7 @@ class ElementFormController extends GoGoController
 
  		$mainCategories = $dm->getRepository('App\Document\Category')->findRootCategories();
 
-		return $this->render('@BiopenGeoDirectory/element-form/element-form.html.twig',
+		return $this->render('element-form/element-form.html.twig',
 					array(
 						'editMode' => $editMode,
 						'form' => $elementForm->createView(),
@@ -348,7 +348,7 @@ class ElementFormController extends GoGoController
 		else if ($session->has('duplicatesElements') && count($session->get('duplicatesElements') > 0))
 		{
 			$duplicates = $session->get('duplicatesElements');
-			return $this->render('@BiopenGeoDirectory/element-form/check-for-duplicates.html.twig', array('duplicateForm' => $checkDuplicatesForm->createView(),
+			return $this->render('element-form/check-for-duplicates.html.twig', array('duplicateForm' => $checkDuplicatesForm->createView(),
 																															    'duplicatesElements' => $duplicates));
 		}
 		// otherwise just redirect ot add action

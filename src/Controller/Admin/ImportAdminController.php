@@ -38,7 +38,7 @@ class ImportAdminController extends Controller
 
     $dataDisplay = print_r($result, true);
     $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]);
-    return $this->render('@BiopenAdmin/pages/import/show-data.html.twig', [
+    return $this->render('admin/pages/import/show-data.html.twig', [
       'dataDisplay' => $dataDisplay,
       'redirectUrl' => $url,
       'import' => $object
@@ -69,7 +69,7 @@ class ImportAdminController extends Controller
     $redirectionUrl = $this->admin->generateUrl('edit', ['id' => $object->getId()]);
     $stateUrl = $this->generateUrl('biopen_import_state', ['id' => $object->getId()]);
 
-    return $this->render('@BiopenAdmin/pages/import/import-progress.html.twig', [
+    return $this->render('admin/pages/import/import-progress.html.twig', [
       'import' => $object,
       'redirectUrl' => $redirectionUrl,
       'redirectListUrl' => $redirectionUrl = $this->admin->generateUrl('list'),

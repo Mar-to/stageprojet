@@ -1,0 +1,61 @@
+{% extends "page-layout.html.twig" %}
+
+{% set pageName = 'check-for-duplicates' %}
+{% set navTitle = "Doublons" %}
+
+{% block title %}
+	Détection de doublons
+{% endblock %}
+
+{# Stylessheets #}
+{% block page_stylesheets %}
+
+ 	<link rel="stylesheet" href="{{ asset('assets/css/element-form.css?ver=' ~ version) }}">
+
+{% endblock %}
+
+
+{# BODY CONTENT #}
+{% block body_content %}
+
+  <h1>Recherche de doublons</h1>
+
+  <h2>Des éléments similaires ont été détectés, vous vouliez peut être ajouter l'un d'eux?</h2>
+
+	<div class="duplicate-list">
+	  {% for key, element in duplicatesElements %}
+
+	  	<div class="element row">
+	  		<div class="col s9 m10">
+		  		<div class="name">{{ element.name | capitalize }}</div>
+		  		{% if element.description is defined %}<div class="description">{{ element.description | capitalize }}</div>{% endif %}
+		  		{% set address = element.address.streetAddress is defined ? element.address.streetAddress ~ ', ' : '' %}
+		      {% set postalCode = element.address.postalCode is defined ? (element.address.postalCode ~ ' ') : '' %}
+		      {% set city = element.address.addressLocality is defined ? element.address.addressLocality : '' %}
+		  		<div class="address">{{ address ~ postalCode ~ city | capitalize }}</div>
+		  	</div>
+		  	<div class="col s3 m2 right-align">
+	  			<a href="{{ path('biopen_directory_showElement', {'id': element._id, 'name': element.name}) | replace({"%23":'#'}) }}"><button class="btn-biopen btn-secondary small waves-light waves-effect btn">c'est lui !</button></a>
+	  		</div>
+	  	</div>
+
+	  {% endfor %}
+  </div>
+
+	{{ form_start(duplicateForm) }}
+
+	<center>
+		<button type="submit" class="btn-biopen btn-primary waves-light waves-effect btn">Non, c'est un nouvel élément, je continue !</button>
+	</center>
+
+	{{ form_rest(duplicateForm) }}
+
+
+{# Fermeture de la balise <form> du formulaire HTML #}
+{{ form_end(duplicateForm) }}
+
+{% endblock %}
+
+{% block page_javascripts %}
+    <script src="{{ asset('js/element-form.js?ver=' ~ version) }}"></script>
+{% endblock %}

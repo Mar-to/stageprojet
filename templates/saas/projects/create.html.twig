@@ -1,4 +1,4 @@
-{% extends "@BiopenSaasBundle/sass-layout.html.twig" %}
+{% extends "saas/sass-layout.html.twig" %}
 
 {% block title %}GoGoCarto - Des cartes à GoGo{% endblock %}
 
@@ -7,29 +7,29 @@
   <div style="text-align: center; font-style: italic; margin-bottom: 30px;opacity: .6;font-weight: bold;">
     GoGoCarto est encore en version bêta, et cette plateforme de création de carte n'est pas encore officiellement lancée. Ce faisant, nous ne garantissons en aucun cas la fiabilité et la maintenance du service.
   </div>
-  <section class="project-create">    
+  <section class="project-create">
 
-    {{ form_start(form, {'id': 'project-form'}) }}   
-    
+    {{ form_start(form, {'id': 'project-form'}) }}
+
     <div class="row">
       <h2>Nom du projet</h2>
       {# NAME #}
       {{ form_errors(form.name) }}
       <div class="input-field col s12">
-        <i class="material-icons gogo-icon-description prefix"></i>  
-        {{ form_widget(form.name, {'id': 'input-name', 
+        <i class="material-icons gogo-icon-description prefix"></i>
+        {{ form_widget(form.name, {'id': 'input-name',
                                    'attr': {'class': 'validate required', 'length':'80'}}) }}
         <label for="input-name" class="gogo-form-label" data-error="Oups, ce nom est trop long !">Nom du projet</label>
-      </div>  
+      </div>
 
       {# DOMAIN #}
       {{ form_errors(form.domainName, {'class': 'form-error'}) }}
       <div class="input-field col s12">
-        <i class="material-icons gogo-icon-internet prefix"></i>  
-        {{ form_widget(form.domainName, {'id': 'input-domain', 
+        <i class="material-icons gogo-icon-internet prefix"></i>
+        {{ form_widget(form.domainName, {'id': 'input-domain',
                                    'attr': {'class': 'validate required', 'length':'80'}}) }}
         <label for="input-domain" class="gogo-form-label" data-error="">Nom du domaine <i>( ****.{{ base_url }} )</i></label>
-      </div> 
+      </div>
 
       <div class="col s12 contrib-config-section">
         {# CONTRIBUTION_CONFIG #}
@@ -49,14 +49,14 @@
           </p>
         {% endfor %}
       </div>
-    </div>    
-    
-    <button class="btn" type="submit" onclick="performSubmit(event);">Créer</button>  
-    
+    </div>
+
+    <button class="btn" type="submit" onclick="performSubmit(event);">Créer</button>
+
     <div class="overlay">
       <div class="overlay-content">
         <div class="message">Votre projet est en cours de création, veuillez patienter...</div>
-        {% include '@BiopenGeoDirectory/directory/components/spinner-loader.html.twig' with {'id': 'create-project-loader' }%}
+        {% include 'directory/components/spinner-loader.html.twig' with {'id': 'create-project-loader' }%}
       </div>
     </div>
 
@@ -66,7 +66,7 @@
   </section>
 {% endblock %}
 
-{% block javascripts %}   
+{% block javascripts %}
   <script>
     var timer;
     $('#input-domain').on("keyup", function(e) {
@@ -74,7 +74,7 @@
       timer = setTimeout(function() { slugifyDomain(); }, 200);
     });
 
-    function performSubmit(e) {      
+    function performSubmit(e) {
       $('.required').each(function() {
         if (!$(this).val()) $(this).addClass('error');
         else $(this).removeClass('error');
@@ -85,9 +85,9 @@
         e.preventDefault();
       } else if ($('.error').length == 0) {
         showWaitingMessage();
-        slugifyDomain();      
+        slugifyDomain();
         $('form').submit();
-      }      
+      }
     }
 
     function showWaitingMessage() {
@@ -118,5 +118,5 @@
        if ($.inArray(result, ['dev', 'test', 'demo', 'carto', 'carto-dev', 'www']) !== -1) result += "_1";
        return result;
     }
-  </script>        
-{% endblock %}   
+  </script>
+{% endblock %}

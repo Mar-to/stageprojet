@@ -61,7 +61,7 @@ class DuplicatesActionsController extends BulkActionsAbstractController
             $element->setIsDuplicateNode(true);
          }
 
-         return $this->render('@BiopenAdmin/pages/bulks/bulk_duplicates.html.twig', array(
+         return $this->render('admin/pages/bulks/bulk_duplicates.html.twig', array(
                'duplicates' => $duplicates,
                'automaticMerge' => count($perfectMatches) > 0,
                'needHumanMerge' => count($otherDuplicates) > 0,

@@ -14,11 +14,7 @@ twig:
         oauth_google: '%env(oauth_google_id)%'
         oauth_facebook: '%env(oauth_facebook_id)%'
     paths:
-        "%kernel.root_dir%/../templates/geo-directory/": BiopenGeoDirectory
-        "%kernel.root_dir%/../templates/geo-directory/admin": BiopenAdmin
-        "%kernel.root_dir%/../templates/core": BiopenCoreBundle
         "%kernel.root_dir%/../templates/bundles/SonataUserBundle": UserBundle
         "%kernel.root_dir%/../web": RootDir
-        "%kernel.root_dir%/../templates/saas": BiopenSaasBundle
     form_themes:
         - '@SonataFormatter/Form/formatter.html.twig'

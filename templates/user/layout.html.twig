@@ -1,0 +1,45 @@
+{% extends "page-layout.html.twig" %}
+
+{# BODY CONTENT #}
+{% block body_content %}
+
+{% block body_user_before_content %}
+{% endblock %}
+
+<i class="gogo-icon-menu menu-user-button" onclick="showMenu()"></i>
+<div id="menu-overlay" onclick="hideMenu()"></div>
+
+<div id="menu-user" class="menu-user side-nav">
+  <ul>
+    <li class="title">Menu</li>
+    <a href="{{ path('biopen_user_profile') }}">      <li><i class="gogo-icon-filters-1"></i>Mes Paramètres</li></a>
+    <a href="{{ path('biopen_user_contributions') }}"><li><i class="gogo-icon-edit"></i>Mes contributions</li></a>
+    <a href="{{ path('biopen_user_votes') }}">        <li><i class="gogo-icon-vote"></i>Mes votes</li></a>
+    <a href="{{ path('biopen_user_reports') }}">      <li><i class="gogo-icon-exclamation-1"></i>Mes signalements</li></a>
+  </ul>
+</div>
+
+<section>
+  {% block body_user_content %}
+  {% endblock %}
+</section>
+
+{% endblock %}
+
+{% block page_javascripts %}
+  <script>
+    function showMenu() {
+      $('#menu-user').show();
+      $('#menu-overlay').fadeIn();
+    }
+
+    function hideMenu() {
+      $('#menu-user').hide();
+      $('#menu-overlay').fadeOut();
+    }
+  </script>
+
+  {% block user_page_javascripts %}
+  {% endblock %}
+
+{% endblock %}

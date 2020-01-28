@@ -1,0 +1,48 @@
+{% extends "page-layout.html.twig" %}
+
+{% set pageName = 'element-form' %}
+{% set navTitle = "Ajouter un élément" %}
+
+{% block page_stylesheets %}
+
+  <link rel="stylesheet" href="{{ asset('assets/css/element-form.css?ver=' ~ version) }}">
+
+{% endblock %}
+
+{% block title %}
+	{% if editMode %} Edition
+	{% else %}  Ajouter {{ config.elementDisplayNameIndefinite }}
+	{% endif %}
+{% endblock %}
+
+
+{# BODY CONTENT #}
+{% block body_content %}
+
+ 	{% if config.elementFormIntroText %}<div class="flash-message">{{ config.elementFormIntroText | raw }}</div>{% endif %}
+
+  {% if element.status == 7 %} <div class="flash-message warning">Cet élément a été importé dynamiquement, et pourra donc être écrasé sous peu par une nouvelle version. Il n'est pas très conseillé de l'éditer</div>{% endif %}
+
+  <h1 id="element-form-title">{{ editMode ? 'Modification des données' : "Ajouter " ~ config.elementDisplayNameIndefinite }}</h1>
+
+  {% include "element-form/form.html.twig" with {'editMode': editMode } %}
+
+{% endblock %}
+
+{% block page_javascripts %}
+
+  <script src="{{ asset('js/element-form.js?ver=' ~ version) }}"></script>
+
+  <script>
+	  var editMode = false;
+	  {% if editMode %} editMode = true; {% endif %}
+    var defaultTileLayer = "{{ config.defaultTileLayer.url }}";
+	  initMap();
+  </script>
+
+{% endblock %}
+
+
+
+
+

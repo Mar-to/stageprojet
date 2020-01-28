@@ -23,7 +23,7 @@ class MailTestController extends Controller
       if ($draftResponse['success'])
       {
          $mailContent = $mailService->draftTemplate($draftResponse['content']);
-         return $this->render('@BiopenCoreBundle/emails/test-emails.html.twig', array('subject' => $draftResponse['subject'], 'content' => $mailContent, 'mailType' => $mailType));
+         return $this->render('emails/test-emails.html.twig', array('subject' => $draftResponse['subject'], 'content' => $mailContent, 'mailType' => $mailType));
       }
       else
       {
