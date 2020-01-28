@@ -1,17 +1,17 @@
 {% extends "@UserBundle/layout.html.twig" %}
 
 {% block fos_user_content %}
-    
+
 {% endblock fos_user_content %}
 
 {% block page_javascripts %}
-    <script src="{{ asset('js/libs.js') }}"></script>
+    <script src="{{ asset('js/init-sw.js') }}"></script>
     <script>
         jQuery(document).ready(function()
-        {  
+        {
             $("#popup-login").openModal({
                 dismissible: true,
             });
-        });         
+        });
     </script>
 {% endblock page_javascripts %}

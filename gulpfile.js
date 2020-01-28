@@ -11,19 +11,19 @@ var gulp = require('gulp'),
     workboxBuild = require('workbox-build');
 
 gulp.task("scriptsHome", function () {
-   return gulp.src(['src/Biopen/CoreBundle/Resources/js/home.js'])
+   return gulp.src(['assets/js/home.js'])
     .pipe(concat('home.js'))
     .pipe(gulp.dest('web/js'));
 });
 
 gulp.task("scriptsExternalPages", function () {
-   return gulp.src(['src/Biopen/GeoDirectoryBundle/Resources/js/**/*.js', '!src/Biopen/GeoDirectoryBundle/Resources/js/element-form/**/*.js'])
+   return gulp.src(['assets/js/api/**/*.js', 'assets/js/duplicates/**/*.js'])
     .pipe(concat('external-pages.js'))
     .pipe(gulp.dest('web/js'));
 });
 
 gulp.task('scriptsElementForm', function() {
-  return gulp.src(['src/Biopen/GeoDirectoryBundle/Resources/js/element-form/**/*.js'])
+  return gulp.src(['assets/js/element-form/**/*.js'])
     .pipe(concat('element-form.js'))
     .pipe(gulp.dest('web/js'));
 });
@@ -31,22 +31,19 @@ gulp.task('scriptsElementForm', function() {
 gulp.task('scriptsLibs', function() {
   gulp.src(['node_modules/gogocarto-js/dist/gogocarto.js'])
       .pipe(gulp.dest('web/js'));
-  return gulp.src(['src/Biopen/GeoDirectoryBundle/Resources/js/libs/**/*.js',
-                   'src/Biopen/CoreBundle/Resources/js/libs/**/*.js',
-                   'src/Biopen/CoreBundle/Resources/js/init-sw.js',
-                   'web/bundles/fosjsrouting/js/router.js',
+  return gulp.src(['assets/js/vendor/**/*.js',
+                   'assets/js/init-sw.js',
                    ])
-    .pipe(concat('libs.js'))
     .pipe(gulp.dest('web/js'));
 });
 
 gulp.task('service-worker', () => {
     return workboxBuild.injectManifest({
-        swSrc: 'src/Biopen/CoreBundle/Resources/js/sw.js',
+        swSrc: 'assets/js/sw.js',
         swDest: 'web/sw.js',
         globDirectory: 'web',
         globPatterns: [
-            '+(assets|js|templates)\/**\/*.{js,css,html,png, woff, woff2}',
+            '+(fonts|img|js|css)\/**\/*.{js,css,html,png,woff,woff2}',
             'offline.html'
         ],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024
@@ -58,91 +55,69 @@ gulp.task('service-worker', () => {
 });
 
 gulp.task('sass', function () {
-  return gulp.src(['src/Biopen/GeoDirectoryBundle/Resources/scss/**/*.scss',
-                  'src/Biopen/CoreBundle/Resources/scss/**/*.scss',
-                  'src/Biopen/SaasBundle/Resources/scss/**/*.scss'])
-    .pipe(sass()
-    .on('error', sass.logError))
-    .pipe(gulp.dest('web/assets/css'));
+  gulp.src(['assets/scss/vendor/*.css']).pipe(gulp.dest('web/css'));
+  return gulp.src(['assets/scss/**/*.scss'])
+    .pipe(sass().on('error', sass.logError))
+    .pipe(gulp.dest('web/css'));
 });
 
 gulp.task('gogocarto_assets', function() {
     gulp.src(['node_modules/gogocarto-js/dist/*.css*',])
-     .pipe(gulp.dest('web/assets/css'));
+     .pipe(gulp.dest('web/css'));
      gulp.src(['node_modules/gogocarto-js/dist/fonts/**/*',])
-     .pipe(gulp.dest('web/assets/css/fonts'));
+     .pipe(gulp.dest('web/css/fonts'));
      gulp.src(['node_modules/gogocarto-js/dist/images/**/*'])
-     .pipe(gulp.dest('web/assets/css/images'));
+     .pipe(gulp.dest('web/css/images'));
 });
 
 gulp.task('prod_styles' ,function() {
-  return gulp.src('web/assets/css/**/*.css')
-    //.pipe(rename({suffix: '.min'}))
+  return gulp.src('web/css/*.css')
     .pipe(minifycss())
-    .pipe(gzip())
-    .pipe(gulp.dest('web/assets/css'));
-    //.pipe(notify({ message: 'Styles task complete' }));
+    .pipe(gulp.dest('web/css'));
 });
 
 gulp.task('gzip_styles', ['prod_styles'], function() {
-  return gulp.src('web/assets/css/**/*.css')
-    //.pipe(rename({suffix: '.min'}))
-    //.pipe(minifycss())
+  return gulp.src('web/css/**/*.css!(.gz)')
     .pipe(gzip())
-    .pipe(gulp.dest('web/assets/css'));
-    //.pipe(notify({ message: 'Styles task complete' }));
+    .pipe(gulp.dest('web/css'));
 });
 
 gulp.task('prod_js', function() {
-  return gulp.src(['web/js/*.js', '!web/js/external-pages.js'])
-    //.pipe(rename({suffix: '.min'}))
+  return gulp.src(['web/js/!(*.min)*.js', '!web/js/external-pages.js']) // externalm page use a lib that fail to be minified
     .pipe(uglify())
-    //.pipe(sourcemaps.init({loadMaps: true}))
     .pipe(uglify().on('error', function(uglify) {
         console.error(uglify.message);
         this.emit('end');
     }))
-    //.pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('web/js'));
 });
 
 gulp.task('gzip_js', ['prod_js'],  function() {
-  return gulp.src(['web/js/*.js'])
+  return gulp.src(['web/js/**/*.js!(.gz)'])
     .pipe(gzip())
     .pipe(gulp.dest('web/js'));
 });
-
-
-gulp.task('images', function() {
-  return gulp.src('web/assets/img/*')
-    .pipe(cache(imagemin({ optimizationLevel: 5, progressive: true, interlaced: true })))
-    .pipe(gulp.dest('web/assets/imgMin'))
-    .pipe(notify({ message: 'Images task complete' }));
-});
-
 
 gulp.task('watch', function() {
   // Watch .scss files
   gulp.watch(['src/Biopen/**/Resources/scss/**/*.scss'],['sass']);
 
-  gulp.watch(['src/Biopen/GeoDirectoryBundle/Resources/js/element-form/**/*.js'],
+  gulp.watch(['assets/js/element-form/**/*.js'],
               ['scriptsElementForm']);
 
-  gulp.watch(['src/Biopen/GeoDirectoryBundle/Resources/js/**/*.js', '!src/Biopen/GeoDirectoryBundle/Resources/js/element-form/**/*.js'],
+  gulp.watch(['assets/js/**/*.js', '!assets/js/element-form/**/*.js'],
               ['scriptsExternalPages']);
 
   gulp.watch(['node_modules/gogocarto-js/dist/**/*'],
               ['gogocarto_assets']);
 
-  gulp.watch(['src/Biopen/GeoDirectoryBundle/Resources/js/libs/**/*.js','src/Biopen/CoreBundle/Resources/js/libs/**/*.js','node_modules/gogocarto-js/dist/gogocarto.js'], ['scriptsLibs']);
+  gulp.watch(['assets/js/vendor/**/*.js','node_modules/gogocarto-js/dist/gogocarto.js'], ['scriptsLibs']);
 
-  gulp.watch(['src/Biopen/CoreBundle/Resources/js/home.js'], ['scriptsHome']);
-  // Watch image files
-  //gulp.watch('src/img/*', ['images']);
+  gulp.watch(['assets/js/home.js'], ['scriptsHome']);
 });
 
 gulp.task('clean', function(cb) {
-    del(['web/assets/css/*.css', 'web/js'], cb);
+    del(['web/css', 'web/js'], cb);
 });
 
 gulp.task('build', function() {

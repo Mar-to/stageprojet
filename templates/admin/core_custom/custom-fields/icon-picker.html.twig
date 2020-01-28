@@ -7,9 +7,9 @@
 </div>
 {% endif %}
 
-<link rel="stylesheet" href="{{ asset('assets/fonts/fontawesome-5/css/all.css') }}" />
-<script src="{{ asset('assets/js/fontawesome-iconpicker.min.js') }}"></script>
-<link rel="stylesheet" href="{{ asset('assets/js/fontawesome-iconpicker.min.css') }}" />
+<link rel="stylesheet" href="{{ asset('fonts/fontawesome-5/css/all.css') }}" />
+<script src="{{ asset('js/fontawesome-iconpicker.min.js') }}"></script>
+<link rel="stylesheet" href="{{ asset('js/fontawesome-iconpicker.min.css') }}" />
 
 <script>
   jQuery(document).ready(function() {
@@ -46,7 +46,7 @@
         iconpicker: '<div class="iconpicker"><div class="iconpicker-items"></div></div>',
         iconpickerItem: '<a role="button" class="iconpicker-item"><i></i></a>',
       }
-    }; 
+    };
     $('.icp-auto').iconpicker(options);
 
     // In the form buidler, icon field are added dyanmically, so we need to initialize them every 500ms

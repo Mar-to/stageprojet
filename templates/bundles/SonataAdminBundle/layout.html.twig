@@ -158,7 +158,7 @@
 {% block logo %}
     {% spaceless %}
         <a class="logo" href="{{ path('sonata_admin_dashboard') }}">
-            <img src="{{ asset('assets/img/default-icon.png') }}">
+            <img src="{{ asset('img/default-icon.png') }}">
             <span>GoGoCarto Administration</span>
             {% set newMsgsCount = new_msgs_count() %}
             {% if newMsgsCount > 0 %}

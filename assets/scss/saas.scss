@@ -1,7 +1,7 @@
-@import '../../../CoreBundle/Resources/scss/partials/base';
+@import 'partials/base';
 
-@import 'home';
-@import 'create';
+@import 'sass/home';
+@import 'sass/create';
 
 body
 {
@@ -20,8 +20,8 @@ body
     margin-top: 0;
     margin-left: auto;
     margin-right: auto;
-    width:100%;   
-    padding: 0rem; 
+    width:100%;
+    padding: 0rem;
     background-color: transparent;
 
     h1 {
@@ -33,7 +33,7 @@ body
     {
        margin-top: 30px;
        max-width: 900px;
-       width:80%;  
+       width:80%;
     }
 
     section {
@@ -43,7 +43,7 @@ body
       padding: 2rem;
       border-radius: 5px;
       margin-bottom: 2rem;
-    }  
+    }
 
     .overlay {
       display: none;
@@ -57,7 +57,7 @@ body
 
         .message { margin-bottom: 2.5rem; }
       }
-      
+
     }
   }
 }
