@@ -37,7 +37,7 @@
   			</div>
       {% endif %}
 
-      {#} {% if config.addFeature.active and (not config.addFeature.isOnlyAllowedForAdmin() or is_granted('ROLE_ADMIN')) %}
+      {% if config.addFeature.active and (not config.addFeature.isOnlyAllowedForAdmin() or is_granted('ROLE_ADMIN')) %}
 			<div class="col menu-item">
 				<a href="{{ path('gogo_element_add') }}" {% if iframe %}target="_blank"{% endif %}>
           <span class="header-icon gogo-icon-user-plus"></span><span class="text">Ajouter {{ config.elementDisplayNameIndefinite }}</span>
@@ -67,7 +67,7 @@
       {% endif %}
 
       {# no loggin in iframe #}
-      {#{% if not iframe %}
+      {% if not iframe %}
         {% set userName =  app.user ? app.user.username : app.session.get('userEmail') ?  app.session.get('userEmail') : null %}
         <div {{ userName ? '' : 'style="display:none"' }} class="col menu-item btn-login dropdown-button" data-activates='listUserActions' id="btn-logout">
           <span class="text username">{{ userName }}</span>
@@ -89,7 +89,7 @@
   				class="btn btn-login">
           <span class="text">Connexion</span>
   			</button>
-      {% endif %}#}
+      {% endif %}
 
     </div>
 	</div>
