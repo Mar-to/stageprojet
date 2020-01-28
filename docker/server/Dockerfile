@@ -74,11 +74,3 @@ RUN rm -R /var/www/html
 WORKDIR /var/www
 
 RUN apt-get install unzip
-
-# Add following to /usr/local/etc/php/conf.d/custom-php-conf.ini to activate xdebug
-# zend_extension=/usr/local/lib/php/extensions/no-debug-non-zts-20180731/xdebug.so#
-# xdebug.remote_enable=1
-# xdebug.remote_handler=dbgp
-# xdebug.remote_host=127.0.0.1
-# xdebug.remote_port=9000
-# xdebug.remote_log="/var/log/xdebug/xdebug.log"
