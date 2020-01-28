@@ -29,7 +29,7 @@
         {% for vote in votes %}
             <tr class="">
               <td>
-                <a href="{{ path('biopen_directory_showElement', {'id': vote.element.id, 'name': vote.element.name}) | replace({"%23":'#'}) }}">{{ vote.element.name }}</a>
+                <a href="{{ path('gogo_directory_showElement', {'id': vote.element.id, 'name': vote.element.name}) | replace({"%23":'#'}) }}">{{ vote.element.name }}</a>
               </td>
               <td>{{ voteValues[vote.value] }}</td>
               <td>{{ vote.createdAt|date("d/m/Y")}}</td>

@@ -18,9 +18,9 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class ConfigurationAPIAdmin extends ConfigurationAbstractAdmin
 {
-    protected $baseRouteName = 'biopen_core_bundle_config_api_admin_classname';
+    protected $baseRouteName = 'gogo_core_bundle_config_api_admin_classname';
 
-    protected $baseRoutePattern = 'biopen/core/configuration-api';
+    protected $baseRoutePattern = 'gogo/core/configuration-api';
 
     protected function configureFormFields(FormMapper $formMapper)
     {

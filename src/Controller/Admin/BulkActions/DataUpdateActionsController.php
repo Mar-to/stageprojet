@@ -15,7 +15,7 @@ class DataUpdateActionsController extends BulkActionsAbstractController
       $query = $qb->getQuery();
       $users = $query->execute();
 
-      $gamificationService = $this->get('biopen_user.gamification');
+      $gamificationService = $this->get('gogo_user.gamification');
 
       $i = 0;
       foreach ($users as $key => $user)
@@ -32,6 +32,6 @@ class DataUpdateActionsController extends BulkActionsAbstractController
       $dm->clear();
 
       $session->getFlashBag()->add('success', count($users) . " utilisateurs ont été mis à jour");
-      return $this->redirect($this->generateUrl('admin_biopen_core_user_list'));
+      return $this->redirect($this->generateUrl('admin_gogo_core_user_list'));
    }
 }

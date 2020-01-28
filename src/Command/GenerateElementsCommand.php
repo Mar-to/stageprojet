@@ -25,7 +25,7 @@ class GenerateElementsCommand extends GoGoAbstractCommand
     {
       $this->output = $output;
 
-      $this->getContainer()->get('biopen.random_creation_service')->generate($input->getArgument('number'), $input->getArgument('generateVotes'));
+      $this->getContainer()->get('gogo.random_creation_service')->generate($input->getArgument('number'), $input->getArgument('generateVotes'));
 
       $this->log('Element générés !');
     }

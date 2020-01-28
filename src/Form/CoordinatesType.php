@@ -46,6 +46,6 @@ class CoordinatesType extends AbstractType
   */
   public function getName()
   {
-    return 'biopen_elementbundle_coordinates';
+    return 'gogo_elementbundle_coordinates';
   }
 }

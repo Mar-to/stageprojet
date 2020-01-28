@@ -13,7 +13,7 @@ class ModerationActionsController extends BulkActionsAbstractController
       $repo = $dm->getRepository('App\Document\Element');
       $elements = $repo->findModerationNeeded(false, 1);
 
-      $actionService = $this->get('biopen.element_action_service');
+      $actionService = $this->get('gogo.element_action_service');
 
       $i = 0;
       $count = 0;

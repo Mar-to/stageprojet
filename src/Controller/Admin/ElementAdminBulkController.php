@@ -55,13 +55,13 @@ class ElementAdminBulkController extends Controller
         $sendMail = !($request->has('dont-send-mail-' . $actionName) && $request->get('dont-send-mail-' . $actionName));
         $comment = $request->get('comment-' . $actionName);
         $dm = $modelManager->getDocumentManager($selectedModels->getNext());
-        if ($sendMail) $mailService = $this->container->get('biopen.mail_service');
+        if ($sendMail) $mailService = $this->container->get('gogo.mail_service');
 
         try {
             // BULK - PROCEED ALL ELEMENTS AT ONCE
             if ($isBulk && in_array($actionName, ['softDelete', 'restore', 'resolveReports']))
             {
-                $interactionService = $this->container->get('biopen.user_interaction_service');
+                $interactionService = $this->container->get('gogo.user_interaction_service');
 
                 // SEND EMAIL - ITERATE EACH ELEMENT WITHOUT DB OPERATIONS
                 if ($nbreModelsToProceed < 5000) {
@@ -126,12 +126,12 @@ class ElementAdminBulkController extends Controller
                 $dm->flush();
 
                 // update element json asyncronously
-                $this->container->get('biopen.async')->callCommand('app:elements:updateJson', ["ids" => $elementIdsString]);
+                $this->container->get('gogo.async')->callCommand('app:elements:updateJson', ["ids" => $elementIdsString]);
             }
             // PROCEED EACH ELEMENT ONE BY ONE
             else
             {
-                $elementActionService = $this->container->get('biopen.element_action_service');
+                $elementActionService = $this->container->get('gogo.element_action_service');
                 $i = 0;
                 foreach ($selectedModels as $selectedModel)
                 {
@@ -172,7 +172,7 @@ class ElementAdminBulkController extends Controller
         $selectedModels = clone $selectedModelQuery;
         $elementIds = array_keys($selectedModels->select('id')->field('status')->gte(-1)->hydrate(false)->getQuery()->execute()->toArray());
         if (count($elementIds)) {
-            $interactionService = $this->container->get('biopen.user_interaction_service');
+            $interactionService = $this->container->get('gogo.user_interaction_service');
             $contribution = $interactionService->createContribution(null, InteractType::Deleted, ElementStatus::Deleted);
             $contribution->setElementIds($elementIds);
             $dm->persist($contribution);
@@ -243,7 +243,7 @@ class ElementAdminBulkController extends Controller
         }
         else if (count($mails) > 0)
         {
-            $mailService = $this->container->get('biopen.mail_service');
+            $mailService = $this->container->get('gogo.mail_service');
             $result = $mailService->sendMail(null, $request->get('mail-subject'), $request->get('mail-content'), $request->get('from'), $mails);
             if ($result['success'])
                 $this->addFlash('sonata_flash_success', count($mails) . ' mails ont bien été envoyés');

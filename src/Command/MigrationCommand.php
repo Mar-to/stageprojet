@@ -88,7 +88,7 @@ class MigrationCommand extends GoGoAbstractCommand
                 $this->log("No Migrations to perform");
             }
 
-            $asyncService = $this->getContainer()->get('biopen.async');
+            $asyncService = $this->getContainer()->get('gogo.async');
             // run them syncronously otherwise all the command will be run at once
             $asyncService->setRunSynchronously(true);
             if (count($this->commands) > $migrationState->getCommandsIndex()) {

@@ -124,7 +124,7 @@ class MailService
     {
         return $this->twig->render(
                 'emails/layout.html.twig',
-                array('content' => $content, 'config' => $this->config, 'homeUrl' => $this->generateRoute('biopen_homepage'))
+                array('content' => $content, 'config' => $this->config, 'homeUrl' => $this->generateRoute('gogo_homepage'))
             );
     }
 
@@ -157,12 +157,12 @@ class MailService
         {
             if ($element instanceof Element)
             {
-                $showElementUrl = $this->generateRoute('biopen_directory_showElement', array('id' => $element->getId()));
+                $showElementUrl = $this->generateRoute('gogo_directory_showElement', array('id' => $element->getId()));
                 $showElementUrl = str_replace('%23', '#', $showElementUrl);
-                $editElementUrl = $this->generateRoute('biopen_element_edit', array('id' => $element->getId()));
+                $editElementUrl = $this->generateRoute('gogo_element_edit', array('id' => $element->getId()));
                 $elementName = $element->getName();
                 $contribution = $element->getCurrContribution();
-                $directEditElementUniqueUrl = $this->generateRoute('biopen_element_edit',array("id" => $element->getId(), "hash" => $element->getRandomHash()));
+                $directEditElementUniqueUrl = $this->generateRoute('gogo_element_edit',array("id" => $element->getId(), "hash" => $element->getRandomHash()));
 
                 if ($mailType == 'report' && $option && $option instanceof UserInteractionReport)
                     $user = $option->getUserDisplayName();
@@ -182,9 +182,9 @@ class MailService
             }
         }
 
-        $homeUrl = $this->generateRoute('biopen_homepage');
-        $userContributionsUrl = $this->generateRoute('biopen_user_contributions');
-        $userProfileUrl = $this->generateRoute('biopen_user_profile');
+        $homeUrl = $this->generateRoute('gogo_homepage');
+        $userContributionsUrl = $this->generateRoute('gogo_user_contributions');
+        $userProfileUrl = $this->generateRoute('gogo_user_profile');
 
         $string = preg_replace('/({{((?:\s)+)?homeUrl((?:\s)+)?}})/i', $homeUrl, $string);
         $string = preg_replace('/({{((?:\s)+)?customMessage((?:\s)+)?}})/i', $customMessage, $string);
@@ -219,7 +219,7 @@ class MailService
         );
 
         $showOnMapBtnHtml = $this->twig->render('emails/newsletter-show-on-map-button.html.twig',
-            array('config' => $this->config, 'user' => $user, 'directoryUrl' => $this->generateRoute('biopen_directory'))
+            array('config' => $this->config, 'user' => $user, 'directoryUrl' => $this->generateRoute('gogo_directory'))
         );
 
         $string = preg_replace('/({{((?:\s)+)?pendingElements((?:\s)+)?}})/i', $pendingElementsHtml, $string);

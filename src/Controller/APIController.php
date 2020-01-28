@@ -33,7 +33,7 @@ class APIController extends GoGoController
     $elementId = $id ? $id : $request->get('id');
     $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
     $protectWithToken = $config->getApi()->getProtectPublicApiWithToken();
-    $apiUiUrl = $this->generateUrl('biopen_api_ui', [], UrlGeneratorInterface::ABSOLUTE_URL);
+    $apiUiUrl = $this->generateUrl('gogo_api_ui', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
     if ($request->isMethod('POST')) // this kind of call is restricted with cross domain headers
     {
@@ -238,7 +238,7 @@ class APIController extends GoGoController
     $odm = $this->get('doctrine_mongodb')->getManager();
     $config = $odm->getRepository('App\Document\Configuration')->findConfiguration();
 
-    $gogocartoConf = $this->get('biopen.gogocartojs_service')->getConfig();
+    $gogocartoConf = $this->get('gogo.gogocartojs_service')->getConfig();
 
     return $this->createResponse(json_encode($gogocartoConf), $config);
   }

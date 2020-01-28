@@ -36,6 +36,6 @@ class ElementImageType extends AbstractType
   */
   public function getName()
   {
-    return 'biopen_geodirectorybundle_element_image';
+    return 'gogo_geodirectorybundle_element_image';
   }
 }

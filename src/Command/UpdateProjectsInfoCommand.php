@@ -27,7 +27,7 @@ class UpdateProjectsInfoCommand extends ContainerAwareCommand
       $logger = $this->getContainer()->get('monolog.logger.commands');
       $logger->info("Updating projects informations. " . count($projects) . " projects to update");
       $router = $this->getContainer()->get('router');
-      $apiUrl = $this->getContainer()->getParameter('base_url') . $router->generate('biopen_api_project_info');
+      $apiUrl = $this->getContainer()->getParameter('base_url') . $router->generate('gogo_api_project_info');
 
       foreach ($projects as $key => $project) {
         try {

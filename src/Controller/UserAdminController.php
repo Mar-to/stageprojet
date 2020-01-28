@@ -38,7 +38,7 @@ class UserAdminController extends Controller
       }
       else if (count($mails) > 0)
       {
-         $mailService = $this->container->get('biopen.mail_service');
+         $mailService = $this->container->get('gogo.mail_service');
          $result = $mailService->sendMail(null, $request->get('mail-subject'), $request->get('mail-content'), $request->get('from'), $mails);
          if ($result['success'])
             $this->addFlash('sonata_flash_success', count($mails) . ' mails ont bien été envoyés');

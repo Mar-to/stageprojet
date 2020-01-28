@@ -3,9 +3,9 @@
   <table class="bordered">
     <thead>
       <tr>
-        <th>Fiche</th>        
-        <th class="type">Type</th> 
-        <th class="date">Date</th>       
+        <th>Fiche</th>
+        <th class="type">Type</th>
+        <th class="date">Date</th>
         <th class="action">Action</th>
       </tr>
     </thead>
@@ -13,21 +13,21 @@
       {% for contribution in pendingContributions %}
         <tr>
           <td>
-            <a href="{{ path('biopen_directory_showElement', {'id': contribution.element.id, 'name': contribution.element.name}) | replace({"%23":'#'}) }}">{{ contribution.element.name }}</a>        
-          </td>          
-          <td>{{ contributionType[contribution.type]}}</td>  
-          <td>{{ contribution.createdAt|date("d/m/Y")}}</td>        
+            <a href="{{ path('gogo_directory_showElement', {'id': contribution.element.id, 'name': contribution.element.name}) | replace({"%23":'#'}) }}">{{ contribution.element.name }}</a>
+          </td>
+          <td>{{ contributionType[contribution.type]}}</td>
+          <td>{{ contribution.createdAt|date("d/m/Y")}}</td>
           <td>
-            <a href="{{ path('biopen_element_edit', {'id': contribution.element.id, 'hash': contribution.element.randomHash}) }}">
-              <button class="btn-biopen btn-secondary small waves-light waves-effect btn">Editer</button>
+            <a href="{{ path('gogo_element_edit', {'id': contribution.element.id, 'hash': contribution.element.randomHash}) }}">
+              <button class="btn-gogo btn-secondary small waves-light waves-effect btn">Editer</button>
             </a>
           </td>
-        </tr>    
+        </tr>
       {% endfor %}
     </tbody>
   </table>
 {% else %}
   <p class="empty-secton-message">
-    Vous n'avez aucune contribution en attente. N'hésitez pas à <a href="{{ path('biopen_element_add') }}">ajouter une fiche</a> !
+    Vous n'avez aucune contribution en attente. N'hésitez pas à <a href="{{ path('gogo_element_add') }}">ajouter une fiche</a> !
   </p>
 {% endif %}

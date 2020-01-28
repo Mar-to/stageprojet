@@ -19,7 +19,7 @@ class DirectoryController extends GoGoController
 {
   public function renderAction(Request $request)
   {
-    $gogoConfig = $this->get('biopen.gogocartojs_service')->getConfig();
+    $gogoConfig = $this->get('gogo.gogocartojs_service')->getConfig();
     return $this->render('BiopenGeoDirectoryBundle:directory:directory.html.twig', array('gogoConfig' => $gogoConfig));
   }
 }

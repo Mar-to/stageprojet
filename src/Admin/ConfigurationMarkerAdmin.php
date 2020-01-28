@@ -16,9 +16,9 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 class ConfigurationMarkerAdmin extends ConfigurationAbstractAdmin
 {
-    protected $baseRouteName = 'biopen_core_bundle_config_marker_admin_classname';
+    protected $baseRouteName = 'gogo_core_bundle_config_marker_admin_classname';
 
-    protected $baseRoutePattern = 'biopen/core/configuration-marker';
+    protected $baseRoutePattern = 'gogo/core/configuration-marker';
 
     protected function configureFormFields(FormMapper $formMapper)
     {

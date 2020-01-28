@@ -119,7 +119,7 @@ class WebhookService
             $element = $contribution->getElement();
             $this->em->refresh($element);
             $element->setPreventJsonUpdate(true);
-            $link = str_replace('%23', '#', $this->router->generate('biopen_directory_showElement', array('id'=>$element->getId()), true));
+            $link = str_replace('%23', '#', $this->router->generate('gogo_directory_showElement', array('id'=>$element->getId()), true));
             $data = json_decode($element->getBaseJson(), true);
         }
         // BATCH CONTRIBUTION

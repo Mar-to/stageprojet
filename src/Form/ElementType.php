@@ -92,6 +92,6 @@ class ElementType extends AbstractType
   */
   public function getName()
   {
-    return 'biopen_elementbundle_element';
+    return 'gogo_elementbundle_element';
   }
 }

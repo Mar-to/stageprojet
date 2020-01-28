@@ -3,20 +3,20 @@
 * @Date:   2017-04-03 13:36:02
 * @Last Modified by:   Sebastian Castro
 * @Last Modified time: 2018-03-18 13:46:56
-*/ 
+*/
 #page-content.register
 {
   @media #{$small-only} { padding-top: 10px; }
   max-width: 600px !important;
   background-color: transparent !important;
-  section { 
+  section {
     background-color: white;
     border-radius: 5px;
   }
 
-  .form-actions { 
-    text-align: center; 
-    margin-top: 1rem; 
+  .form-actions {
+    text-align: center;
+    margin-top: 1rem;
     height: 2rem;
     @media #{$medium-and-up} { margin-top: 2rem; }
     .btn { width: 100%; }
@@ -27,7 +27,7 @@
   }
 }
 
-form.biopen_user_profile, form.fos_user_registration_register 
+form.gogo_user_profile, form.fos_user_registration_register
 {
   #input-range {
     box-shadow: none !important;
@@ -52,7 +52,7 @@ form.biopen_user_profile, form.fos_user_registration_register
   .error ul {
     margin-bottom: 20px;
     margin-top: 0;
-    li {      
+    li {
       margin-left: 3rem;
     }
   }
@@ -80,4 +80,4 @@ form.biopen_user_profile, form.fos_user_registration_register
   }
 
   h2 { text-align: center !important; }
-}   
+}

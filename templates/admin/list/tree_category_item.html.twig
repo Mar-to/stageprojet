@@ -9,8 +9,8 @@
     {% if category.enableDescription %}<span class="label label-info">Description des catégories</span>{% endif %}
 	</span>
 	<span class="actions">
-    <a href="{{ path('admin_biopen_geodirectory_category_edit', {id: category.id}) }}" class="btn btn-sm btn-default"> <i class="fa fa-pen" aria-hidden="true"></i></a>
-    <a href="{{ path('admin_biopen_geodirectory_category_delete', {id: category.id}) }}" class="btn btn-sm btn-default"> <i class="fa fa-trash" aria-hidden="true"></i></a>
+    <a href="{{ path('admin_gogo_geodirectory_category_edit', {id: category.id}) }}" class="btn btn-sm btn-default"> <i class="fa fa-pen" aria-hidden="true"></i></a>
+    <a href="{{ path('admin_gogo_geodirectory_category_delete', {id: category.id}) }}" class="btn btn-sm btn-default"> <i class="fa fa-trash" aria-hidden="true"></i></a>
   </span>
 
   <ul class="children category-children"
@@ -26,8 +26,8 @@
 	      	{% if option.subcategories|length and not option.unexpandable %}<span class="arrow-after"></span>{% endif %}
       	</span>
       	<span class="actions">
-	      	<a href="{{ path('admin_biopen_geodirectory_option_edit', {id: option.id}) }}" class="btn btn-sm btn-default"> <i class="fa fa-pen" aria-hidden="true"></i></a>
-	      	<a href="{{ path('admin_biopen_geodirectory_option_delete', {id: option.id}) }}" class="btn btn-sm btn-default"> <i class="fa fa-trash" aria-hidden="true"></i></a>
+	      	<a href="{{ path('admin_gogo_geodirectory_option_edit', {id: option.id}) }}" class="btn btn-sm btn-default"> <i class="fa fa-pen" aria-hidden="true"></i></a>
+	      	<a href="{{ path('admin_gogo_geodirectory_option_delete', {id: option.id}) }}" class="btn btn-sm btn-default"> <i class="fa fa-trash" aria-hidden="true"></i></a>
 	      </span>
 
       	<ul class="children option-children"

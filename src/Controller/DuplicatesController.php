@@ -60,7 +60,7 @@ class DuplicatesController extends GoGoController
             $dm = $this->get('doctrine_mongodb')->getManager();
             $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
 
-            $elementActionService = $this->container->get('biopen.element_action_service');
+            $elementActionService = $this->container->get('gogo.element_action_service');
 
             $element->setIsDuplicateNode(false);
             $duplicates = $element->getPotentialDuplicates() ? $element->getPotentialDuplicates()->toArray() : [];

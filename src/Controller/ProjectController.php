@@ -36,14 +36,14 @@ class ProjectController extends AbstractSaasController
         return $odm;
     }
 
-    protected function generateUrlForProject($project, $route = 'biopen_homepage')
+    protected function generateUrlForProject($project, $route = 'gogo_homepage')
     {
         return 'http://' . $project->getDomainName() . '.' . $this->getParameter('base_url') . $this->generateUrl($route);
     }
 
     public function createAction(Request $request)
     {
-        if (!$this->isAuthorized()) return $this->redirectToRoute('biopen_homepage');
+        if (!$this->isAuthorized()) return $this->redirectToRoute('gogo_homepage');
 
         $odm = $this->get('doctrine_mongodb')->getManager();
         $domain = $request->request->get('form')['domainName'];
@@ -54,7 +54,7 @@ class ProjectController extends AbstractSaasController
             // but it has not been initialized
             // so redirect to initialize project
             if ($existingProject && $existingProject->getDataSize() == 0)
-                return $this->redirect($this->generateUrlForProject($existingProject, 'biopen_saas_initialize_project'));
+                return $this->redirect($this->generateUrlForProject($existingProject, 'gogo_saas_initialize_project'));
         }
 
         $project = new Project();
@@ -87,7 +87,7 @@ class ProjectController extends AbstractSaasController
             // Due to conflicts between ODM, we get the Configuration froma Json API, and convert it to an object
             $baseUrl = $this->getParameter('base_url');
             if ($baseUrl == 'saas.localhost') $baseUrl = "gogocarto.fr"; # Fixs for docker in localhost
-            $configUrl = 'http://' . $baseUrl . $this->generateUrl('biopen_api_configuration');
+            $configUrl = 'http://' . $baseUrl . $this->generateUrl('gogo_api_configuration');
             $rootConfigToCopy = json_decode(file_get_contents($configUrl));
             $rootConfigToCopy->appName = $project->getName();
             $rootConfigToCopy->appBaseLine = "";
@@ -125,7 +125,7 @@ class ProjectController extends AbstractSaasController
 
             $projectOdm->getSchemaManager()->updateIndexes();
 
-            $url = $this->generateUrlForProject($project, 'biopen_saas_initialize_project');
+            $url = $this->generateUrlForProject($project, 'gogo_saas_initialize_project');
             return $this->redirect($url);
         }
 
@@ -135,11 +135,11 @@ class ProjectController extends AbstractSaasController
     }
 
     /**
-     * @Route("/projects", name="biopen_saas_home")
+     * @Route("/projects", name="gogo_saas_home")
      */
     public function homeAction()
     {
-        if (!$this->isAuthorized()) return $this->redirectToRoute('biopen_homepage');
+        if (!$this->isAuthorized()) return $this->redirectToRoute('gogo_homepage');
 
         $odm = $this->get('doctrine_mongodb')->getManager();
         $repository = $odm->getRepository('App\Document\Project');
@@ -159,7 +159,7 @@ class ProjectController extends AbstractSaasController
     {
         $odm = $this->get('doctrine_mongodb')->getManager();
         $users = $odm->getRepository('App\Document\User')->findAll();
-        if (count($users) > 0) return $this->redirectToRoute('biopen_homepage');
+        if (count($users) > 0) return $this->redirectToRoute('gogo_homepage');
 
         $userManager = $this->container->get('fos_user.user_manager');
         $user = $userManager->createUser();
@@ -206,7 +206,7 @@ class ProjectController extends AbstractSaasController
         $commandline = 'mongo ' . $dbname .' --eval "db.dropDatabase()"';
         $process = new Process($commandline);
         $process->start();
-        $url = $this->generateUrl('biopen_project_delete_saas_record', ['dbName' => $dbname], true);
+        $url = $this->generateUrl('gogo_project_delete_saas_record', ['dbName' => $dbname], true);
         $url = str_replace($dbname . '.', '', $url);
         return $this->redirect($url);
     }
@@ -225,6 +225,6 @@ class ProjectController extends AbstractSaasController
             $dm->flush();
         }
 
-        return $this->redirectToRoute('biopen_homepage');
+        return $this->redirectToRoute('gogo_homepage');
     }
 }

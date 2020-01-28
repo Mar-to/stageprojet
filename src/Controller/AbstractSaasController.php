@@ -20,7 +20,7 @@ class AbstractSaasController extends Controller
         return $odm;
     }
 
-    protected function generateUrlForProject($project, $route = 'biopen_homepage')
+    protected function generateUrlForProject($project, $route = 'gogo_homepage')
     {
         return 'http://' . $project->getDomainName() . '.' . $this->getParameter('base_url') . $this->generateUrl($route);
     }

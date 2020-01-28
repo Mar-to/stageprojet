@@ -55,6 +55,6 @@ class OpenHoursType extends AbstractType
   */
   public function getName()
   {
-    return 'biopen_elementbundle_openhours';
+    return 'gogo_elementbundle_openhours';
   }
 }

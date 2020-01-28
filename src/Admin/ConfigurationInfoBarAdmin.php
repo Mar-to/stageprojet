@@ -19,9 +19,9 @@ use Sonata\AdminBundle\Form\Type\AdminType;
 
 class ConfigurationInfoBarAdmin extends ConfigurationAbstractAdmin
 {
-    protected $baseRouteName = 'biopen_core_bundle_config_map_element_form_admin_classname';
+    protected $baseRouteName = 'gogo_core_bundle_config_map_element_form_admin_classname';
 
-    protected $baseRoutePattern = 'biopen/core/configuration-map-element-form';
+    protected $baseRoutePattern = 'gogo/core/configuration-map-element-form';
 
     protected function configureFormFields(FormMapper $formMapper)
     {

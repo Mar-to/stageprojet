@@ -5,8 +5,8 @@
       <tr>
           <th>Name</th>
           <th class="type">Type</th>
-          <th class="date">Date</th>          
-          <th class="small-status">Status</th>          
+          <th class="date">Date</th>
+          <th class="small-status">Status</th>
       </tr>
     </thead>
     <tbody>
@@ -14,12 +14,12 @@
         {% set element = contribution.element %}
         <tr class="">
           <td>
-            <a href="{{ path('biopen_directory_showElement', {'id': element.id, 'name': element.name}) | replace({"%23":'#'}) }}">{{ element.name }}</a>        
-          </td>            
+            <a href="{{ path('gogo_directory_showElement', {'id': element.id, 'name': element.name}) | replace({"%23":'#'}) }}">{{ element.name }}</a>
+          </td>
           <td>{{ contributionType[contribution.type]}}</td>
-          <td>{{ contribution.createdAt|date("d/m/Y")}}</td>            
-          <td>{{ elementStatus[contribution.status] }}</td>            
-        </tr>    
+          <td>{{ contribution.createdAt|date("d/m/Y")}}</td>
+          <td>{{ elementStatus[contribution.status] }}</td>
+        </tr>
       {% endfor %}
     </tbody>
   </table>

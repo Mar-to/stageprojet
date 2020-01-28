@@ -100,7 +100,7 @@ class UserController extends GoGoController
          $session->getFlashBag()->add('error', "Désolé, cet élément appartient déjà à quelqu'un !");
       }
 
-      return $this->redirectToRoute('biopen_user_contributions');
+      return $this->redirectToRoute('gogo_user_contributions');
    }
 
    public function profileAction(Request $request, SessionInterface $session)

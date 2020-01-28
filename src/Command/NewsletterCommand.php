@@ -25,7 +25,7 @@ class NewsletterCommand extends GoGoAbstractCommand
       $users = $usersRepo->findNeedsToReceiveNewsletter();
       $nbrUsers = $users->count();
 
-      $newsletterService = $this->getContainer()->get('biopen.newsletter_service');
+      $newsletterService = $this->getContainer()->get('gogo.newsletter_service');
 
       foreach ($users as $key => $user)
       {

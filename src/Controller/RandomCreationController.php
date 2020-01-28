@@ -27,7 +27,7 @@ class RandomCreationController extends Controller
 {
     public function generateAction($nombre, $generateVote = false)
     {
-	   $lastElementCreated = $this->get('biopen.random_creation_service')->generate($nombre, $generateVote);
+	   $lastElementCreated = $this->get('gogo.random_creation_service')->generate($nombre, $generateVote);
 
 	   return new Response('Elements générés');
   	}

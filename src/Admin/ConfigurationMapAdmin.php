@@ -21,9 +21,9 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 
 class ConfigurationMapAdmin extends ConfigurationAbstractAdmin
 {
-    protected $baseRouteName = 'biopen_core_bundle_config_map_admin_classname';
+    protected $baseRouteName = 'gogo_core_bundle_config_map_admin_classname';
 
-    protected $baseRoutePattern = 'biopen/core/configuration-map';
+    protected $baseRoutePattern = 'gogo/core/configuration-map';
 
     protected function configureFormFields(FormMapper $formMapper)
     {

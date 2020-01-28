@@ -16,9 +16,9 @@ use Sonata\AdminBundle\Form\Type\AdminType;
 
 class ConfigurationMailAdmin extends ConfigurationAbstractAdmin
 {
-    protected $baseRouteName = 'biopen_core_bundle_config_mail_admin_classname';
+    protected $baseRouteName = 'gogo_core_bundle_config_mail_admin_classname';
 
-    protected $baseRoutePattern = 'biopen/core/configuration-mail';
+    protected $baseRoutePattern = 'gogo/core/configuration-mail';
 
     protected function configureFormFields(FormMapper $formMapper)
     {
@@ -97,7 +97,7 @@ class ConfigurationMailAdmin extends ConfigurationAbstractAdmin
 
     private function getEmailTestLink($router, $mailType)
     {
-        $url = $router->generate('biopen_mail_draft_automated', ['mailType' => $mailType]);
+        $url = $router->generate('gogo_mail_draft_automated', ['mailType' => $mailType]);
         return ' - <a href="' . $url . '" target="_blank">TESTER</a>';
     }
 }

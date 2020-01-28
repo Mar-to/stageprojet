@@ -28,7 +28,7 @@ class ElementInteractionController extends Controller
 {
     public function voteAction(Request $request)
     {
-        if (!$this->container->get('biopen.config_service')->isUserAllowed('vote', $request))
+        if (!$this->container->get('gogo.config_service')->isUserAllowed('vote', $request))
             return $this->returnResponse(false,"Désolé, vous n'êtes pas autorisé à voter !");
 
         // CHECK REQUEST IS VALID
@@ -39,7 +39,7 @@ class ElementInteractionController extends Controller
 
         $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
 
-        $resultMessage = $this->get('biopen.element_vote_service')
+        $resultMessage = $this->get('gogo.element_vote_service')
                          ->voteForElement($element, $request->get('value'), $request->get('comment'), $request->get('userEmail'));
 
         return $this->returnResponse(true, $resultMessage, $element->getStatus());
@@ -47,7 +47,7 @@ class ElementInteractionController extends Controller
 
     public function reportErrorAction(Request $request)
     {
-        if (!$this->container->get('biopen.config_service')->isUserAllowed('report', $request))
+        if (!$this->container->get('gogo.config_service')->isUserAllowed('report', $request))
             return $this->returnResponse(false,"Désolé, vous n'êtes pas autorisé à signaler d'erreurs !");
 
         // CHECK REQUEST IS VALID
@@ -76,7 +76,7 @@ class ElementInteractionController extends Controller
 
     public function deleteAction(Request $request)
     {
-        if (!$this->container->get('biopen.config_service')->isUserAllowed('delete', $request))
+        if (!$this->container->get('gogo.config_service')->isUserAllowed('delete', $request))
             return $this->returnResponse(false,"Désolé, vous n'êtes pas autorisé à supprimer un élément !");
 
         // CHECK REQUEST IS VALID
@@ -87,7 +87,7 @@ class ElementInteractionController extends Controller
         $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
         $dm->persist($element);
 
-        $elementActionService = $this->container->get('biopen.element_action_service');
+        $elementActionService = $this->container->get('gogo.element_action_service');
         $elementActionService->delete($element, true, $request->get('message'));
 
         $dm->flush();
@@ -97,7 +97,7 @@ class ElementInteractionController extends Controller
 
     public function resolveReportsAction(Request $request)
     {
-        if (!$this->container->get('biopen.config_service')->isUserAllowed('directModeration', $request))
+        if (!$this->container->get('gogo.config_service')->isUserAllowed('directModeration', $request))
             return $this->returnResponse(false,"Désolé, vous n'êtes pas autorisé à modérer cet élément !");
 
         // CHECK REQUEST IS VALID
@@ -107,7 +107,7 @@ class ElementInteractionController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
         $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
 
-        $elementActionService = $this->container->get('biopen.element_action_service');
+        $elementActionService = $this->container->get('gogo.element_action_service');
         $elementActionService->resolveReports($element, $request->get('comment'), true);
 
         $dm->persist($element);
@@ -118,7 +118,7 @@ class ElementInteractionController extends Controller
 
     public function sendMailAction(Request $request)
     {
-        if (!$this->container->get('biopen.config_service')->isUserAllowed('sendMail', $request))
+        if (!$this->container->get('gogo.config_service')->isUserAllowed('sendMail', $request))
             return $this->returnResponse(false,"Désolé, vous n'êtes pas autorisé à envoyer des mails !");
 
         // CHECK REQUEST IS VALID
@@ -141,7 +141,7 @@ class ElementInteractionController extends Controller
             <p><b>Titre du message</b></p><p> " . $request->get('subject') . "</p>
             <p><b>Contenu</b></p><p> " . $request->get('content') . "</p>";
 
-        $mailService = $this->container->get('biopen.mail_service');
+        $mailService = $this->container->get('gogo.mail_service');
         $mailService->sendMail($element->getEmail(), $mailSubject, $mailContent);
 
         return $this->returnResponse(true, "L'email a bien été envoyé");

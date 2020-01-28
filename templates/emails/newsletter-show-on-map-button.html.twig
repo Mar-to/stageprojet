@@ -1,7 +1,7 @@
 {% if user.geo and user.geo.latitude and user.geo.longitude %}
     {% set params = '#/carte/' ~ user.location ~ '@' ~ user.geo.latitude ~ ',' ~ user.geo.longitude ~ ',11z' %}
     <a href="{{ directoryUrl ~ params }}">
-      <button class="btn-biopen btn-secondary small waves-light waves-effect btn"
+      <button class="btn-gogo btn-secondary small waves-light waves-effect btn"
         style= "font-size: 11px;
                 line-height: 30px;
                 height: 30px;

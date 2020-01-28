@@ -12,7 +12,7 @@ class ImportAdminController extends Controller
   public function collectAction()
   {
     $object = $this->admin->getSubject();
-    $result = $this->get('biopen.element_import')->collectData($object);
+    $result = $this->get('gogo.element_import')->collectData($object);
 
     $showUrl = $this->admin->generateUrl('showData', ['id' => $object->getId()]);
 
@@ -34,7 +34,7 @@ class ImportAdminController extends Controller
   public function showDataAction()
   {
     $object = $this->admin->getSubject();
-    $result = $this->get('biopen.element_import')->collectData($object);
+    $result = $this->get('gogo.element_import')->collectData($object);
 
     $dataDisplay = print_r($result, true);
     $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]);
@@ -62,12 +62,12 @@ class ImportAdminController extends Controller
     $dm->flush();
 
     if ($request->get('direct'))
-      $result = $this->get('biopen.element_import')->startImport($object);
+      $result = $this->get('gogo.element_import')->startImport($object);
     else
-      $this->get('biopen.async')->callCommand('app:elements:importSource', [$object->getId()]);
+      $this->get('gogo.async')->callCommand('app:elements:importSource', [$object->getId()]);
 
     $redirectionUrl = $this->admin->generateUrl('edit', ['id' => $object->getId()]);
-    $stateUrl = $this->generateUrl('biopen_import_state', ['id' => $object->getId()]);
+    $stateUrl = $this->generateUrl('gogo_import_state', ['id' => $object->getId()]);
 
     return $this->render('admin/pages/import/import-progress.html.twig', [
       'import' => $object,

@@ -21,8 +21,8 @@ use Sonata\AdminBundle\Form\Type\ModelType;
 
 class OptionAdmin extends AbstractAdmin
 {
-   protected $baseRouteName = 'admin_biopen_geodirectory_option';
-   protected $baseRoutePattern = 'admin_biopen_geodirectory_option';
+   protected $baseRouteName = 'admin_gogo_geodirectory_option';
+   protected $baseRoutePattern = 'admin_gogo_geodirectory_option';
 
    public function createQuery($context = 'list')
 	{

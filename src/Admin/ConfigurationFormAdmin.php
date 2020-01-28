@@ -17,9 +17,9 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
 class ConfigurationFormAdmin extends ConfigurationAbstractAdmin
 {
-    protected $baseRouteName = 'biopen_core_bundle_config_form_admin_classname';
+    protected $baseRouteName = 'gogo_core_bundle_config_form_admin_classname';
 
-    protected $baseRoutePattern = 'biopen/core/configuration-form';
+    protected $baseRoutePattern = 'gogo/core/configuration-form';
 
     protected function configureFormFields(FormMapper $formMapper)
     {

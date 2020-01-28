@@ -15,7 +15,7 @@ class MailTestController extends Controller
 {
    public function draftAutomatedAction(Request $request, SessionInterface $session, $mailType)
    {
-      $mailService = $this->container->get('biopen.mail_service');
+      $mailService = $this->container->get('gogo.mail_service');
       $draftResponse = $this->draftTest($mailType);
 
       if ($draftResponse == null) return new Response('No visible elements in database, please create an element');
@@ -28,7 +28,7 @@ class MailTestController extends Controller
       else
       {
          $session->getFlashBag()->add('error', 'Error : ' . $draftResponse['message']);
-         return $this->redirectToRoute('admin_biopen_core_configuration_list');
+         return $this->redirectToRoute('admin_gogo_core_configuration_list');
       }
    }
 
@@ -37,14 +37,14 @@ class MailTestController extends Controller
       $mail = $request->get('email');
 
       if (!$mail) return new Response('Aucune adresse mail n\'a été renseignée');
-      $mailService = $this->container->get('biopen.mail_service');
+      $mailService = $this->container->get('gogo.mail_service');
 
       $draftResponse = $this->draftTest($mailType);
 
       if ($draftResponse == null)
       {
          $session->getFlashBag()->add('error', 'No elements in database, please create an element for email testing');
-         return $this->redirectToRoute('admin_biopen_core_configuration_list');
+         return $this->redirectToRoute('admin_gogo_core_configuration_list');
       }
 
       if ($draftResponse['success'])
@@ -59,7 +59,7 @@ class MailTestController extends Controller
       {
          $session->getFlashBag()->add('error', 'Erreur : ' . $draftResponse['message']);
       }
-      return $this->redirectToRoute('biopen_mail_draft_automated', array('mailType' => $mailType));
+      return $this->redirectToRoute('gogo_mail_draft_automated', array('mailType' => $mailType));
    }
 
   private function draftTest($mailType)
@@ -84,7 +84,7 @@ class MailTestController extends Controller
 
      if (!$element) return null;
 
-     $mailService = $this->container->get('biopen.mail_service');
+     $mailService = $this->container->get('gogo.mail_service');
      $draftResponse = $mailService->draftEmail($mailType, $element, "Un customMessage de test", $options);
      return $draftResponse;
   }

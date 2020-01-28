@@ -46,10 +46,10 @@ class ElementFormController extends GoGoController
 		if (!$element)
 		{
 			$session->getFlashBag()->add('error', "L'élément demandé n'existe pas...");
-			return $this->redirectToRoute('biopen_directory');
+			return $this->redirectToRoute('gogo_directory');
 		}
 		else if ( $element->getStatus() > ElementStatus::PendingAdd && $element->getStatus() != ElementStatus::DynamicImport
-			|| $this->container->get('biopen.config_service')->isUserAllowed('directModeration')
+			|| $this->container->get('gogo.config_service')->isUserAllowed('directModeration')
 			|| ($element->isPending() && $element->getRandomHash() == $request->get('hash')))
 		{
 			return $this->renderForm($element, true, $request, $session, $dm);
@@ -57,7 +57,7 @@ class ElementFormController extends GoGoController
 		else
 		{
 			$session->getFlashBag()->add('error', "Désolé, vous n'êtes pas autorisé à modifier cet élement !");
-			return $this->redirectToRoute('biopen_directory');
+			return $this->redirectToRoute('gogo_directory');
 		}
 	}
 
@@ -70,7 +70,7 @@ class ElementFormController extends GoGoController
 
 		$addOrEditComplete = false;
 		$userRoles = [];
-		$configService = $this->container->get('biopen.config_service');
+		$configService = $this->container->get('gogo.config_service');
 		$addEditName = $editMode ? 'edit' : 'add';
 
 		if ($request->get('logout')) $session->remove('userEmail');
@@ -187,13 +187,13 @@ class ElementFormController extends GoGoController
 				// check for duplicates in Add action
 				if (!$editMode && !$editingOwnPendingContrib)
 				{
-					$duplicates = $this->get("biopen.element_duplicates_service")->checkForDuplicates($element, true);
+					$duplicates = $this->get("gogo.element_duplicates_service")->checkForDuplicates($element, true);
 					$needToCheckDuplicates = count($duplicates) > 0;
 				}
 				else $needToCheckDuplicates = false;
 
 				// custom handling form (creating OptionValues for example)
-				list($element, $isMinorModification) = $this->get("biopen.element_form_service")->handleFormSubmission($element, $request, $editMode, $userEmail, $isAllowedDirectModeration, $originalElement, $dm);
+				list($element, $isMinorModification) = $this->get("gogo.element_form_service")->handleFormSubmission($element, $request, $editMode, $userEmail, $isAllowedDirectModeration, $originalElement, $dm);
 
 				if ($needToCheckDuplicates)
 				{
@@ -205,7 +205,7 @@ class ElementFormController extends GoGoController
 					$session->set('inputPassword', $request->request->get('input-password'));
 					$session->set('submitOption', $request->request->get('submit-option'));
 					// redirect to check duplicate
-					return $this->redirectToRoute('biopen_element_check_duplicate');
+					return $this->redirectToRoute('gogo_element_check_duplicate');
 				}
 			}
 
@@ -239,7 +239,7 @@ class ElementFormController extends GoGoController
 				$userManager->updateUser($user, true);
 				$dm->persist($user);
 
-				$text = 'Votre compte a bien été créé ! Vous pouvez maintenant compléter <a href="'. $this->generateUrl('biopen_user_profile') .'" >votre profil</a> !';
+				$text = 'Votre compte a bien été créé ! Vous pouvez maintenant compléter <a href="'. $this->generateUrl('gogo_user_profile') .'" >votre profil</a> !';
 				$session->getFlashBag()->add('success', $text);
 
 				$this->authenticateUser($user);
@@ -247,7 +247,7 @@ class ElementFormController extends GoGoController
 
 			if ($this->isRealModification($element, $request))
 			{
-			  $elementActionService = $this->container->get('biopen.element_action_service');
+			  $elementActionService = $this->container->get('gogo.element_action_service');
 			  $message = $request->get('admin-message');
 
 			  if ($isAllowedDirectModeration || $isMinorModification)
@@ -277,7 +277,7 @@ class ElementFormController extends GoGoController
 			}
 
 			if ($this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED') || $session->has('userEmail'))
-				$noticeText .= '</br>Retrouvez et modifiez vos contributions sur la page <a href="'.$this->generateUrl('biopen_user_contributions').'">Mes Contributions</a>';
+				$noticeText .= '</br>Retrouvez et modifiez vos contributions sur la page <a href="'.$this->generateUrl('gogo_user_contributions').'">Mes Contributions</a>';
 
 			$isAllowedPending = $configService->isUserAllowed('pending');
 
@@ -288,7 +288,7 @@ class ElementFormController extends GoGoController
 
 			if ($submitOption != 'stayonform' && !$recopyInfo) return $this->redirect($elementShowOnMapUrl);
 
-			if ($editMode) return $this->redirectToRoute('biopen_element_add');
+			if ($editMode) return $this->redirectToRoute('gogo_element_add');
 
 			// Unless admin ask for recopying the informations
 			if (!($isAllowedDirectModeration && $recopyInfo))
@@ -342,7 +342,7 @@ class ElementFormController extends GoGoController
 		if ($request->getMethod() == "POST")
 		{
 			// if user say that it's not a duplicate, we go back to add action with checkDuplicate to true
-			return $this->redirectToRoute('biopen_element_add', array('checkDuplicate' => true));
+			return $this->redirectToRoute('gogo_element_add', array('checkDuplicate' => true));
 		}
 		// check that duplicateselement are in session and are not empty
 		else if ($session->has('duplicatesElements') && count($session->get('duplicatesElements') > 0))
@@ -354,7 +354,7 @@ class ElementFormController extends GoGoController
 		// otherwise just redirect ot add action
 		else
 		{
-			return $this->redirectToRoute('biopen_element_add');
+			return $this->redirectToRoute('gogo_element_add');
 		}
 	}
 

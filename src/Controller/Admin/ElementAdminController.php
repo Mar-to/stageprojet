@@ -16,7 +16,7 @@ class ElementAdminController extends ElementAdminBulkController
             throw new NotFoundHttpException(sprintf('unable to find the object with id : %s', $id));
         }
 
-        return $this->redirectToRoute('biopen_element_edit', ['id' => $object->getId()]);
+        return $this->redirectToRoute('gogo_element_edit', ['id' => $object->getId()]);
     }
 
     public function redirectShowAction()
@@ -99,12 +99,12 @@ class ElementAdminController extends ElementAdminBulkController
                 try {
                     $message = $request->get('custom_message') ? $request->get('custom_message') : '';
 
-                    $elementActionService = $this->container->get('biopen.element_action_service');
+                    $elementActionService = $this->container->get('gogo.element_action_service');
 
                     if ($request->get('submit_update_json'))
                     {
                         $dm = $this->container->get('doctrine_mongodb')->getManager();
-                        $this->container->get('biopen.element_json_generator')->updateJsonRepresentation($object, $dm);
+                        $this->container->get('gogo.element_json_generator')->updateJsonRepresentation($object, $dm);
                     }
                     elseif ($object->isPending() && ($request->get('submit_accept') || $request->get('submit_refuse')))
                     {
@@ -163,6 +163,6 @@ class ElementAdminController extends ElementAdminBulkController
             }
         }
 
-        return $this->redirectToRoute('admin_biopen_geodirectory_element_showEdit', ['id' => $id]);
+        return $this->redirectToRoute('admin_gogo_geodirectory_element_showEdit', ['id' => $id]);
     }
 }

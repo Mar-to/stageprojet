@@ -48,6 +48,6 @@ class PostalAddressType extends AbstractType
   */
   public function getName()
   {
-    return 'biopen_elementbundle_postal_address';
+    return 'gogo_elementbundle_postal_address';
   }
 }

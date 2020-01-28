@@ -12,11 +12,11 @@
     {% set iframe = app.request.get('iframe') %}
 
 		<div class="col menu-item" id="menu-home" >
-			<a href="{{ path('biopen_homepage') }}" {% if iframe %}target="_blank"{% endif %} class="small-logo">
+			<a href="{{ path('gogo_homepage') }}" {% if iframe %}target="_blank"{% endif %} class="small-logo">
         {% set logo = config.favicon ? config.favicon : config.logo %}
         {% if logo %}<img src="{{ logo.imageUrl }}"/>{% endif %}
       </a>
-			<a href="{{ path('biopen_homepage') }}" {% if iframe %}target="_blank"{% endif %} class="large-logo">
+			<a href="{{ path('gogo_homepage') }}" {% if iframe %}target="_blank"{% endif %} class="large-logo">
         {% set logo = config.logoInline ? config.logoInline : config.logo %}
         {% if logo %}
           <img src="{{ logo.imageUrl }}" id="logo-inline"/>
@@ -33,13 +33,13 @@
       <div class="nav-overlay" onclick="hideNavDropdown()"></div>
       {% if not iframe %}
   			<div class="col menu-item">
-  			  <a href="{{ path('biopen_directory') }}"><span class="header-icon gogo-icon-map"></span><span class="text">La carte</span></a>
+  			  <a href="{{ path('gogo_directory') }}"><span class="header-icon gogo-icon-map"></span><span class="text">La carte</span></a>
   			</div>
       {% endif %}
 
       {#} {% if config.addFeature.active and (not config.addFeature.isOnlyAllowedForAdmin() or is_granted('ROLE_ADMIN')) %}
 			<div class="col menu-item">
-				<a href="{{ path('biopen_element_add') }}" {% if iframe %}target="_blank"{% endif %}>
+				<a href="{{ path('gogo_element_add') }}" {% if iframe %}target="_blank"{% endif %}>
           <span class="header-icon gogo-icon-user-plus"></span><span class="text">Ajouter {{ config.elementDisplayNameIndefinite }}</span>
         </a>
 			</div>
@@ -47,7 +47,7 @@
 
       {% if config.activatePartnersPage and countPartners %}
   			<div class="col menu-item">
-  				<a href="{{ path('biopen_partners') }}" {% if iframe %}target="_blank"{% endif %}>
+  				<a href="{{ path('gogo_partners') }}" {% if iframe %}target="_blank"{% endif %}>
             <span class="header-icon gogo-icon-partner-3"></span><span class="text">{{ config.partnerPageTitle }}</span>
           </a>
   			</div>
@@ -78,7 +78,7 @@
               <a class="about-title-item waves-effect waves-light" href="{{ path('sonata_admin_dashboard') }}">Interface admin</a></li>
             <li class="item-divider"></li>
             <li class="name only-for-user" {{ app.user ? '' : 'style="display:none"' }}>
-              <a class="about-title-item waves-effect waves-light" href="{{ path('biopen_user_space') }}">Mon Espace</a></li>
+              <a class="about-title-item waves-effect waves-light" href="{{ path('gogo_user_space') }}">Mon Espace</a></li>
             <li class="item-divider"></li>
             <li class="name">
               <a class="about-title-item waves-effect waves-light" onclick="logout()">Se Déconnecter</a></li>

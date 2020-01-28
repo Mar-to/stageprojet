@@ -40,7 +40,7 @@ class RegistrationFOSUser1Controller extends Controller
         $config = $odm->getRepository('App\Document\Configuration')->findConfiguration();
         if (!$config->getUser()->getEnableRegistration()) {
             $session->getFlashBag()->add('error', "Désolé, vous n'êtes pas autorisé à créer un compte.");
-            return $this->redirectToRoute('biopen_directory');
+            return $this->redirectToRoute('gogo_directory');
         }
 
         $user = $this->getUser();
@@ -52,7 +52,7 @@ class RegistrationFOSUser1Controller extends Controller
         }
 
         $form = $this->get('form.factory')->create(RegistrationFormType::class, new User());
-        $formHandler = $this->get('biopen.registration.form.handler');
+        $formHandler = $this->get('gogo.registration.form.handler');
 
 
         $confirmationEnabled = $config->getUser()->getSendConfirmationEmail();

@@ -144,15 +144,15 @@ class GoGoCartoJsService
       [
           "listMode" => $this->getConfigFrom($config->getListModeFeature()) ,
           "searchPlace" => $this->getConfigFrom($config->getSearchPlaceFeature()) ,
-          "searchElements" => $this->getConfigFrom($config->getSearchElementsFeature(), 'biopen_api_elements_from_text') ,
+          "searchElements" => $this->getConfigFrom($config->getSearchElementsFeature(), 'gogo_api_elements_from_text') ,
           "searchGeolocate" => $this->getConfigFrom($config->getSearchGeolocateFeature()) ,
           "share" =>    $this->getConfigFrom($config->getShareFeature()) ,
-          "report" =>   $this->getConfigFrom($config->getReportFeature(), 'biopen_report_error_for_element') ,
+          "report" =>   $this->getConfigFrom($config->getReportFeature(), 'gogo_report_error_for_element') ,
           "favorite" => $this->getConfigFrom($config->getFavoriteFeature()) ,
           "export" =>   $this->getConfigFrom($config->getExportIframeFeature()) ,
           "pending" =>  $this->getConfigFrom($config->getPendingFeature()) ,
           "directModeration" =>  $this->getConfigFrom($config->getDirectModerationFeature()) ,
-          "moderation" =>  $this->getConfigFrom($config->getDirectModerationFeature(), 'biopen_resolve_reports_element') ,
+          "moderation" =>  $this->getConfigFrom($config->getDirectModerationFeature(), 'gogo_resolve_reports_element') ,
           "elementHistory" => $this->getConfigFrom($config->getDirectModerationFeature()) ,
           "directions" => $this->getConfigFrom($config->getDirectionsFeature()) ,
           "layers" => $this->getConfigFrom($config->getLayersFeature()) ,
@@ -162,16 +162,16 @@ class GoGoCartoJsService
           // the edit button in the element info menu
           "edit" =>     $this->getConfigFrom(
                           $config->getEditFeature(),
-                          'biopen_element_edit',
+                          'gogo_element_edit',
                           $config->getEditFeature()->isOnlyAllowedForAdmin() ? [] : ["roles" => ['anonymous', 'user', 'admin']]
                      ) ,
-          "delete" =>   $this->getConfigFrom($config->getDeleteFeature(), 'biopen_delete_element') ,
+          "delete" =>   $this->getConfigFrom($config->getDeleteFeature(), 'gogo_delete_element') ,
 
-          "vote" =>     $this->getConfigFrom($config->getCollaborativeModerationFeature(), 'biopen_vote_for_element') ,
-          "sendMail" => $this->getConfigFrom($config->getSendMailFeature(), 'biopen_element_send_mail') ,
+          "vote" =>     $this->getConfigFrom($config->getCollaborativeModerationFeature(), 'gogo_vote_for_element') ,
+          "sendMail" => $this->getConfigFrom($config->getSendMailFeature(), 'gogo_element_send_mail') ,
           "stamp" => $this->getConfigFrom(
                   $config->getStampFeature(),
-                  'biopen_element_stamp',
+                  'gogo_element_stamp',
                   [ "options" => [ "allowedStamps" => $allowedStamps ] ]
               ) ,
           "customPopup" => $this->getConfigFrom(
@@ -187,7 +187,7 @@ class GoGoCartoJsService
       "data" =>
       [
           "taxonomy" => json_decode($taxonomyJson),
-          "elements" => $this->getAbsolutePath('biopen_api_elements_index'),
+          "elements" => $this->getAbsolutePath('gogo_api_elements_index'),
           "requestByBounds" => true,
       ],
     ];
@@ -209,8 +209,8 @@ class GoGoCartoJsService
     $result['active'] = array_key_exists('active', $overwrite) ? $overwrite['active'] : $feature->getActive();
     $result['inIframe'] = $feature->getActiveInIframe();
 
-    if ($route == 'biopen_element_edit')
-      $url = str_replace('fake', '', $this->getAbsolutePath('biopen_element_edit', ['id'=>'fake']));
+    if ($route == 'gogo_element_edit')
+      $url = str_replace('fake', '', $this->getAbsolutePath('gogo_element_edit', ['id'=>'fake']));
     elseif ($route)
       $url = $this->getAbsolutePath($route);
     else

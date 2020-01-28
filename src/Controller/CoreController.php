@@ -12,14 +12,14 @@ class CoreController extends GoGoController
     public function homeAction($force = true, DocumentManager $dm)
     {
         $sassHelper = new SaasHelper();
-        if (!$force && $this->getParameter('use_as_saas') && $sassHelper->isRootProject()) return $this->redirectToRoute('biopen_saas_home');
+        if (!$force && $this->getParameter('use_as_saas') && $sassHelper->isRootProject()) return $this->redirectToRoute('gogo_saas_home');
 
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
         if (!$config && $this->getParameter('use_as_saas')) {
-            $url = 'http://' . $this->getParameter('base_url') . $this->generateUrl('biopen_saas_home');
+            $url = 'http://' . $this->getParameter('base_url') . $this->generateUrl('gogo_saas_home');
             return $this->redirect($url);
         }
-        if (!$config->getActivateHomePage()) return $this->redirectToRoute('biopen_directory');
+        if (!$config->getActivateHomePage()) return $this->redirectToRoute('gogo_directory');
 
         // Get Wrapper List
         $listWrappers = $dm->getRepository('App\Document\Wrapper')->findAllOrderedByPosition();

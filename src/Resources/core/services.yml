@@ -3,27 +3,27 @@ services:
 
 
 
-  biopen.config_service:
+  gogo.config_service:
     class: App\Services\ConfigurationService
     public: true
     arguments: [ "@doctrine.odm.mongodb.document_manager", "@security.token_storage" ]
 
-  biopen.mail_service:
+  gogo.mail_service:
     class: App\Services\MailService
     public: true
     arguments: [ "@doctrine.odm.mongodb.document_manager", "@mailer", "@router", "@twig", "%base_url%", "%base_path%", "%use_as_saas%", "%mailer_user%", "%env(instance_name)%" ]
 
-  biopen.newsletter_service:
+  gogo.newsletter_service:
     class: App\Services\NewsletterService
     public: true
-    arguments: [ "@doctrine.odm.mongodb.document_manager", "@biopen.mail_service" ]
+    arguments: [ "@doctrine.odm.mongodb.document_manager", "@gogo.mail_service" ]
 
-  biopen.upload_directory_namer:
+  gogo.upload_directory_namer:
     class: App\Services\UploadDirectoryNamer
     public: true
     arguments: []
 
-  biopen.image_resizer:
+  gogo.image_resizer:
     class: App\EventListener\ImageResizer
     public: true
     arguments:
@@ -31,14 +31,14 @@ services:
     tags:
         - { name: doctrine_mongodb.odm.event_listener, event: postPersist }
 
-  biopen.config_listener:
+  gogo.config_listener:
     class: App\EventListener\ConfigurationListener
     public: true
     tags:
         - { name: doctrine_mongodb.odm.event_listener, event: preUpdate }
-    arguments: [ "@biopen.async" ]
+    arguments: [ "@gogo.async" ]
 
-  biopen.async.factory:
+  gogo.async.factory:
     class: App\Services\AsyncServiceFactory
     public: true
     arguments:
@@ -47,7 +47,7 @@ services:
         - 'bin/console'
         - null
 
-  biopen.async:
+  gogo.async:
     class: App\Services\AsyncService
     public: true
-    factory: 'biopen.async.factory:createAsyncService'
+    factory: 'gogo.async.factory:createAsyncService'

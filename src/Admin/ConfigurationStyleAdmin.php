@@ -16,9 +16,9 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class ConfigurationStyleAdmin extends ConfigurationAbstractAdmin
 {
-    protected $baseRouteName = 'biopen_core_bundle_config_style_admin_classname';
+    protected $baseRouteName = 'gogo_core_bundle_config_style_admin_classname';
 
-    protected $baseRoutePattern = 'biopen/core/configuration-style';
+    protected $baseRoutePattern = 'gogo/core/configuration-style';
 
     protected function configureFormFields(FormMapper $formMapper)
     {

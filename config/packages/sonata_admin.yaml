@@ -17,8 +17,8 @@ sonata_admin:
     dashboard:
         blocks:
             # display a dashboard block
-            - { position: left, type: biopen.block.recent_elements, settings: { title: 'Dernières validation collaboratives', filterStatus: 2, class: box-success}}
-            - { position: right, type: biopen.block.recent_elements, settings: { title: 'Derniers refus collaboratifs', filterStatus: -3 , class: box-danger}}
+            - { position: left, type: gogo.block.recent_elements, settings: { title: 'Dernières validation collaboratives', filterStatus: 2, class: box-success}}
+            - { position: right, type: gogo.block.recent_elements, settings: { title: 'Derniers refus collaboratifs', filterStatus: -3 , class: box-danger}}
             - { position: top, class: col-md-12, type: sonata.block.service.monitoring}
             - { position: top, class: col-md-12, type: sonata.block.service.charts}
         groups:
@@ -52,5 +52,5 @@ sonata_block:
         # enable the SonataAdminBundle block
         sonata.block.service.monitoring:
         sonata.block.service.charts:
-        biopen.block.recent_elements:
+        gogo.block.recent_elements:
             contexts: [admin]

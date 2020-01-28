@@ -28,7 +28,7 @@
         {% for report in reports %}
             <tr class="">
               <td>
-                <a href="{{ path('biopen_directory_showElement', {'id': report.element.id, 'name': report.element.name}) | replace({"%23":'#'}) }}">{{ report.element.name }}</a>
+                <a href="{{ path('gogo_directory_showElement', {'id': report.element.id, 'name': report.element.name}) | replace({"%23":'#'}) }}">{{ report.element.name }}</a>
               </td>
               <td>{{ reportValues[report.value] }}</td>
               <td>{{ report.createdAt|date("d/m/Y")}}</td>

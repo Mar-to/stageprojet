@@ -20,8 +20,8 @@ use Knp\Menu\ItemInterface;
 
 class OptionLiteAdmin extends AbstractAdmin
 {
-  protected $baseRouteName = 'admin_biopen_geodirectory_option_lite';
-	protected $baseRoutePattern = 'admin_biopen_geodirectory_option_lite';
+  protected $baseRouteName = 'admin_gogo_geodirectory_option_lite';
+	protected $baseRoutePattern = 'admin_gogo_geodirectory_option_lite';
 
 	protected function configureFormFields(FormMapper $formMapper)
 	{
@@ -32,6 +32,6 @@ class OptionLiteAdmin extends AbstractAdmin
 		  	->add('icon', null, array('required' => false, 'label' => 'Icone', 'attr' => ['class' => 'gogo-icon-picker']))
 		  	->add('useIconForMarker', null, array('required' => false, 'label' => "Icone  pour le marqueur", 'label_attr' => ['title'=>"Le marqueur affichera toutes icones de chaque catégorie ayant cette option activée. Les icones seront classées par ordre de selection des catégories dans le formulaire"]))
 		  	->add('useColorForMarker', null, array('required' => false, 'label' => "Couleur pour le marqueur", 'label_attr' => ['title'=>"Si un élément a plusieurs catégories qui donnent la couleur, on utilise la catégorie de plus bas niveau"]))
-				->add('_link', 'text', array('required' => false, 'mapped' => false, 'label' => 'admin_biopen_geodirectory_option_edit', ));
+				->add('_link', 'text', array('required' => false, 'mapped' => false, 'label' => 'admin_gogo_geodirectory_option_edit', ));
 	}
 }

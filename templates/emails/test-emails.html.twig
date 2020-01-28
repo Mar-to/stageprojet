@@ -7,7 +7,7 @@
 
   <h2 style="text-align:center; font-weight:bold;">Test du rendu du mail {{ mailType | upper }}</h2>
 
-  <form method="post" action="{{ path('biopen_mail_send_test_automated', { 'mailType' : mailType }) }}" style="text-align:center; margin-bottom:40px;">
+  <form method="post" action="{{ path('gogo_mail_send_test_automated', { 'mailType' : mailType }) }}" style="text-align:center; margin-bottom:40px;">
     <input type="email" name="email" class="form-control" placeholder="Entrez une adresse mail"
             style="display: inline-block;
             width: auto;

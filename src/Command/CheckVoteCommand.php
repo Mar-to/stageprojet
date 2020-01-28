@@ -25,7 +25,7 @@ class CheckVoteCommand extends GoGoAbstractCommand
       $elementRepo = $dm->getRepository('App\Document\Element');
       $elements = $elementRepo->findPendings();
 
-      $voteService = $this->getContainer()->get('biopen.element_vote_service');
+      $voteService = $this->getContainer()->get('gogo.element_vote_service');
 
       foreach ($elements as $key => $element)
       {

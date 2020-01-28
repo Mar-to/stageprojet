@@ -70,7 +70,7 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
 
 			} else {
 
-				$url = $this->router->generate( 'biopen_homepage' );
+				$url = $this->router->generate( 'gogo_homepage' );
 
 			} // end if
 

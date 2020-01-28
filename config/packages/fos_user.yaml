@@ -4,7 +4,7 @@ fos_user:
     user_class:     App\Document\User
     registration:
         form:
-            type: biopen_user_registration
+            type: gogo_user_registration
         confirmation:
             enabled: true
 

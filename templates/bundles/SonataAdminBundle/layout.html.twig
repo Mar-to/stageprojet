@@ -181,15 +181,15 @@
 
 {% block sonata_sidebar_search %}
     <div class="btn-group side-bar-links">
-      <a type="button" href={{ path('biopen_homepage') }} target='_blank' class="btn btn-primary">Retour au site</a>
+      <a type="button" href={{ path('gogo_homepage') }} target='_blank' class="btn btn-primary">Retour au site</a>
       <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <span class="caret"></span>
         <span class="sr-only">Toggle Dropdown</span>
       </button>
       <ul class="dropdown-menu">
-        <li><a href={{ path('biopen_directory') }} target='_blank'>La Carte</a></li>
-        <li><a href={{ path('biopen_element_add') }} target='_blank'>Formulaire</a></li>
-        <li><a href={{ path('biopen_partners') }} target='_blank'>Qui sommes nous</a></li>
+        <li><a href={{ path('gogo_directory') }} target='_blank'>La Carte</a></li>
+        <li><a href={{ path('gogo_element_add') }} target='_blank'>Formulaire</a></li>
+        <li><a href={{ path('gogo_partners') }} target='_blank'>Qui sommes nous</a></li>
       </ul>
     </div>
 {% endblock %}
@@ -199,18 +199,18 @@
     <ul class="sidebar-menu">
         {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_SUPER_ADMIN") %}
             <li class="first treeview">
-                <a href="{{ path('biopen_bulk_actions_index') }}"><i class="fa fa-bullhorn"></i><span>Actions de masse</span></a>
+                <a href="{{ path('gogo_bulk_actions_index') }}"><i class="fa fa-bullhorn"></i><span>Actions de masse</span></a>
             </li>
         {% endif %}
         <li>
-            <a href="{{ path('biopen_core_help') }}"><i class="fa fa-question"></i><span>Aide</span></a>
+            <a href="{{ path('gogo_core_help') }}"><i class="fa fa-question"></i><span>Aide</span></a>
         </li>
         {% if use_as_saas %}
             <li>
                 {% if is_root_project() %}
-                    <a href="{{ path('admin_biopen_saas_project_list') }}"><i class="fa fa-folder-open"></i><span>Projets</span></a>
+                    <a href="{{ path('admin_gogo_saas_project_list') }}"><i class="fa fa-folder-open"></i><span>Projets</span></a>
                 {% elseif is_granted("ROLE_SUPER_ADMIN") %}
-                    <a href="{{ path('biopen_project_delete_my_project') }}" onclick="return confirm('Cette action ne peux pas être annulée. Vous allez supprimer entièrement votre projet. Etes vous sur de vouloir continuer?')">
+                    <a href="{{ path('gogo_project_delete_my_project') }}" onclick="return confirm('Cette action ne peux pas être annulée. Vous allez supprimer entièrement votre projet. Etes vous sur de vouloir continuer?')">
                         <button class="btn btn-sm btn-danger"><i class="fa fa-trash"></i><span>Supprimer ce projet</span></button>
                     </a>
                 {% endif %}

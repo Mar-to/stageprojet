@@ -17,9 +17,9 @@ use Sonata\AdminBundle\Form\Type\AdminType;
 
 class ConfigurationContributionsAdmin extends ConfigurationAbstractAdmin
 {
-    protected $baseRouteName = 'biopen_core_bundle_config_contributions_admin_classname';
+    protected $baseRouteName = 'gogo_core_bundle_config_contributions_admin_classname';
 
-    protected $baseRoutePattern = 'biopen/core/configuration-contributions';
+    protected $baseRoutePattern = 'gogo/core/configuration-contributions';
 
     protected function configureFormFields(FormMapper $formMapper)
     {

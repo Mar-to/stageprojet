@@ -59,6 +59,6 @@ class DailyTimeSlotType extends AbstractType
   */
   public function getName()
   {
-    return 'biopen_elementbundle_dayhoraire';
+    return 'gogo_elementbundle_dayhoraire';
   }
 }

@@ -20,7 +20,7 @@ class WebhooksPostCommand extends GoGoAbstractCommand
     protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
     {
         /** @var WebhookService $webhookService */
-        $webhookService = $this->getContainer()->get('biopen.webhook_service');
+        $webhookService = $this->getContainer()->get('gogo.webhook_service');
 
         $numPosts = $webhookService->processPosts(10);
 

@@ -379,7 +379,7 @@ class Element
 
     public function getShowUrlFromController($controller)
     {
-        return str_replace('%23', '#', $controller->publicGenerateUrl('biopen_directory_showElement', array('id'=>$this->getId())));
+        return str_replace('%23', '#', $controller->publicGenerateUrl('gogo_directory_showElement', array('id'=>$this->getId())));
     }
 
     public function updateRandomHash()

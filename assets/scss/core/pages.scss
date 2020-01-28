@@ -49,15 +49,15 @@ body.gogo-load-css
   	position:relative;
     margin-top: 0;
   	margin-left: auto;
-    margin-right: auto; 
-  	width:100%;	  
-    padding: 0rem; 
+    margin-right: auto;
+  	width:100%;
+    padding: 0rem;
 
     @media screen and (min-width: 900px)
   	{
   	   margin-top: 30px;
   	   max-width: 900px;
-  	   width:80%;  
+  	   width:80%;
   	}
 
     &.with-sidebar {
@@ -83,13 +83,13 @@ body.gogo-load-css
 
   #page-content.with-section {
     background-color: transparent;
-    section { 
+    section {
       border-radius: 5px;
     }
   }
 
-  .divider 
-  {    
+  .divider
+  {
       overflow: hidden;
       border-bottom: 2px dashed;
       overflow: hidden;
@@ -107,7 +107,7 @@ body.gogo-load-css
 
   // ---------------------------------------
   //          MISE EN PAGE GENERALE
-  // --------------------------------------- 
+  // ---------------------------------------
   h1
   {
     font-size: 2.5rem;
@@ -138,7 +138,7 @@ body.gogo-load-css
     margin-bottom: 0;
   }
 
-  .btn-biopen
+  .btn-gogo
   {
     &.small
     {

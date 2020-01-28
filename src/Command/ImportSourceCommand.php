@@ -35,7 +35,7 @@ class ImportSourceCommand extends GoGoAbstractCommand
         }
 
         $this->log('Updating source ' . $import->getSourceName() . ' for project ' . $input->getArgument('dbname') . ' begins...');
-        $importService = $this->getContainer()->get('biopen.element_import');
+        $importService = $this->getContainer()->get('gogo.element_import');
         $result = $importService->startImport($import);
         $this->log($result);
       } catch (\Exception $e) {

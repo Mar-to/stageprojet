@@ -17,9 +17,9 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 class ConfigurationHomeAdmin extends ConfigurationAbstractAdmin
 {
-    protected $baseRouteName = 'biopen_core_bundle_config_home_admin_classname';
+    protected $baseRouteName = 'gogo_core_bundle_config_home_admin_classname';
 
-    protected $baseRoutePattern = 'biopen/core/configuration-home';
+    protected $baseRoutePattern = 'gogo/core/configuration-home';
 
     protected function configureFormFields(FormMapper $formMapper)
     {

@@ -27,7 +27,7 @@ class CheckExternalSourceToUpdateCommand extends GoGoAbstractCommand
       $dynamicImports = $qb->field('refreshFrequencyInDays')->gt(0)
                 ->field('nextRefresh')->lte(new \DateTime())
                 ->getQuery()->execute();
-      $importService = $this->getContainer()->get('biopen.element_import');
+      $importService = $this->getContainer()->get('gogo.element_import');
 
       $this->log('CheckExternalSourceToUpdate : Nombre de sources à mettre à jour : ' . $dynamicImports->count());
 

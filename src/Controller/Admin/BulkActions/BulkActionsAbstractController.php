@@ -87,6 +87,6 @@ class BulkActionsAbstractController extends Controller
 
     protected function redirectToIndex()
     {
-        return $this->redirect($this->generateUrl("biopen_bulk_actions_index"));
+        return $this->redirect($this->generateUrl("gogo_bulk_actions_index"));
     }
 }

@@ -55,6 +55,6 @@ class UserProfileType extends AbstractType
   */
   public function getName()
   {
-    return 'biopen_corebundle_user_profile';
+    return 'gogo_corebundle_user_profile';
   }
 }
