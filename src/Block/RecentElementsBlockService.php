@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use App\Document\ElementStatus;
+use Twig\Environment;
+
 /**
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
  */
@@ -29,11 +31,11 @@ class RecentElementsBlockService extends AbstractAdminBlockService
      * @param DocumentManager $dm
      * @param Pool             $adminPool
      */
-    public function __construct(EngineInterface $templating, DocumentManager $dm, Pool $adminPool = null)
+    public function __construct(Environment $twig, DocumentManager $dm, Pool $adminPool = null)
     {
         $this->manager = $dm;
         $this->adminPool = $adminPool;
-        parent::__construct("RecentElementsBlockService", $templating);
+        parent::__construct("RecentElementsBlockService", $twig);
     }
     /**
      * {@inheritdoc}
@@ -44,7 +46,7 @@ class RecentElementsBlockService extends AbstractAdminBlockService
             'context' => $blockContext,
             'settings' => $blockContext->getSettings(),
             'block' => $blockContext->getBlock(),
-            'results' => $this->manager->createQueryBuilder('BiopenGeoDirectoryBundle:Element')
+            'results' => $this->manager->createQueryBuilder('App\Document\Element')
 						    ->field('status')->equals($blockContext->getSettings()['filterStatus'])
 						    ->sort('updatedAt', 'DESC')
 						    ->limit($blockContext->getSettings()['number'])

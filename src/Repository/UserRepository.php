@@ -15,7 +15,7 @@ class UserRepository extends DocumentRepository
 {
 	public function findNeedsToReceiveNewsletter()
 	{
-      $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:User');
+      $qb = $this->createQueryBuilder('App\Document\User');
       return $qb->field('newsletterFrequency')->gt(NewsletterFrequencyOptions::Never)
                 ->field('nextNewsletterDate')->lte(new \DateTime())
                 ->limit(70)

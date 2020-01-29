@@ -41,6 +41,7 @@ services:
     #     - { resource: "../src/Saas/Resources/config/services.yml" }
     #     - { resource: "../src/Saas/Resources/config/services_admin.yml" }
     #     - { resource: "../src/Sonata/UserBundle/Resources/config/services.yml" }
+
     gogo.authentication_handler:
       class: App\Application\Sonata\UserBundle\Security\AuthenticationHandler
       public: true
@@ -91,12 +92,6 @@ services:
         class: 'JMS\Serializer\Expression\ExpressionEvaluator'
         arguments : ['@jms_serializer.expression_language']
 
-    # app.twig_extension:
-    #     class: Application\Twig\AppExtension
-    #     public: true
-    #     arguments: [ "@doctrine.odm.mongodb.document_manager" ]
-    #     tags:
-    #         - { name: twig.extension }
 
     custom.sonata.security.handler.role:
         public: true
@@ -107,23 +102,23 @@ services:
 
 
     # # SONATA BLOCKS
-    # sonata.block.service.monitoring:
-    #     class: App\Block\MonitoringElementsBlockService
-    #     public: true
-    #     arguments: [ "@templating", "@doctrine.odm.mongodb.document_manager" ]
-    #     tags:
-    #         - { name: sonata.block }
+    gogo.block.service.monitoring:
+        class: App\Block\MonitoringElementsBlockService
+        public: true
+        arguments: [ "@twig", "@doctrine.odm.mongodb.document_manager" ]
+        tags:
+            - { name: sonata.block }
 
-    # sonata.block.service.charts:
-    #     class: App\Block\ChartBlockService
-    #     public: true
-    #     arguments: [ "@templating", "@doctrine.odm.mongodb.document_manager", "@gogo.config_service" ]
-    #     tags:
-    #         - { name: sonata.block }
+    gogo.block.service.charts:
+        class: App\Block\ChartBlockService
+        public: true
+        arguments: [ "@twig", "@doctrine.odm.mongodb.document_manager", "App/Services/ConfigurationService" ]
+        tags:
+            - { name: sonata.block }
 
-    # gogo.block.recent_elements:
-    #     class: App\Block\RecentElementsBlockService
-    #     public: true
-    #     arguments: [ "@templating", "@doctrine.odm.mongodb.document_manager", "@sonata.admin.pool" ]
-    #     tags:
-    #         - { name: sonata.block }
+    gogo.block.recent_elements:
+        class: App\Block\RecentElementsBlockService
+        public: true
+        arguments: [ "@twig", "@doctrine.odm.mongodb.document_manager", "@sonata.admin.pool" ]
+        tags:
+            - { name: sonata.block }

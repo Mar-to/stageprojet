@@ -14,7 +14,7 @@ class OptionRepository extends DocumentRepository
 {
    public function findOptionsIdsWithText($text)
    {
-      $qbOption = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Option');
+      $qbOption = $this->createQueryBuilder('App\Document\Option');
       $expr = $qbOption->expr()->operator('$text', array('$search' => (string) $text));
       $qbOption  //->limit(50)
         ->equals($expr->getQuery())

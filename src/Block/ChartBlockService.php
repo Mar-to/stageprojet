@@ -17,7 +17,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Ob\HighchartsBundle\Highcharts\Highchart;
 use App\Document\InteractionType;
 use App\Document\ElementStatus;
-
+use Twig\Environment;
 
 class ChartBlockService extends AbstractBlockService
 {
@@ -56,10 +56,10 @@ class ChartBlockService extends AbstractBlockService
 		'7' => '#7cb5ec',
 	];
 
-	public function __construct($templating, DocumentManager $dm, $configService)
+	public function __construct(Environment $twig, DocumentManager $dm, $configService)
 	{
 		$this->dm = $dm;
-    $this->templating = $templating;
+    $this->twig = $twig;
     $this->configService = $configService;
 	}
 

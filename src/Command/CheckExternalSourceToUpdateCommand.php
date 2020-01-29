@@ -22,7 +22,7 @@ class CheckExternalSourceToUpdateCommand extends GoGoAbstractCommand
     protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
     {
 
-      $qb = $dm->createQueryBuilder('BiopenGeoDirectoryBundle:ImportDynamic');
+      $qb = $dm->createQueryBuilder('App\Document\ImportDynamic');
 
       $dynamicImports = $qb->field('refreshFrequencyInDays')->gt(0)
                 ->field('nextRefresh')->lte(new \DateTime())

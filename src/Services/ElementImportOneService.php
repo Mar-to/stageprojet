@@ -65,14 +65,14 @@ class ElementImportOneService
 		if ($row['id'])
 		{
 			if (in_array($row['id'], $import->getIdsToIgnore())) return;
-			$qb = $this->dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+			$qb = $this->dm->createQueryBuilder('App\Document\Element');
 			$qb->field('source')->references($import);
 			$qb->field('oldId')->equals("" . $row['id']);
 			$element = $qb->getQuery()->getSingleResult();
 		}
 		else if (is_string($row['name']) && strlen($row['name']) > 0)
 		{
-			$qb = $this->dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+			$qb = $this->dm->createQueryBuilder('App\Document\Element');
 			$qb->field('source')->references($import);
 			$qb->field('name')->equals($row['name']);
 

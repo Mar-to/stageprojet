@@ -19,8 +19,8 @@ sonata_admin:
             # display a dashboard block
             - { position: left, type: gogo.block.recent_elements, settings: { title: 'Dernières validation collaboratives', filterStatus: 2, class: box-success}}
             - { position: right, type: gogo.block.recent_elements, settings: { title: 'Derniers refus collaboratifs', filterStatus: -3 , class: box-danger}}
-            - { position: top, class: col-md-12, type: sonata.block.service.monitoring}
-            - { position: top, class: col-md-12, type: sonata.block.service.charts}
+            - { position: top, class: col-md-12, type: gogo.block.service.monitoring}
+            - { position: top, class: col-md-12, type: gogo.block.service.charts}
         groups:
             Contenus:
                 icon: <i class='fa fa-file-text'></i>

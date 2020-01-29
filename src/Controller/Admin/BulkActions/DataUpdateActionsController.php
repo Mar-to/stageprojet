@@ -10,7 +10,7 @@ class DataUpdateActionsController extends BulkActionsAbstractController
 {
    public function updateGamificationAction(Request $request, SessionInterface $session, DocumentManager $dm)
    {
-      $qb = $dm->createQueryBuilder('BiopenCoreBundle:User');
+      $qb = $dm->createQueryBuilder('App\Document\User');
       $qb->field('email')->notEqual(null);
       $query = $qb->getQuery();
       $users = $query->execute();

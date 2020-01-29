@@ -72,7 +72,7 @@ class MailTestController extends Controller
         $element = $dm->getRepository('App\Document\User')->findOneByEnabled(true);
         $element->setLocation('bordeaux');
         $element->setGeo(new Coordinates(44.876,-0.512));
-        $qb = $dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+        $qb = $dm->createQueryBuilder('App\Document\Element');
         $qb->field('status')->gte(ElementStatus::AdminRefused);
         $qb->field('moderationState')->notIn(array(ModerationState::GeolocError, ModerationState::NoOptionProvided));
         $options = $qb->limit(30)->getQuery()->execute();

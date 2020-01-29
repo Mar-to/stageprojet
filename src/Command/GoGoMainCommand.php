@@ -32,7 +32,7 @@ class GoGoMainCommand extends ContainerAwareCommand
    {
       $dm = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
 
-      $qb = $dm->createQueryBuilder('BiopenSaasBundle:ScheduledCommand');
+      $qb = $dm->createQueryBuilder('App\Document\ScheduledCommand');
 
       $commandToExecute = $qb->field('nextExecutionAt')->lte(new \DateTime())
                              ->sort('nextExecutionAt', 'ASC')

@@ -52,7 +52,7 @@ class DatabaseIntegrityWatcher
 		else if ($document instanceof Webhook)
 		{
 			$webhook = $document;
-      $contributions = $dm->createQueryBuilder('BiopenGeoDirectoryBundle:UserInteractionContribution')
+      $contributions = $dm->createQueryBuilder('App\Document\UserInteractionContribution')
       ->field('webhookPosts.webhook.$id')->equals($webhook->getId())
       ->getQuery()->execute();
 
@@ -80,7 +80,7 @@ class DatabaseIntegrityWatcher
       $uow->computeChangeSets();
       $changeset = $uow->getDocumentChangeSet($document);
       if (array_key_exists("name", $changeset)) {
-        $query = $dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element')->field('optionValues.optionId')->in([$document->getId()]);
+        $query = $dm->createQueryBuilder('App\Document\Element')->field('optionValues.optionId')->in([$document->getId()]);
         $elementIds = array_keys($query->select('id')->hydrate(false)->getQuery()->execute()->toArray());
         if (count($elementIds))
         {

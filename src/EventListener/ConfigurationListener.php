@@ -32,7 +32,7 @@ class ConfigurationListener
                 $removedProps = array_diff($oldPrivateProperties, $newPrivateProperties);
                 $addedProps = array_diff($newPrivateProperties, $oldPrivateProperties);
 
-                $qb = $dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+                $qb = $dm->createQueryBuilder('App\Document\Element');
                 $qb = $qb->updateMany();
                 foreach ($removedProps as $key => $prop) {
                   $qb = $qb->field('privateData.' . $prop)->rename('data.' . $prop);

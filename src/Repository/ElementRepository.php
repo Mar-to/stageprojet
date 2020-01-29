@@ -26,7 +26,7 @@ class ElementRepository extends DocumentRepository
 {
   public function findDuplicatesFor($element, $distance, $maxResults, $includeDeleted = true, $hydrate = false)
   {
-    $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+    $qb = $this->createQueryBuilder('App\Document\Element');
 
     // convert kilometre in degrees
     $radius = $distance / 110;
@@ -48,7 +48,7 @@ class ElementRepository extends DocumentRepository
 
   public function findWhithinBoxes($bounds, $request, $getFullRepresentation, $isAdmin = false)
   {
-    $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+    $qb = $this->createQueryBuilder('App\Document\Element');
 
     $status = ($request->get('pendings') === "false") ? ElementStatus::AdminValidate : ElementStatus::PendingModification;
     $this->filterVisibles($qb, $status);
@@ -69,7 +69,7 @@ class ElementRepository extends DocumentRepository
 
   public function findDuplicatesNodes($limit = null, $getCount = null)
   {
-    $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+    $qb = $this->createQueryBuilder('App\Document\Element');
     $qb->field('isDuplicateNode')->equals(true);
     if ($getCount) $qb->count();
     else {
@@ -81,7 +81,7 @@ class ElementRepository extends DocumentRepository
 
   public function findElementsWithText($text, $fullRepresentation = true, $isAdmin = false)
   {
-    $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+    $qb = $this->createQueryBuilder('App\Document\Element');
 
     $this->queryText($qb, $text)->sortMeta('score', 'textScore');
     $this->filterVisibles($qb);
@@ -93,7 +93,7 @@ class ElementRepository extends DocumentRepository
 
   public function findPendings($getCount = false)
   {
-    $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+    $qb = $this->createQueryBuilder('App\Document\Element');
 
     $qb->field('status')->in(array(ElementStatus::PendingAdd,ElementStatus::PendingModification));
     if ($getCount) $qb->count();
@@ -103,7 +103,7 @@ class ElementRepository extends DocumentRepository
 
   public function findModerationNeeded($getCount = false, $moderationState = null)
   {
-    $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+    $qb = $this->createQueryBuilder('App\Document\Element');
 
     if ($moderationState != null) $qb->field('moderationState')->equals($moderationState);
     else $qb->field('moderationState')->notIn([ModerationState::NotNeeded]);
@@ -116,7 +116,7 @@ class ElementRepository extends DocumentRepository
 
   public function findValidated($getCount = false)
   {
-    $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+    $qb = $this->createQueryBuilder('App\Document\Element');
 
     $qb->field('status')->gt(ElementStatus::PendingAdd)->field('status')->notEqual(ElementStatus::DynamicImport);
     if ($getCount) $qb->count();
@@ -126,7 +126,7 @@ class ElementRepository extends DocumentRepository
 
   public function findVisibles($getCount = false, $excludeImported = false)
   {
-    $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+    $qb = $this->createQueryBuilder('App\Document\Element');
 
     $qb = $this->filterVisibles($qb);
     if ($excludeImported) $qb->field('status')->notEqual(ElementStatus::DynamicImport);
@@ -137,7 +137,7 @@ class ElementRepository extends DocumentRepository
 
   public function findAllPublics($getFullRepresentation, $isAdmin, $request = null)
   {
-    $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+    $qb = $this->createQueryBuilder('App\Document\Element');
 
     $qb = $this->filterVisibles($qb);
     $qb->field('moderationState')->equals(ModerationState::NotNeeded);
@@ -150,7 +150,7 @@ class ElementRepository extends DocumentRepository
 
   public function findAllElements($limit = null, $skip = null, $getCount = false)
   {
-    $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+    $qb = $this->createQueryBuilder('App\Document\Element');
 
     if ($limit) $qb->limit($limit);
     if ($skip) $qb->skip($skip);
@@ -224,7 +224,7 @@ class ElementRepository extends DocumentRepository
 
   public function findElementsOwnedBy($userEmail)
   {
-    $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+    $qb = $this->createQueryBuilder('App\Document\Element');
 
     $qb->field('userOwnerEmail')->equals($userEmail);
     $qb->field('status')->notEqual(ElementStatus::ModifiedPendingVersion);
@@ -234,7 +234,7 @@ class ElementRepository extends DocumentRepository
 
   public function findWithinCenterFromDate($lat, $lng, $distance, $date, $limit = null)
   {
-    $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+    $qb = $this->createQueryBuilder('App\Document\Element');
     $radius = $distance / 110;
     $qb->field('geo')->withinCenter((float)$lat, (float)$lng, $radius);
     $qb->field('createdAt')->gt($date);
@@ -245,7 +245,7 @@ class ElementRepository extends DocumentRepository
 
   public function findStampedWithId($stampId)
   {
-    $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+    $qb = $this->createQueryBuilder('App\Document\Element');
     $qb->field('stamps.id')->in(array((float) $stampId));
     $qb->select('id');
     return $this->queryToArray($qb);
@@ -253,14 +253,14 @@ class ElementRepository extends DocumentRepository
 
   public function findPotentialDuplicateOwner($element)
   {
-    $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+    $qb = $this->createQueryBuilder('App\Document\Element');
     $qb->field('potentialDuplicates')->includesReferenceTo($element);
     return $qb->getQuery()->execute();
   }
 
   public function findOriginalElementOfModifiedPendingVersion($element)
   {
-    $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+    $qb = $this->createQueryBuilder('App\Document\Element');
     $qb->field('modifiedElement')->references($element);
     return $qb->getQuery()->getSingleResult();
   }
@@ -282,7 +282,7 @@ class ElementRepository extends DocumentRepository
 
   private function findProperties($rootPath = 'this')
   {
-    $qb = $this->createQueryBuilder('BiopenGeoDirectoryBundle:Element')
+    $qb = $this->createQueryBuilder('App\Document\Element')
       ->map('function() { for (var key in ' . $rootPath . ') { emit(key, null); } }')
       ->reduce('function(k, vals) { return null; }');
     return array_map(function($array) { return $array['_id']; }, $qb->getQuery()->execute()->toArray());

@@ -13,7 +13,7 @@ class ConfigurationRepository extends DocumentRepository
 {
 	public function findConfiguration()
 	{
-	  $qb = $this->createQueryBuilder('BiopenCoreBundle:Configuration');
+	  $qb = $this->createQueryBuilder('App\Document\Configuration');
      return $qb->getQuery()->getSingleResult();
 	}
 }

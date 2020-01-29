@@ -116,7 +116,7 @@ class ElementImportService
     $import->setLastRefresh(time());
     $import->setCurrState(ImportState::InProgress);
 
-    $qb = $this->dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+    $qb = $this->dm->createQueryBuilder('App\Document\Element');
 		if ($import->isDynamicImport())
 		{
 			$import->updateNextRefreshDate();
@@ -187,7 +187,7 @@ class ElementImportService
       {
       	// If there was an error while retrieving an already existing element
       	// we set back the status to DynamicImport otherwise it will be deleted just after
-	      $qb = $this->dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+	      $qb = $this->dm->createQueryBuilder('App\Document\Element');
 	      $result = $qb->updateMany()
 	         ->field('source')->references($import)->field('oldId')->in($this->elementIdsErrors)
 	         ->field('status')->set(ElementStatus::DynamicImport)
@@ -196,7 +196,7 @@ class ElementImportService
 
       // after updating the source, the element still in DynamicImportTemp are the one who are missing
       // from the new data received, so we need to delete them
-      $qb = $this->dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+      $qb = $this->dm->createQueryBuilder('App\Document\Element');
       $deleteQuery = $qb
          ->field('source')->references($import)
          ->field('status')->equals(ElementStatus::DynamicImportTemp);
@@ -208,12 +208,12 @@ class ElementImportService
       $countElemenDeleted = $deleteQuery->remove()->getQuery()->execute()['n'];
     }
 
-		$qb = $this->dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+		$qb = $this->dm->createQueryBuilder('App\Document\Element');
 		$totalCount = $qb->field('status')->field('source')->references($import)->count()->getQuery()->execute();
 
-		$qb = $this->dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+		$qb = $this->dm->createQueryBuilder('App\Document\Element');
 		$elementsMissingGeoCount = $qb->field('source')->references($import)->field('moderationState')->equals(ModerationState::GeolocError)->count()->getQuery()->execute();
-		$qb = $this->dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+		$qb = $this->dm->createQueryBuilder('App\Document\Element');
 		$elementsMissingTaxoCount = $qb->field('source')->references($import)->field('moderationState')->equals(ModerationState::NoOptionProvided)->count()->getQuery()->execute();
 
 		$logData = [

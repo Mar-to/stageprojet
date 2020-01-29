@@ -30,7 +30,7 @@ class UpdateElementsJsonCommand extends GoGoAbstractCommand
         }
         else
         {
-            $qb = $dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+            $qb = $dm->createQueryBuilder('App\Document\Element');
             $qb->field('id')->in(explode(',',$input->getArgument('ids')));
             $elements = $qb->getQuery()->execute();
         }

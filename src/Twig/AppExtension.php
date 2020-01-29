@@ -1,15 +1,16 @@
 <?php
 
-namespace Application\Twig;
+namespace App\Twig;
 
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 use App\Helper\SaasHelper;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 class AppExtension extends AbstractExtension
 {
-    public function __construct($dm)
+    public function __construct(DocumentManager $dm)
     {
         $this->dm = $dm;
     }

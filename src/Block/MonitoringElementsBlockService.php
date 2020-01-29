@@ -15,15 +15,16 @@ use Sonata\CoreBundle\Validator\ErrorElement;
 use Sonata\BlockBundle\Block\Service\AbstractBlockService;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Twig\Environment;
 
 class MonitoringElementsBlockService extends AbstractBlockService
 {
 	protected $dm;
 
-	public function __construct($templating, DocumentManager $dm)
+	public function __construct(Environment $twig, DocumentManager $dm)
 	{
-		 $this->dm = $dm;
-       $this->templating = $templating;
+		$this->dm = $dm;
+    $this->twig = $twig;
 	}
 
 	public function getName()
@@ -51,8 +52,8 @@ class MonitoringElementsBlockService extends AbstractBlockService
 	    $validateElements = $this->dm->getRepository('App\Document\Element')->findValidated(true);
 	    $allVisibleElements = $this->dm->getRepository('App\Document\Element')->findVisibles(true, false);
 	    $visibleNonImportedElements = $this->dm->getRepository('App\Document\Element')->findVisibles(true, true);
-	    $activeUsersCount = $this->dm->createQueryBuilder('BiopenCoreBundle:User')->field('enabled')->equals(true)->count()->getQuery()->execute();
-	    $activeUsersNewsletterCount = $this->dm->createQueryBuilder('BiopenCoreBundle:User')->field('enabled')->equals(true)
+	    $activeUsersCount = $this->dm->createQueryBuilder('App\Document\User')->field('enabled')->equals(true)->count()->getQuery()->execute();
+	    $activeUsersNewsletterCount = $this->dm->createQueryBuilder('App\Document\User')->field('enabled')->equals(true)
 	    																				->field('newsletterFrequency')->gt(NewsletterFrequencyOptions::Never)->count()->getQuery()->execute();
 
 	    $errors = $this->dm->getRepository('App\Document\GoGoLog')->findBy(['level' => 'error', 'hidden' => false]);
