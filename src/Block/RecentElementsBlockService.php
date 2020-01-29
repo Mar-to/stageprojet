@@ -26,12 +26,12 @@ class RecentElementsBlockService extends AbstractAdminBlockService
     /**
      * @param string           $name
      * @param EngineInterface  $templating
-     * @param DocumentManager $documentManager
+     * @param DocumentManager $dm
      * @param Pool             $adminPool
      */
-    public function __construct(EngineInterface $templating, DocumentManager $documentManager, Pool $adminPool = null)
+    public function __construct(EngineInterface $templating, DocumentManager $dm, Pool $adminPool = null)
     {
-        $this->manager = $documentManager;
+        $this->manager = $dm;
         $this->adminPool = $adminPool;
         parent::__construct("RecentElementsBlockService", $templating);
     }

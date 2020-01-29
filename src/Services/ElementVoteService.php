@@ -28,9 +28,9 @@ class ElementVoteService
 	/**
      * Constructor
      */
-    public function __construct(DocumentManager $documentManager, $securityContext, ConfigurationService $confService, ElementPendingService $elementPendingService)
+    public function __construct(DocumentManager $dm, $securityContext, ConfigurationService $confService, ElementPendingService $elementPendingService)
     {
-        $this->em = $documentManager;
+        $this->dm = $dm;
         $this->user = $securityContext->getToken() ? $securityContext->getToken()->getUser() : null;
         $this->confService = $confService;
         $this->securityContext = $securityContext;
@@ -82,8 +82,8 @@ class ElementVoteService
 
         $element->updateTimestamp();
 
-        $this->em->persist($element);
-        $this->em->flush();
+        $this->dm->persist($element);
+        $this->dm->flush();
 
         $resultMessage = $hasAlreadyVoted ? 'Merci ' . $this->user . ' : votre vote a bien été modifié !' : 'Merci de votre contribution !';
         if ($procedureCompleteMessage) $resultMessage .= '</br>' . $procedureCompleteMessage;

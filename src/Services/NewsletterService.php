@@ -14,11 +14,11 @@ class NewsletterService
    /**
    * Constructor
    */
-   public function __construct(DocumentManager $documentManager, MailService $mailService)
+   public function __construct(DocumentManager $dm, MailService $mailService)
    {
-      $this->em = $documentManager;
+      $this->dm = $dm;
       $this->mailService = $mailService;
-      $this->elementRepo = $this->em->getRepository('App\Document\Element');
+      $this->elementRepo = $this->dm->getRepository('App\Document\Element');
    }
 
    public function sendTo($user)

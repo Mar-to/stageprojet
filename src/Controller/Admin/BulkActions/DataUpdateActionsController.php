@@ -4,12 +4,12 @@ namespace App\Controller\Admin\BulkActions;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 class DataUpdateActionsController extends BulkActionsAbstractController
 {
-   public function updateGamificationAction(Request $request, SessionInterface $session)
+   public function updateGamificationAction(Request $request, SessionInterface $session, DocumentManager $dm)
    {
-      $dm = $this->get('doctrine_mongodb')->getManager();
       $qb = $dm->createQueryBuilder('BiopenCoreBundle:User');
       $qb->field('email')->notEqual(null);
       $query = $qb->getQuery();

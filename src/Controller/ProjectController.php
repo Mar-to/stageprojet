@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Controller\AbstractSaasController;
 use App\Helper\SaasHelper;
 use Symfony\Component\HttpFoundation\Request;
 use App\Document\Project;
@@ -20,8 +19,10 @@ use App\Document\Category;
 use App\Document\Option;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class ProjectController extends AbstractSaasController
+class ProjectController extends Controller
 {
     protected function isAuthorized()
     {
@@ -29,11 +30,10 @@ class ProjectController extends AbstractSaasController
         return $sassHelper->isRootProject();
     }
 
-    protected function getOdmForProject($project)
+    protected function getOdmForProject($project, DocumentManager $dm)
     {
-        $odm = $this->get('doctrine_mongodb')->getManager();
-        $odm->getConfiguration()->setDefaultDB($project->getDbName());
-        return $odm;
+        $dm->getConfiguration()->setDefaultDB($project->getDbName());
+        return $dm;
     }
 
     protected function generateUrlForProject($project, $route = 'gogo_homepage')
@@ -41,15 +41,14 @@ class ProjectController extends AbstractSaasController
         return 'http://' . $project->getDomainName() . '.' . $this->getParameter('base_url') . $this->generateUrl($route);
     }
 
-    public function createAction(Request $request)
+    public function createAction(Request $request, DocumentManager $dm)
     {
         if (!$this->isAuthorized()) return $this->redirectToRoute('gogo_homepage');
 
-        $odm = $this->get('doctrine_mongodb')->getManager();
         $domain = $request->request->get('form')['domainName'];
         if ($domain) // if submiting the form
         {
-            $existingProject = $odm->getRepository(Project::class)->findOneByDomainName($domain);
+            $existingProject = $dm->getRepository(Project::class)->findOneByDomainName($domain);
             // fix a bug sometime the form says that the project already exist but actually we just created it
             // but it has not been initialized
             // so redirect to initialize project
@@ -66,8 +65,8 @@ class ProjectController extends AbstractSaasController
 
         if ($projectForm->handleRequest($request)->isValid())
         {
-            $odm->persist($project);
-            $odm->flush();
+            $dm->persist($project);
+            $dm->flush();
             // initialize commands
             $commands = (new GoGoMainCommand())->scheduledCommands;
             foreach ($commands as $commandName => $period) {
@@ -76,9 +75,9 @@ class ProjectController extends AbstractSaasController
                 $scheduledCommand->setNextExecutionAt(time());
                 $scheduledCommand->setCommandName($commandName);
                 $project->addCommand($scheduledCommand);
-                $odm->persist($scheduledCommand);
+                $dm->persist($scheduledCommand);
             }
-            $odm->flush();
+            $dm->flush();
 
             // Switch to new project ODM
             $projectOdm = $this->getOdmForProject($project);
@@ -129,7 +128,7 @@ class ProjectController extends AbstractSaasController
             return $this->redirect($url);
         }
 
-        $config = $odm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
 
         return $this->render('saas/projects/create.html.twig', ['form' => $projectForm->createView(), 'config' => $config]);
     }
@@ -137,14 +136,13 @@ class ProjectController extends AbstractSaasController
     /**
      * @Route("/projects", name="gogo_saas_home")
      */
-    public function homeAction()
+    public function homeAction(DocumentManager $dm)
     {
         if (!$this->isAuthorized()) return $this->redirectToRoute('gogo_homepage');
 
-        $odm = $this->get('doctrine_mongodb')->getManager();
-        $repository = $odm->getRepository('App\Document\Project');
+        $repository = $dm->getRepository('App\Document\Project');
 
-        $config = $odm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
 
         $projects = $repository->findBy([], ['dataSize' => 'DESC']);
 
@@ -155,10 +153,9 @@ class ProjectController extends AbstractSaasController
         return $this->render('saas/home.html.twig', array('projects' => $projects, 'config' => $config));
     }
 
-    public function initializeAction(Request $request)
+    public function initializeAction(Request $request, DocumentManager $dm)
     {
-        $odm = $this->get('doctrine_mongodb')->getManager();
-        $users = $odm->getRepository('App\Document\User')->findAll();
+        $users = $dm->getRepository('App\Document\User')->findAll();
         if (count($users) > 0) return $this->redirectToRoute('gogo_homepage');
 
         $userManager = $this->container->get('fos_user.user_manager');
@@ -183,7 +180,7 @@ class ProjectController extends AbstractSaasController
             return $response;
         }
 
-        $config = $odm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
         return $this->render('saas/projects/initialize.html.twig', ['form' => $form->createView(), 'config' => $config]);
     }
 
@@ -211,9 +208,8 @@ class ProjectController extends AbstractSaasController
         return $this->redirect($url);
     }
 
-    public function deleteSaasRecordAction($dbName)
+    public function deleteSaasRecordAction($dbName, DocumentManager $dm)
     {
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $command = "mongo --eval 'db.getMongo().getDBNames().indexOf(\"{$dbName}\")'";
         $process = new Process($command);
         $process->run();

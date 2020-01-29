@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use Sonata\AdminBundle\Controller\CRUDController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use App\Document\Category;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 class CategoryAdminController extends Controller
 {
@@ -13,11 +14,10 @@ class CategoryAdminController extends Controller
         return $this->treeAction();
     }
 
-    public function treeAction()
+    public function treeAction(DocumentManager $dm)
     {
         $this->admin->checkAccess('list');
 
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
         $rootCategories = $dm->getRepository('App\Document\Category')->findRootCategories();
 

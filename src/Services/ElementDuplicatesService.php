@@ -12,14 +12,14 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 class ElementDuplicatesService
 {
-   public function __construct(DocumentManager $documentManager)
+   public function __construct(DocumentManager $dm)
    {
-      $this->em = $documentManager;
+      $this->dm = $dm;
    }
 
    public function checkForDuplicates($element, $includeDeleted = false, $hydrate = false, $distance = 1, $maxResults = 10)
    {
-      $elements = $this->em->getRepository('App\Document\Element')->findDuplicatesFor(
+      $elements = $this->dm->getRepository('App\Document\Element')->findDuplicatesFor(
          $element,
          $distance,
          $maxResults,

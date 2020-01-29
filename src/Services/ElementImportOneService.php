@@ -29,9 +29,9 @@ class ElementImportOneService
 	/**
     * Constructor
     */
-  public function __construct(DocumentManager $documentManager, $geocoder, $interactionService)
+  public function __construct(DocumentManager $dm, $geocoder, $interactionService)
   {
-		$this->em = $documentManager;
+		$this->dm = $dm;
 		$this->geocoder = $geocoder->using('google_maps');
 		$this->interactionService = $interactionService;
 		$this->currentRow = [];
@@ -45,7 +45,7 @@ class ElementImportOneService
     }
 
     // Getting the private field of the custom data
-    $config = $this->em->getRepository('App\Document\Configuration')->findConfiguration();
+    $config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
     $this->privateDataProps = $config->getApi()->getPublicApiPrivateProperties();
   }
 
@@ -65,14 +65,14 @@ class ElementImportOneService
 		if ($row['id'])
 		{
 			if (in_array($row['id'], $import->getIdsToIgnore())) return;
-			$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+			$qb = $this->dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 			$qb->field('source')->references($import);
 			$qb->field('oldId')->equals("" . $row['id']);
 			$element = $qb->getQuery()->getSingleResult();
 		}
 		else if (is_string($row['name']) && strlen($row['name']) > 0)
 		{
-			$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+			$qb = $this->dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 			$qb->field('source')->references($import);
 			$qb->field('name')->equals($row['name']);
 
@@ -102,7 +102,7 @@ class ElementImportOneService
 				{
 					$element->setPreventJsonUpdate(true);
 					if ($element->getStatus() == ElementStatus::DynamicImportTemp) $element->setStatus(ElementStatus::DynamicImport);
-					$this->em->persist($element);
+					$this->dm->persist($element);
 					return "nothing_to_do";
 				}
 				else {
@@ -177,7 +177,7 @@ class ElementImportOneService
 		$element->setStatus($status);
 		$element->updateTimestamp();
 
-		$this->em->persist($element);
+		$this->dm->persist($element);
 
 		return $updateExisting ? "updated" : "created";
 	}

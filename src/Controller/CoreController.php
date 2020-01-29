@@ -51,11 +51,9 @@ class CoreController extends GoGoController
             "renderedFromController" => true));
     }
 
-    public function partnersAction()
+    public function partnersAction(DocumentManager $dm)
     {
-    	$repository = $this
-    	  ->get('doctrine_mongodb')->getManager()
-    	  ->getRepository('App\Document\Partner');
+    	$repository = $dm->getRepository('App\Document\Partner');
 
         $listPartners = $repository->findAllOrderedByPosition();
 

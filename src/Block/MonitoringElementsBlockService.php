@@ -20,9 +20,9 @@ class MonitoringElementsBlockService extends AbstractBlockService
 {
 	protected $dm;
 
-	public function __construct($templating, DocumentManager $documentManager)
+	public function __construct($templating, DocumentManager $dm)
 	{
-		 $this->em = $documentManager;
+		 $this->dm = $dm;
        $this->templating = $templating;
 	}
 
@@ -46,19 +46,19 @@ class MonitoringElementsBlockService extends AbstractBlockService
 
 	public function execute(BlockContextInterface $blockContext, Response $response = null)
 	{
-	    $pendings = $this->em->getRepository('App\Document\Element')->findPendings(true);
-	    $moderationNeeded = $this->em->getRepository('App\Document\Element')->findModerationNeeded(true);
-	    $validateElements = $this->em->getRepository('App\Document\Element')->findValidated(true);
-	    $allVisibleElements = $this->em->getRepository('App\Document\Element')->findVisibles(true, false);
-	    $visibleNonImportedElements = $this->em->getRepository('App\Document\Element')->findVisibles(true, true);
-	    $activeUsersCount = $this->em->createQueryBuilder('BiopenCoreBundle:User')->field('enabled')->equals(true)->count()->getQuery()->execute();
-	    $activeUsersNewsletterCount = $this->em->createQueryBuilder('BiopenCoreBundle:User')->field('enabled')->equals(true)
+	    $pendings = $this->dm->getRepository('App\Document\Element')->findPendings(true);
+	    $moderationNeeded = $this->dm->getRepository('App\Document\Element')->findModerationNeeded(true);
+	    $validateElements = $this->dm->getRepository('App\Document\Element')->findValidated(true);
+	    $allVisibleElements = $this->dm->getRepository('App\Document\Element')->findVisibles(true, false);
+	    $visibleNonImportedElements = $this->dm->getRepository('App\Document\Element')->findVisibles(true, true);
+	    $activeUsersCount = $this->dm->createQueryBuilder('BiopenCoreBundle:User')->field('enabled')->equals(true)->count()->getQuery()->execute();
+	    $activeUsersNewsletterCount = $this->dm->createQueryBuilder('BiopenCoreBundle:User')->field('enabled')->equals(true)
 	    																				->field('newsletterFrequency')->gt(NewsletterFrequencyOptions::Never)->count()->getQuery()->execute();
 
-	    $errors = $this->em->getRepository('App\Document\GoGoLog')->findBy(['level' => 'error', 'hidden' => false]);
+	    $errors = $this->dm->getRepository('App\Document\GoGoLog')->findBy(['level' => 'error', 'hidden' => false]);
       usort( $errors, function ($a, $b) { return $b->getCreatedAt()->getTimestamp() - $a->getCreatedAt()->getTimestamp(); });
 
-      $messages = $this->em->getRepository('App\Document\GoGoLog')->findBy(['type' => 'update', 'hidden' => false]);
+      $messages = $this->dm->getRepository('App\Document\GoGoLog')->findBy(['type' => 'update', 'hidden' => false]);
       usort( $errors, function ($a, $b) { return $b->getCreatedAt()->getTimestamp() - $a->getCreatedAt()->getTimestamp(); });
 
 	    // merge settings

@@ -9,6 +9,7 @@ use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Document\OptionValue;
 use App\Document\ValidationType;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 use App\Document\ElementStatus;
 use App\Document\Import;
@@ -166,8 +167,8 @@ class ElementAdminBulkController extends Controller
     // BATCH HARD DELETE
     public function batchActionDelete(ProxyQueryInterface $selectedModelQuery)
     {
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
+        $dm = $this->admin->getModelManager(); // ??
+        dump($dm);
         // Add contribution for webhook - Get elements visible, no need to add a contirbution if element where already soft deleted for example
         $selectedModels = clone $selectedModelQuery;
         $elementIds = array_keys($selectedModels->select('id')->field('status')->gte(-1)->hydrate(false)->getQuery()->execute()->toArray());

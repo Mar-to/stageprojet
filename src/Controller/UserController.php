@@ -11,6 +11,7 @@ use App\Form\UserProfileType;
 use Symfony\Component\Form\FormError;
 use App\Document\Coordinates;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 class UserController extends GoGoController
 {
@@ -19,9 +20,8 @@ class UserController extends GoGoController
       return $this->render('user/user-space.html.twig');
    }
 
-   public function contributionsAction()
+   public function contributionsAction(DocumentManager $dm)
    {
-      $dm = $this->get('doctrine_mongodb')->getManager();
       $user = $this->getUser();
       $userEmail = $user->getEmail();
 
@@ -59,9 +59,8 @@ class UserController extends GoGoController
          'allContributions' => $allContribs));
    }
 
-   public function votesAction()
+   public function votesAction(DocumentManager $dm)
    {
-      $dm = $this->get('doctrine_mongodb')->getManager();
       $user = $this->getUser();
       $userEmail = $user->getEmail();
 
@@ -71,9 +70,8 @@ class UserController extends GoGoController
       return $this->render('user/contributions/votes.html.twig', array('votes' => $votes));
    }
 
-   public function reportsAction()
+   public function reportsAction(DocumentManager $dm)
    {
-      $dm = $this->get('doctrine_mongodb')->getManager();
       $user = $this->getUser();
       $userEmail = $user->getEmail();
 
@@ -83,9 +81,8 @@ class UserController extends GoGoController
       return $this->render('user/contributions/reports.html.twig', array('reports' => $reports));
    }
 
-   public function becomeOwnerAction($id, Request $request, SessionInterface $session)
+   public function becomeOwnerAction($id, Request $request, SessionInterface $session, DocumentManager $dm)
    {
-      $dm = $this->get('doctrine_mongodb')->getManager();
       $element = $dm->getRepository('App\Document\Element')->find($id);
 
       if (!$element->getUserOwnerEmail()) {
@@ -103,12 +100,11 @@ class UserController extends GoGoController
       return $this->redirectToRoute('gogo_user_contributions');
    }
 
-   public function profileAction(Request $request, SessionInterface $session)
+   public function profileAction(Request $request, SessionInterface $session, DocumentManager $dm)
    {
       $user = $this->getUser();
       $current_user = clone $user;
       $form = $this->get('form.factory')->create(UserProfileType::class, $user);
-      $dm = $this->get('doctrine_mongodb')->getManager();
       $userRepo = $dm->getRepository('App\Document\User');
       $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
 

@@ -43,7 +43,7 @@ class UpdateElementsJsonCommand extends GoGoAbstractCommand
         $i = 0;
         foreach ($elements as $key => $element)
         {
-            $elemntJsonService->updateJsonRepresentation($element, $dm);
+            $elemntJsonService->updateJsonRepresentation($element);
 
             if ((++$i % 100) == 0) {
                 $dm->flush();

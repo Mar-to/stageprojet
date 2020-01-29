@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Services\ValidationType;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 // Split this big controller into two classes
 class ElementAdminController extends ElementAdminBulkController
@@ -103,8 +104,7 @@ class ElementAdminController extends ElementAdminBulkController
 
                     if ($request->get('submit_update_json'))
                     {
-                        $dm = $this->container->get('doctrine_mongodb')->getManager();
-                        $this->container->get('gogo.element_json_generator')->updateJsonRepresentation($object, $dm);
+                        $this->container->get('gogo.element_json_generator')->updateJsonRepresentation($object);
                     }
                     elseif ($object->isPending() && ($request->get('submit_accept') || $request->get('submit_refuse')))
                     {

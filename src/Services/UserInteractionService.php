@@ -19,11 +19,11 @@ class UserInteractionService
    /**
    * Constructor
    */
-   public function __construct(DocumentManager $documentManager, $securityContext)
+   public function __construct(DocumentManager $dm, $securityContext)
    {
-      $this->em = $documentManager;
+      $this->dm = $dm;
       $this->securityContext = $securityContext;
-      $this->webhooks = $this->em->getRepository(Webhook::class)->findAll();
+      $this->webhooks = $this->dm->getRepository(Webhook::class)->findAll();
    }
 
    public function createContribution($message, $interactType, $status, $directModerationWithHash = false, $dmail = null)

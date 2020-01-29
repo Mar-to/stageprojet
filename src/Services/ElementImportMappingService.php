@@ -40,9 +40,9 @@ class ElementImportMappingService
     'long' => 'longitude', 'lng' => 'longitude', 'lon' => 'longitude'
   ];
 
-  public function __construct(DocumentManager $documentManager)
+  public function __construct(DocumentManager $dm)
   {
-    $this->em = $documentManager;
+    $this->dm = $dm;
     $this->mappingTableIds = [];
   }
 
@@ -50,7 +50,7 @@ class ElementImportMappingService
   {
     $this->import = $import;
     $this->createMissingOptions = $import->getCreateMissingOptions();
-    $parent = $import->getParentCategoryToCreateOptions() ?: $this->em->getRepository('App\Document\Category')->findOneByIsRootCategory(true);
+    $parent = $import->getParentCategoryToCreateOptions() ?: $this->dm->getRepository('App\Document\Category')->findOneByIsRootCategory(true);
     $this->parentCategoryIdToCreateMissingOptions = $parent ? $parent->getId() : null;
 
     // Execute custom code (the <?php is used to have proper code highliting in text editor, we remove it before executing)
@@ -126,8 +126,8 @@ class ElementImportMappingService
     }
 
     try {
-      $this->em->persist($import);
-      $this->em->flush();
+      $this->dm->persist($import);
+      $this->dm->flush();
     } catch (\Exception $e) {
       // catching corrupt BSON
       return null;
@@ -140,7 +140,7 @@ class ElementImportMappingService
   {
     $this->ontologyMapping = $import->getOntologyMapping();
     $this->allNewFields = [];
-    $props = $this->em->getRepository('App\Document\Element')->findAllCustomProperties();
+    $props = $this->dm->getRepository('App\Document\Element')->findAllCustomProperties();
     $props = array_merge($this->coreFields, $props);
     $this->existingProps = [];
     foreach ($props as $prop) {
@@ -196,7 +196,7 @@ class ElementImportMappingService
   {
     $taxonomyMapping = $import->getTaxonomyMapping();
     // delete obsolte mapping (if an option have been deleted, but is still in the mapping)
-    $allOptionsIds = array_keys($this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Option')->select('id')
+    $allOptionsIds = array_keys($this->dm->createQueryBuilder('BiopenGeoDirectoryBundle:Option')->select('id')
                                 ->hydrate(false)->getQuery()->execute()->toArray());
     foreach ($taxonomyMapping as $key => $value) {
       $taxonomyMapping[$key] = array_filter($value, function($el) use ($allOptionsIds) {
@@ -359,7 +359,7 @@ class ElementImportMappingService
 
   private function createOptionsMappingTable($options = null)
   {
-    if ($options === null) $options = $this->em->getRepository('App\Document\Option')->findAll();
+    if ($options === null) $options = $this->dm->getRepository('App\Document\Option')->findAll();
 
     foreach($options as $option)
     {
@@ -379,7 +379,7 @@ class ElementImportMappingService
   {
     if ($this->parentCategoryIdToCreateMissingOptions)
     {
-      $parent = $this->em->getRepository('App\Document\Category')->find($this->parentCategoryIdToCreateMissingOptions);
+      $parent = $this->dm->getRepository('App\Document\Category')->find($this->parentCategoryIdToCreateMissingOptions);
     }
     else
     {
@@ -387,7 +387,7 @@ class ElementImportMappingService
       $mainCategory = new Category();
       $mainCategory->setName('Catégories Principales');
       $mainCategory->setPickingOptionText('Une catégorie principale');
-      $this->em->persist($mainCategory);
+      $this->dm->persist($mainCategory);
       $this->parentCategoryIdToCreateMissingOptions = $mainCategory->getId();
       $parent = $mainCategory;
     }
@@ -397,7 +397,7 @@ class ElementImportMappingService
     $option->setParent($parent);
     $option->setUseIconForMarker(false);
     $option->setUseColorForMarker(false);
-    $this->em->persist($option);
+    $this->dm->persist($option);
     $this->createOptionsMappingTable([$option]);
     return $option->getId();
   }

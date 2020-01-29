@@ -28,13 +28,13 @@ class WebhookService
 
 	protected $router;
 
-    public function __construct(DocumentManager $documentManager, Router $router, $securityContext, $baseUrl, $basePath)
+    public function __construct(DocumentManager $dm, Router $router, $securityContext, $baseUrl, $basePath)
     {
-    	 $this->em = $documentManager;
+    	 $this->dm = $dm;
     	 $this->router = $router;
          $this->securityContext = $securityContext;
          $this->baseUrl = 'http://' . $baseUrl . $basePath;
-         $this->config = $this->em->getRepository(Configuration::class)->findConfiguration();
+         $this->config = $this->dm->getRepository(Configuration::class)->findConfiguration();
     }
 
     /**
@@ -42,7 +42,7 @@ class WebhookService
      */
     public function processPosts($limit = 5)
     {
-        $contributions = $this->em->createQueryBuilder(UserInteractionContribution::class)
+        $contributions = $this->dm->createQueryBuilder(UserInteractionContribution::class)
         ->field('status')->exists(true)
         ->field('webhookPosts.nextAttemptAt')->lte(new \DateTime())
         ->limit($limit)
@@ -106,7 +106,7 @@ class WebhookService
         // Force the pool of requests to complete.
         $promise->wait();
 
-        $this->em->flush();
+        $this->dm->flush();
 
         return count($postsToProceed);
     }
@@ -117,7 +117,7 @@ class WebhookService
         if ($contribution->getElement())
         {
             $element = $contribution->getElement();
-            $this->em->refresh($element);
+            $this->dm->refresh($element);
             $element->setPreventJsonUpdate(true);
             $link = str_replace('%23', '#', $this->router->generate('gogo_directory_showElement', array('id'=>$element->getId()), true));
             $data = json_decode($element->getBaseJson(), true);

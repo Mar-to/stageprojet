@@ -21,8 +21,8 @@ class UpdateProjectsInfoCommand extends ContainerAwareCommand
 
    protected function execute(InputInterface $input, OutputInterface $output)
    {
-      $odm = $this->getContainer()->get('doctrine_mongodb')->getManager();
-      $projects = $odm->getRepository('App\Document\Project')->findAll();
+      $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+      $projects = $dm->getRepository('App\Document\Project')->findAll();
 
       $logger = $this->getContainer()->get('monolog.logger.commands');
       $logger->info("Updating projects informations. " . count($projects) . " projects to update");
@@ -39,12 +39,12 @@ class UpdateProjectsInfoCommand extends ContainerAwareCommand
           $project->setImageUrl($data['imageUrl']);
           $project->setDescription($data['description']);
           $project->setDataSize($data['dataSize']);
-          $odm->persist($project);
+          $dm->persist($project);
         }
         catch (\Exception $e) {
           $logger->error($e->getMessage());
         }
       }
-      $odm->flush();
+      $dm->flush();
    }
 }

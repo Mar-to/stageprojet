@@ -27,9 +27,9 @@ class ElementImportService
 	/**
     * Constructor
     */
-  public function __construct(DocumentManager $documentManager, $importOneService, $mappingService, $taxonomyJsonGenerator)
+  public function __construct(DocumentManager $dm, $importOneService, $mappingService, $taxonomyJsonGenerator)
   {
-		$this->em = $documentManager;
+		$this->dm = $dm;
 		$this->importOneService = $importOneService;
 		$this->mappingService = $mappingService;
     $this->taxonomyJsonGenerator = $taxonomyJsonGenerator;
@@ -48,8 +48,8 @@ class ElementImportService
 
   	$import->setCurrState(ImportState::Downloading);
   	$import->setCurrMessage("Téléchargement des données en cours... Veuillez patienter...");
-  	$this->em->persist($import);
-  	$this->em->flush();
+  	$this->dm->persist($import);
+  	$this->dm->flush();
   	if ($import->getUrl()) return $this->importJson($import);
   	else return $this->importCsv($import);
   }
@@ -116,7 +116,7 @@ class ElementImportService
     $import->setLastRefresh(time());
     $import->setCurrState(ImportState::InProgress);
 
-    $qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+    $qb = $this->dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 		if ($import->isDynamicImport())
 		{
 			$import->updateNextRefreshDate();
@@ -165,20 +165,20 @@ class ElementImportService
 
 			if (($i % $batchSize) === 1)
 			{
-			   $this->em->flush();
-			   $this->em->clear();
+			   $this->dm->flush();
+			   $this->dm->clear();
 			   // After flush, we need to get again the import from the DB to avoid doctrine raising errors
-			   $import = $this->em->getRepository('App\Document\Import')->find($import->getId());
-			   $this->em->persist($import);
+			   $import = $this->dm->getRepository('App\Document\Import')->find($import->getId());
+			   $this->dm->persist($import);
 			}
 		}
 
-		$this->em->flush();
-		$this->em->clear();
+		$this->dm->flush();
+		$this->dm->clear();
 
-    $this->taxonomyJsonGenerator->updateTaxonomy($this->em);
-		$import = $this->em->getRepository('App\Document\Import')->find($import->getId());
-		$this->em->persist($import);
+    $this->taxonomyJsonGenerator->updateTaxonomy($this->dm);
+		$import = $this->dm->getRepository('App\Document\Import')->find($import->getId());
+		$this->dm->persist($import);
 
 		$countElemenDeleted = 0;
 		if ($import->isDynamicImport())
@@ -187,7 +187,7 @@ class ElementImportService
       {
       	// If there was an error while retrieving an already existing element
       	// we set back the status to DynamicImport otherwise it will be deleted just after
-	      $qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+	      $qb = $this->dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 	      $result = $qb->updateMany()
 	         ->field('source')->references($import)->field('oldId')->in($this->elementIdsErrors)
 	         ->field('status')->set(ElementStatus::DynamicImport)
@@ -196,24 +196,24 @@ class ElementImportService
 
       // after updating the source, the element still in DynamicImportTemp are the one who are missing
       // from the new data received, so we need to delete them
-      $qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+      $qb = $this->dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
       $deleteQuery = $qb
          ->field('source')->references($import)
          ->field('status')->equals(ElementStatus::DynamicImportTemp);
       // really needed?
       $deletedElementIds = array_keys($deleteQuery->select('id')->hydrate(false)->getQuery()->execute()->toArray());
-      $qb = $this->em->createQueryBuilder(UserInteraction::class);
+      $qb = $this->dm->createQueryBuilder(UserInteraction::class);
       $qb->field('element.id')->in($deletedElementIds)->remove()->getQuery()->execute();
 
       $countElemenDeleted = $deleteQuery->remove()->getQuery()->execute()['n'];
     }
 
-		$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+		$qb = $this->dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 		$totalCount = $qb->field('status')->field('source')->references($import)->count()->getQuery()->execute();
 
-		$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+		$qb = $this->dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 		$elementsMissingGeoCount = $qb->field('source')->references($import)->field('moderationState')->equals(ModerationState::GeolocError)->count()->getQuery()->execute();
-		$qb = $this->em->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
+		$qb = $this->dm->createQueryBuilder('BiopenGeoDirectoryBundle:Element');
 		$elementsMissingTaxoCount = $qb->field('source')->references($import)->field('moderationState')->equals(ModerationState::NoOptionProvided)->count()->getQuery()->execute();
 
 		$logData = [
@@ -241,7 +241,7 @@ class ElementImportService
 		$import->setCurrState($totalErrors > 0 ? ($totalErrors == $size ? ImportState::Failed : ImportState::Errors) : ImportState::Completed);
   	$import->setCurrMessage($log->displayMessage());
 
-		$this->em->flush();
+		$this->dm->flush();
 
 		return $message;
 	}

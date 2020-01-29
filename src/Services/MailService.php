@@ -21,10 +21,10 @@ class MailService
 	/**
 	* Constructor
 	*/
-	public function __construct(DocumentManager $documentManager, $mailer, $router, $twig, $baseUrl, $basePath, $sass, $dmail, $instanceName)
+	public function __construct(DocumentManager $dm, $mailer, $router, $twig, $baseUrl, $basePath, $sass, $dmail, $instanceName)
 	{
-	   $this->em = $documentManager;
-       $this->config = $this->em->getRepository('App\Document\Configuration')->findConfiguration();
+	   $this->dm = $dm;
+       $this->config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
        $this->mailer = $mailer;
        $this->router = $router;
        $this->twig = $twig;

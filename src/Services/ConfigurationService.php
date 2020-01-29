@@ -13,11 +13,11 @@ class ConfigurationService
 	/**
 	* Constructor
 	*/
-	public function __construct(DocumentManager $documentManager, $securityContext)
+	public function __construct(DocumentManager $dm, $securityContext)
 	{
-	   $this->em = $documentManager;
+	   $this->dm = $dm;
 	   $this->securityContext = $securityContext;
-       $this->config = $this->em->getRepository('App\Document\Configuration')->findConfiguration();
+       $this->config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
 	}
 
 	public function isUserAllowed($featureName, $request = null, $dmail = null)

@@ -45,9 +45,9 @@ class ElementActionService
    /**
    * Constructor
    */
-   public function __construct(DocumentManager $documentManager, $securityContext, MailService $mailService, ElementPendingService $elementPendingService, UserInteractionService $interactionService)
+   public function __construct(DocumentManager $dm, $securityContext, MailService $mailService, ElementPendingService $elementPendingService, UserInteractionService $interactionService)
    {
-      $this->em = $documentManager;
+      $this->dm = $dm;
       $this->securityContext = $securityContext;
       $this->mailService = $mailService;
       $this->elementPendingService = $elementPendingService;
@@ -66,7 +66,7 @@ class ElementActionService
    {
       if ($element->getStatus() == ElementStatus::ModifiedPendingVersion)
       {
-         $element = $this->em->getRepository('App\Document\Element')->findOriginalElementOfModifiedPendingVersion($element);
+         $element = $this->dm->getRepository('App\Document\Element')->findOriginalElementOfModifiedPendingVersion($element);
          $this->resolve($element, true, ValidationType::Admin, $message);
       }
       else if ($sendMail) $this->mailService->sendAutomatedMail('edit', $element, $message);
@@ -139,9 +139,9 @@ class ElementActionService
             $element->setIsDuplicateNode(false);
             $element->clearPotentialDuplicates();
          } else {
-            $potentialOwners = $this->em->getRepository('App\Document\Element')->findPotentialDuplicateOwner($element);
+            $potentialOwners = $this->dm->getRepository('App\Document\Element')->findPotentialDuplicateOwner($element);
             foreach ($potentialOwners as $key => $owner) {
-               $this->em->persist($owner);
+               $this->dm->persist($owner);
                $owner->removePotentialDuplicate($element);
             }
          }

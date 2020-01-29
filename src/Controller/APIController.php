@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use JMS\Serializer\SerializationContext;
 use App\Services\GoGoCartoJsService;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 class APIController extends GoGoController
 {
@@ -22,10 +23,8 @@ class APIController extends GoGoController
   * @stamps (ids)
   * @ontology ( gogofull or gogocompact )
   **/
-  public function getElementsAction(Request $request, $id = null, $_format = 'json')
+  public function getElementsAction(Request $request, $id = null, $_format = 'json', DocumentManager $dm)
   {
-    $dm = $this->get('doctrine_mongodb')->getManager();
-
     $jsonLdRequest = $this->isJsonLdRequest($request, $_format);
     $token = $request->get('token');
     $ontology = $request->get('ontology') ? strtolower($request->get('ontology')) : "gogofull";
@@ -117,10 +116,8 @@ class APIController extends GoGoController
     return $this->createResponse($responseJson, $config, $status);
   }
 
-  public function getTaxonomyAction(Request $request, $id = null, $_format = 'json')
+  public function getTaxonomyAction(Request $request, $id = null, $_format = 'json', DocumentManager $dm)
   {
-    $dm = $this->get('doctrine_mongodb')->getManager();
-
     $optionId = $id ? $id : $request->get('id');
     $jsonLdRequest = $this->isJsonLdRequest($request, $_format);
 
@@ -149,9 +146,8 @@ class APIController extends GoGoController
     return $this->createResponse($responseJson, $config);
   }
 
-  public function getTaxonomyMappingAction(Request $request, $id = null, $_format = 'json')
+  public function getTaxonomyMappingAction(Request $request, $id = null, $_format = 'json', DocumentManager $dm)
   {
-    $dm = $this->get('doctrine_mongodb')->getManager();
     $options = $dm->getRepository('App\Document\Option')->findAll();
     $result = [];
     foreach ($options as $key => $option) {
@@ -179,10 +175,8 @@ class APIController extends GoGoController
     return $response;
   }
 
-  public function getElementsFromTextAction(Request $request)
+  public function getElementsFromTextAction(Request $request, DocumentManager $dm)
   {
-    $dm = $this->get('doctrine_mongodb')->getManager();
-
     $isAdmin = $this->isUserAdmin();
 
     $elements = $dm->getRepository('App\Document\Element')->findElementsWithText($request->get('text'), true, $isAdmin);
@@ -233,19 +227,17 @@ class APIController extends GoGoController
     return $elementsJson;
   }
 
-  public function getGoGoCartoJsConfigurationAction()
+  public function getGoGoCartoJsConfigurationAction(DocumentManager $dm)
   {
-    $odm = $this->get('doctrine_mongodb')->getManager();
-    $config = $odm->getRepository('App\Document\Configuration')->findConfiguration();
+    $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
 
     $gogocartoConf = $this->get('gogo.gogocartojs_service')->getConfig();
 
     return $this->createResponse(json_encode($gogocartoConf), $config);
   }
 
-  public function apiUiAction(SessionInterface $session)
+  public function apiUiAction(SessionInterface $session, DocumentManager $dm)
   {
-    $dm = $this->get('doctrine_mongodb')->getManager();
     $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
     $protectPublicApiWithToken = $config->getApi()->getProtectPublicApiWithToken();
 
@@ -266,9 +258,8 @@ class APIController extends GoGoController
     return $this->render('BiopenCoreBundle:api:api-ui.html.twig', array('options' => $options));
   }
 
-  public function getManifestAction()
+  public function getManifestAction(DocumentManager $dm)
   {
-    $dm = $this->get('doctrine_mongodb')->getManager();
     $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
     $img = $config->getFavicon() ? $config->getFavicon() : $config->getLogo();
     $imageData = null;
@@ -311,9 +302,8 @@ class APIController extends GoGoController
     return $response;
   }
 
-  public function getProjectInfoAction()
+  public function getProjectInfoAction(DocumentManager $dm)
   {
-    $dm = $this->get('doctrine_mongodb')->getManager();
     $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
     $img = $config->getSocialShareImage() ? $config->getSocialShareImage() : $config->getLogo();
     $imageUrl = $img ? $img->getImageUrl() : null;
@@ -330,14 +320,13 @@ class APIController extends GoGoController
     return $response;
   }
 
-  public function getConfigurationAction()
+  public function getConfigurationAction(DocumentManager $dm)
   {
-    $odm = $this->get('doctrine_mongodb')->getManager();
-    $config = $odm->getRepository('App\Document\Configuration')->findConfiguration();
+    $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
     $defaultTileLayer = $config->getDefaultTileLayer()->getName();
     $config = json_decode(json_encode($config));
 
-    $tileLayers = $odm->getRepository('App\Document\TileLayer')->findAll();
+    $tileLayers = $dm->getRepository('App\Document\TileLayer')->findAll();
 
     $config->defaultTileLayer = $defaultTileLayer;
     $config->tileLayers = $tileLayers;
@@ -346,21 +335,19 @@ class APIController extends GoGoController
     return $response;
   }
 
-  public function hideLogAction($id)
+  public function hideLogAction($id, DocumentManager $dm)
   {
-    $odm = $this->get('doctrine_mongodb')->getManager();
-    $log = $odm->getRepository('App\Document\GoGoLog')->find($id);
+    $log = $dm->getRepository('App\Document\GoGoLog')->find($id);
     $log->setHidden(true);
-    $odm->flush();
+    $dm->flush();
     $response = new Response(json_encode(['success' => true]));
     $response->headers->set('Content-Type', 'application/json');
     return $response;
   }
 
-  public function hideAllLogsAction()
+  public function hideAllLogsAction(DocumentManager $dm)
   {
-    $odm = $this->get('doctrine_mongodb')->getManager();
-    $qb = $odm->createQueryBuilder('BiopenCoreBundle:GoGoLog');
+    $qb = $dm->createQueryBuilder('BiopenCoreBundle:GoGoLog');
     $qb->updateMany()
        ->field('type')->notEqual('update')
        ->field('hidden')->equals(false)
@@ -368,10 +355,9 @@ class APIController extends GoGoController
     return $this->redirectToRoute('sonata_admin_dashboard');
   }
 
-  public function hideAllMessagesAction()
+  public function hideAllMessagesAction(DocumentManager $dm)
   {
-    $odm = $this->get('doctrine_mongodb')->getManager();
-    $qb = $odm->createQueryBuilder('BiopenCoreBundle:GoGoLogUpdate');
+    $qb = $dm->createQueryBuilder('BiopenCoreBundle:GoGoLogUpdate');
     $qb->updateMany()
        ->field('type')->equals('update')
        ->field('hidden')->equals(false)

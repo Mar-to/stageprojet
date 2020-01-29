@@ -18,11 +18,11 @@ class GamificationService {
 
    protected $interactionRepo;
 
-   public function __construct(DocumentManager $documentManager)
+   public function __construct(DocumentManager $dm)
    {
-      $this->contribsRepo = $documentManager->getRepository('App\Document\UserInteractionContribution');
-      $this->votesRepo = $documentManager->getRepository('App\Document\UserInteractionVote');
-      $this->reportsRepo = $documentManager->getRepository('App\Document\UserInteractionReport');
+      $this->contribsRepo = $dm->getRepository('App\Document\UserInteractionContribution');
+      $this->votesRepo = $dm->getRepository('App\Document\UserInteractionVote');
+      $this->reportsRepo = $dm->getRepository('App\Document\UserInteractionReport');
    }
 
    public function updateGamification($user)

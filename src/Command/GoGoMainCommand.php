@@ -30,9 +30,9 @@ class GoGoMainCommand extends ContainerAwareCommand
 
    protected function execute(InputInterface $input, OutputInterface $output)
    {
-      $odm = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
+      $dm = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
 
-      $qb = $odm->createQueryBuilder('BiopenSaasBundle:ScheduledCommand');
+      $qb = $dm->createQueryBuilder('BiopenSaasBundle:ScheduledCommand');
 
       $commandToExecute = $qb->field('nextExecutionAt')->lte(new \DateTime())
                              ->sort('nextExecutionAt', 'ASC')
@@ -47,16 +47,16 @@ class GoGoMainCommand extends ContainerAwareCommand
          $dateNow->setTimestamp(time());
          $interval = new \DateInterval('PT' . $this->scheduledCommands[$commandToExecute->getCommandName()]);
          $commandToExecute->setNextExecutionAt($dateNow->add($interval));
-         $odm->persist($commandToExecute);
-         $odm->flush();
+         $dm->persist($commandToExecute);
+         $dm->flush();
 
          try {
           $logger->info('---- Running command ' . $commandToExecute->getCommandName() . ' for project : ' . $commandToExecute->getProject()->getName());
          } catch (\Exception $e) {
           // the project has been deleted
           $logger->info('---- DELETEING command ' . $commandToExecute->getCommandName());
-          $odm->remove($commandToExecute);
-          $odm->flush();
+          $dm->remove($commandToExecute);
+          $dm->flush();
           return;
          }
          $command = $this->getApplication()->find($commandToExecute->getCommandNAme());

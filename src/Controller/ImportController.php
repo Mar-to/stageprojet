@@ -17,6 +17,7 @@ namespace App\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 use App\Document\Element;
 use App\Document\OptionValue;
@@ -32,18 +33,17 @@ class ImportController extends Controller
         return $this->render('admin/pages/help.html.twig');
     }
 
-    public function availableOptionsAction()
+    public function availableOptionsAction(DocumentManager $dm)
     {
-        $options = $this->get('doctrine_mongodb')->getManager()->getRepository('App\Document\Option')->findAll();
+        $options = $dm->getRepository('App\Document\Option')->findAll();
         $bottomOptions = array_filter($options, function($option) { return $option->getSubcategoriesCount() == 0;});
         $optionsNames = array_map(function($option) { return $option->getNameWithParent(); }, $bottomOptions);
 
         return new Response(join('<br>', $optionsNames));
     }
 
-    public function currStateAction($id)
+    public function currStateAction($id, DocumentManager $dm)
     {
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $import = $dm->getRepository('App\Document\Import')->find($id);
         $responseArray = array(
             "state" => $import->getCurrState(),

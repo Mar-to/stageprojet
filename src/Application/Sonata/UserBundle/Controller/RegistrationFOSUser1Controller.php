@@ -23,6 +23,7 @@ use Symfony\Component\Security\Core\Exception\AccountStatusException;
 use App\Application\Sonata\UserBundle\Form\Type\RegistrationFormType;
 use App\Document\User;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * This class is inspired from the FOS RegistrationController.
@@ -34,10 +35,9 @@ class RegistrationFOSUser1Controller extends Controller
     /**
      * @return RedirectResponse|Response
      */
-    public function registerAction(Request $request = null, SessionInterface $session)
+    public function registerAction(Request $request = null, SessionInterface $session, DocumentManager $dm)
     {
-        $odm = $this->get('doctrine_mongodb')->getManager();
-        $config = $odm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
         if (!$config->getUser()->getEnableRegistration()) {
             $session->getFlashBag()->add('error', "Désolé, vous n'êtes pas autorisé à créer un compte.");
             return $this->redirectToRoute('gogo_directory');

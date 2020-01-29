@@ -20,8 +20,9 @@ use App\Document\Element;
 use App\Document\ElementStatus;
 use App\Form\ElementType;
 use App\Document\User;
+use App\Services\ConfigurationService;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -30,17 +31,13 @@ use joshtronic\LoremIpsum;
 
 class ElementFormController extends GoGoController
 {
-	public function addAction(Request $request, SessionInterface $session)
+	public function addAction(Request $request, SessionInterface $session, DocumentManager $dm, ConfigurationService $configService)
 	{
-		$dm = $this->get('doctrine_mongodb')->getManager();
+		return $this->renderForm(new Element(), false, $request, $session, $dm, $configService);
+ 	}
 
-		return $this->renderForm(new Element(), false, $request, $session, $dm);
-  	}
-
-	public function editAction($id, Request $request, SessionInterface $session)
+	public function editAction($id, Request $request, SessionInterface $session, DocumentManager $dm, ConfigurationService $configService)
 	{
-		$dm = $this->get('doctrine_mongodb')->getManager();
-
 		$element = $dm->getRepository('App\Document\Element')->find($id);
 
 		if (!$element)
@@ -49,10 +46,10 @@ class ElementFormController extends GoGoController
 			return $this->redirectToRoute('gogo_directory');
 		}
 		else if ( $element->getStatus() > ElementStatus::PendingAdd && $element->getStatus() != ElementStatus::DynamicImport
-			|| $this->container->get('gogo.config_service')->isUserAllowed('directModeration')
+			|| $configService->isUserAllowed('directModeration')
 			|| ($element->isPending() && $element->getRandomHash() == $request->get('hash')))
 		{
-			return $this->renderForm($element, true, $request, $session, $dm);
+			return $this->renderForm($element, true, $request, $session, $dm, $configService);
 		}
 		else
 		{
@@ -62,7 +59,7 @@ class ElementFormController extends GoGoController
 	}
 
 	// render for both Add and Edit actions
-	private function renderForm($element, $editMode, $request, $session, $dm)
+	private function renderForm($element, $editMode, $request, $session, $dm, $configService)
 	{
 		if (null === $element) {
 		  throw new NotFoundHttpException("Cet élément n'existe pas.");
@@ -70,7 +67,6 @@ class ElementFormController extends GoGoController
 
 		$addOrEditComplete = false;
 		$userRoles = [];
-		$configService = $this->container->get('gogo.config_service');
 		$addEditName = $editMode ? 'edit' : 'add';
 
 		if ($request->get('logout')) $session->remove('userEmail');
@@ -333,10 +329,8 @@ class ElementFormController extends GoGoController
   }
 
 	// when submitting new element, check it's not yet existing
-	public function checkDuplicatesAction(Request $request, SessionInterface $session)
+	public function checkDuplicatesAction(Request $request, SessionInterface $session, DocumentManager $dm)
 	{
-		$dm = $this->get('doctrine_mongodb')->getManager();
-
 		// a form with just a submit button
 		$checkDuplicatesForm = $this->get('form.factory')->createNamedBuilder('duplicates', 'form')->getForm();
 		if ($request->getMethod() == "POST")

@@ -6,6 +6,7 @@ use Sonata\AdminBundle\Controller\CRUDController as Controller;
 use Symfony\Component\Process\Process;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 class ProjectAdminController extends Controller
 {
@@ -89,23 +90,22 @@ class ProjectAdminController extends Controller
         ));
     }
 
-    private function batchDelete($class, ProxyQueryInterface $queryProxy)
+    private function batchDelete($class, ProxyQueryInterface $queryProxy, DocumentManager $dm)
     {
         $queryBuilder = $queryProxy->getQuery();
-        $documentManager = $this->get('doctrine_mongodb')->getManager();
 
         $i = 0;
         foreach ($queryBuilder->execute() as $object) {
-            $documentManager->remove($object);
+            $dm->remove($object);
             $this->dropDatabase($object);
 
             if ((++$i % 20) == 0) {
-                $documentManager->flush();
-                $documentManager->clear();
+                $dm->flush();
+                $dm->clear();
             }
         }
 
-        $documentManager->flush();
-        $documentManager->clear();
+        $dm->flush();
+        $dm->clear();
     }
 }

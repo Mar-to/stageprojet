@@ -44,9 +44,9 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 class ElementType extends AbstractType
 {
 
-  public function __construct(DocumentManager $documentManager)
+  public function __construct(DocumentManager $dm)
   {
-     $this->em = $documentManager;
+     $this->dm = $dm;
   }
 
   /**

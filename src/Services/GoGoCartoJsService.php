@@ -8,9 +8,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class GoGoCartoJsService
 {
-  public function __construct(DocumentManager $documentManager, $securityContext, $router, $session, $base_protocol)
+  public function __construct(DocumentManager $dm, $securityContext, $router, $session, $base_protocol)
   {
-    $this->odm = $documentManager;
+    $this->odm = $dm;
     $this->securityContext = $securityContext;
     $this->router = $router;
     $this->session = $session;

@@ -10,6 +10,7 @@ use App\Document\Coordinates;
 use App\Document\ElementStatus;
 use App\Document\ModerationState;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 class MailTestController extends Controller
 {
@@ -62,9 +63,8 @@ class MailTestController extends Controller
       return $this->redirectToRoute('gogo_mail_draft_automated', array('mailType' => $mailType));
    }
 
-  private function draftTest($mailType)
+  private function draftTest($mailType, DocumentManager $dm)
   {
-     $dm = $this->get('doctrine_mongodb')->getManager();
      $options = null;
 
      if ($mailType == 'newsletter')

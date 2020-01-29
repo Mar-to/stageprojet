@@ -13,14 +13,14 @@ use App\Controller\GoGoController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Document\Element;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 class DuplicatesController extends GoGoController
 {
   const DUPLICATE_BATH_SIZE = 15;
 
-   public function indexAction()
+   public function indexAction(DocumentManager $dm)
    {
-      $dm = $this->get('doctrine_mongodb')->getManager();
       $options = $dm->getRepository('App\Document\Option')->findAll();
       $optionsNames = [];
       foreach($options as $option) $optionsNames[$option->getId()] = $option->getName();
@@ -50,14 +50,13 @@ class DuplicatesController extends GoGoController
    }
 
    // Will mark all the
-   public function markAsNonDuplicateAction(Request $request)
+   public function markAsNonDuplicateAction(Request $request, DocumentManager $dm)
     {
         if($request->isXmlHttpRequest())
         {
             if (!$request->get('elementId'))
                 return $this->returnResponse(false,"Les paramètres sont incomplets");
 
-            $dm = $this->get('doctrine_mongodb')->getManager();
             $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
 
             $elementActionService = $this->container->get('gogo.element_action_service');

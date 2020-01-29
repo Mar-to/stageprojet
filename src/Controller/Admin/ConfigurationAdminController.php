@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use Sonata\AdminBundle\Controller\CRUDController as Controller;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
@@ -8,14 +8,13 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use App\Document\ElementStatus;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 class ConfigurationAdminController extends Controller
 {
   public function listAction()
   {
-    $dm = $this->get('doctrine_mongodb')->getManager();
-
-    $configuration = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+    // $configuration = $dm->getRepository('App\Document\Configuration')->findConfiguration();
 
     if ($configuration)
        return $this->redirect($this->admin->generateUrl('edit', ['id' => $configuration->getId()]));

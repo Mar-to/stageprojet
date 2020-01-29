@@ -32,9 +32,9 @@ class RandomCreationService
 	/**
      * Constructor
      */
-    public function __construct(DocumentManager $documentManager)
+    public function __construct(DocumentManager $dm)
     {
-    	 $this->em = $documentManager;
+    	 $this->dm = $dm;
     }
 
     public function generate($number, $generateVotes = true)
@@ -83,7 +83,7 @@ class RandomCreationService
 	    $lngSpan = $NElng - $SOlng;
 	    $latSpan = $NElat - $SOlat;
 
-	    $mainCategories = $this->em->getRepository('App\Document\Category')->findRootCategories();
+	    $mainCategories = $this->dm->getRepository('App\Document\Category')->findRootCategories();
 
 	    $lipsum = new LoremIpsum();
 
@@ -112,7 +112,7 @@ class RandomCreationService
 	      		// 	$vote->setValue($this->randWithSet($new_element->getStatus() == 0 ? $voteNewSet : $voteEditSet));
 	      		// 	$vote->setUserEmail($lipsum->words(1) . '@protonmail.com');
 	      		// 	if (rand(0,1)) $vote->setComment($lipsum->words(rand(6,10)));
-	      		// 	$this->em->persist($vote);
+	      		// 	$this->dm->persist($vote);
 	      		// 	$new_element->addVote($vote);
 	      		// }
 	      	}
@@ -124,15 +124,15 @@ class RandomCreationService
           $this->recursivelyCreateOptionsforCategory($mainCategory, $new_element, $lipsum);
         }
 
-	      $this->em->persist($new_element);
+	      $this->dm->persist($new_element);
 
         if (($i % 100) == 0) {
-          $this->em->flush();
-          $this->em->clear();
+          $this->dm->flush();
+          $this->dm->clear();
         }
 	    }
 
-	    $this->em->flush();
+	    $this->dm->flush();
 
 	    return $new_element;
   }

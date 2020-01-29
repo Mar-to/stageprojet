@@ -10,6 +10,7 @@ use App\Document\UserInteractionReport;
 use App\Document\ReportValue;
 use App\Document\UserRoles;
 use App\Document\ModerationState;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 class DuplicatesActionsController extends BulkActionsAbstractController
 {
@@ -17,14 +18,14 @@ class DuplicatesActionsController extends BulkActionsAbstractController
    protected $duplicateService;
    protected $elementActionService;
 
-   public function detectDuplicatesAction(Request $request, SessionInterface $session)
+   public function detectDuplicatesAction(Request $request, SessionInterface $session, DocumentManager $dm)
    {
       $this->title = "Détection des doublons";
       $this->automaticRedirection = false;
       $this->batchSize = 2000;
       $this->duplicateService = $this->get("gogo.element_duplicates_service");
       $this->elementActionService = $this->get("gogo.element_action_service");
-      return $this->elementsBulkAction('detectDuplicates', $request, $session);
+      return $this->elementsBulkAction('detectDuplicates', $dm, $request, $session);
    }
    public function detectDuplicates($element, $dm)
    {

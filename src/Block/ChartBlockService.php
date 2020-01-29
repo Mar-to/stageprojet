@@ -56,9 +56,9 @@ class ChartBlockService extends AbstractBlockService
 		'7' => '#7cb5ec',
 	];
 
-	public function __construct($templating, DocumentManager $documentManager, $configService)
+	public function __construct($templating, DocumentManager $dm, $configService)
 	{
-		$this->em = $documentManager;
+		$this->dm = $dm;
     $this->templating = $templating;
     $this->configService = $configService;
 	}
@@ -191,7 +191,7 @@ class ChartBlockService extends AbstractBlockService
 
 	private function getDataContributionFromType($type)
 	{
-		$builder = $this->em->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionContribution');
+		$builder = $this->dm->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionContribution');
 		$builder
         ->match()
             ->field('type')->equals($type)
@@ -201,19 +201,19 @@ class ChartBlockService extends AbstractBlockService
 
 	private function getDataVote()
 	{
-		$builder = $this->em->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionVote');
+		$builder = $this->dm->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionVote');
       return $this->getDataGroupedBy($builder, 'createdAt');
 	}
 
 	private function getDataReports()
 	{
-		$builder = $this->em->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionReport');
+		$builder = $this->dm->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionReport');
       return $this->getDataGroupedBy($builder, 'createdAt');
 	}
 
 	private function getDataCollaborativeResolve($status)
 	{
-		$builder = $this->em->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionContribution');
+		$builder = $this->dm->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionContribution');
 		$builder
         ->match()
             ->field('status')->equals($status);
@@ -277,7 +277,7 @@ class ChartBlockService extends AbstractBlockService
 
 	private function getDataHowContributionAreResolved($types)
 	{
-		$builder = $this->em->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionContribution');
+		$builder = $this->dm->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionContribution');
 		$builder
 		  ->match()
 		  		->field('type')->in($types)

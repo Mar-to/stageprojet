@@ -21,13 +21,12 @@ class BulkActionsAbstractController extends Controller
     protected $batchSize = 1000;
     protected $automaticRedirection = true;
 
-    protected function elementsBulkAction($functionToExecute, $request, $session)
+    protected function elementsBulkAction($functionToExecute, $dm, $request, $session)
     {
         $elementsLeft = null;
         $elementLeftCount = 0;
         $isStillElementsToProceed = false;
 
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $elementRepo = $dm->getRepository('App\Document\Element');
 
         $optionsRepo = $dm->getRepository('App\Document\Option');

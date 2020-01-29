@@ -6,6 +6,7 @@ use Sonata\AdminBundle\Controller\CRUDController as Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Document\ImportState;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 class ImportAdminController extends Controller
 {
@@ -45,7 +46,7 @@ class ImportAdminController extends Controller
     ]);
   }
 
-  public function refreshAction(Request $request)
+  public function refreshAction(Request $request, DocumentManager $dm)
   {
     $object = $this->admin->getSubject();
 
@@ -57,7 +58,6 @@ class ImportAdminController extends Controller
 
     $object->setCurrState(ImportState::Started);
     $object->setCurrMessage("En attente...");
-    $dm = $this->get('doctrine_mongodb')->getManager();
     $dm->persist($object);
     $dm->flush();
 

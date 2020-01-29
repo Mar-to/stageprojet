@@ -15,7 +15,7 @@ class GoGoAbstractCommand extends ContainerAwareCommand
 {
    protected $logger;
    protected $output;
-   protected $odm;
+   protected $dm;
 
    protected function configure()
    {
@@ -45,7 +45,7 @@ class GoGoAbstractCommand extends ContainerAwareCommand
       }
    }
 
-   protected function gogoExecute($odm, InputInterface $input, OutputInterface $output) {}
+   protected function gogoExecute($dm, InputInterface $input, OutputInterface $output) {}
 
    protected function gogoConfigure() {}
 

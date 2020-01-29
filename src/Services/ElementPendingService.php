@@ -34,9 +34,9 @@ class ElementPendingService
    /**
    * Constructor
    */
-   public function __construct(DocumentManager $documentManager, MailService $mailService, UserInteractionService $interactionService)
+   public function __construct(DocumentManager $dm, MailService $mailService, UserInteractionService $interactionService)
    {
-      $this->em = $documentManager;
+      $this->dm = $dm;
       $this->mailService = $mailService;
       $this->interactionService = $interactionService;
    }
@@ -69,11 +69,11 @@ class ElementPendingService
 
       // making a real refresh, calling refresh and getting again the element from DB (otherwise there were conflicts)
       $element->reset();
-      $this->em->refresh($element);
+      $this->dm->refresh($element);
       $id = $element->getId();
-      $oldElement = $this->em->getRepository('App\Document\Element')->find($id);
+      $oldElement = $this->dm->getRepository('App\Document\Element')->find($id);
 
-      $this->em->persist($modifiedElement);
+      $this->dm->persist($modifiedElement);
       $oldElement->setModifiedElement($modifiedElement);
       return $oldElement;
    }

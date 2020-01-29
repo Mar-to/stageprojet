@@ -5,6 +5,7 @@ namespace App\EventListener;
 use App\Document\Element;
 use App\Document\ModerationState;
 use App\Document\ElementStatus;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 class ElementJsonGenerator
 {
@@ -12,29 +13,34 @@ class ElementJsonGenerator
   protected $config = null;
   protected $options = null;
 
-  public function getConfig($dm)
+  public function __construct(DocumentManager $dm)
   {
-    if (!$this->config) $this->config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+    $this->dm = $dm;
+  }
+
+  public function getConfig()
+  {
+    if (!$this->config) $this->config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
     return $this->config;
   }
 
-  public function getOptions($dm)
+  public function getOptions()
   {
     // load all options so we don't need to do a query on each element being modified
-    if (!$this->options) $this->options = $dm->getRepository('App\Document\Option')->createQueryBuilder()
+    if (!$this->options) $this->options = $this->dm->getRepository('App\Document\Option')->createQueryBuilder()
                                              ->select('name')->hydrate(false)->getQuery()->execute()->toArray();
     return $this->options;
   }
 
   public function preFlush(\Doctrine\ODM\MongoDB\Event\PreFlushEventArgs $eventArgs)
   {
-    $dm = $eventArgs->getDocumentManager();
-    $documentManaged = $dm->getUnitOfWork()->getIdentityMap();
+    $this->dm = $eventArgs->getDocumentManager();
+    $documentManaged = $this->dm->getUnitOfWork()->getIdentityMap();
 
     if (array_key_exists("App\Document\Element", $documentManaged))
     {
       // dump("on pre flush, number of doc managed" . count($documentManaged["App\Document\Element"]));
-      // $uow = $dm->getUnitOfWork();
+      // $uow = $this->dm->getUnitOfWork();
       // $uow->computeChangeSets();
 
       foreach ($documentManaged["App\Document\Element"] as $key => $element)
@@ -45,17 +51,17 @@ class ElementJsonGenerator
 
           // if we want to update only some specific part of the Json object, user currElementChangeset and below method attrChanged
           // $this->currElementChangeset = array_keys($uow->getDocumentChangeSet($element));
-          $this->updateJsonRepresentation($element, $dm);
+          $this->updateJsonRepresentation($element);
         }
       }
     }
   }
 
-  public function updateJsonRepresentation($element, $dm)
+  public function updateJsonRepresentation($element)
   {
     if (!$element->getGeo()) { return; }
-    $config = $this->getConfig($dm);
-    $options = $this->getOptions($dm);
+    $config = $this->getConfig($this->dm);
+    $options = $this->getOptions($this->dm);
     $privateProps = $config->getApi()->getPublicApiPrivateProperties();
 
     // -------------------- FULL JSON ----------------

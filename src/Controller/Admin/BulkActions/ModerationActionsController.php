@@ -4,12 +4,12 @@ namespace App\Controller\Admin\BulkActions;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 class ModerationActionsController extends BulkActionsAbstractController
 {
-   public function deleteElementReportedAsNoMoreExistingAction(Request $request, SessionInterface $session)
+   public function deleteElementReportedAsNoMoreExistingAction(Request $request, SessionInterface $session, DocumentManager $dm)
    {
-      $dm = $this->get('doctrine_mongodb')->getManager();
       $repo = $dm->getRepository('App\Document\Element');
       $elements = $repo->findModerationNeeded(false, 1);
 
