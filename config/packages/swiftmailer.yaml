@@ -5,7 +5,7 @@ swiftmailer:
     # old config :
     # transport: "%mailer_transport%"
     # host:      "%mailer_host%"
-    # username:  "%mailer_user%"
+    # username:  "%from_email%"
     # password:  "%mailer_password%"
     # encryption: ssl
     # port : 465

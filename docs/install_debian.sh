@@ -130,7 +130,7 @@ echo "
 parameters:
     mailer_transport: smtp
     mailer_host: 127.0.0.1
-    mailer_user: null
+    from_email: null
     mailer_password: null
     secret: lijd676jf5657fe56Hyjlkdz
     router.request_context.host: mywebsite.fr

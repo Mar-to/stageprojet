@@ -121,7 +121,7 @@ class UserInteraction
         return $this->getUserRole() == UserRoles::Admin;
     }
 
-    public function updateUserInformation($securityContext, $dmail = null, $directModerationWithHash = false)
+    public function updateUserInformation($securityContext, $email = null, $directModerationWithHash = false)
     {
         $user = $securityContext->getToken() ? $securityContext->getToken()->getUser() : null;
         $user = is_object($user) ? $user : null;
@@ -132,9 +132,9 @@ class UserInteraction
         }
         else
         {
-            if ($dmail)
+            if ($email)
             {
-                $this->setUserEmail($dmail);
+                $this->setUserEmail($email);
                 $this->setUserRole(UserRoles::AnonymousWithEmail);
             }
             else $this->setUserRole(UserRoles::Anonymous);
@@ -143,7 +143,7 @@ class UserInteraction
         }
     }
 
-    public function updateResolvedBy($securityContext, $dmail = null, $directModerationWithHash = false)
+    public function updateResolvedBy($securityContext, $email = null, $directModerationWithHash = false)
     {
         $user = $securityContext->getToken() ? $securityContext->getToken()->getUser() : null;
         $user = is_object($user) ? $user : null;
@@ -153,7 +153,7 @@ class UserInteraction
         }
         else
         {
-            if ($dmail)                          $this->setResolvedBy($dmail);
+            if ($email)                          $this->setResolvedBy($email);
             else if ($directModerationWithHash)  $this->setResolvedBy('Anonymous with hash');
             else                                 $this->setResolvedBy('Anonymous');
         }

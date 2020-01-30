@@ -5,19 +5,25 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     app.version: 2.5.8
-    use_as_sass: "%env(use_as_saas)%"
+    use_as_sass: "%env(USE_AS_SAAS)%"
     locale: fr
-    router.request_context.host: '%env(base_url)%'
-    router.request_context.base_url: '%env(base_path)%'
-    mailer_user: "none" # To be changed
-    use_as_saas: '%env(use_as_saas)%'
+    router.request_context.host: '%env(string:BASE_URL)%'
+    router.request_context.base_url: '%env(BASE_PATH)%'
+    from_email: "%env(FROM_EMAIL)"
+    use_as_saas: '%env(USE_AS_SAAS)%'
+    images_max_filesize: "%env(IMAGES_MAX_FILESIZE)%"
+    files_max_filesize: "%env(FILES_MAX_FILESIZE)%"
+    base_path: '%env(BASE_PATH)%'
+    base_url: '%env(BASE_URL)%'
+    instance_name: '%env(INSTANCE_NAME)%'
+    contact_email: '%env(CONTACT_EMAIL)%'
 
 services:
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-
+        public: false
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
@@ -29,6 +35,14 @@ services:
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
+
+    App\Services\MailService:
+        arguments:
+            $basePath: '%base_path%'
+            $baseUrl: '%base_url%'
+            $saas: '%use_as_saas%'
+            $instanceName: '%instance_name%'
+            $fromEmail: '%from_email%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -28,7 +28,7 @@ class WebhookService
 
 	protected $router;
 
-    public function __construct(DocumentManager $dm, Router $router, $securityContext, $baseUrl, $basePath)
+    public function __construct(DocumentManager $dm, Router $router, TokenStorageInterface $securityContext, $baseUrl, $basePath)
     {
     	 $this->dm = $dm;
     	 $this->router = $router;

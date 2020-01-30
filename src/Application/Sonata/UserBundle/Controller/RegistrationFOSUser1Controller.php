@@ -115,12 +115,12 @@ class RegistrationFOSUser1Controller extends Controller
      */
     public function checkEmailAction()
     {
-        $dmail = $this->get('session')->get('fos_user_send_confirmation_email/email');
+        $email = $this->get('session')->get('fos_user_send_confirmation_email/email');
         $this->get('session')->remove('fos_user_send_confirmation_email/email');
-        $user = $this->get('fos_user.user_manager')->findUserByEmail($dmail);
+        $user = $this->get('fos_user.user_manager')->findUserByEmail($email);
 
         if (null === $user) {
-            throw new NotFoundHttpException(sprintf('The user with email "%s" does not exist', $dmail));
+            throw new NotFoundHttpException(sprintf('The user with email "%s" does not exist', $email));
         }
 
         return $this->render('FOSUserBundle:Registration:checkEmail.html.'.$this->getEngine(), [

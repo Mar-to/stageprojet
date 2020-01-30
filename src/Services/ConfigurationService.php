@@ -3,6 +3,7 @@ namespace App\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class ConfigurationService
 {
@@ -13,16 +14,16 @@ class ConfigurationService
 	/**
 	* Constructor
 	*/
-	public function __construct(DocumentManager $dm, $securityContext)
+	public function __construct(DocumentManager $dm, TokenStorageInterface $securityContext)
 	{
 	   $this->dm = $dm;
 	   $this->securityContext = $securityContext;
        $this->config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
 	}
 
-	public function isUserAllowed($featureName, $request = null, $dmail = null)
+	public function isUserAllowed($featureName, $request = null, $email = null)
 	{
-        if ($dmail === null && $request !== null) $dmail = $request->get('userEmail');
+        if ($email === null && $request !== null) $email = $request->get('userEmail');
 
         $user = $this->securityContext->getToken()->getUser();
 
@@ -31,7 +32,7 @@ class ConfigurationService
         $feature = $this->getFeatureConfig($featureName);
 
         // CHECK USER IS ALLOWED
-        return $feature->isAllowed($user, $request ? $request->get('iframe') : false, $dmail);
+        return $feature->isAllowed($user, $request ? $request->get('iframe') : false, $email);
     }
 
     public function getConfig()

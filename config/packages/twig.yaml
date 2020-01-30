@@ -6,10 +6,10 @@ twig:
 
     globals:
         version: '%app.version%'
-        base_url: '%env(base_url)%'
-        use_as_saas: '%env(use_as_saas)%'
-        base_path: '%env(base_path)%'
-        contact_email: '%env(contact_email)%'
+        base_url: '%base_url%'
+        use_as_saas: '%use_as_saas%'
+        base_path: '%base_path%'
+        contact_email: '%contact_email%'
         oauth_communs: '%env(oauth_communs_id)%'
         oauth_google: '%env(oauth_google_id)%'
         oauth_facebook: '%env(oauth_facebook_id)%'

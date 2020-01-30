@@ -9,7 +9,7 @@ fos_user:
             enabled: true
 
     from_email:
-        address:        "%mailer_user%"
+        address:        "%from_email%"
         sender_name:    "%env(instance_name)%"
 
     group:

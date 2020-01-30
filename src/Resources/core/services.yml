@@ -11,7 +11,7 @@ services:
   gogo.mail_service:
     class: App\Services\MailService
     public: true
-    arguments: [ "@doctrine.odm.mongodb.document_manager", "@mailer", "@router", "@twig", "%base_url%", "%base_path%", "%use_as_saas%", "%mailer_user%", "%env(instance_name)%" ]
+    arguments: [ "@doctrine.odm.mongodb.document_manager", "@mailer", "@router", "@twig", "%base_url%", "%base_path%", "%use_as_saas%", "%from_email%", "%env(instance_name)%" ]
 
   gogo.newsletter_service:
     class: App\Services\NewsletterService

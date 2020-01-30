@@ -6,7 +6,8 @@ use App\Document\UserInteractionReport;
 use App\Document\Element;
 use App\Document\User;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
+use Twig\Environment;
+use Symfony\Component\Routing\RouterInterface;
 class MailService
 {
     protected $dm;
@@ -15,13 +16,13 @@ class MailService
     protected $router;
     protected $twig;
     protected $baseUrl;
-    protected $dmail;
+    protected $email;
     protected $instanceName;
 
 	/**
 	* Constructor
 	*/
-	public function __construct(DocumentManager $dm, $mailer, $router, $twig, $baseUrl, $basePath, $sass, $dmail, $instanceName)
+	public function __construct(DocumentManager $dm, \Swift_Mailer $mailer, RouterInterface $router, Environment $twig, $baseUrl, $basePath, $saas, $fromEmail, $instanceName)
 	{
 	   $this->dm = $dm;
        $this->config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
@@ -30,9 +31,9 @@ class MailService
        $this->twig = $twig;
 
        $this->baseUrl = 'http://';
-       if ($sass) $this->baseUrl .= $this->config->getDbName() . '.';
+       if ($saas) $this->baseUrl .= $this->config->getDbName() . '.';
        $this->baseUrl .= $baseUrl;
-       $this->email = $dmail;
+       $this->email = $fromEmail;
        $this->instanceName = $instanceName;
 	}
 

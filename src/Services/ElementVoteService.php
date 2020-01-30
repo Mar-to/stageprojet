@@ -22,13 +22,14 @@ use Symfony\Component\Security\Core\Security;
 use App\Services\ConfigurationService;
 use App\Services\ElementPendingService;
 use App\Services\ValidationType;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class ElementVoteService
 {
 	/**
      * Constructor
      */
-    public function __construct(DocumentManager $dm, $securityContext, ConfigurationService $confService, ElementPendingService $elementPendingService)
+    public function __construct(DocumentManager $dm,TokenStorageInterface  $securityContext, ConfigurationService $confService, ElementPendingService $elementPendingService)
     {
         $this->dm = $dm;
         $this->user = $securityContext->getToken() ? $securityContext->getToken()->getUser() : null;

@@ -118,7 +118,7 @@ sudo -u $WEB_USR echo "parameters:
   base_path: ${BASE_PATH}
   mailer_transport: ${MAILER_TRANSPORT}
   mailer_host: ${MAILER_HOST}
-  mailer_user: ${MAILER_USER}
+  from_email: ${MAILER_USER}
   mailer_password: ${MAILER_PASSWORD}
   secret: ${SECRET}
   csrf_protection: ${CSRF_PROTECTION}

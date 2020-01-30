@@ -21,6 +21,8 @@ use App\Document\ElementStatus;
 use App\Form\ElementType;
 use App\Document\User;
 use App\Services\ConfigurationService;
+use App\Services\ElementDuplicatesService;
+use App\Services\ElementFormService;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -31,12 +33,12 @@ use joshtronic\LoremIpsum;
 
 class ElementFormController extends GoGoController
 {
-	public function addAction(Request $request, SessionInterface $session, DocumentManager $dm, ConfigurationService $configService)
+	public function addAction(Request $request, SessionInterface $session, DocumentManager $dm, ConfigurationService $configService, ElementDuplicatesService $duplicateService, ElementFormService $elementFormService)
 	{
-		return $this->renderForm(new Element(), false, $request, $session, $dm, $configService);
+		return $this->renderForm(new Element(), false, $request, $session, $dm, $configService, $duplicateService, $elementFormService);
  	}
 
-	public function editAction($id, Request $request, SessionInterface $session, DocumentManager $dm, ConfigurationService $configService)
+	public function editAction($id, Request $request, SessionInterface $session, DocumentManager $dm, ConfigurationService $configService, ElementDuplicatesService $duplicateService, ElementFormService $elementFormService)
 	{
 		$element = $dm->getRepository('App\Document\Element')->find($id);
 
@@ -49,7 +51,7 @@ class ElementFormController extends GoGoController
 			|| $configService->isUserAllowed('directModeration')
 			|| ($element->isPending() && $element->getRandomHash() == $request->get('hash')))
 		{
-			return $this->renderForm($element, true, $request, $session, $dm, $configService);
+			return $this->renderForm($element, true, $request, $session, $dm, $configService, $duplicateService, $elementFormService);
 		}
 		else
 		{
@@ -59,7 +61,7 @@ class ElementFormController extends GoGoController
 	}
 
 	// render for both Add and Edit actions
-	private function renderForm($element, $editMode, $request, $session, $dm, $configService)
+	private function renderForm($element, $editMode, $request, $session, $dm, $configService, $duplicateService, $elementFormService)
 	{
 		if (null === $element) {
 		  throw new NotFoundHttpException("Cet élément n'existe pas.");
@@ -83,12 +85,12 @@ class ElementFormController extends GoGoController
 			->getForm();
 
 			$userEmail = $request->request->get('user')['email'];
-			$dmailAlreadyUsed = false;
+			$emailAlreadyUsed = false;
 			if ($userEmail) {
 				$othersUsers = $dm->getRepository('App\Document\User')->findByEmail($userEmail);
-				$dmailAlreadyUsed = count($othersUsers) > 0;
+				$emailAlreadyUsed = count($othersUsers) > 0;
 			}
-			if ($loginform->handleRequest($request)->isValid() && !$dmailAlreadyUsed)
+			if ($loginform->handleRequest($request)->isValid() && !$emailAlreadyUsed)
 			{
 				$session->set('userEmail', $userEmail);
 				$userType = "email";
@@ -97,7 +99,7 @@ class ElementFormController extends GoGoController
 			{
 				return $this->render('element-form/contributor-login.html.twig', array(
 					'loginForm' => $loginform->createView(),
-					'emailAlreadyUsed' => $dmailAlreadyUsed,
+					'emailAlreadyUsed' => $emailAlreadyUsed,
 					'config' => $configService->getConfig(),
 					'featureConfig' => $configService->getFeatureConfig($addEditName)));
 			}
@@ -183,13 +185,13 @@ class ElementFormController extends GoGoController
 				// check for duplicates in Add action
 				if (!$editMode && !$editingOwnPendingContrib)
 				{
-					$duplicates = $this->get("gogo.element_duplicates_service")->checkForDuplicates($element, true);
+					$duplicates = $duplicateService->checkForDuplicates($element, true);
 					$needToCheckDuplicates = count($duplicates) > 0;
 				}
 				else $needToCheckDuplicates = false;
 
 				// custom handling form (creating OptionValues for example)
-				list($element, $isMinorModification) = $this->get("gogo.element_form_service")->handleFormSubmission($element, $request, $editMode, $userEmail, $isAllowedDirectModeration, $originalElement, $dm);
+				list($element, $isMinorModification) = $elementFormService->handleFormSubmission($element, $request, $editMode, $userEmail, $isAllowedDirectModeration, $originalElement, $dm);
 
 				if ($needToCheckDuplicates)
 				{

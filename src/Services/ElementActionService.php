@@ -22,6 +22,7 @@ use App\Services\ElementPendingService;
 use App\Services\ValidationType;
 use App\Services\MailService;
 use App\Services\UserInteractionService;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 // strange bug importing this class does not work, so redeclare it here
 abstract class InteractType
@@ -45,7 +46,7 @@ class ElementActionService
    /**
    * Constructor
    */
-   public function __construct(DocumentManager $dm, $securityContext, MailService $mailService, ElementPendingService $elementPendingService, UserInteractionService $interactionService)
+   public function __construct(DocumentManager $dm, TokenStorageInterface $securityContext, MailService $mailService, ElementPendingService $elementPendingService, UserInteractionService $interactionService)
    {
       $this->dm = $dm;
       $this->securityContext = $securityContext;

@@ -8,7 +8,7 @@ use App\Document\Webhook;
 use App\Document\WebhookPost;
 use App\Document\UserInteractionContribution;
 use App\Document\ElementStatus;
-
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
 * Service used to handle to resolution of pending Elements
@@ -19,18 +19,18 @@ class UserInteractionService
    /**
    * Constructor
    */
-   public function __construct(DocumentManager $dm, $securityContext)
+   public function __construct(DocumentManager $dm, TokenStorageInterface $securityContext)
    {
       $this->dm = $dm;
       $this->securityContext = $securityContext;
       $this->webhooks = $this->dm->getRepository(Webhook::class)->findAll();
    }
 
-   public function createContribution($message, $interactType, $status, $directModerationWithHash = false, $dmail = null)
+   public function createContribution($message, $interactType, $status, $directModerationWithHash = false, $email = null)
    {
       $contribution = new UserInteractionContribution();
       $contribution->setType($interactType);
-      $contribution->updateUserInformation($this->securityContext, $dmail, $directModerationWithHash);
+      $contribution->updateUserInformation($this->securityContext, $email, $directModerationWithHash);
       $contribution->setResolvedMessage($message);
 
       // pending contribution does not have status
