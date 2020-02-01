@@ -54,7 +54,7 @@ class PartnerAdmin extends AbstractAdmin
                     'edit' => array(),
                     'delete' => array(),
                     'move' => array(
-                        'template' => 'PixSortableBehaviorBundle:Default:_sort.html.twig'
+                        'template' => '@PixSortableBehavior/Default/_sort.html.twig'
                     )
                 )
             ));

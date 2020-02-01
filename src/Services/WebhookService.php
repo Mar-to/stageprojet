@@ -175,7 +175,7 @@ class WebhookService
 
         return $img
             ? $img->getImageUrl()
-            : str_replace('app_dev.php/', '', $this->baseUrl . '/assets/img/default-icon.png');
+            : str_replace('index.php/', '', $this->baseUrl . '/assets/img/default-icon.png');
     }
 
     private function formatData($format, $data)

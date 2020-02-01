@@ -274,7 +274,7 @@ class APIController extends GoGoController
     if (!$imageData) {
       $imgUrl = $this->getRequest()->getUriForPath('/assets/img/default-icon.png');
       if ($this->container->getParameter('kernel.environment') == 'dev') {
-        $imgUrl = str_replace('app_dev.php/', '', $imgUrl);
+        $imgUrl = str_replace('index.php/', '', $imgUrl);
       }
       try {
         $imageData = InterventionImage::make($imgUrl);

@@ -13,6 +13,7 @@ class SaasHelper
    {
       $dbName = $this->ROOT_PROJECT_CODE;
       $host = array_key_exists("HTTP_HOST", $_SERVER) ? $_SERVER["HTTP_HOST"] : null;
+
       if ($host)
       {
          $exploded = explode('.', $host);

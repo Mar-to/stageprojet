@@ -208,7 +208,7 @@
         {% if use_as_saas %}
             <li>
                 {% if is_root_project() %}
-                    <a href="{{ path('admin_gogo_saas_project_list') }}"><i class="fa fa-folder-open"></i><span>Projets</span></a>
+                    <a href="{{ path('admin_app_project_list') }}"><i class="fa fa-folder-open"></i><span>Projets</span></a>
                 {% elseif is_granted("ROLE_SUPER_ADMIN") %}
                     <a href="{{ path('gogo_project_delete_my_project') }}" onclick="return confirm('Cette action ne peux pas être annulée. Vous allez supprimer entièrement votre projet. Etes vous sur de vouloir continuer?')">
                         <button class="btn btn-sm btn-danger"><i class="fa fa-trash"></i><span>Supprimer ce projet</span></button>

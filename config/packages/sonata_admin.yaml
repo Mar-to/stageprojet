@@ -17,10 +17,10 @@ sonata_admin:
     dashboard:
         blocks:
             # display a dashboard block
-            - { position: left, type: gogo.block.recent_elements, settings: { title: 'Dernières validation collaboratives', filterStatus: 2, class: box-success}}
-            - { position: right, type: gogo.block.recent_elements, settings: { title: 'Derniers refus collaboratifs', filterStatus: -3 , class: box-danger}}
-            - { position: top, class: col-md-12, type: gogo.block.service.monitoring}
-            - { position: top, class: col-md-12, type: gogo.block.service.charts}
+            # - { position: left, type: gogo.block.recent_elements, settings: { title: 'Dernières validation collaboratives', filterStatus: 2, class: box-success}}
+            # - { position: right, type: gogo.block.recent_elements, settings: { title: 'Derniers refus collaboratifs', filterStatus: -3 , class: box-danger}}
+            # - { position: top, class: col-md-12, type: gogo.block.service.monitoring}
+            # - { position: top, class: col-md-12, type: gogo.block.service.charts}
         groups:
             Contenus:
                 icon: <i class='fa fa-file-text'></i>
@@ -42,15 +42,3 @@ sonata_admin:
             sonata_user:
                 label: Utilisateurs
                 icon: <i class='fa fa-users'></i>
-
-sonata_block:
-    default_contexts: [cms]
-    blocks:
-        sonata.user.block.menu:    # used to display the menu in profile pages
-        sonata.user.block.account: # used to display menu option (login option)
-        sonata.block.service.text: # used to if you plan to use Sonata user routes
-        # enable the SonataAdminBundle block
-        sonata.block.service.monitoring:
-        sonata.block.service.charts:
-        gogo.block.recent_elements:
-            contexts: [admin]

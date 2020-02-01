@@ -45,17 +45,6 @@ services:
             $instanceName: '%instance_name%'
             $fromEmail: '%from_email%'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
-
-    # imports:
-    #     - { resource: "../src/Core/Resources/config/services.yml" }
-    #     - { resource: "../src/Core/Resources/config/services_admin.yml" }
-    #     - { resource: "../src/GeoDirectory/Resources/config/services.yml" }
-    #     - { resource: "../src/GeoDirectory/Resources/config/services_admin.yml" }
-    #     - { resource: "../src/Saas/Resources/config/services.yml" }
-    #     - { resource: "../src/Saas/Resources/config/services_admin.yml" }
-    #     - { resource: "../src/Sonata/UserBundle/Resources/config/services.yml" }
 
     gogo.authentication_handler:
       class: App\Application\Sonata\UserBundle\Security\AuthenticationHandler
@@ -106,7 +95,6 @@ services:
         class: 'JMS\Serializer\Expression\ExpressionEvaluator'
         arguments : ['@jms_serializer.expression_language']
 
-
     custom.sonata.security.handler.role:
         public: true
         class:  App\Application\Sonata\UserBundle\Security\CustomRoleSecurityHandler
@@ -118,6 +106,13 @@ services:
       class: App\Services\UploadDirectoryNamer
       public: true
       arguments: []
+
+    gedmo.listener.sortable:
+        class: Gedmo\Sortable\SortableListener
+        calls:
+            - [setAnnotationReader, ['@annotation_reader']]
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
 
     App\Services\GoGoCartoJsService:
       arguments:
@@ -132,7 +127,8 @@ services:
       class: App\Services\AsyncService
       factory: 'gogo.async.factory:createAsyncService'
 
-    # EVENT LISTENERS
+    # --------- EVENT LISTENERS -----------
+
     gogo.image_resizer:
       class: App\EventListener\ImageResizer
       arguments:
@@ -172,7 +168,8 @@ services:
           - { name: doctrine_mongodb.odm.event_listener, event: preUpdate }
 
 
-    # SONATA BLOCKS
+    # ----------- SONATA BLOCKS -------------
+
     gogo.block.service.monitoring:
         class: App\Block\MonitoringElementsBlockService
         arguments: [ "@twig", "@doctrine.odm.mongodb.document_manager" ]
@@ -192,3 +189,214 @@ services:
         arguments: [ "@twig", "@doctrine.odm.mongodb.document_manager", "@sonata.admin.pool" ]
         tags:
             - { name: sonata.block }
+
+    # ----------------------------------------
+    # ------------- SONATA ADMIN -------------
+    # ----------------------------------------
+
+
+    # --------- CONTENTS -----------
+
+    admin.wrappers:
+        class: App\Admin\WrapperAdmin
+        arguments: [~, App\Document\Wrapper, 'PixSortableBehaviorBundle:SortableAdmin']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Contenus", label: Bandeaux de la page d'accueil }
+
+    admin.partners:
+        class: App\Admin\PartnerAdmin
+        arguments: [~, App\Document\Partner, 'PixSortableBehaviorBundle:SortableAdmin']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Contenus", label: Partenaires }
+
+    admin.abouts_popup:
+        class: App\Admin\AboutAdmin
+        arguments: [~, App\Document\About, 'PixSortableBehaviorBundle:SortableAdmin']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Contenus", label: Popups type "A propos" }
+
+
+    # --------- CONFIGURATION -----------
+
+    admin.general_config:
+        class: App\Admin\ConfigurationAdmin
+        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Configuration Générale }
+
+    admin.style_config:
+        class: App\Admin\ConfigurationStyleAdmin
+        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Style / Couleurs / Icones }
+
+    admin.home_config:
+        class: App\Admin\ConfigurationHomeAdmin
+        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Page d'Accueil }
+
+    admin.map_config:
+        class: App\Admin\ConfigurationMapAdmin
+        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: La Carte }
+
+    admin.tile_layers:
+        class: App\Admin\TileLayerAdmin
+        arguments: [~, App\Document\TileLayer, 'PixSortableBehaviorBundle:SortableAdmin']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Fonds de Carte }
+
+    admin.fiche_detail_config:
+        class: App\Admin\ConfigurationInfoBarAdmin
+        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: data_model, label: Fiche Détail }
+
+    admin.marker_config:
+        class: App\Admin\ConfigurationMarkerAdmin
+        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Marqueur / Popup }
+
+    admin.contributions_config:
+        class: App\Admin\ConfigurationContributionsAdmin
+        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: data_model, label: Qui peut Contribuer? }
+
+    admin.form_config:
+        class: App\Admin\ConfigurationFormAdmin
+        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: data_model, label: Formulaire }
+
+    admin.email_config:
+        class: App\Admin\ConfigurationMailAdmin
+        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: emailing, label: Mails / Newsletter }
+
+    admin.api_config:
+        class: App\Admin\ConfigurationAPIAdmin
+        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: other_config, label: APIs }
+
+    # -- USER CONF ---
+
+    admin.login_config:
+        class: App\Admin\ConfigurationUserAdmin
+        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: sonata_user, label: Configuration }
+
+    admin.etiquettes_config:
+        class: App\Admin\StampAdmin
+        arguments: [~, App\Document\Stamp, '' ]
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: other_config, label: Etiquettes }
+
+    admin.webhooks_config:
+        class: App\Admin\WebhookAdmin
+        arguments: [~, App\Document\Webhook, '']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: other_config, label: Webhooks }
+
+
+    # --------- HIDDEN -----------
+
+    admin.parter_image_hidden:
+        class: App\Admin\ImageAdmin
+        arguments: [~, App\Document\PartnerImage, '' ]
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }
+
+    admin.conf_image_hidden:
+        class: App\Admin\ImageAdmin
+        arguments: [~, App\Document\ConfImage, '' ]
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }
+
+    admin.image_hidden:
+        class: App\Admin\ImageAdmin
+        arguments: [~, App\Document\EmbeddedImage, '' ]
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }
+
+    admin.feature_config_hidden:
+        class: App\Admin\FeatureConfigurationAdmin
+        arguments: [~, App\Document\FeatureConfiguration, '']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }
+
+    admin.interaction_config_hidden:
+        class: App\Admin\InteractionConfigurationAdmin
+        arguments: [~, App\Document\InteractionConfiguration, '']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }
+
+    admin.automated_mail_config_hidden:
+        class: App\Admin\AutomatedMailConfigurationAdmin
+        arguments: [~, App\Document\AutomatedMailConfiguration, '']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }
+
+    # ------- ELEMENTS ----------
+
+    admin.elements:
+        class: App\Admin\Element\ElementAdmin
+        arguments: [~, App\Document\Element, 'App\Controller\Admin\ElementAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "data", label: Éléments }
+
+    admin.categories:
+        class: App\Admin\CategoryAdmin
+        arguments: [~, App\Document\Category, 'App\Controller\Admin\CategoryAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: data_model, label: Catégories }
+
+    admin.imports:
+        class: App\Admin\ImportAdmin
+        arguments: [~, App\Document\Import, 'App\Controller\Admin\ImportAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "data", label: Import }
+
+    admin.dynamic_imports:
+        class: App\Admin\ImportAdmin
+        arguments: [~, App\Document\ImportDynamic, 'App\Controller\Admin\ImportAdminController' ]
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "data", label: Import dynamique }
+
+    admin.element_image_hidden:
+        class: App\Admin\ImageAdmin
+        arguments: [~, App\Document\ElementImage, '' ]
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }
+
+    admin.option_hidden:
+        class: App\Admin\OptionAdmin
+        arguments: [~, App\Document\Option, 'App\Controller\Admin\OptionAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }
+
+    admin.option.lite_hidden:
+        class: App\Admin\OptionLiteAdmin
+        arguments: [~, App\Document\Option, '']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }
+
+    admin.categories.lite_hidden:
+        class: App\Admin\CategoryLiteAdmin
+        arguments: [~, App\Document\Category, '']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }
+
+    # ------- SAAS ---------
+
+    admin.project:
+        class: App\Admin\ProjectAdmin
+        arguments: [~, App\Document\Project, 'App\Controller\Admin\ProjectAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "hide", label: Projets }
