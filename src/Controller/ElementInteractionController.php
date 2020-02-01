@@ -16,20 +16,24 @@ namespace App\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 use App\Document\Element;
 use App\Document\ElementStatus;
 use App\Document\UserInteractionReport;
-
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Services\ConfigurationService;
+use App\Services\ElementVoteService;
+use App\Services\MailService;
+use App\Services\ElementActionService;
 
 class ElementInteractionController extends Controller
 {
-    public function voteAction(Request $request, DocumentManager $dm)
+    public function voteAction(Request $request, DocumentManager $dm, ConfigurationService $confService,
+                               ElementVoteService $voteService)
     {
-        if (!$this->container->get('gogo.config_service')->isUserAllowed('vote', $request))
+        if (!$confService->isUserAllowed('vote', $request))
             return $this->returnResponse($dm, false,"Désolé, vous n'êtes pas autorisé à voter !");
 
         // CHECK REQUEST IS VALID
@@ -38,15 +42,16 @@ class ElementInteractionController extends Controller
 
         $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
 
-        $resultMessage = $this->get('gogo.element_vote_service')
-                         ->voteForElement($element, $request->get('value'), $request->get('comment'), $request->get('userEmail'));
+        $resultMessage = $voteService->voteForElement($element, $request->get('value'),
+                                                      $request->get('comment'),
+                                                      $request->get('userEmail'));
 
         return $this->returnResponse($dm, true, $resultMessage, $element->getStatus());
     }
 
-    public function reportErrorAction(Request $request, DocumentManager $dm)
+    public function reportErrorAction(Request $request, DocumentManager $dm, ConfigurationService $confService)
     {
-        if (!$this->container->get('gogo.config_service')->isUserAllowed('report', $request))
+        if (!$confService->isUserAllowed('report', $request))
             return $this->returnResponse($dm, false,"Désolé, vous n'êtes pas autorisé à signaler d'erreurs !");
 
         // CHECK REQUEST IS VALID
@@ -71,9 +76,10 @@ class ElementInteractionController extends Controller
         return $this->returnResponse($dm, true, "Merci, votre signalement a bien été enregistré !");
     }
 
-    public function deleteAction(Request $request, DocumentManager $dm)
+    public function deleteAction(Request $request, DocumentManager $dm, ConfigurationService $confService,
+                                 ElementActionService $elementActionService)
     {
-        if (!$this->container->get('gogo.config_service')->isUserAllowed('delete', $request))
+        if (!$confService->isUserAllowed('delete', $request))
             return $this->returnResponse($dm, false,"Désolé, vous n'êtes pas autorisé à supprimer un élément !");
 
         // CHECK REQUEST IS VALID
@@ -83,7 +89,6 @@ class ElementInteractionController extends Controller
         $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
         $dm->persist($element);
 
-        $elementActionService = $this->container->get('gogo.element_action_service');
         $elementActionService->delete($element, true, $request->get('message'));
 
         $dm->flush();
@@ -91,9 +96,11 @@ class ElementInteractionController extends Controller
         return $this->returnResponse($dm, true, "L'élément a bien été supprimé");
     }
 
-    public function resolveReportsAction(Request $request, DocumentManager $dm)
+    public function resolveReportsAction(Request $request, DocumentManager $dm,
+                                         ConfigurationService $confService,
+                                         ElementActionService $elementActionService)
     {
-        if (!$this->container->get('gogo.config_service')->isUserAllowed('directModeration', $request))
+        if (!$confService->isUserAllowed('directModeration', $request))
             return $this->returnResponse($dm, false,"Désolé, vous n'êtes pas autorisé à modérer cet élément !");
 
         // CHECK REQUEST IS VALID
@@ -102,7 +109,6 @@ class ElementInteractionController extends Controller
 
         $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
 
-        $elementActionService = $this->container->get('gogo.element_action_service');
         $elementActionService->resolveReports($element, $request->get('comment'), true);
 
         $dm->persist($element);
@@ -111,9 +117,10 @@ class ElementInteractionController extends Controller
         return $this->returnResponse($dm, true, "L'élément a bien été modéré");
     }
 
-    public function sendMailAction(Request $request, DocumentManager $dm)
+    public function sendMailAction(Request $request, DocumentManager $dm, ConfigurationService $confService,
+                                   MailService $mailService)
     {
-        if (!$this->container->get('gogo.config_service')->isUserAllowed('sendMail', $request))
+        if (!$confService->isUserAllowed('sendMail', $request))
             return $this->returnResponse($dm, false,"Désolé, vous n'êtes pas autorisé à envoyer des mails !");
 
         // CHECK REQUEST IS VALID
@@ -135,7 +142,6 @@ class ElementInteractionController extends Controller
             <p><b>Titre du message</b></p><p> " . $request->get('subject') . "</p>
             <p><b>Contenu</b></p><p> " . $request->get('content') . "</p>";
 
-        $mailService = $this->container->get('gogo.mail_service');
         $mailService->sendMail($element->getEmail(), $mailSubject, $mailContent);
 
         return $this->returnResponse($dm, true, "L'email a bien été envoyé");
@@ -172,15 +178,13 @@ class ElementInteractionController extends Controller
         $response['message'] = $message;
         if ($data !== null) $response['data'] = $data;
 
-        $serializer = $this->container->get('jms_serializer');
-        $responseJson = $serializer->serialize($response, 'json');
+        $responseJson = json_encode($response);
+        $response = new Response($responseJson);
+        $response->headers->set('Content-Type', 'application/json');
 
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
-
-        $response = new Response($responseJson);
-        if ($config->getApi()->getInternalApiAuthorizedDomains())
-           $response->headers->set('Access-Control-Allow-Origin', $config->getApi()->getInternalApiAuthorizedDomains());
-        $response->headers->set('Content-Type', 'application/json');
+        $cors = $config->getApi()->getInternalApiAuthorizedDomains();
+        if ($cors) $response->headers->set('Access-Control-Allow-Origin', $cors);
 
         return $response;
     }

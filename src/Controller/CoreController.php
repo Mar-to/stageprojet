@@ -54,10 +54,11 @@ class CoreController extends GoGoController
     public function partnersAction(DocumentManager $dm)
     {
     	$repository = $dm->getRepository('App\Document\Partner');
+        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
 
         $listPartners = $repository->findAllOrderedByPosition();
 
-        return $this->render('partners.html.twig', array('listPartners' => $listPartners));
+        return $this->render('partners.html.twig', array('listPartners' => $listPartners, 'config' => $config));
     }
 
     public function helpAction()

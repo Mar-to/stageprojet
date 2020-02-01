@@ -13,26 +13,6 @@ use Symfony\Component\Process\PhpExecutableFinder;
 class AsyncServiceFactory
 {
     /**
-     * @var Filesystem
-     */
-    protected $filesystem;
-
-    /**
-     * @var string
-     */
-    protected $rootDir;
-
-    /**
-     * @var string
-     */
-    protected $consolePath;
-
-    /**
-     * @var string
-     */
-    protected $phpPath;
-
-    /**
      * AsyncServiceFactory constructor.
      * @param Filesystem $filesystem
      * @param string $rootDir
@@ -41,14 +21,11 @@ class AsyncServiceFactory
      */
     public function __construct(
         Filesystem $filesystem,
-        $rootDir,
-        $consolePath,
-        $phpPath
+        $rootDir
     ) {
         $this->filesystem = $filesystem;
         $this->rootDir = $rootDir;
-        $this->consolePath = $consolePath;
-        $this->phpPath = $phpPath;
+        $this->consolePath = 'bin/console';
     }
 
     /**
@@ -85,12 +62,8 @@ class AsyncServiceFactory
      */
     protected function resolvePhpPath()
     {
-        $phpPath = $this->phpPath;
-
-        if ($phpPath === null) {
-            $finder = new PhpExecutableFinder();
-            $phpPath = $finder->find();
-        }
+        $finder = new PhpExecutableFinder();
+        $phpPath = $finder->find();
 
         if (!$this->filesystem->exists($phpPath)) {
             throw new FileNotFoundException(sprintf('PHP executable %s doesn\'t exist', $phpPath));

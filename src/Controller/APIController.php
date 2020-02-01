@@ -255,7 +255,7 @@ class APIController extends GoGoController
     }
 
     $options = $dm->getRepository('App\Document\Option')->findAll();
-    return $this->render('BiopenCoreBundle:api:api-ui.html.twig', array('options' => $options));
+    return $this->render('api/api-ui.html.twig', array('options' => $options, 'config' => $config));
   }
 
   public function getManifestAction(DocumentManager $dm)
@@ -273,7 +273,7 @@ class APIController extends GoGoController
     }
     if (!$imageData) {
       $imgUrl = $this->getRequest()->getUriForPath('/assets/img/default-icon.png');
-      if ($this->container->get('kernel')->getEnvironment() == 'dev') {
+      if ($this->container->getParameter('kernel.environment') == 'dev') {
         $imgUrl = str_replace('app_dev.php/', '', $imgUrl);
       }
       try {

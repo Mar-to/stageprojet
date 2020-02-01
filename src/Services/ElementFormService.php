@@ -29,7 +29,6 @@ class ElementFormService
     public function handleFormSubmission($element, $request, $editMode, $userEmail, $isAllowedDirectModeration, $originalElement, $dm)
     {
         $request = $request->request;
-        dump($request);
         $this->updateOptionsValues($element, $request);
         $this->updateCustomData($element, $request, $dm);
 

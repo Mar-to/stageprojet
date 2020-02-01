@@ -8,10 +8,7 @@
  * @license    MIT License
  * @Last Modified time: 2018-07-08 16:44:57
  */
-
-
 namespace App\Controller;
-
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,19 +23,26 @@ use App\Services\ElementFormService;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-
+use FOS\UserBundle\Security\LoginManagerInterface;
+use FOS\UserBundle\Model\UserManagerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
 use joshtronic\LoremIpsum;
+use App\Services\ElementActionService;
 
 class ElementFormController extends GoGoController
 {
-	public function addAction(Request $request, SessionInterface $session, DocumentManager $dm, ConfigurationService $configService, ElementDuplicatesService $duplicateService, ElementFormService $elementFormService)
+	public function addAction(Request $request, SessionInterface $session, DocumentManager $dm,
+														ConfigurationService $configService, ElementDuplicatesService $duplicateService,
+														ElementFormService $elementFormService, UserManagerInterface $userManager,
+														ElementActionService $elementActionService, LoginManagerInterface $loginManager)
 	{
-		return $this->renderForm(new Element(), false, $request, $session, $dm, $configService, $duplicateService, $elementFormService);
+		return $this->renderForm(new Element(), false, $request, $session, $dm, $configService, $duplicateService, $elementFormService, $userManager, $elementActionService, $loginManager);
  	}
 
-	public function editAction($id, Request $request, SessionInterface $session, DocumentManager $dm, ConfigurationService $configService, ElementDuplicatesService $duplicateService, ElementFormService $elementFormService)
+	public function editAction($id, Request $request, SessionInterface $session, DocumentManager $dm,
+														 ConfigurationService $configService, ElementDuplicatesService $duplicateService,
+														 ElementFormService $elementFormService, UserManagerInterface $userManager,
+														 ElementActionService $elementActionService, LoginManagerInterface $loginManager)
 	{
 		$element = $dm->getRepository('App\Document\Element')->find($id);
 
@@ -51,7 +55,7 @@ class ElementFormController extends GoGoController
 			|| $configService->isUserAllowed('directModeration')
 			|| ($element->isPending() && $element->getRandomHash() == $request->get('hash')))
 		{
-			return $this->renderForm($element, true, $request, $session, $dm, $configService, $duplicateService, $elementFormService);
+			return $this->renderForm($element, true, $request, $session, $dm, $configService, $duplicateService, $elementFormService, $userManager, $elementActionService, $loginManager);
 		}
 		else
 		{
@@ -61,11 +65,10 @@ class ElementFormController extends GoGoController
 	}
 
 	// render for both Add and Edit actions
-	private function renderForm($element, $editMode, $request, $session, $dm, $configService, $duplicateService, $elementFormService)
+	private function renderForm($element, $editMode, $request, $session, $dm, $configService, $duplicateService,
+															$elementFormService, $userManager, $elementActionService)
 	{
-		if (null === $element) {
-		  throw new NotFoundHttpException("Cet élément n'existe pas.");
-		}
+		if (null === $element) { throw new NotFoundHttpException("Cet élément n'existe pas."); }
 
 		$addOrEditComplete = false;
 		$userRoles = [];
@@ -81,8 +84,8 @@ class ElementFormController extends GoGoController
 		{
 			// creating simple form to let user enter a email address
 			$loginform = $this->get('form.factory')->createNamedBuilder('user', 'form')
-			->add('email', 'email', array('required' => false))
-			->getForm();
+				->add('email', 'email', array('required' => false))
+				->getForm();
 
 			$userEmail = $request->request->get('user')['email'];
 			$emailAlreadyUsed = false;
@@ -224,8 +227,6 @@ class ElementFormController extends GoGoController
 
 			if ($inputPassword)
 			{
-				$userManager = $this->container->get('fos_user.user_manager');
-
 				// Create our user and set details
 				$user = $userManager->createUser();
 				$user->setUserName($userEmail);
@@ -240,12 +241,11 @@ class ElementFormController extends GoGoController
 				$text = 'Votre compte a bien été créé ! Vous pouvez maintenant compléter <a href="'. $this->generateUrl('gogo_user_profile') .'" >votre profil</a> !';
 				$session->getFlashBag()->add('success', $text);
 
-				$this->authenticateUser($user);
+				$this->authenticateUser($user, $loginManager);
 			}
 
 			if ($this->isRealModification($element, $request))
 			{
-			  $elementActionService = $this->container->get('gogo.element_action_service');
 			  $message = $request->get('admin-message');
 
 			  if ($isAllowedDirectModeration || $isMinorModification)
@@ -354,10 +354,10 @@ class ElementFormController extends GoGoController
 		}
 	}
 
-	protected function authenticateUser($user)
+	protected function authenticateUser($user, $loginManager)
   {
     try {
-      $this->container->get('fos_user.security.login_manager')->loginUser(
+      $loginManager->loginUser(
             $this->getParameter('fos_user.firewall_name'),
             $user, null);
     } catch (AccountStatusException $ex) {

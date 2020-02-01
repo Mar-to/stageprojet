@@ -1,7 +1,7 @@
 # ELEMENTS
 gogo_api_ui:
     path: /api
-    defaults: { _controller: App\Controller\APIController::apiUi }
+    defaults: { _controller: App\Controller\APIController::apiUiAction }
 
 gogo_api_elements_from_text:
     path:     /api/elements/search

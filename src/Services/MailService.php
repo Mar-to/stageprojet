@@ -8,6 +8,7 @@ use App\Document\User;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
 use Symfony\Component\Routing\RouterInterface;
+
 class MailService
 {
     protected $dm;

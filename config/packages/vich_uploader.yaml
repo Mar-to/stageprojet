@@ -3,32 +3,32 @@ vich_uploader:
     mappings:
         default_file:
             upload_destination: '%kernel.root_dir%/../web'
-            directory_namer: gogo.upload_directory_namer
+            directory_namer: App\Services\UploadDirectoryNamer
             namer: vich_uploader.namer_origname
         import_file:
             upload_destination: '%kernel.root_dir%/../web'
-            directory_namer: gogo.upload_directory_namer
+            directory_namer: App\Services\UploadDirectoryNamer
         image:
             upload_destination: '%kernel.root_dir%/../web'
             # inject_on_load: true
-            directory_namer: gogo.upload_directory_namer
+            directory_namer: App\Services\UploadDirectoryNamer
             namer: vich_uploader.namer_origname
         element_image:
             upload_destination: '%kernel.root_dir%/../web'
-            directory_namer: gogo.upload_directory_namer
+            directory_namer: App\Services\UploadDirectoryNamer
             namer: vich_uploader.namer_origname
             delete_on_remove: true
         element_file:
             upload_destination: '%kernel.root_dir%/../web'
-            directory_namer: gogo.upload_directory_namer
+            directory_namer: App\Services\UploadDirectoryNamer
             namer: vich_uploader.namer_origname
             delete_on_remove: true
         partner_image:
             upload_destination: '%kernel.root_dir%/../web'
-            directory_namer: gogo.upload_directory_namer
+            directory_namer: App\Services\UploadDirectoryNamer
             namer: ~
         config_image:
             upload_destination: '%kernel.root_dir%/../web'
-            directory_namer: gogo.upload_directory_namer
+            directory_namer: App\Services\UploadDirectoryNamer
             namer: ~
         # if you add new image class, don't forget to add the relevant service in services_admin.yml

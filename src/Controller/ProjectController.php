@@ -21,6 +21,7 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use FOS\UserBundle\Doctrine\UserManager;
 
 class ProjectController extends Controller
 {
@@ -153,12 +154,11 @@ class ProjectController extends Controller
         return $this->render('saas/home.html.twig', array('projects' => $projects, 'config' => $config));
     }
 
-    public function initializeAction(Request $request, DocumentManager $dm)
+    public function initializeAction(Request $request, DocumentManager $dm, UserManager $userManager)
     {
         $users = $dm->getRepository('App\Document\User')->findAll();
         if (count($users) > 0) return $this->redirectToRoute('gogo_homepage');
 
-        $userManager = $this->container->get('fos_user.user_manager');
         $user = $userManager->createUser();
 
         $form = $this->get('form.factory')->create(RegistrationFormType::class, $user);

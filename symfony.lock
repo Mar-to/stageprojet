@@ -524,6 +524,9 @@
     "symfony/polyfill-uuid": {
         "version": "1.14-dev"
     },
+    "symfony/process": {
+        "version": "4.4.x-dev"
+    },
     "symfony/profiler-pack": {
         "version": "dev-master"
     },

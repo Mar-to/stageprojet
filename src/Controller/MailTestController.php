@@ -9,14 +9,15 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Document\Coordinates;
 use App\Document\ElementStatus;
 use App\Document\ModerationState;
+use App\Services\MailService;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 class MailTestController extends Controller
 {
-   public function draftAutomatedAction(Request $request, SessionInterface $session, $mailType)
+   public function draftAutomatedAction(Request $request, SessionInterface $session, MailService $mailService,
+                                        $mailType)
    {
-      $mailService = $this->container->get('gogo.mail_service');
       $draftResponse = $this->draftTest($mailType);
 
       if ($draftResponse == null) return new Response('No visible elements in database, please create an element');
@@ -33,12 +34,12 @@ class MailTestController extends Controller
       }
    }
 
-   public function sentTestAutomatedAction(Request $request, SessionInterface $session, $mailType)
+   public function sentTestAutomatedAction(Request $request, SessionInterface $session, MailService $mailService,
+                                           $mailType)
    {
       $mail = $request->get('email');
 
       if (!$mail) return new Response('Aucune adresse mail n\'a été renseignée');
-      $mailService = $this->container->get('gogo.mail_service');
 
       $draftResponse = $this->draftTest($mailType);
 
@@ -63,7 +64,7 @@ class MailTestController extends Controller
       return $this->redirectToRoute('gogo_mail_draft_automated', array('mailType' => $mailType));
    }
 
-  private function draftTest($mailType, DocumentManager $dm)
+  private function draftTest($mailType, DocumentManager $dm, MailService $mailService)
   {
      $options = null;
 
@@ -84,7 +85,6 @@ class MailTestController extends Controller
 
      if (!$element) return null;
 
-     $mailService = $this->container->get('gogo.mail_service');
      $draftResponse = $mailService->draftEmail($mailType, $element, "Un customMessage de test", $options);
      return $draftResponse;
   }

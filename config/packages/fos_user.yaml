@@ -4,13 +4,13 @@ fos_user:
     user_class:     App\Document\User
     registration:
         form:
-            type: gogo_user_registration
+            type: App\Application\Sonata\UserBundle\Form\Type\RegistrationFormType
         confirmation:
             enabled: true
 
     from_email:
         address:        "%from_email%"
-        sender_name:    "%env(instance_name)%"
+        sender_name:    "%instance_name%"
 
     group:
         group_class:   App\Application\Sonata\UserBundle\Document\Group

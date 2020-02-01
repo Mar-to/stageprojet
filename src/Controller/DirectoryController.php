@@ -14,12 +14,13 @@ namespace App\Controller;
 
 use App\Controller\GoGoController;
 use Symfony\Component\HttpFoundation\Request;
+use App\Services\GoGoCartoJsService;
 
 class DirectoryController extends GoGoController
 {
-  public function renderAction(Request $request)
+  public function renderAction(Request $request, GoGoCartoJsService $gogoJsService)
   {
-    $gogoConfig = $this->get('gogo.gogocartojs_service')->getConfig();
-    return $this->render('BiopenGeoDirectoryBundle:directory:directory.html.twig', array('gogoConfig' => $gogoConfig));
+    $gogoConfig = $gogoJsService->getConfig();
+    return $this->render('directory/directory.html.twig', array('gogoConfig' => $gogoConfig));
   }
 }

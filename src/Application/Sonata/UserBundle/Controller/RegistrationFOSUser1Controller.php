@@ -24,6 +24,7 @@ use App\Application\Sonata\UserBundle\Form\Type\RegistrationFormType;
 use App\Document\User;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use FOS\UserBundle\Doctrine\UserManager;
 
 /**
  * This class is inspired from the FOS RegistrationController.
@@ -113,11 +114,11 @@ class RegistrationFOSUser1Controller extends Controller
      *
      * @throws NotFoundHttpException
      */
-    public function checkEmailAction()
+    public function checkEmailAction(UserManager $userManager)
     {
         $email = $this->get('session')->get('fos_user_send_confirmation_email/email');
         $this->get('session')->remove('fos_user_send_confirmation_email/email');
-        $user = $this->get('fos_user.user_manager')->findUserByEmail($email);
+        $user = $userManager->findUserByEmail($email);
 
         if (null === $user) {
             throw new NotFoundHttpException(sprintf('The user with email "%s" does not exist', $email));
@@ -137,9 +138,9 @@ class RegistrationFOSUser1Controller extends Controller
      *
      * @throws NotFoundHttpException
      */
-    public function confirmAction($token)
+    public function confirmAction($token, UserManager $userManager)
     {
-        $user = $this->get('fos_user.user_manager')->findUserByConfirmationToken($token);
+        $user = $userManager->findUserByConfirmationToken($token);
 
         if (null === $user) {
             throw new NotFoundHttpException(sprintf('The user with confirmation token "%s" does not exist', $token));
@@ -149,7 +150,7 @@ class RegistrationFOSUser1Controller extends Controller
         $user->setEnabled(true);
         $user->setLastLogin(new \DateTime());
 
-        $this->get('fos_user.user_manager')->updateUser($user);
+        $userManager->updateUser($user);
         if ($redirectRoute = $this->getParameter('sonata.user.register.confirm.redirect_route')) {
             $response = $this->redirect($this->generateUrl(
                 $redirectRoute,

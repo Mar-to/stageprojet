@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Document\Element;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use App\Services\ElementActionService;
 
 class DuplicatesController extends GoGoController
 {
@@ -46,11 +47,11 @@ class DuplicatesController extends GoGoController
       }
       $dm->flush();
 
-      return $this->render('BiopenGeoDirectoryBundle:duplicates:duplicates-index.html.twig', array('duplicatesNode' => $duplicatesNode, 'controller' => $this, 'optionsNames' => $optionsNames, 'leftDuplicatesToProceedCount' => $leftDuplicatesToProceedCount));
+      return $this->render('duplicates/duplicates-index.html.twig', array('duplicatesNode' => $duplicatesNode, 'controller' => $this, 'optionsNames' => $optionsNames, 'leftDuplicatesToProceedCount' => $leftDuplicatesToProceedCount));
    }
 
    // Will mark all the
-   public function markAsNonDuplicateAction(Request $request, DocumentManager $dm)
+   public function markAsNonDuplicateAction(Request $request, DocumentManager $dm, ElementActionService $elementActionService)
     {
         if($request->isXmlHttpRequest())
         {
@@ -58,8 +59,6 @@ class DuplicatesController extends GoGoController
                 return $this->returnResponse(false,"Les paramètres sont incomplets");
 
             $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
-
-            $elementActionService = $this->container->get('gogo.element_action_service');
 
             $element->setIsDuplicateNode(false);
             $duplicates = $element->getPotentialDuplicates() ? $element->getPotentialDuplicates()->toArray() : [];

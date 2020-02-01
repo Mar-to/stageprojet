@@ -46,31 +46,6 @@ services:
       public: true
       arguments: [ "@doctrine.odm.mongodb.document_manager", "@router", "@security.token_storage", "%base_url%", "%base_path%" ]
 
-    gogo.taxonomy_json_generator:
-        class: App\EventListener\TaxonomyJsonGenerator
-        public: true
-        arguments: [ '@jms_serializer' ]
-        tags:
-            - { name: doctrine_mongodb.odm.event_listener, event: postPersist }
-            - { name: doctrine_mongodb.odm.event_listener, event: postFlush }
-            - { name: doctrine_mongodb.odm.event_listener, event: preFlush }
-            - { name: doctrine_mongodb.odm.event_listener, event: postUpdate }
-
-    gogo.element_json_generator:
-        class: App\EventListener\ElementJsonGenerator
-        public: true
-        tags:
-            - { name: doctrine_mongodb.odm.event_listener, event: preFlush }
-
-    gogo.db_integrity:
-        class: App\EventListener\DatabaseIntegrityWatcher
-        public: true
-        arguments: ["@gogo.async"]
-        tags:
-            - { name: doctrine_mongodb.odm.event_listener, event: preRemove }
-            - { name: doctrine_mongodb.odm.event_listener, event: preFlush }
-            - { name: doctrine_mongodb.odm.event_listener, event: preUpdate }
-
     gogo.element_import:
        class: App\Services\ElementImportService
        public: true

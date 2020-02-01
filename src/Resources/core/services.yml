@@ -18,36 +18,6 @@ services:
     public: true
     arguments: [ "@doctrine.odm.mongodb.document_manager", "@gogo.mail_service" ]
 
-  gogo.upload_directory_namer:
-    class: App\Services\UploadDirectoryNamer
-    public: true
-    arguments: []
 
-  gogo.image_resizer:
-    class: App\EventListener\ImageResizer
-    public: true
-    arguments:
-        - '%env(IMAGE_RESIZE_WIDTH)%'
-    tags:
-        - { name: doctrine_mongodb.odm.event_listener, event: postPersist }
 
-  gogo.config_listener:
-    class: App\EventListener\ConfigurationListener
-    public: true
-    tags:
-        - { name: doctrine_mongodb.odm.event_listener, event: preUpdate }
-    arguments: [ "@gogo.async" ]
 
-  gogo.async.factory:
-    class: App\Services\AsyncServiceFactory
-    public: true
-    arguments:
-        - '@filesystem'
-        - '%kernel.root_dir%'
-        - 'bin/console'
-        - null
-
-  gogo.async:
-    class: App\Services\AsyncService
-    public: true
-    factory: 'gogo.async.factory:createAsyncService'

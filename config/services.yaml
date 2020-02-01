@@ -9,10 +9,11 @@ parameters:
     locale: fr
     router.request_context.host: '%env(string:BASE_URL)%'
     router.request_context.base_url: '%env(BASE_PATH)%'
-    from_email: "%env(FROM_EMAIL)"
+    from_email: "%env(FROM_EMAIL)%"
     use_as_saas: '%env(USE_AS_SAAS)%'
     images_max_filesize: "%env(IMAGES_MAX_FILESIZE)%"
     files_max_filesize: "%env(FILES_MAX_FILESIZE)%"
+    base_protocol: '%env(BASE_PROTOCOL)%'
     base_path: '%env(BASE_PATH)%'
     base_url: '%env(BASE_URL)%'
     instance_name: '%env(INSTANCE_NAME)%'
@@ -68,7 +69,6 @@ services:
 
     gogo_user.registration.form.type:
         class: App\Application\Sonata\UserBundle\Form\Type\RegistrationFormType
-        public: true
         arguments: [ "%fos_user.model.user.class%" ]
         tags:
           - { name: "form.type", alias: "gogo_user_registration"}
@@ -114,11 +114,67 @@ services:
             - "@security.authorization_checker"
             - [ROLE_SUPER_ADMIN]
 
+    App\Services\UploadDirectoryNamer:
+      class: App\Services\UploadDirectoryNamer
+      public: true
+      arguments: []
 
-    # # SONATA BLOCKS
+    App\Services\GoGoCartoJsService:
+      arguments:
+        $baseProtocol: '%base_protocol%'
+
+    gogo.async.factory:
+      class: App\Services\AsyncServiceFactory
+      arguments:
+          $rootDir: '%kernel.root_dir%'
+
+    gogo.async:
+      class: App\Services\AsyncService
+      factory: 'gogo.async.factory:createAsyncService'
+
+    # EVENT LISTENERS
+    gogo.image_resizer:
+      class: App\EventListener\ImageResizer
+      arguments:
+          - '%env(IMAGE_RESIZE_WIDTH)%'
+      tags:
+          - { name: doctrine_mongodb.odm.event_listener, event: postPersist }
+
+    gogo.config_listener:
+      class: App\EventListener\ConfigurationListener
+      tags:
+          - { name: doctrine_mongodb.odm.event_listener, event: preUpdate }
+      arguments: [ "@gogo.async" ]
+
+    gogo.element_json_generator:
+      class: App\EventListener\ElementJsonGenerator
+      public: true
+      tags:
+          - { name: doctrine_mongodb.odm.event_listener, event: preFlush }
+
+    gogo.taxonomy_json_generator:
+      class: App\EventListener\TaxonomyJsonGenerator
+      public: true
+      arguments: [ '@jms_serializer' ]
+      tags:
+          - { name: doctrine_mongodb.odm.event_listener, event: postPersist }
+          - { name: doctrine_mongodb.odm.event_listener, event: postFlush }
+          - { name: doctrine_mongodb.odm.event_listener, event: preFlush }
+          - { name: doctrine_mongodb.odm.event_listener, event: postUpdate }
+
+    gogo.db_integrity:
+      class: App\EventListener\DatabaseIntegrityWatcher
+      public: true
+      arguments: ["@gogo.async"]
+      tags:
+          - { name: doctrine_mongodb.odm.event_listener, event: preRemove }
+          - { name: doctrine_mongodb.odm.event_listener, event: preFlush }
+          - { name: doctrine_mongodb.odm.event_listener, event: preUpdate }
+
+
+    # SONATA BLOCKS
     gogo.block.service.monitoring:
         class: App\Block\MonitoringElementsBlockService
-        public: true
         arguments: [ "@twig", "@doctrine.odm.mongodb.document_manager" ]
         tags:
             - { name: sonata.block }

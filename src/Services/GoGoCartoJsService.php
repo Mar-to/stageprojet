@@ -6,16 +6,18 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 class GoGoCartoJsService
 {
-  public function __construct(DocumentManager $dm, TokenStorageInterface $securityContext, $router, $session, $base_protocol)
+  public function __construct(DocumentManager $dm, TokenStorageInterface $securityContext, RouterInterface $router, SessionInterface $session, $baseProtocol)
   {
     $this->odm = $dm;
     $this->securityContext = $securityContext;
     $this->router = $router;
     $this->session = $session;
-    $this->base_protocol = $base_protocol;
+    $this->base_protocol = $baseProtocol;
   }
 
   public function getConfig()

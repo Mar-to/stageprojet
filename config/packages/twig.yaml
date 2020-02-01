@@ -14,7 +14,6 @@ twig:
         oauth_google: '%env(oauth_google_id)%'
         oauth_facebook: '%env(oauth_facebook_id)%'
     paths:
-        "%kernel.root_dir%/../templates/bundles/SonataUserBundle": UserBundle
         "%kernel.root_dir%/../web": RootDir
     form_themes:
         - '@SonataFormatter/Form/formatter.html.twig'
