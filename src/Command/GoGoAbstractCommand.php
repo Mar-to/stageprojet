@@ -10,11 +10,21 @@ use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
 use App\Document\GoGoLog;
 use App\Document\GoGoLogLevel;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class GoGoAbstractCommand extends Command
 {
-   protected $logger;
    protected $output;
+
+   public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger,
+                               TokenStorageInterface $tokenStorage)
+   {
+      $this->dm = $dm;
+      $this->logger = $commandsLogger;
+      $this->security = $tokenStorage;
+      parent::__construct();
+   }
 
    protected function configure()
    {
@@ -23,19 +33,16 @@ class GoGoAbstractCommand extends Command
       $this->addArgument('dbname', InputArgument::OPTIONAL, 'Db name');
    }
 
-   protected function execute(InputInterface $input, OutputInterface $output, DocumentManager $dm)
+   protected function execute(InputInterface $input, OutputInterface $output)
    {
       try {
-         $this->dm = $dm;
-
-         $this->logger = $this->getContainer()->get('monolog.logger.commands');
          $this->output = $output;
 
          if ($input->getArgument('dbname')) $this->dm->getConfiguration()->setDefaultDB($input->getArgument('dbname'));
 
          // create dummy user, as some code called from command will maybe need the current user informations
          $token = new AnonymousToken('admin', 'GoGo Gadget au Bot', ['ROLE_ADMIN']);
-         $this->getContainer()->get('security.token_storage')->setToken($token);
+         $this->security->setToken($token);
 
          $this->gogoExecute($this->dm, $input, $output);
       } catch (\Exception $e) {

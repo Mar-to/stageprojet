@@ -14,6 +14,8 @@ use App\Document\UserInteractionContribution;
 use App\Document\PostalAddress;
 use App\Document\ElementImage;
 use App\Document\ElementFile;
+use App\Services\UserInteractionService;
+use Geocoder\ProviderAggregator;
 
 class ElementImportOneService
 {
@@ -29,7 +31,8 @@ class ElementImportOneService
 	/**
     * Constructor
     */
-  public function __construct(DocumentManager $dm, $geocoder, $interactionService)
+  public function __construct(DocumentManager $dm, ProviderAggregator $geocoder,
+  										        UserInteractionService $interactionService)
   {
 		$this->dm = $dm;
 		$this->geocoder = $geocoder->using('google_maps');

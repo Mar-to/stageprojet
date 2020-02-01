@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Psr\Log\LoggerInterface;
 
 /*
 * For SAAS Instance, this command is executed every minute, and check if there is a command to execute
@@ -22,20 +23,25 @@ class GoGoMainCommand extends Command
       "app:webhooks:post" => "5M" // 5 minuutes
    ];
 
+   public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger)
+   {
+      $this->dm = $dm;
+      $this->logger = $commandsLogger;
+      parent::__construct();
+   }
+
    protected function configure()
    {
       $this->setName('app:main-command');
    }
 
-   protected function execute(InputInterface $input, OutputInterface $output, DocumentManager $dm)
+   protected function execute(InputInterface $input, OutputInterface $output)
    {
-      $qb = $dm->createQueryBuilder('App\Document\ScheduledCommand');
+      $qb = $this->dm->createQueryBuilder('App\Document\ScheduledCommand');
 
       $commandToExecute = $qb->field('nextExecutionAt')->lte(new \DateTime())
                              ->sort('nextExecutionAt', 'ASC')
                              ->getQuery()->getSingleResult();
-
-      $logger = $this->getContainer()->get('monolog.logger.commands');
 
       if ($commandToExecute !== null)
       {
@@ -44,16 +50,16 @@ class GoGoMainCommand extends Command
          $dateNow->setTimestamp(time());
          $interval = new \DateInterval('PT' . $this->scheduledCommands[$commandToExecute->getCommandName()]);
          $commandToExecute->setNextExecutionAt($dateNow->add($interval));
-         $dm->persist($commandToExecute);
-         $dm->flush();
+         $this->dm->persist($commandToExecute);
+         $this->dm->flush();
 
          try {
-          $logger->info('---- Running command ' . $commandToExecute->getCommandName() . ' for project : ' . $commandToExecute->getProject()->getName());
+          $this->logger->info('---- Running command ' . $commandToExecute->getCommandName() . ' for project : ' . $commandToExecute->getProject()->getName());
          } catch (\Exception $e) {
           // the project has been deleted
-          $logger->info('---- DELETEING command ' . $commandToExecute->getCommandName());
-          $dm->remove($commandToExecute);
-          $dm->flush();
+          $this->logger->info('---- DELETEING command ' . $commandToExecute->getCommandName());
+          $this->dm->remove($commandToExecute);
+          $this->dm->flush();
           return;
          }
          $command = $this->getApplication()->find($commandToExecute->getCommandNAme());
@@ -65,7 +71,7 @@ class GoGoMainCommand extends Command
 
          $input = new ArrayInput($arguments);
          try { $command->run($input, $output); }
-         catch (\Exception $e) { $logger->error($e->getMessage()); }
+         catch (\Exception $e) { $this->logger->error($e->getMessage()); }
       }
    }
 }

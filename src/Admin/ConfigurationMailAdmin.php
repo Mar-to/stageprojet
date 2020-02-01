@@ -22,7 +22,7 @@ class ConfigurationMailAdmin extends ConfigurationAbstractAdmin
 
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $dm = $this->admin->getModelManager()->getDocumentManager('App\Document\Configuration');
+        $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
         $repo = $dm->getRepository('App\Document\Configuration');
         $config = $repo->findConfiguration();
         $router = $this->getConfigurationPool()->getContainer()->get('router');

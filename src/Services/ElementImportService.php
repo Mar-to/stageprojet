@@ -10,6 +10,9 @@ use App\Document\UserInteraction;
 use App\Document\ImportState;
 use App\Document\GoGoLogImport;
 use App\Document\ModerationState;
+use App\Services\ElementImportOneService;
+use App\Services\ElementImportMappingService;
+use App\EventListener\TaxonomyJsonGenerator;
 
 class ElementImportService
 {
@@ -27,7 +30,9 @@ class ElementImportService
 	/**
     * Constructor
     */
-  public function __construct(DocumentManager $dm, $importOneService, $mappingService, $taxonomyJsonGenerator)
+  public function __construct(DocumentManager $dm, ElementImportOneService $importOneService,
+                              ElementImportMappingService $mappingService,
+                              TaxonomyJsonGenerator $taxonomyJsonGenerator)
   {
 		$this->dm = $dm;
 		$this->importOneService = $importOneService;

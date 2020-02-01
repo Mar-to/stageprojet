@@ -9,9 +9,21 @@ use App\Document\ImportState;
 use App\Document\ElementStatus;
 
 use App\Command\GoGoAbstractCommand;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use App\Services\ElementImportService;
 
 class ImportSourceCommand extends GoGoAbstractCommand
 {
+    public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger,
+                               TokenStorageInterface $security,
+                               ElementImportService $importService)
+    {
+        $this->importService = $importService;
+        parent::__construct($dm, $commandsLogger, $security);
+    }
+
     protected function gogoConfigure()
     {
        $this
@@ -35,7 +47,6 @@ class ImportSourceCommand extends GoGoAbstractCommand
         }
 
         $this->log('Updating source ' . $import->getSourceName() . ' for project ' . $input->getArgument('dbname') . ' begins...');
-        $importService = $this->getContainer()->get('gogo.element_import');
         $result = $importService->startImport($import);
         $this->log($result);
       } catch (\Exception $e) {

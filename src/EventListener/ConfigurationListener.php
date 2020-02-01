@@ -3,12 +3,14 @@ namespace App\EventListener;
 
 use App\Document\Configuration\ConfigurationApi;
 use App\Document\Configuration\ConfigurationMarker;
+use App\Services\AsyncService;
 
 class ConfigurationListener
 {
     protected $asyncService;
 
-    public function __construct($asyncService) {
+    public function __construct(AsyncService $asyncService)
+    {
         $this->asyncService = $asyncService;
     }
 

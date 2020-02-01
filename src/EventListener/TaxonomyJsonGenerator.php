@@ -15,7 +15,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use JMS\Serializer\SerializationContext;
+use JMS\Serializer\SerializerInterface;
 
 class TaxonomyJsonGenerator
 {
@@ -24,7 +24,7 @@ class TaxonomyJsonGenerator
 	/**
 	* Constructor
 	*/
-	public function __construct($serializer)
+	public function __construct(SerializerInterface $serializer)
 	{
 		 $this->serializer = $serializer;
 	}

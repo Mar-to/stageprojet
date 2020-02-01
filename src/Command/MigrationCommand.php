@@ -9,6 +9,11 @@ use App\Document\MigrationState;
 use App\Document\GoGoLogUpdate;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Process\Process;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use App\Services\AsyncService;
+
 /**
  * Command to update database when schema need migration
  * Also provide some update message in the admin dashboard
@@ -52,6 +57,13 @@ class MigrationCommand extends GoGoAbstractCommand
         "Il est maintenant possible de <b>téléverser des images et des fichiers</b> depuis le formulaire d'ajout d'un élément ! Paramétrez ces nouveaux champs dans Modèle de Données -> Formulaire"
     ];
 
+    public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger,
+                               TokenStorageInterface $security,
+                               AsyncService $asyncService)
+    {
+        $this->asyncService = $asyncService;
+        parent::__construct($dm, $commandsLogger, $security);
+    }
 
     protected function gogoConfigure()
     {
@@ -88,9 +100,8 @@ class MigrationCommand extends GoGoAbstractCommand
                 $this->log("No Migrations to perform");
             }
 
-            $asyncService = $this->getContainer()->get('gogo.async');
             // run them syncronously otherwise all the command will be run at once
-            $asyncService->setRunSynchronously(true);
+            $this->asyncService->setRunSynchronously(true);
             if (count($this->commands) > $migrationState->getCommandsIndex()) {
                 $commandsToRun = array_slice($this->commands, $migrationState->getCommandsIndex());
                 $commandsToRun = array_unique($commandsToRun);
@@ -98,7 +109,7 @@ class MigrationCommand extends GoGoAbstractCommand
                 foreach($dbs as $db) {
                     foreach($commandsToRun as $command) {
                         $this->log("call command " . $command . " on project " . $db);
-                        $asyncService->callCommand($command, [], $db);
+                        $this->asyncService->callCommand($command, [], $db);
                     }
                 }
             } else {
@@ -112,7 +123,7 @@ class MigrationCommand extends GoGoAbstractCommand
                     $this->log("add message on project " . $db);
                     foreach($messagesToAdd as $message) {
                         // create a GoGoLogUpdate
-                        $asyncService->callCommand('gogolog:add:message', ['"' . $message . '"'], $db);
+                        $this->asyncService->callCommand('gogolog:add:message', ['"' . $message . '"'], $db);
                     }
                 }
                 $this->log(count($messagesToAdd) . " messages added to admin dashboard");

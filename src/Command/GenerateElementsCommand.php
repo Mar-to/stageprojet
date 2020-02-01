@@ -7,9 +7,21 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use App\Command\GoGoAbstractCommand;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use App\Services\RandomCreationService;
 
 class GenerateElementsCommand extends GoGoAbstractCommand
 {
+    public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger,
+                               TokenStorageInterface $security,
+                               RandomCreationService $randomService)
+    {
+        $this->randomService = $randomService;
+        parent::__construct($dm, $commandsLogger, $security);
+    }
+
     protected function gogoConfigure()
     {
        $this
@@ -25,7 +37,7 @@ class GenerateElementsCommand extends GoGoAbstractCommand
     {
       $this->output = $output;
 
-      $this->getContainer()->get('gogo.random_creation_service')->generate($input->getArgument('number'), $input->getArgument('generateVotes'));
+      $randomService->generate($input->getArgument('number'), $input->getArgument('generateVotes'));
 
       $this->log('Element générés !');
     }

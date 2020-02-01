@@ -27,7 +27,7 @@ class ConfigurationInfoBarAdmin extends ConfigurationAbstractAdmin
     {
         $featureFormOption = ['delete' => false, 'required'=> false, 'label_attr'=> ['style'=> 'display:none']];
 
-        $dm = $this->admin->getModelManager()->getDocumentManager('App\Document\Configuration');
+        $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
         $apiProperties = $dm->getRepository('App\Document\Element')->findAllCustomProperties();
         $propertiesText = implode($apiProperties, ',');
 

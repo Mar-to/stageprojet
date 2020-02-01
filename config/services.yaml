@@ -37,15 +37,35 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
+    # ----- GOGO SERVICES ------
+
+    App\Services\UploadDirectoryNamer:
+      class: App\Services\UploadDirectoryNamer
+      arguments: []
+
+    App\Services\GoGoCartoJsService:
+      arguments:
+        $baseProtocol: '%base_protocol%'
+
+    App\Services\AsyncService:
+      arguments:
+        $rootDir: '%kernel.root_dir%'
+        $env: '%kernel.environment%'
+
+    App\Services\WebhookService:
+      arguments:
+        $baseUrl: '%base_url%'
+        $basePath: '%base_path%'
+
     App\Services\MailService:
         arguments:
-            $basePath: '%base_path%'
-            $baseUrl: '%base_url%'
-            $saas: '%use_as_saas%'
-            $instanceName: '%instance_name%'
-            $fromEmail: '%from_email%'
+          $basePath: '%base_path%'
+          $baseUrl: '%base_url%'
+          $saas: '%use_as_saas%'
+          $instanceName: '%instance_name%'
+          $fromEmail: '%from_email%'
 
-
+    # TODO: fix auto wiring of following services
     gogo.authentication_handler:
       class: App\Application\Sonata\UserBundle\Security\AuthenticationHandler
       public: true
@@ -72,10 +92,19 @@ services:
         - "@fos_user.util.token_generator"
         - "@bazinga_geocoder.geocoder"
 
+    custom.sonata.security.handler.role:
+        public: true
+        class:  App\Application\Sonata\UserBundle\Security\CustomRoleSecurityHandler
+        arguments:
+            - "@security.authorization_checker"
+            - [ROLE_SUPER_ADMIN]
+
     my_user_provider:
         class: App\Application\Sonata\UserBundle\Security\FOSUBUserProvider
         public: true
         arguments: ["@fos_user.user_manager",{facebook: facebookUid, gplus: gplusUid, communs: communsUid}]
+
+    # ----- VENDOR CONFIG (double check if it's neededn and move them into packages/)
 
     jms_serializer.naming_strategy_camelCase:
         public: true
@@ -95,18 +124,6 @@ services:
         class: 'JMS\Serializer\Expression\ExpressionEvaluator'
         arguments : ['@jms_serializer.expression_language']
 
-    custom.sonata.security.handler.role:
-        public: true
-        class:  App\Application\Sonata\UserBundle\Security\CustomRoleSecurityHandler
-        arguments:
-            - "@security.authorization_checker"
-            - [ROLE_SUPER_ADMIN]
-
-    App\Services\UploadDirectoryNamer:
-      class: App\Services\UploadDirectoryNamer
-      public: true
-      arguments: []
-
     gedmo.listener.sortable:
         class: Gedmo\Sortable\SortableListener
         calls:
@@ -114,54 +131,30 @@ services:
         tags:
             - { name: doctrine.event_subscriber, connection: default }
 
-    App\Services\GoGoCartoJsService:
-      arguments:
-        $baseProtocol: '%base_protocol%'
-
-    gogo.async.factory:
-      class: App\Services\AsyncServiceFactory
-      arguments:
-          $rootDir: '%kernel.root_dir%'
-
-    gogo.async:
-      class: App\Services\AsyncService
-      factory: 'gogo.async.factory:createAsyncService'
-
     # --------- EVENT LISTENERS -----------
 
-    gogo.image_resizer:
-      class: App\EventListener\ImageResizer
+    App\EventListener\ImageResizer:
       arguments:
           - '%env(IMAGE_RESIZE_WIDTH)%'
       tags:
           - { name: doctrine_mongodb.odm.event_listener, event: postPersist }
 
-    gogo.config_listener:
-      class: App\EventListener\ConfigurationListener
+    App\EventListener\ConfigurationListener:
       tags:
           - { name: doctrine_mongodb.odm.event_listener, event: preUpdate }
-      arguments: [ "@gogo.async" ]
 
-    gogo.element_json_generator:
-      class: App\EventListener\ElementJsonGenerator
-      public: true
+    App\EventListener\ElementJsonGenerator:
       tags:
           - { name: doctrine_mongodb.odm.event_listener, event: preFlush }
 
-    gogo.taxonomy_json_generator:
-      class: App\EventListener\TaxonomyJsonGenerator
-      public: true
-      arguments: [ '@jms_serializer' ]
+    App\EventListener\TaxonomyJsonGenerator:
       tags:
           - { name: doctrine_mongodb.odm.event_listener, event: postPersist }
           - { name: doctrine_mongodb.odm.event_listener, event: postFlush }
           - { name: doctrine_mongodb.odm.event_listener, event: preFlush }
           - { name: doctrine_mongodb.odm.event_listener, event: postUpdate }
 
-    gogo.db_integrity:
-      class: App\EventListener\DatabaseIntegrityWatcher
-      public: true
-      arguments: ["@gogo.async"]
+    App\EventListener\DatabaseIntegrityWatcher:
       tags:
           - { name: doctrine_mongodb.odm.event_listener, event: preRemove }
           - { name: doctrine_mongodb.odm.event_listener, event: preFlush }

@@ -18,9 +18,10 @@ use GuzzleHttp\Psr7\Response;
 use http\Exception\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Routing\Router;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Security;
 use App\Document\UserInteractionContribution;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class WebhookService
 {
@@ -28,7 +29,9 @@ class WebhookService
 
 	protected $router;
 
-    public function __construct(DocumentManager $dm, Router $router, TokenStorageInterface $securityContext, $baseUrl, $basePath)
+    public function __construct(DocumentManager $dm, RouterInterface $router,
+                                TokenStorageInterface $securityContext,
+                                $baseUrl, $basePath)
     {
     	 $this->dm = $dm;
     	 $this->router = $router;

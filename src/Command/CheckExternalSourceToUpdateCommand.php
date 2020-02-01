@@ -7,11 +7,22 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use App\Document\ImportState;
 use App\Document\ElementStatus;
-
+use App\Services\ElementImportService;
 use App\Command\GoGoAbstractCommand;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class CheckExternalSourceToUpdateCommand extends GoGoAbstractCommand
 {
+   public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger,
+                               TokenStorageInterface $security,
+                               ElementImportService $importService)
+   {
+      $this->importService = $importService;
+      parent::__construct($dm, $commandsLogger, $security);
+   }
+
     protected function gogoConfigure()
     {
        $this
@@ -27,7 +38,6 @@ class CheckExternalSourceToUpdateCommand extends GoGoAbstractCommand
       $dynamicImports = $qb->field('refreshFrequencyInDays')->gt(0)
                 ->field('nextRefresh')->lte(new \DateTime())
                 ->getQuery()->execute();
-      $importService = $this->getContainer()->get('gogo.element_import');
 
       $this->log('CheckExternalSourceToUpdate : Nombre de sources à mettre à jour : ' . $dynamicImports->count());
 
@@ -35,7 +45,7 @@ class CheckExternalSourceToUpdateCommand extends GoGoAbstractCommand
       {
         $this->log('Updating source : ' . $import->getSourceName());
         try {
-          $this->log($importService->startImport($import));
+          $this->log($this->importService->startImport($import));
         } catch (\Exception $e) {
           $this->dm->persist($import);
           $import->setCurrState(ImportState::Failed);

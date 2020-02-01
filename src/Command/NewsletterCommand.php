@@ -7,9 +7,21 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use App\Command\GoGoAbstractCommand;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use App\Services\NewsletterService;
 
 class NewsletterCommand extends GoGoAbstractCommand
 {
+    public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger,
+                               TokenStorageInterface $security,
+                               NewsletterService $newsletterService)
+    {
+        $this->newsletterService = $newsletterService;
+        parent::__construct($dm, $commandsLogger, $security);
+    }
+
     protected function gogoConfigure()
     {
        $this
@@ -25,12 +37,11 @@ class NewsletterCommand extends GoGoAbstractCommand
       $users = $usersRepo->findNeedsToReceiveNewsletter();
       $nbrUsers = $users->count();
 
-      $newsletterService = $this->getContainer()->get('gogo.newsletter_service');
 
       foreach ($users as $key => $user)
       {
          $dm->persist($user);
-         $nreElements = $newsletterService->sendTo($user);
+         $nreElements = $this->newsletterService->sendTo($user);
          // $this->log('  -> User : ' . $user->getDisplayName() . ', location : ' . $user->getLocation() . ' / ' . $user->getNewsletterRange() . ' km -> Nre Elements : ' .  $nreElements);
       }
 

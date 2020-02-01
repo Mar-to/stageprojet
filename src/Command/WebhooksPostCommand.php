@@ -7,9 +7,20 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use App\Command\GoGoAbstractCommand;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class WebhooksPostCommand extends GoGoAbstractCommand
 {
+    public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger,
+                               TokenStorageInterface $security,
+                               WebhookService $webhookService)
+    {
+        $this->webhookService = $webhookService;
+        parent::__construct($dm, $commandsLogger, $security);
+    }
+
     protected function gogoConfigure()
     {
        $this
@@ -19,10 +30,7 @@ class WebhooksPostCommand extends GoGoAbstractCommand
 
     protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
     {
-        /** @var WebhookService $webhookService */
-        $webhookService = $this->getContainer()->get('gogo.webhook_service');
-
-        $numPosts = $webhookService->processPosts(10);
+        $numPosts = $this->webhookService->processPosts(10);
 
         $this->log('Nombre webhooks traités : ' . $numPosts);
     }

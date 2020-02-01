@@ -14,13 +14,14 @@ use App\Document\ImportDynamic;
 use App\Document\Import;
 use App\Document\Webhook;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use App\Services\AsyncService;
 
 /* check database integrity : for example when removing an option, need to remove all references to this options */
 class DatabaseIntegrityWatcher
 {
 	protected $asyncService;
 
-	public function __construct($asyncService)
+	public function __construct(AsyncService $asyncService)
 	{
 		$this->asyncService = $asyncService;
 	}

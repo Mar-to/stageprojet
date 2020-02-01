@@ -68,7 +68,7 @@ class ElementAdminAbstract extends AbstractAdmin
   {
     parent::initialize();
 
-    $dm = $this->admin->getModelManager()->getDocumentManager('App\Document\Configuration');
+    $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
     $repo = $dm->getRepository('App\Document\Option');
     $this->optionList = $repo->createQueryBuilder()->hydrate(false)->getQuery()->execute()->toArray();
 
