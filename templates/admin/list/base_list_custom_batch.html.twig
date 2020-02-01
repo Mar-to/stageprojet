@@ -1,4 +1,4 @@
-{% extends 'SonataAdminBundle:CRUD:base_list.html.twig' %}
+{% extends '@SonataAdmin/CRUD/base_list.html.twig' %}
 
 {% block batch %}
     <script>
@@ -35,14 +35,14 @@
         <label class="checkbox" for="{{ admin.uniqid }}_all_elements">
             <input type="checkbox" name="all_elements" id="{{ admin.uniqid }}_all_elements"/>
             {{ 'all_elements'|trans({},'SonataAdminBundle') }} ({{ admin.datagrid.pager.nbresults }})
-        </label>        
-        
+        </label>
+
         <select id="batch-select" name="action" style="width:auto;height: auto" class="form-control">
             {% for action, options in batchactions %}
                 <option value="{{ action }}" data-modal="{{ options.modal is defined }}">{{ options.label }}</option>
             {% endfor %}
         </select>
-        
+
     {% endblock batch_actions %}
 
     <input type="submit" id="submit-batch-action" class="btn btn-small btn-primary" value="{{ 'btn_batch'|trans({}, 'SonataAdminBundle') }}">
@@ -88,12 +88,12 @@
                     <style> .width-100 { width: 100% !important; margin-bottom: 1.5rem;}</style>
                 </div>
             </div>
-        </div>            
-            
+        </div>
+
         {% endif %}
     {% endfor %}
 
-   
+
 
     <script>
         $('.select2-input').select2({

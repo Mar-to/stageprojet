@@ -6,14 +6,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\ArrayInput;
-
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 /*
 * For SAAS Instance, this command is executed every minute, and check if there is a command to execute
 * for a particular instance. This permit to not run all the commands as the same time
 */
-class GoGoMainCommand extends ContainerAwareCommand
+class GoGoMainCommand extends Command
 {
    // List of the command to execute periodically, with the period in hours
    public $scheduledCommands = [
@@ -28,10 +27,8 @@ class GoGoMainCommand extends ContainerAwareCommand
       $this->setName('app:main-command');
    }
 
-   protected function execute(InputInterface $input, OutputInterface $output)
+   protected function execute(InputInterface $input, OutputInterface $output, DocumentManager $dm)
    {
-      $dm = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
-
       $qb = $dm->createQueryBuilder('App\Document\ScheduledCommand');
 
       $commandToExecute = $qb->field('nextExecutionAt')->lte(new \DateTime())

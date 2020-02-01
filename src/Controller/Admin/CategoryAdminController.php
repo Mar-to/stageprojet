@@ -14,10 +14,10 @@ class CategoryAdminController extends Controller
         return $this->treeAction();
     }
 
-    public function treeAction(DocumentManager $dm)
+    public function treeAction()
     {
         $this->admin->checkAccess('list');
-
+        $dm = $this->admin->getModelManager()->getDocumentManager('App\Document\Configuration');
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
         $rootCategories = $dm->getRepository('App\Document\Category')->findRootCategories();
 

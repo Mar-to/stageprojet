@@ -17,8 +17,7 @@ class ElementAdmin extends ElementAdminShowEdit
 {
 	public function getExportFields()
   {
-    $container = $this->getConfigurationPool()->getContainer();
-    $dm = $container->get('doctrine_mongodb')->getManager();
+    $dm = $this->admin->getModelManager()->getDocumentManager('App\Document\Configuration');
     $basicFields = [
       'id' => 'id',
       'name' => 'name',

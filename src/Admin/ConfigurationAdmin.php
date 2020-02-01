@@ -32,7 +32,7 @@ class ConfigurationAdmin extends ConfigurationAbstractAdmin
         $featureFormOption = ['delete' => false, 'required'=> false, 'label_attr'=> ['style'=> 'display:none']];
         $featureFormTypeOption = ['edit' => 'inline'];
 
-        $dm = $this->getConfigurationPool()->getContainer()->get('doctrine_mongodb');
+        $dm = $this->admin->getModelManager()->getDocumentManager('App\Document\Configuration');
         $apiProperties = $dm->getRepository('App\Document\Element')->findAllCustomProperties();
 
         $formMapper

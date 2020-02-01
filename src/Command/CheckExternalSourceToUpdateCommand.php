@@ -37,7 +37,7 @@ class CheckExternalSourceToUpdateCommand extends GoGoAbstractCommand
         try {
           $this->log($importService->startImport($import));
         } catch (\Exception $e) {
-          $this->odm->persist($import);
+          $this->dm->persist($import);
           $import->setCurrState(ImportState::Failed);
           $message = $e->getMessage() . '</br>' . $e->getFile() . ' LINE ' . $e->getLine();
           $import->setCurrMessage($message);

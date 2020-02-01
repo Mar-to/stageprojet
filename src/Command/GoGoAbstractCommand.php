@@ -9,13 +9,12 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
 use App\Document\GoGoLog;
 use App\Document\GoGoLogLevel;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
-class GoGoAbstractCommand extends ContainerAwareCommand
+class GoGoAbstractCommand extends Command
 {
    protected $logger;
    protected $output;
-   protected $dm;
 
    protected function configure()
    {
@@ -24,21 +23,21 @@ class GoGoAbstractCommand extends ContainerAwareCommand
       $this->addArgument('dbname', InputArgument::OPTIONAL, 'Db name');
    }
 
-   protected function execute(InputInterface $input, OutputInterface $output)
+   protected function execute(InputInterface $input, OutputInterface $output, DocumentManager $dm)
    {
       try {
-         $this->odm = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
+         $this->dm = $dm;
 
          $this->logger = $this->getContainer()->get('monolog.logger.commands');
          $this->output = $output;
 
-         if ($input->getArgument('dbname')) $this->odm->getConfiguration()->setDefaultDB($input->getArgument('dbname'));
+         if ($input->getArgument('dbname')) $this->dm->getConfiguration()->setDefaultDB($input->getArgument('dbname'));
 
          // create dummy user, as some code called from command will maybe need the current user informations
          $token = new AnonymousToken('admin', 'GoGo Gadget au Bot', ['ROLE_ADMIN']);
          $this->getContainer()->get('security.token_storage')->setToken($token);
 
-         $this->gogoExecute($this->odm, $input, $output);
+         $this->gogoExecute($this->dm, $input, $output);
       } catch (\Exception $e) {
          $message = $e->getMessage() . '</br>' . $e->getFile() . ' LINE ' . $e->getLine();
          $this->error("Error executing command: " . $message);
@@ -60,7 +59,7 @@ class GoGoAbstractCommand extends ContainerAwareCommand
       $this->logger->error($message);
       $this->output->writeln('ERROR ' . $message);
       $log = new GoGoLog(GoGoLogLevel::Error, 'Error running ' . $this->getName() . ' : ' . $message);
-      $this->odm->persist($log);
-      $this->odm->flush();
+      $this->dm->persist($log);
+      $this->dm->flush();
    }
 }

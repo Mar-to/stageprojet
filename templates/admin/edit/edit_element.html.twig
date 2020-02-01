@@ -1,4 +1,4 @@
-{% extends 'SonataAdminBundle::CRUD/base_edit.html.twig' %}
+{% extends '@SonataAdmin/CRUD/base_edit.html.twig' %}
 
 {% block formactions %}
     {% include "admin/edit/edit_element_actions.html.twig" %}
@@ -11,8 +11,8 @@
     </a></li>
 {%- endblock -%}
 
-{% use 'SonataAdminBundle:CRUD:base_edit_form.html.twig' with form as parentForm %}
-{% import 'SonataAdminBundle:CRUD:base_show_macro.html.twig' as show_helper %}
+{% use '@SonataAdmin/CRUD/base_edit_form.html.twig' with form as parentForm %}
+{% import '@SonataAdmin/CRUD/base_show_macro.html.twig' as show_helper %}
 
 {% block form %}
 	<div class="row" style="padding-bottom: 8rem;">

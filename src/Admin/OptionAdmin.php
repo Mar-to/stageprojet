@@ -43,7 +43,8 @@ class OptionAdmin extends AbstractAdmin
 	protected function configureFormFields(FormMapper $formMapper)
    {
       // prevent circular reference, i.e setting a child as parent
-      $repo = $this->getConfigurationPool()->getContainer()->get('doctrine_mongodb')->getRepository('App\Document\Category');
+      $dm = $this->admin->getModelManager()->getDocumentManager('App\Document\Configuration');
+      $repo = $dm->getRepository('App\Document\Category');
       $parentQuery = $repo->createQueryBuilder()
                           ->field('id')->notIn($this->subject->getAllSubcategoriesIds());
 

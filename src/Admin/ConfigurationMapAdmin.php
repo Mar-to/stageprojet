@@ -30,8 +30,7 @@ class ConfigurationMapAdmin extends ConfigurationAbstractAdmin
         $featureStyle = array('class' => 'col-md-6 col-lg-3 gogo-feature');
         $featureFormOption = ['delete' => false, 'required'=> false, 'label_attr'=> ['style'=> 'display:none']];
         $featureFormTypeOption = ['edit' => 'inline'];
-        $container = $this->getConfigurationPool()->getContainer();
-        $dm = $container->get('doctrine_mongodb')->getManager();
+        $dm = $this->admin->getModelManager()->getDocumentManager('App\Document\Configuration');
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
 
         $formMapper

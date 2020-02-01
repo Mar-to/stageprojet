@@ -13,7 +13,7 @@ class GoGoCartoJsService
 {
   public function __construct(DocumentManager $dm, TokenStorageInterface $securityContext, RouterInterface $router, SessionInterface $session, $baseProtocol)
   {
-    $this->odm = $dm;
+    $this->dm = $dm;
     $this->securityContext = $securityContext;
     $this->router = $router;
     $this->session = $session;
@@ -22,14 +22,14 @@ class GoGoCartoJsService
 
   public function getConfig()
   {
-    $taxonomyRep = $this->odm->getRepository('App\Document\Taxonomy');
-    $elementsRep = $this->odm->getRepository('App\Document\Element');
+    $taxonomyRep = $this->dm->getRepository('App\Document\Taxonomy');
+    $elementsRep = $this->dm->getRepository('App\Document\Element');
 
-    $tileLayers = $this->odm->getRepository('App\Document\TileLayer')->findAll();
+    $tileLayers = $this->dm->getRepository('App\Document\TileLayer')->findAll();
 
     $taxonomyJson = $taxonomyRep->findTaxonomyJson();
 
-    $config = $this->odm->getRepository('App\Document\Configuration')->findConfiguration();
+    $config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
 
     $user = $this->securityContext->getToken() ? $this->securityContext->getToken()->getUser() : null;
 

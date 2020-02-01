@@ -39,7 +39,7 @@ class ImportSourceCommand extends GoGoAbstractCommand
         $result = $importService->startImport($import);
         $this->log($result);
       } catch (\Exception $e) {
-          $this->odm->persist($import);
+          $this->dm->persist($import);
           $import->setCurrState(ImportState::Failed);
           $message = $e->getMessage() . '</br>' . $e->getFile() . ' LINE ' . $e->getLine();
           $import->setCurrMessage($message);

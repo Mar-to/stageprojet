@@ -29,7 +29,7 @@ class ImportAdmin extends AbstractAdmin
 
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $dm = $this->getConfigurationPool()->getContainer()->get('doctrine_mongodb');
+        $dm = $this->admin->getModelManager()->getDocumentManager('App\Document\Configuration');
         $repo = $dm->getRepository('App\Document\Element');
         $formProperties = json_encode($repo->findFormProperties());
         $elementProperties = json_encode($repo->findDataCustomProperties());
@@ -147,7 +147,7 @@ Transformer un attribut
 
     protected function configureListFields(ListMapper $listMapper)
     {
-        $dm = $this->getConfigurationPool()->getContainer()->get('doctrine_mongodb');
+        $dm = $this->admin->getModelManager()->getDocumentManager('App\Document\Configuration');
         $deletedElementsCount = $dm->getRepository('App\Document\Element')->findDeletedElementsByImportIdCount();
         $isDynamic = $this->getClass() == "App\Document\ImportDynamic";
 

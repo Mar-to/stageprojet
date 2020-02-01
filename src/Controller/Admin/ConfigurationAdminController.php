@@ -14,7 +14,8 @@ class ConfigurationAdminController extends Controller
 {
   public function listAction()
   {
-    // $configuration = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+    $dm = $this->admin->getModelManager()->getDocumentManager('App\Document\Configuration');
+    $configuration = $dm->getRepository('App\Document\Configuration')->findConfiguration();
 
     if ($configuration)
        return $this->redirect($this->admin->generateUrl('edit', ['id' => $configuration->getId()]));

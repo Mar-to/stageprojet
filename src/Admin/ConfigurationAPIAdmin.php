@@ -24,7 +24,7 @@ class ConfigurationAPIAdmin extends ConfigurationAbstractAdmin
 
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $dm = $this->getConfigurationPool()->getContainer()->get('doctrine_mongodb');
+        $dm = $this->admin->getModelManager()->getDocumentManager('App\Document\Configuration');
         $apiProperties = $dm->getRepository('App\Document\Element')->findAllCustomProperties();
 
         $apiPropertiesChanged = [];
