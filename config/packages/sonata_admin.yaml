@@ -1,6 +1,6 @@
 sonata_admin:
     security:
-        handler: custom.sonata.security.handler.role # sonata.admin.security.handler.role
+        handler: App\Application\Sonata\UserBundle\Security\CustomRoleSecurityHandler # sonata.admin.security.handler.role
         information:
             LIST: LIST
             CREATE: CREATE

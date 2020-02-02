@@ -11,3 +11,18 @@ jms_serializer:
 #            another-name:
 #                namespace_prefix: "My\\BarBundle"
 #                path: "@MyBarBundle/Resources/config/serializer"
+
+services:
+  jms_serializer.naming_strategy_camelCase:
+      class: 'JMS\Serializer\Naming\IdenticalPropertyNamingStrategy'
+
+  jms_serializer.naming_strategy:
+      class: 'JMS\Serializer\Naming\SerializedNameAnnotationStrategy'
+      arguments : ['@jms_serializer.naming_strategy_camelCase']
+
+  jms_serializer.expression_language:
+      class: 'Symfony\Component\ExpressionLanguage\ExpressionLanguage'
+
+  jms_serializer.expression_evaluator:
+      class: 'JMS\Serializer\Expression\ExpressionEvaluator'
+      arguments : ['@jms_serializer.expression_language']

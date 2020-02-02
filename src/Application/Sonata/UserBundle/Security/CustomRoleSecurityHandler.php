@@ -7,38 +7,14 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
 use Sonata\AdminBundle\Security\Handler\SecurityHandlerInterface;
 
-
 class CustomRoleSecurityHandler implements SecurityHandlerInterface
 {
-    /**
-     * @var AuthorizationCheckerInterface
-     */
-    protected $authorizationChecker;
-
-    /**
-     * @var array
-     */
-    protected $superAdminRoles;
-
-    /**
-     * NEXT_MAJOR: Go back to signature class check when bumping requirements to SF 2.6+.
-     *
-     * @param AuthorizationCheckerInterface $authorizationChecker
-     * @param array                                                  $superAdminRoles
-     */
-    public function __construct($authorizationChecker, array $superAdminRoles)
+    public function __construct(AuthorizationCheckerInterface $authorizationChecker)
     {
-        if (!$authorizationChecker instanceof AuthorizationCheckerInterface) {
-            throw new \InvalidArgumentException('Argument 1 should be an instance of Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface');
-        }
-
         $this->authorizationChecker = $authorizationChecker;
-        $this->superAdminRoles = $superAdminRoles;
+        $this->superAdminRoles = ['ROLE_SUPER_ADMIN'];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function isGranted(AdminInterface $admin, $attributes, $object = null)
     {
         if (!is_array($attributes)) {

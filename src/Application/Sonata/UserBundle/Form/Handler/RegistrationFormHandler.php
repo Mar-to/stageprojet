@@ -17,19 +17,18 @@ use FOS\UserBundle\Mailer\MailerInterface;
 use FOS\UserBundle\Util\TokenGeneratorInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Form\FormError;
 use App\Document\Coordinates;
+use Geocoder\ProviderAggregator;
 
 class RegistrationFormHandler
 {
-    protected $request;
-    protected $userManager;
     protected $form;
-    protected $mailer;
-    protected $tokenGenerator;
-    protected $geocoder;
 
-    public function __construct($requestStack, UserManagerInterface $userManager, MailerInterface $mailer, TokenGeneratorInterface $tokenGenerator, $geocoder)
+    public function __construct(RequestStack $requestStack, UserManagerInterface $userManager,
+                                MailerInterface $mailer, TokenGeneratorInterface $tokenGenerator,
+                                ProviderAggregator $geocoder)
     {
         $this->request = $request_stack->getCurrentRequest();
         $this->userManager = $userManager;

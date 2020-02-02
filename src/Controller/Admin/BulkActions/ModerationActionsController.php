@@ -5,15 +5,16 @@ namespace App\Controller\Admin\BulkActions;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use App\Services\ElementActionService;
 
 class ModerationActionsController extends BulkActionsAbstractController
 {
-   public function deleteElementReportedAsNoMoreExistingAction(Request $request, SessionInterface $session, DocumentManager $dm)
+   public function deleteElementReportedAsNoMoreExistingAction(Request $request, SessionInterface $session,
+                                                               DocumentManager $dm,
+                                                               ElementActionService $actionService)
    {
       $repo = $dm->getRepository('App\Document\Element');
       $elements = $repo->findModerationNeeded(false, 1);
-
-      $actionService = $this->get('gogo.element_action_service');
 
       $i = 0;
       $count = 0;

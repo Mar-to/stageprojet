@@ -49,11 +49,11 @@ security:
                 use_referer:    true
                 check_path:     /login_check
                 failure_path:   /login
-                success_handler: gogo.authentication_handler
-                failure_handler: gogo.authentication_handler
+                success_handler: App\Application\Sonata\UserBundle\Security\AuthenticationHandler
+                failure_handler: App\Application\Sonata\UserBundle\Security\AuthenticationHandler
             logout:
                 path:   /logout
-                success_handler: gogo.authentication_handler
+                success_handler: App\Application\Sonata\UserBundle\Security\AuthenticationHandler
             anonymous: ~
             oauth:
                 resource_owners:
@@ -67,7 +67,7 @@ security:
                 oauth_user_provider:
                     #this is my custom user provider, created from FOSUBUserProvider - will manage the
                     #automatic user registration on your site, with data from the provider (facebook. google, etc.)
-                    service: my_user_provider
+                    service: App\Application\Sonata\UserBundle\Security\FOSUBUserProvider
 
     # set access_strategy to unanimous, else you may have unexpected behaviors
     access_decision_manager:

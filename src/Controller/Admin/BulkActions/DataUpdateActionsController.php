@@ -32,6 +32,6 @@ class DataUpdateActionsController extends BulkActionsAbstractController
       $dm->clear();
 
       $session->getFlashBag()->add('success', count($users) . " utilisateurs ont été mis à jour");
-      return $this->redirect($this->generateUrl('admin_gogo_core_user_list'));
+      return $this->redirect($this->generateUrl('admin_app_user_list'));
    }
 }

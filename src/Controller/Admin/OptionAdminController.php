@@ -13,6 +13,6 @@ class OptionAdminController extends Controller
 {
     public function listAction()
     {
-        return $this->redirectToRoute('admin_gogo_geodirectory_category_list');
+        return $this->redirectToRoute('admin_app_category_list');
     }
 }

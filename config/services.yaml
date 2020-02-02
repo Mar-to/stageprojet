@@ -58,78 +58,22 @@ services:
         $basePath: '%base_path%'
 
     App\Services\MailService:
-        arguments:
-          $basePath: '%base_path%'
-          $baseUrl: '%base_url%'
-          $saas: '%use_as_saas%'
-          $instanceName: '%instance_name%'
-          $fromEmail: '%from_email%'
-
-    # TODO: fix auto wiring of following services
-    gogo.authentication_handler:
-      class: App\Application\Sonata\UserBundle\Security\AuthenticationHandler
-      public: true
-      arguments: [ '@router', '@session', "@security.token_storage"]
-
-    gogo_user.gamification:
-        class: App\Application\Sonata\UserBundle\Services\GamificationService
-        public: true
-        arguments: [ "@doctrine.odm.mongodb.document_manager" ]
-
-    gogo_user.registration.form.type:
-        class: App\Application\Sonata\UserBundle\Form\Type\RegistrationFormType
-        arguments: [ "%fos_user.model.user.class%" ]
-        tags:
-          - { name: "form.type", alias: "gogo_user_registration"}
-
-    gogo.registration.form.handler:
-      class: App\Application\Sonata\UserBundle\Form\Handler\RegistrationFormHandler
-      public: true
       arguments:
-        - "@request_stack"
+        $basePath: '%base_path%'
+        $baseUrl: '%base_url%'
+        $saas: '%use_as_saas%'
+        $instanceName: '%instance_name%'
+        $fromEmail: '%from_email%'
+
+    App\Application\Sonata\UserBundle\Form\Type\RegistrationFormType:
+      arguments: [ "%fos_user.model.user.class%" ]
+      tags:
+        - { name: "form.type", alias: "gogo_user_registration"}
+
+    App\Application\Sonata\UserBundle\Security\FOSUBUserProvider:
+      arguments:
         - "@fos_user.user_manager"
-        - "@fos_user.mailer"
-        - "@fos_user.util.token_generator"
-        - "@bazinga_geocoder.geocoder"
-
-    custom.sonata.security.handler.role:
-        public: true
-        class:  App\Application\Sonata\UserBundle\Security\CustomRoleSecurityHandler
-        arguments:
-            - "@security.authorization_checker"
-            - [ROLE_SUPER_ADMIN]
-
-    my_user_provider:
-        class: App\Application\Sonata\UserBundle\Security\FOSUBUserProvider
-        public: true
-        arguments: ["@fos_user.user_manager",{facebook: facebookUid, gplus: gplusUid, communs: communsUid}]
-
-    # ----- VENDOR CONFIG (double check if it's neededn and move them into packages/)
-
-    jms_serializer.naming_strategy_camelCase:
-        public: true
-        class: 'JMS\Serializer\Naming\IdenticalPropertyNamingStrategy'
-
-    jms_serializer.naming_strategy:
-        public: true
-        class: 'JMS\Serializer\Naming\SerializedNameAnnotationStrategy'
-        arguments : ['@jms_serializer.naming_strategy_camelCase']
-
-    jms_serializer.expression_language:
-        public: true
-        class: 'Symfony\Component\ExpressionLanguage\ExpressionLanguage'
-
-    jms_serializer.expression_evaluator:
-        public: true
-        class: 'JMS\Serializer\Expression\ExpressionEvaluator'
-        arguments : ['@jms_serializer.expression_language']
-
-    gedmo.listener.sortable:
-        class: Gedmo\Sortable\SortableListener
-        calls:
-            - [setAnnotationReader, ['@annotation_reader']]
-        tags:
-            - { name: doctrine.event_subscriber, connection: default }
+        - { facebook: facebookUid, gplus: gplusUid, communs: communsUid }
 
     # --------- EVENT LISTENERS -----------
 
@@ -171,14 +115,12 @@ services:
 
     gogo.block.service.charts:
         class: App\Block\ChartBlockService
-        public: true
         arguments: [ "@twig", "@doctrine.odm.mongodb.document_manager", "App/Services/ConfigurationService" ]
         tags:
             - { name: sonata.block }
 
     gogo.block.recent_elements:
         class: App\Block\RecentElementsBlockService
-        public: true
         arguments: [ "@twig", "@doctrine.odm.mongodb.document_manager", "@sonata.admin.pool" ]
         tags:
             - { name: sonata.block }

@@ -30,7 +30,7 @@ class MailTestController extends Controller
       else
       {
          $session->getFlashBag()->add('error', 'Error : ' . $draftResponse['message']);
-         return $this->redirectToRoute('admin_gogo_core_configuration_list');
+         return $this->redirectToRoute('admin_app_configuration_list');
       }
    }
 
@@ -46,7 +46,7 @@ class MailTestController extends Controller
       if ($draftResponse == null)
       {
          $session->getFlashBag()->add('error', 'No elements in database, please create an element for email testing');
-         return $this->redirectToRoute('admin_gogo_core_configuration_list');
+         return $this->redirectToRoute('admin_app_configuration_list');
       }
 
       if ($draftResponse['success'])

@@ -17,7 +17,7 @@
         {% for i in 0..3 if not isRootCategory %}
             {% set currNode = currNode.parent %}
             {% set is_category = attribute(currNode, "isRootCategory") is defined %}
-            {% set route_name = is_category ? 'admin_gogo_geodirectory_category_edit' : 'admin_gogo_geodirectory_option_edit' %}
+            {% set route_name = is_category ? 'admin_app_category_edit' : 'admin_app_option_edit' %}
             <li><a href={{ path(route_name, { id: currNode.id }) }}>{{ currNode.name }}</a></li>
             {% set isRootCategory = is_category ? currNode.isRootCategory : false %}
         {% endfor %}

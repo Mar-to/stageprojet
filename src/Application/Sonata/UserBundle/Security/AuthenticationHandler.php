@@ -5,7 +5,7 @@ namespace App\Application\Sonata\UserBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,20 +13,15 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerI
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Security\Http\Logout\LogoutSuccessHandlerInterface;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface, LogoutSuccessHandlerInterface
 {
 	private $router;
 	private $session;
 
-	/**
-	 * Constructor
-	 *
-	 * @author 	Joe Sexton <joe@webtipblog.com>
-	 * @param 	RouterInterface $router
-	 * @param 	Session $session
-	 */
-	public function __construct( RouterInterface $router, Session $session, $securityToken )
+	public function __construct(RouterInterface $router, SessionInterface $session,
+														  TokenStorageInterface $securityToken)
 	{
 		$this->router  = $router;
 		$this->session = $session;
@@ -41,10 +36,11 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
 	 * @param 	TokenInterface $token
 	 * @return 	Response
 	 */
-	public function onAuthenticationSuccess( Request $request, TokenInterface $token )
+	public function onAuthenticationSuccess(Request $request, TokenInterface $token)
 	{
 		// if AJAX login
-		if ( $request->isXmlHttpRequest() ) {
+		if ($request->isXmlHttpRequest())
+		{
 			$user = $this->securityToken->getToken()->getUser();
 			$redirectionUrl = '';
 			if ( $this->session->get('_security.main.target_path' ) ) {
@@ -79,19 +75,11 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
 		}
 	}
 
-	/**
-	 * onAuthenticationFailure
-	 *
-	 * @author 	Joe Sexton <joe@webtipblog.com>
-	 * @param 	Request $request
-	 * @param 	AuthenticationException $exception
-	 * @return 	Response
-	 */
-	 public function onAuthenticationFailure( Request $request, AuthenticationException $exception )
+	public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
 	{
 		// if AJAX login
-		if ( $request->isXmlHttpRequest() ) {
-
+		if ($request->isXmlHttpRequest())
+		{
 			$array = array( 'success' => false, 'message' => $exception->getMessage() ); // data to return via JSON
 			$response = new Response( json_encode( $array ) );
 			$response->headers->set( 'Content-Type', 'application/json' );
@@ -104,7 +92,7 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
 			// set authentication exception to session
 			$this->session->set(Security::AUTHENTICATION_ERROR, $exception);
 
-			return new RedirectResponse( $this->router->generate( 'login_route' ) );
+			return new RedirectResponse($this->router->generate( 'login_route' ));
 		}
 	}
 

@@ -22,8 +22,8 @@ use Sonata\AdminBundle\Form\Type\CollectionType;
 
 class CategoryAdmin extends AbstractAdmin
 {
-  protected $baseRouteName = 'admin_gogo_geodirectory_category';
-	protected $baseRoutePattern = 'admin_gogo_geodirectory_category';
+  protected $baseRouteName = 'admin_app_category';
+	protected $baseRoutePattern = 'admin_app_category';
 
    public function createQuery($context = 'list')
 	{

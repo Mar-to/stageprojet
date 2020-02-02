@@ -25,7 +25,7 @@ use App\Document\User;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use FOS\UserBundle\Doctrine\UserManager;
-
+use App\Application\Sonata\UserBundle\Form\Handler\RegistrationFormHandler;
 /**
  * This class is inspired from the FOS RegistrationController.
  *
@@ -36,7 +36,8 @@ class RegistrationFOSUser1Controller extends Controller
     /**
      * @return RedirectResponse|Response
      */
-    public function registerAction(Request $request = null, SessionInterface $session, DocumentManager $dm)
+    public function registerAction(Request $request = null, SessionInterface $session, DocumentManager $dm,
+                                   RegistrationFormHandler $formHandler)
     {
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
         if (!$config->getUser()->getEnableRegistration()) {
@@ -53,8 +54,6 @@ class RegistrationFOSUser1Controller extends Controller
         }
 
         $form = $this->get('form.factory')->create(RegistrationFormType::class, new User());
-        $formHandler = $this->get('gogo.registration.form.handler');
-
 
         $confirmationEnabled = $config->getUser()->getSendConfirmationEmail();
 

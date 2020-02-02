@@ -5,10 +5,18 @@ namespace App\Controller\Admin;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Services\ValidationType;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use App\Services\ElementActionService;
+use App\EventListener\ElementJsonGenerator;
 
 // Split this big controller into two classes
 class ElementAdminController extends ElementAdminBulkController
 {
+    public function __construct(ElementActionService $elementActionService, ElementJsonGenerator $jsonGenerator)
+    {
+        $this->elementActionService = $elementActionService;
+        $this->jsonGenerator = $jsonGenerator;
+    }
+
     public function redirectEditAction()
     {
         $object = $this->admin->getSubject();
@@ -100,15 +108,13 @@ class ElementAdminController extends ElementAdminBulkController
                 try {
                     $message = $request->get('custom_message') ? $request->get('custom_message') : '';
 
-                    $elementActionService = $this->container->get('gogo.element_action_service');
-
                     if ($request->get('submit_update_json'))
                     {
-                        $this->container->get('gogo.element_json_generator')->updateJsonRepresentation($object);
+                        $this->jsonGenerator->updateJsonRepresentation($object);
                     }
                     elseif ($object->isPending() && ($request->get('submit_accept') || $request->get('submit_refuse')))
                     {
-                        $elementActionService->resolve($object, $request->get('submit_accept'), ValidationType::Admin, $message);
+                        $this->elementActionService->resolve($object, $request->get('submit_accept'), ValidationType::Admin, $message);
                     }
                     else
                     {
@@ -163,6 +169,6 @@ class ElementAdminController extends ElementAdminBulkController
             }
         }
 
-        return $this->redirectToRoute('admin_gogo_geodirectory_element_showEdit', ['id' => $id]);
+        return $this->redirectToRoute('admin_app_element_showEdit', ['id' => $id]);
     }
 }

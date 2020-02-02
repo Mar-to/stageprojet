@@ -5,11 +5,11 @@
 {% endblock %}
 
 {%- block actions -%}
-    <li><a class="sonata-action-element" href="{{ path('admin_gogo_geodirectory_category_create') }}">
+    <li><a class="sonata-action-element" href="{{ path('admin_app_category_create') }}">
     				<i class="fa fa-plus-circle" aria-hidden="true"></i>
             Ajouter un Groupe de catégories
     </a></li>
-     <li><a class="sonata-action-element" href="{{ path('admin_gogo_geodirectory_option_create') }}">
+     <li><a class="sonata-action-element" href="{{ path('admin_app_option_create') }}">
     				<i class="fa fa-plus-circle" aria-hidden="true"></i>
             Ajouter une Catégorie
     </a></li>
@@ -21,11 +21,11 @@
   <link rel="stylesheet" href="{{ asset('fonts/fontawesome-5/css/all.css') }}" />
   {{ config.iconImport|raw }}
 
-  <p><a class="btn btn-primary sonata-action-element" href="{{ path('admin_gogo_geodirectory_category_create') }}" style="margin-right: 10px;">
+  <p><a class="btn btn-primary sonata-action-element" href="{{ path('admin_app_category_create') }}" style="margin-right: 10px;">
         <i class="fa fa-plus-circle" aria-hidden="true"></i>
         Ajouter un Groupe de catégories
   </a>
-  <a class="btn btn-primary sonata-action-element {{ categories|length == 0 ? 'disabled' : ''}}" href="{{ path('admin_gogo_geodirectory_option_create') }}">
+  <a class="btn btn-primary sonata-action-element {{ categories|length == 0 ? 'disabled' : ''}}" href="{{ path('admin_app_option_create') }}">
           <i class="fa fa-plus-circle" aria-hidden="true"></i>
           Ajouter une Catégorie
   </a></p>
