@@ -139,7 +139,7 @@ class ElementImportOneService
 			$lat = 0; $lng = 0;
 			if ($import->getGeocodeIfNecessary())
 			{
-		   	$result = $this->geocoder->geocode($address->getFormatedAddress())->first();
+		   	$result = $this->geocoder->geocode($address->getFormatedAddress())->first()->getCoordinates();
 		   	$lat = $result->getLatitude();
 		   	$lng = $result->getLongitude();
 			}

@@ -12,6 +12,7 @@ use Symfony\Component\Form\FormError;
 use App\Document\Coordinates;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Geocoder\ProviderAggregator;
 
 class UserController extends GoGoController
 {
@@ -100,7 +101,8 @@ class UserController extends GoGoController
       return $this->redirectToRoute('gogo_user_contributions');
    }
 
-   public function profileAction(Request $request, SessionInterface $session, DocumentManager $dm)
+   public function profileAction(Request $request, SessionInterface $session, DocumentManager $dm,
+                                 ProviderAggregator $geocoder)
    {
       $user = $this->getUser();
       $current_user = clone $user;
@@ -121,7 +123,8 @@ class UserController extends GoGoController
          if ($user->getLocation()) {
              try
              {
-                 $geocoded = $this->get('bazinga_geocoder.geocoder')->using('google_maps')->geocode($user->getLocation())->first();
+                 $geocoded = $geocoder->using('google_maps')->geocode($user->getLocation())
+                             ->first()->getCoordinates();
                  $user->setGeo(new Coordinates($geocoded->getLatitude(), $geocoded->getLongitude()));
              }
              catch (\Exception $error) { $geocodeError = true; }

@@ -63,7 +63,8 @@ class RegistrationFormHandler
             if ($user->getLocation()) {
                 try
                 {
-                    $geocoded = $this->geocoder->using('google_maps')->geocode($user->getLocation())->first();
+                    $geocoded = $this->geocoder->using('google_maps')->geocode($user->getLocation())
+                                ->first()->getCoordinates();
                     $user->setGeo(new Coordinates($geocoded->getLatitude(), $geocoded->getLongitude()));
                 }
                 catch (\Exception $error) { $geocodeError = true; }

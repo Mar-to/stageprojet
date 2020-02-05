@@ -4,15 +4,21 @@ bazinga_geocoder:
     # see https://github.com/geocoder-php/BazingaGeocoderBundle/blob/5.0.0/Resources/doc/index.md#fake-local-ip
     fake_ip: 123.123.123.123
     providers:
+        # See https://github.com/geocoder-php/BazingaGeocoderBundle/blob/master/Resources/doc/services.md
         google_maps:
-            locale:               fr
+            locale: '%locale%'
             factory: Bazinga\GeocoderBundle\ProviderFactory\GoogleMapsFactory
             options:
                 # httplug_client: '@httplug.client' # When using HTTPlugBundle
                 # region: 'Sweden'
                 api_key: 'AIzaSyBgah9u8A21CdN6O_fN80Op-4zcLJ0EwXk'
-            # region:               null
-            # use_ssl:              true
-            # api_key:
+        # mapbox:
+        #     locale: '%locale%'
+        #     factory: Bazinga\GeocoderBundle\ProviderFactory\MapboxFactory
+        #     options:
+        #         api_key: ''
         # openstreetmap:
-        #     locale:               fr
+        #     locale: '%locale%'
+        #     factory: Bazinga\GeocoderBundle\ProviderFactory\NominatimFactory
+        #     options:
+        #         root_url: ''
