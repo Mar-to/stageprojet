@@ -36,4 +36,5 @@ return [
     Symfony\Bundle\DebugBundle\DebugBundle::class => ['dev' => true, 'test' => true],
     App\Application\Sonata\UserBundle\ApplicationSonataUserBundle::class => ['all' => true],
     App\Application\Sonata\Exporter\ApplicationSonataExporterBundle::class => ['all' => true],
+    SymfonyBundles\ODMFixturesBundle\SymfonyBundlesODMFixturesBundle::class => ['all' => true],
 ];

@@ -32,21 +32,16 @@ class ProjectController extends Controller
         return $sassHelper->isRootProject();
     }
 
-    protected function getOdmForProject($project, DocumentManager $dm)
-    {
-        $dm->getConfiguration()->setDefaultDB($project->getDbName());
-        return $dm;
-    }
-
     protected function generateUrlForProject($project, $route = 'gogo_homepage')
     {
         return 'http://' . $project->getDomainName() . '.' . $this->getParameter('base_url') . $this->generateUrl($route);
     }
 
+    public const TOTO = "yes";
+
     public function createAction(Request $request, DocumentManager $dm)
     {
         if (!$this->isAuthorized()) return $this->redirectToRoute('gogo_homepage');
-
         $domain = $request->request->get('form')['domainName'];
         if ($domain) // if submiting the form
         {
@@ -65,12 +60,14 @@ class ProjectController extends Controller
             ->add('domainName', null, array('required' => true))
             ->getForm();
 
-        if ($projectForm->handleRequest($request)->isValid())
+        $projectForm->handleRequest($request);
+        if ($projectForm->isSubmitted() && $projectForm->isValid())
         {
             $dm->persist($project);
             $dm->flush();
             // initialize commands
-            $commands = (new GoGoMainCommand())->scheduledCommands;
+            $commands = GoGoMainCommand::SCHEDULED_COMMANDS;
+
             foreach ($commands as $commandName => $period) {
                 $scheduledCommand = new ScheduledCommand();
                 $scheduledCommand->setProject($project);
@@ -82,13 +79,15 @@ class ProjectController extends Controller
             $dm->flush();
 
             // Switch to new project ODM
-            $projectOdm = $this->getOdmForProject($project);
+            $dm->getConfiguration()->setDefaultDB($project->getDbName());
+            $projectOdm = $dm;
 
             // Clone the root configuration into the new project
-            // Due to conflicts between ODM, we get the Configuration froma Json API, and convert it to an object
+            // Due to conflicts between ODM, we get the Configuration from a Json API, and convert it to an object
             $baseUrl = $this->getParameter('base_url');
             if ($baseUrl == 'saas.localhost') $baseUrl = "gogocarto.fr"; # Fixs for docker in localhost
             $configUrl = 'http://' . $baseUrl . $this->generateUrl('gogo_api_configuration');
+            $configUrl = str_replace('index.php/', '', $configUrl); # Fix for localhost
             $rootConfigToCopy = json_decode(file_get_contents($configUrl));
             $rootConfigToCopy->appName = $project->getName();
             $rootConfigToCopy->appBaseLine = "";
@@ -164,8 +163,8 @@ class ProjectController extends Controller
         $user = $userManager->createUser();
 
         $form = $this->get('form.factory')->create(RegistrationFormType::class, $user);
-
-        if ($form->handleRequest($request)->isValid()) {
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
             $user = $form->getData();
             $user->setEnabled(true);
             $user->setRoles(array('ROLE_SUPER_ADMIN'));

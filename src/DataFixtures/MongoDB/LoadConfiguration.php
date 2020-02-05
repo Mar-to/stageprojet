@@ -2,8 +2,7 @@
 
 namespace App\DataFixtures\MongoDB;
 
-use Doctrine\Common\DataFixtures\FixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use App\Document\Configuration;
 use App\Document\Configuration\ConfigurationHome;
 use App\Document\Configuration\ConfigurationUser;
@@ -17,9 +16,9 @@ use App\Document\InteractionConfiguration;
 use App\Document\Coordinates;
 use App\Document\TileLayer;
 
-class LoadConfiguration implements FixtureInterface
+class LoadConfiguration
 {
-   public function load(ObjectManager $manager, $container = null, $configToCopy = null, $contribConfig = null)
+   public function load($dm, $container = null, $configToCopy = null, $contribConfig = null)
    {
       $configuration = new Configuration();
       $tileLayersToCopy = null;
@@ -161,16 +160,16 @@ class LoadConfiguration implements FixtureInterface
       }
 
       $defaultTileLayerName = $configToCopy ? $configToCopy->defaultTileLayer : null;
-      $defaultLayer = $this->loadTileLayers($manager, $tileLayersToCopy, $defaultTileLayerName);
+      $defaultLayer = $this->loadTileLayers($dm, $tileLayersToCopy, $defaultTileLayerName);
       $configuration->setDefaultTileLayer($defaultLayer);
 
-      $manager->persist($configuration);
-      $manager->flush();
+      $dm->persist($configuration);
+      $dm->flush();
 
       return $configuration;
    }
 
-   public function loadTileLayers(ObjectManager $manager, $tileLayersToCopy = null, $defaultTileLayerName = null)
+   public function loadTileLayers($dm, $tileLayersToCopy = null, $defaultTileLayerName = null)
    {
       $tileLayers = $tileLayersToCopy ? $tileLayersToCopy : array(
          array('name' => 'cartodb',
@@ -205,7 +204,7 @@ class LoadConfiguration implements FixtureInterface
             $tileLayer->setAttribution($layer['attribution']);
             $position = array_key_exists('position', $layer) ? $layer['position'] : $key;
             $tileLayer->setPosition($key);
-            $manager->persist($tileLayer);
+            $dm->persist($tileLayer);
             $createdTileLayers[] = $layer['name'];
 
             if ($defaultTileLayer == null && $defaultTileLayerName == null) $defaultTileLayer = $tileLayer;

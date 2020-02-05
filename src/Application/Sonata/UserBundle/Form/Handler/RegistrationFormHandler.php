@@ -70,7 +70,7 @@ class RegistrationFormHandler
                 catch (\Exception $error) { $geocodeError = true; }
             }
 
-            if ($form->isValid() && !$alreadyUsedEmail && !$alreadyUsedUserName && !$locoationSetToReceiveNewsletter && !$geocodeError)
+            if ($form->isSubmitted() && $form->isValid() && !$alreadyUsedEmail && !$alreadyUsedUserName && !$locoationSetToReceiveNewsletter && !$geocodeError)
             {
                 $this->onSuccess($user, $confirmation);
                 return true;

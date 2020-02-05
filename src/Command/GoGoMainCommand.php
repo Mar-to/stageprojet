@@ -16,7 +16,7 @@ use Psr\Log\LoggerInterface;
 class GoGoMainCommand extends Command
 {
    // List of the command to execute periodically, with the period in hours
-   public $scheduledCommands = [
+   public const SCHEDULED_COMMANDS = [
       "app:elements:checkvote" => "24H",
       "app:elements:checkExternalSourceToUpdate" => "24H",
       "app:users:sendNewsletter" => "1H",
@@ -48,7 +48,7 @@ class GoGoMainCommand extends Command
          // Updating next execution time
          $dateNow = new \DateTime();
          $dateNow->setTimestamp(time());
-         $interval = new \DateInterval('PT' . $this->scheduledCommands[$commandToExecute->getCommandName()]);
+         $interval = new \DateInterval('PT' . self::SCHEDULED_COMMANDS[$commandToExecute->getCommandName()]);
          $commandToExecute->setNextExecutionAt($dateNow->add($interval));
          $this->dm->persist($commandToExecute);
          $this->dm->flush();

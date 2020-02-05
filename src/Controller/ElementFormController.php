@@ -93,7 +93,8 @@ class ElementFormController extends GoGoController
 				$othersUsers = $dm->getRepository('App\Document\User')->findByEmail($userEmail);
 				$emailAlreadyUsed = count($othersUsers) > 0;
 			}
-			if ($loginform->handleRequest($request)->isValid() && !$emailAlreadyUsed)
+			$loginform->handleRequest($request);
+			if ($loginform->isSubmitted() && $loginform->isValid() && !$emailAlreadyUsed)
 			{
 				$session->set('userEmail', $userEmail);
 				$userType = "email";
