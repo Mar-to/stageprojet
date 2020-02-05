@@ -24,7 +24,7 @@ class MonitoringElementsBlockService extends AbstractBlockService
 	public function __construct(Environment $twig, DocumentManager $dm)
 	{
 		$this->dm = $dm;
-    $this->twig = $twig;
+    parent::__construct($twig);
 	}
 
 	public function getName()
@@ -64,7 +64,6 @@ class MonitoringElementsBlockService extends AbstractBlockService
 
 	    // merge settings
 	    $settings = $blockContext->getSettings();
-
 	    return $this->renderResponse('admin/blocks/block_monitoring.html.twig', array(
 	        'block'     => $blockContext->getBlock(),
 	        'settings'  => $settings,

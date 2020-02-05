@@ -17,6 +17,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Ob\HighchartsBundle\Highcharts\Highchart;
 use App\Document\InteractionType;
 use App\Document\ElementStatus;
+use App\Services\ConfigurationService;
 use Twig\Environment;
 
 class ChartBlockService extends AbstractBlockService
@@ -56,11 +57,11 @@ class ChartBlockService extends AbstractBlockService
 		'7' => '#7cb5ec',
 	];
 
-	public function __construct(Environment $twig, DocumentManager $dm, $configService)
+	public function __construct(Environment $twig, DocumentManager $dm, ConfigurationService $configService)
 	{
 		$this->dm = $dm;
-    $this->twig = $twig;
     $this->configService = $configService;
+    parent::__construct($twig);
 	}
 
 	public function getName()
@@ -191,7 +192,7 @@ class ChartBlockService extends AbstractBlockService
 
 	private function getDataContributionFromType($type)
 	{
-		$builder = $this->dm->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionContribution');
+		$builder = $this->dm->createAggregationBuilder('App\Document\UserInteractionContribution');
 		$builder
         ->match()
             ->field('type')->equals($type)
@@ -201,19 +202,19 @@ class ChartBlockService extends AbstractBlockService
 
 	private function getDataVote()
 	{
-		$builder = $this->dm->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionVote');
+		$builder = $this->dm->createAggregationBuilder('App\Document\UserInteractionVote');
       return $this->getDataGroupedBy($builder, 'createdAt');
 	}
 
 	private function getDataReports()
 	{
-		$builder = $this->dm->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionReport');
+		$builder = $this->dm->createAggregationBuilder('App\Document\UserInteractionReport');
       return $this->getDataGroupedBy($builder, 'createdAt');
 	}
 
 	private function getDataCollaborativeResolve($status)
 	{
-		$builder = $this->dm->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionContribution');
+		$builder = $this->dm->createAggregationBuilder('App\Document\UserInteractionContribution');
 		$builder
         ->match()
             ->field('status')->equals($status);
@@ -277,7 +278,7 @@ class ChartBlockService extends AbstractBlockService
 
 	private function getDataHowContributionAreResolved($types)
 	{
-		$builder = $this->dm->createAggregationBuilder('BiopenGeoDirectoryBundle:UserInteractionContribution');
+		$builder = $this->dm->createAggregationBuilder('App\Document\UserInteractionContribution');
 		$builder
 		  ->match()
 		  		->field('type')->in($types)

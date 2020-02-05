@@ -314,7 +314,7 @@ class ElementRepository extends DocumentRepository
 
   public function findDeletedElementsByImportIdCount()
   {
-    $builder = $this->createAggregationBuilder('BiopenGeoDirectoryBundle:Element');
+    $builder = $this->createAggregationBuilder('App\Document\Element');
     $builder
       ->match()
         ->field('status')->lte(ElementStatus::AdminRefused)

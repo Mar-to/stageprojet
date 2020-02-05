@@ -110,19 +110,16 @@ services:
 
     gogo.block.service.monitoring:
         class: App\Block\MonitoringElementsBlockService
-        arguments: [ "@twig", "@doctrine.odm.mongodb.document_manager" ]
         tags:
             - { name: sonata.block }
 
     gogo.block.service.charts:
         class: App\Block\ChartBlockService
-        arguments: [ "@twig", "@doctrine.odm.mongodb.document_manager", "App/Services/ConfigurationService" ]
         tags:
             - { name: sonata.block }
 
     gogo.block.recent_elements:
         class: App\Block\RecentElementsBlockService
-        arguments: [ "@twig", "@doctrine.odm.mongodb.document_manager", "@sonata.admin.pool" ]
         tags:
             - { name: sonata.block }
 

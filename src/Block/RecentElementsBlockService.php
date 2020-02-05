@@ -4,11 +4,10 @@ namespace App\Block;
 use Sonata\AdminBundle\Admin\Pool;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\BlockBundle\Block\BlockContextInterface;
-use Sonata\BlockBundle\Block\Service\AbstractAdminBlockService;
+use Sonata\BlockBundle\Block\Service\AbstractBlockService;
 use Sonata\BlockBundle\Model\BlockInterface;
 use Sonata\CoreBundle\Model\ManagerInterface;
 use Sonata\CoreBundle\Model\Metadata;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -18,7 +17,7 @@ use Twig\Environment;
 /**
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
  */
-class RecentElementsBlockService extends AbstractAdminBlockService
+class RecentElementsBlockService extends AbstractBlockService
 {
     protected $manager;
     /**
@@ -35,7 +34,7 @@ class RecentElementsBlockService extends AbstractAdminBlockService
     {
         $this->manager = $dm;
         $this->adminPool = $adminPool;
-        parent::__construct("RecentElementsBlockService", $twig);
+        parent::__construct($twig);
     }
     /**
      * {@inheritdoc}
