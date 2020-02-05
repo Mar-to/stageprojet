@@ -41,6 +41,7 @@ services:
 
     App\Services\UploadDirectoryNamer:
       class: App\Services\UploadDirectoryNamer
+      public: true
       arguments: []
 
     App\Services\GoGoCartoJsService:

@@ -31,7 +31,7 @@ gulp.task('scriptsElementForm', function() {
 gulp.task('scriptsLibs', function() {
   gulp.src(['node_modules/gogocarto-js/dist/gogocarto.js'])
       .pipe(gulp.dest('web/js'));
-  return gulp.src(['assets/js/vendor/**/*.js',
+  return gulp.src(['assets/js/vendor/**/*',
                    'assets/js/init-sw.js',
                    ])
     .pipe(gulp.dest('web/js'));

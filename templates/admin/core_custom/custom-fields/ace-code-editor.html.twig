@@ -6,11 +6,11 @@
 <textarea id="{{ form.vars.id }}" name="{{ form.vars.full_name }}" data-id="{{ attr['data-id']|default('') }}">{{ form.vars.value }}</textarea>
 <pre id="editor{{ form.vars.id }}" class="ace-editor" style="height: {{ height }}px;"></pre>
 
-<script src="{{ asset('js/vendor/ace/ace.js') }}"></script>
+<script src="{{ asset('js/ace/ace.js') }}"></script>
 {% if format != 'javascript' %}
-    <script src="{{ asset('js/vendor/ace/mode-' ~ format ~ '.js') }}"></script>
+    <script src="{{ asset('js/ace/mode-' ~ format ~ '.js') }}"></script>
 {% endif %}
-<script src="{{ asset('js/vendor/ace/theme-monokai.js') }}"></script>
+<script src="{{ asset('js/ace/theme-monokai.js') }}"></script>
 
 <script>
     var editor{{ form.vars.id }} = ace.edit("editor{{ form.vars.id }}", {
