@@ -21,7 +21,8 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use FOS\UserBundle\Doctrine\UserManager;
+use FOS\UserBundle\Model\UserManagerInterface;
+use FOS\UserBundle\Security\LoginManagerInterface;
 
 class ProjectController extends Controller
 {
@@ -154,7 +155,8 @@ class ProjectController extends Controller
         return $this->render('saas/home.html.twig', array('projects' => $projects, 'config' => $config));
     }
 
-    public function initializeAction(Request $request, DocumentManager $dm, UserManager $userManager)
+    public function initializeAction(Request $request, DocumentManager $dm, UserManagerInterface $userManager,
+                                     LoginManagerInterface $loginManager)
     {
         $users = $dm->getRepository('App\Document\User')->findAll();
         if (count($users) > 0) return $this->redirectToRoute('gogo_homepage');
@@ -169,13 +171,13 @@ class ProjectController extends Controller
             $user->setRoles(array('ROLE_SUPER_ADMIN'));
             $userManager->updateUser($user, true);
 
-            $this->get('session')->getFlashBag()->add('success', "<b>Bienvenue dans votre espace Administrateur !</b></br>
+            $this->addFlash('success', "<b>Bienvenue dans votre espace Administrateur !</b></br>
                 L'aventure commence tout juste pour vous, il vous faut maintenant commencer à configurer votre site :)</br>
                 Je vous invite à consulter les <a target='_blank' href='https://video.colibris-outilslibres.org/video-channels/gogocarto_channel/videos'>vidéos tutoriels</a> pour vous apprendre à configurer votre carte !</br>
                 Si vous avez des questions (après avoir regardé ces vidéos) rendez vous sur <a target='_blank' href='https://chat.lescommuns.org/channel/gogocarto'>le chat #gogocarto</a> !");
             $response = $this->redirectToRoute('sonata_admin_dashboard');
 
-            $this->authenticateUser($user, $response);
+            $this->authenticateUser($user, $response, $loginManager);
 
             return $response;
         }
@@ -184,10 +186,11 @@ class ProjectController extends Controller
         return $this->render('saas/projects/initialize.html.twig', ['form' => $form->createView(), 'config' => $config]);
     }
 
-    protected function authenticateUser(UserInterface $user, Response $response)
+    protected function authenticateUser(UserInterface $user, Response $response,
+                                        LoginManagerInterface $loginManager)
     {
         try {
-            $this->get('fos_user.security.login_manager')->loginUser(
+            $loginManager->loginUser(
                 $this->getParameter('fos_user.firewall_name'),
                 $user,
                 $response

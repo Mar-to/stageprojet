@@ -21,14 +21,14 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 use App\Document\Element;
 use App\Document\OptionValue;
-
+use App\Services\RandomCreationService;
 use joshtronic\LoremIpsum;
 
 class ImportController extends Controller
 {
-    public function generateRandomAction($nombre, $generateVote = false)
+    public function generateRandomAction($nombre, $generateVote = false, RandomCreationService $randomService)
     {
-        $lastElementCreated = $this->get('gogo.random_creation_service')->generate($nombre, $generateVote);
+        $lastElementCreated = $randomService->generate($nombre, $generateVote);
 
         return $this->render('admin/pages/help.html.twig');
     }

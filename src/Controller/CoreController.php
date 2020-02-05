@@ -6,10 +6,11 @@ use App\Controller\GoGoController;
 use App\Helper\SaasHelper;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class CoreController extends GoGoController
 {
-    public function homeAction($force = false, DocumentManager $dm)
+    public function homeAction($force = false, DocumentManager $dm, SessionInterface $session)
     {
         $sassHelper = new SaasHelper();
         if (!$force && $this->getParameter('use_as_saas') && $sassHelper->isRootProject()) return $this->redirectToRoute('gogo_saas_home');
@@ -27,7 +28,7 @@ class CoreController extends GoGoController
         $mainOptions = $mainCategory ? $mainCategory->getOptions() : [];
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
 
-        $this->get('session')->clear();
+        $session->clear();
 
         return $this->render('home.html.twig', array(
             'listWrappers' => $listWrappers,

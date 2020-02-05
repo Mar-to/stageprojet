@@ -19,14 +19,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use App\Document\Element;
 use App\Document\OptionValue;
-
+use App\Services\RandomCreationService;
 use joshtronic\LoremIpsum;
 
 class RandomCreationController extends Controller
 {
-    public function generateAction($nombre, $generateVote = false)
+    public function generateAction($nombre, $generateVote = false, RandomCreationService $randomService)
     {
-	   $lastElementCreated = $this->get('gogo.random_creation_service')->generate($nombre, $generateVote);
+	   $lastElementCreated = $randomService->generate($nombre, $generateVote);
 
 	   return new Response('Elements générés');
   	}

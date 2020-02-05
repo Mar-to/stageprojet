@@ -10,14 +10,28 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Document\OptionValue;
 use App\Document\ValidationType;
 use Doctrine\ODM\MongoDB\DocumentManager;
-
+use App\Services\UserInteractionService;
+use App\Services\MailService;
+use App\Services\ElementActionService;
+use App\Services\AsyncService;
 use App\Document\ElementStatus;
 use App\Document\Import;
 use App\Document\ModerationState;
-
+use App\EventListener\ElementJsonGenerator;
 
 class ElementAdminBulkController extends Controller
 {
+    public function __construct(MailService $mailService, UserInteractionService $interactionService,
+                                AsyncService $asyncService, ElementActionService $elementActionService,
+                                ElementJsonGenerator $jsonGenerator, DocumentManager $dm)
+    {
+      $this->mailService = $mailService;
+      $this->interactionService = $interactionService;
+      $this->asyncService = $asyncService;
+      $this->elementActionService = $elementActionService;
+      $this->dm = $dm;
+    }
+
     public function batchActionSoftDelete(ProxyQueryInterface $selectedModelQuery) {
         return $this->batchStatus($selectedModelQuery, 'softDelete');
     }
@@ -39,7 +53,7 @@ class ElementAdminBulkController extends Controller
     {
         $this->admin->checkAccess('edit');
 
-        $request = $this->get('request')->request;
+        $request = $this->get('request_stack')->getCurrentRequest()->request;
         $modelManager = $this->admin->getModelManager();
 
         $qb = clone $selectedModelQuery;
@@ -55,22 +69,18 @@ class ElementAdminBulkController extends Controller
 
         $sendMail = !($request->has('dont-send-mail-' . $actionName) && $request->get('dont-send-mail-' . $actionName));
         $comment = $request->get('comment-' . $actionName);
-        $dm = $modelManager->getDocumentManager($selectedModels->getNext());
-        if ($sendMail) $mailService = $this->container->get('gogo.mail_service');
 
         try {
             // BULK - PROCEED ALL ELEMENTS AT ONCE
             if ($isBulk && in_array($actionName, ['softDelete', 'restore', 'resolveReports']))
             {
-                $interactionService = $this->container->get('gogo.user_interaction_service');
-
                 // SEND EMAIL - ITERATE EACH ELEMENT WITHOUT DB OPERATIONS
                 if ($nbreModelsToProceed < 5000) {
                     foreach ($selectedModels as $element) {
                         $mappingType = array('softDelete' => 'delete', 'restore' => 'add');
-                        if ($sendMail && isset($mappingType[$actionName])) $mailService->sendAutomatedMail($mappingType[$actionName], $element, $comment);
+                        if ($sendMail && isset($mappingType[$actionName])) $this->mailService->sendAutomatedMail($mappingType[$actionName], $element, $comment);
                         if ($actionName == 'resolveReports') {
-                            foreach($element->getUnresolvedReports() as $report) $mailService->sendAutomatedMail('report', $element, $comment, $report);
+                            foreach($element->getUnresolvedReports() as $report) $this->mailService->sendAutomatedMail('report', $element, $comment, $report);
                         }
                         $element->setPreventJsonUpdate(true);
                     }
@@ -81,13 +91,13 @@ class ElementAdminBulkController extends Controller
                 // CREATE CONTRIBUTION
                 $contrib = null;
                 switch ($actionName) {
-                    case 'softDelete': $contrib = $interactionService->createContribution($comment, InteractType::Deleted, ElementStatus::Deleted); break;
-                    case 'restore': $contrib = $interactionService->createContribution($comment, InteractType::Restored, ElementStatus::AddedByAdmin);  break;
-                    case 'resolveReports': $contrib = $interactionService->createContribution($comment, InteractType::ModerationResolved, ElementStatus::AdminValidate); break;
+                    case 'softDelete': $contrib = $this->interactionService->createContribution($comment, InteractType::Deleted, ElementStatus::Deleted); break;
+                    case 'restore': $contrib = $this->interactionService->createContribution($comment, InteractType::Restored, ElementStatus::AddedByAdmin);  break;
+                    case 'resolveReports': $contrib = $this->interactionService->createContribution($comment, InteractType::ModerationResolved, ElementStatus::AdminValidate); break;
                 }
 
                 // Clear previous interaction with same type pending to be dispatched (prevent dispatching multiple edit event)
-                $query = $dm->createQueryBuilder('App\Document\UserInteractionContribution')
+                $query = $this->dm->createQueryBuilder('App\Document\UserInteractionContribution')
                    ->updateMany()
                    ->field('type')->equals($contrib->getType())
                    ->field('elements.id')->in($elementIds)
@@ -95,7 +105,7 @@ class ElementAdminBulkController extends Controller
                    ->getQuery()->execute();
 
                 $contrib->setElementIds($elementIds);
-                $dm->persist($contrib);
+                $this->dm->persist($contrib);
 
                 // UPDATE EACH ELEMENT AT ONCE
                 $mappingStatus = array('softDelete' => ElementStatus::Deleted, 'restore' => ElementStatus::AddedByAdmin);
@@ -113,44 +123,43 @@ class ElementAdminBulkController extends Controller
                 // BATCH RESOLVE REPORTS
                 if ($actionName == 'resolveReports')
                 {
-                    $query = $dm->createQueryBuilder('App\Document\UserInteractionReport')
+                    $query = $this->dm->createQueryBuilder('App\Document\UserInteractionReport')
                        ->updateMany()
                        ->field('isResolved')->notEqual(true)
                        ->field('element.id')->in($elementIds)
                        ->field('isResolved')->set(true)
                        ->field('resolvedMessage')->set($comment)
-                       ->field('resolvedBy')->set($this->container->get('security.token_storage')->getToken()->getUser()->getEmail())
+                       ->field('resolvedBy')->set($this->getUser()->getEmail())
                        ->field('updatedAt')->set(new \DateTime())
                        ->getQuery()->execute();
                 }
 
-                $dm->flush();
+                $this->dm->flush();
 
                 // update element json asyncronously
-                $this->container->get('gogo.async')->callCommand('app:elements:updateJson', ["ids" => $elementIdsString]);
+                $this->asyncService->callCommand('app:elements:updateJson', ["ids" => $elementIdsString]);
             }
             // PROCEED EACH ELEMENT ONE BY ONE
             else
             {
-                $elementActionService = $this->container->get('gogo.element_action_service');
                 $i = 0;
                 foreach ($selectedModels as $selectedModel)
                 {
                     switch ($actionName) {
-                        case 'softDelete': $elementActionService->delete($selectedModel, $sendMail, $comment); break;
-                        case 'restore': $elementActionService->restore($selectedModel, $sendMail, $comment);  break;
-                        case 'resolveReports': $elementActionService->resolveReports($selectedModel, $comment, true); break;
-                        case 'validation': $elementActionService->resolve($selectedModel, true, 2, $comment); break;
-                        case 'refusal': $elementActionService->resolve($selectedModel, false, 2, $comment); break;
+                        case 'softDelete': $this->elementActionService->delete($selectedModel, $sendMail, $comment); break;
+                        case 'restore': $this->elementActionService->restore($selectedModel, $sendMail, $comment);  break;
+                        case 'resolveReports': $this->elementActionService->resolveReports($selectedModel, $comment, true); break;
+                        case 'validation': $this->elementActionService->resolve($selectedModel, true, 2, $comment); break;
+                        case 'refusal': $this->elementActionService->resolve($selectedModel, false, 2, $comment); break;
                     }
 
                     if ((++$i % 100) == 0) {
-                        $dm->flush();
-                        $dm->clear();
+                        $this->dm->flush();
+                        $this->dm->clear();
                     }
                 }
-                $dm->flush();
-                $dm->clear();
+                $this->dm->flush();
+                $this->dm->clear();
             }
 
         } catch (\Exception $e) {
@@ -167,16 +176,13 @@ class ElementAdminBulkController extends Controller
     // BATCH HARD DELETE
     public function batchActionDelete(ProxyQueryInterface $selectedModelQuery)
     {
-        $dm = $this->admin->getModelManager(); // ??
-        dump($dm);
         // Add contribution for webhook - Get elements visible, no need to add a contirbution if element where already soft deleted for example
         $selectedModels = clone $selectedModelQuery;
         $elementIds = array_keys($selectedModels->select('id')->field('status')->gte(-1)->hydrate(false)->getQuery()->execute()->toArray());
         if (count($elementIds)) {
-            $interactionService = $this->container->get('gogo.user_interaction_service');
-            $contribution = $interactionService->createContribution(null, InteractType::Deleted, ElementStatus::Deleted);
+            $contribution = $this->interactionService->createContribution(null, InteractType::Deleted, ElementStatus::Deleted);
             $contribution->setElementIds($elementIds);
-            $dm->persist($contribution);
+            $this->dm->persist($contribution);
         }
 
         // Add element id to ignore to sources
@@ -189,7 +195,7 @@ class ElementAdminBulkController extends Controller
 
         foreach ($elementsIdsGroupedBySource as $value) {
             $elementIdsForCurrSource = explode(',', $value['value']);
-            $qb = $dm->createQueryBuilder(Import::class);
+            $qb = $this->dm->createQueryBuilder(Import::class);
             $qb->updateOne()
                ->field('id')->equals($value['_id'])
                ->field('idsToIgnore')->addToSet($qb->expr()->each($elementIdsForCurrSource))
@@ -198,8 +204,8 @@ class ElementAdminBulkController extends Controller
 
         // Perform remove
         $selectedModelQuery->remove()->getQuery()->execute();
-        $dm->createQueryBuilder(UserInteractionContribution::class)->field('element.id')->in($elementIds)->remove()->getQuery()->execute();
-        $dm->flush();
+        $this->dm->createQueryBuilder(UserInteractionContribution::class)->field('element.id')->in($elementIds)->remove()->getQuery()->execute();
+        $this->dm->flush();
 
         return new RedirectResponse($this->admin->generateUrl('list', array('filter' => $this->admin->getFilterParameters())));
     }
@@ -211,7 +217,7 @@ class ElementAdminBulkController extends Controller
         $nbreModelsToProceed = $selectedModels->count();
         $selectedModels->limit(5000);
 
-        $request = $this->get('request')->request;
+        $request = $this->get('request_stack')->getCurrentRequest()->request;
 
         $mails = [];
         $mailsSent = 0;
@@ -244,8 +250,7 @@ class ElementAdminBulkController extends Controller
         }
         else if (count($mails) > 0)
         {
-            $mailService = $this->container->get('gogo.mail_service');
-            $result = $mailService->sendMail(null, $request->get('mail-subject'), $request->get('mail-content'), $request->get('from'), $mails);
+            $result = $this->mailService->sendMail(null, $request->get('mail-subject'), $request->get('mail-content'), $request->get('from'), $mails);
             if ($result['success'])
                 $this->addFlash('sonata_flash_success', count($mails) . ' mails ont bien été envoyés');
             else
@@ -268,7 +273,7 @@ class ElementAdminBulkController extends Controller
     {
         $this->admin->checkAccess('edit');
 
-        $request = $this->get('request')->request;
+        $request = $this->get('request_stack')->getCurrentRequest()->request;
         $modelManager = $this->admin->getModelManager();
 
         $selectedModels = $selectedModelQuery->execute();
@@ -280,15 +285,13 @@ class ElementAdminBulkController extends Controller
         $optionstoRemoveIds = $request->get('optionsToRemove');
         $optionstoAddIds = $request->get('optionsToAdd');
 
-        $dm = $modelManager->getDocumentManager($selectedModels->getNext());
-
         try {
             $i = 0;
             foreach ($selectedModels as $selectedModel) {
                 $optionsValues = $selectedModel->getOptionValues()->toArray();
                 if ($optionstoRemoveIds && count($optionstoRemoveIds) > 0)
                 {
-                    $optionsToRemove = $dm->createQueryBuilder('App\Document\Option')->field('id')->in($optionstoRemoveIds)
+                    $optionsToRemove = $this->dm->createQueryBuilder('App\Document\Option')->field('id')->in($optionstoRemoveIds)
                                                        ->getQuery()->execute()->toArray();
                     $optionstoRemoveIds = array_map(function($opt) { return $opt->getIdAndChildrenOptionIds(); }, $optionsToRemove);
                     $optionstoRemoveIds = array_unique($this->flatten($optionstoRemoveIds));
@@ -302,7 +305,7 @@ class ElementAdminBulkController extends Controller
 
                 if ($optionstoAddIds && count($optionstoAddIds) > 0)
                 {
-                    $optionsToAdd = $dm->createQueryBuilder('App\Document\Option')->field('id')->in($optionstoAddIds)->getQuery()->execute()->toArray();
+                    $optionsToAdd = $this->dm->createQueryBuilder('App\Document\Option')->field('id')->in($optionstoAddIds)->getQuery()->execute()->toArray();
                     $optionstoAddIds = array_map(function($opt) { return $opt->getIdAndParentOptionIds(); }, $optionsToAdd);
                     $optionstoAddIds = array_unique($this->flatten($optionstoAddIds));
 
@@ -317,10 +320,10 @@ class ElementAdminBulkController extends Controller
                         }
                     }
                 }
-                if ((++$i % 100) == 0) { $dm->flush(); $dm->clear(); }
+                if ((++$i % 100) == 0) { $this->dm->flush(); $this->dm->clear(); }
             }
-            $dm->flush();
-            $dm->clear();
+            $this->dm->flush();
+            $this->dm->clear();
 
         } catch (\Exception $e) {
             $this->addFlash('sonata_flash_error', 'Une erreur est survenue :' . $e->getMessage());

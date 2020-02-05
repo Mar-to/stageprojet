@@ -70,7 +70,7 @@ class ImportAdmin extends AbstractAdmin
                 if ($this->getSubject()->getId())
                 {
                     $formMapper->with('Historique', array('class' => 'col-sm-12'))
-                        ->add('logs', null, array('attr' => ['class' => 'gogo-display-logs'], 'mapped' => false))
+                        ->add('currState', null, array('attr' => ['class' => 'gogo-display-logs'], 'mapped' => false))
                     ->end();
                 }
         $formMapper->end();

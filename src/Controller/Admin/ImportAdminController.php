@@ -7,13 +7,15 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Document\ImportState;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use App\Services\ElementImportService;
+use App\Services\AsyncService;
 
 class ImportAdminController extends Controller
 {
-  public function collectAction()
+  public function collectAction(ElementImportService $importService)
   {
     $object = $this->admin->getSubject();
-    $result = $this->get('gogo.element_import')->collectData($object);
+    $result = $importService->collectData($object);
 
     $showUrl = $this->admin->generateUrl('showData', ['id' => $object->getId()]);
 
@@ -32,10 +34,10 @@ class ImportAdminController extends Controller
     return $this->redirect($url);
   }
 
-  public function showDataAction()
+  public function showDataAction(ElementImportService $importService)
   {
     $object = $this->admin->getSubject();
-    $result = $this->get('gogo.element_import')->collectData($object);
+    $result = $importService->collectData($object);
 
     $dataDisplay = print_r($result, true);
     $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]);
@@ -46,7 +48,8 @@ class ImportAdminController extends Controller
     ]);
   }
 
-  public function refreshAction(Request $request, DocumentManager $dm)
+  public function refreshAction(Request $request, DocumentManager $dm, ElementImportService $importService,
+                                AsyncService $asyncService)
   {
     $object = $this->admin->getSubject();
 
@@ -62,9 +65,9 @@ class ImportAdminController extends Controller
     $dm->flush();
 
     if ($request->get('direct'))
-      $result = $this->get('gogo.element_import')->startImport($object);
+      $result = $importService->startImport($object);
     else
-      $this->get('gogo.async')->callCommand('app:elements:importSource', [$object->getId()]);
+      $asyncService->callCommand('app:elements:importSource', [$object->getId()]);
 
     $redirectionUrl = $this->admin->generateUrl('edit', ['id' => $object->getId()]);
     $stateUrl = $this->generateUrl('gogo_import_state', ['id' => $object->getId()]);

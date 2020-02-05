@@ -5,18 +5,10 @@ namespace App\Controller\Admin;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Services\ValidationType;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use App\Services\ElementActionService;
-use App\EventListener\ElementJsonGenerator;
 
 // Split this big controller into two classes
 class ElementAdminController extends ElementAdminBulkController
 {
-    public function __construct(ElementActionService $elementActionService, ElementJsonGenerator $jsonGenerator)
-    {
-        $this->elementActionService = $elementActionService;
-        $this->jsonGenerator = $jsonGenerator;
-    }
-
     public function redirectEditAction()
     {
         $object = $this->admin->getSubject();
@@ -120,9 +112,9 @@ class ElementAdminController extends ElementAdminBulkController
                     {
                         $sendMail = $request->get('send_mail');
 
-                        if ($request->get('submit_delete'))  { $elementActionService->delete($object, $sendMail, $message); }
-                        else if ($request->get('submit_restore')) { $elementActionService->restore($object, $sendMail, $message); }
-                        else { $elementActionService->edit($object, $sendMail, $message); }
+                        if ($request->get('submit_delete'))  { $this->elementActionService->delete($object, $sendMail, $message); }
+                        else if ($request->get('submit_restore')) { $this->elementActionService->restore($object, $sendMail, $message); }
+                        else { $this->elementActionService->edit($object, $sendMail, $message); }
                     }
 
                     $object = $this->admin->update($object);

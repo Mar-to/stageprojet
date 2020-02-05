@@ -96,7 +96,7 @@ class RegistrationFOSUser1Controller extends Controller
         if ($this->has('request_stack')) {
             $request = $this->get('request_stack')->getCurrentRequest();
         } else {
-            $request = $this->get('request');
+            $request = $this->get('request_stack')->getCurrentRequest();
         }
 
         $this->get('session')->set('sonata_user_redirect_url', $request->headers->get('referer'));

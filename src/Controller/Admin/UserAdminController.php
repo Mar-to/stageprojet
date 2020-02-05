@@ -6,16 +6,22 @@ use Sonata\AdminBundle\Controller\CRUDController as Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Symfony\Component\HttpFoundation\Request;
+use App\Services\MailService;
 
 class UserAdminController extends Controller
 {
+   public function __construct(MailService $mailService)
+   {
+      $this->mailService = $mailService;
+   }
+
    public function batchActionSendMail(ProxyQueryInterface $selectedModelQuery)
    {
       $selectedModels = $selectedModelQuery->execute();
       $nbreModelsToProceed = $selectedModels->count();
       $selectedModels->limit(5000);
 
-      $request = $this->get('request')->request;
+      $request = $this->get('request_stack')->getCurrentRequest()->request;
 
       $mails = [];
       $usersWithoutEmail = 0;
@@ -38,8 +44,7 @@ class UserAdminController extends Controller
       }
       else if (count($mails) > 0)
       {
-         $mailService = $this->container->get('gogo.mail_service');
-         $result = $mailService->sendMail(null, $request->get('mail-subject'), $request->get('mail-content'), $request->get('from'), $mails);
+         $result = $this->mailService->sendMail(null, $request->get('mail-subject'), $request->get('mail-content'), $request->get('from'), $mails);
          if ($result['success'])
             $this->addFlash('sonata_flash_success', count($mails) . ' mails ont bien été envoyés');
          else

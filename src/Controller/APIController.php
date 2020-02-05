@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use JMS\Serializer\SerializationContext;
+use JMS\Serializer\SerializerInterface;
 use App\Services\GoGoCartoJsService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
@@ -116,14 +117,14 @@ class APIController extends GoGoController
     return $this->createResponse($responseJson, $config, $status);
   }
 
-  public function getTaxonomyAction(Request $request, $id = null, $_format = 'json', DocumentManager $dm)
+  public function getTaxonomyAction(Request $request, $id = null, $_format = 'json', DocumentManager $dm,
+                                    SerializerInterface $serializer)
   {
     $optionId = $id ? $id : $request->get('id');
     $jsonLdRequest = $this->isJsonLdRequest($request, $_format);
 
     if ($optionId)
     {
-      $serializer = $this->get('jms_serializer');
       $option = $dm->getRepository('App\Document\Option')->findOneBy(array('id' => $optionId));
       $serializationContext = $jsonLdRequest ? SerializationContext::create()->setGroups(['semantic']) : null;
       $dataJson = $serializer->serialize($option, 'json', $serializationContext);
@@ -146,7 +147,8 @@ class APIController extends GoGoController
     return $this->createResponse($responseJson, $config);
   }
 
-  public function getTaxonomyMappingAction(Request $request, $id = null, $_format = 'json', DocumentManager $dm)
+  public function getTaxonomyMappingAction(Request $request, $id = null, $_format = 'json', DocumentManager $dm,
+                                           SerializerInterface $serialize)
   {
     $options = $dm->getRepository('App\Document\Option')->findAll();
     $result = [];
@@ -154,7 +156,6 @@ class APIController extends GoGoController
       $result[$option->getId()] = $option;
     }
 
-    $serializer = $this->get('jms_serializer');
     $responseJson = $serializer->serialize($result, 'json');
 
     $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
@@ -227,11 +228,11 @@ class APIController extends GoGoController
     return $elementsJson;
   }
 
-  public function getGoGoCartoJsConfigurationAction(DocumentManager $dm)
+  public function getGoGoCartoJsConfigurationAction(DocumentManager $dm, GoGoCartoJsService $gogoJsService)
   {
     $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
 
-    $gogocartoConf = $this->get('gogo.gogocartojs_service')->getConfig();
+    $gogocartoConf = $gogoJsService->getConfig();
 
     return $this->createResponse(json_encode($gogocartoConf), $config);
   }

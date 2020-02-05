@@ -5,17 +5,17 @@ namespace App\Controller\Admin\BulkActions;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use App\Application\Sonata\UserBundle\Services\GamificationService;
 
 class DataUpdateActionsController extends BulkActionsAbstractController
 {
-   public function updateGamificationAction(Request $request, SessionInterface $session, DocumentManager $dm)
+   public function updateGamificationAction(Request $request, SessionInterface $session, DocumentManager $dm,
+                                            GamificationService $gamificationService)
    {
       $qb = $dm->createQueryBuilder('App\Document\User');
       $qb->field('email')->notEqual(null);
       $query = $qb->getQuery();
       $users = $query->execute();
-
-      $gamificationService = $this->get('gogo_user.gamification');
 
       $i = 0;
       foreach ($users as $key => $user)
