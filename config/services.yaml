@@ -10,7 +10,7 @@ parameters:
     router.request_context.host: '%env(string:BASE_URL)%'
     router.request_context.base_url: '%env(BASE_PATH)%'
     from_email: "%env(FROM_EMAIL)%"
-    use_as_saas: '%env(USE_AS_SAAS)%'
+    use_as_saas: '%env(bool:USE_AS_SAAS)%'
     images_max_filesize: "%env(IMAGES_MAX_FILESIZE)%"
     files_max_filesize: "%env(FILES_MAX_FILESIZE)%"
     base_protocol: '%env(BASE_PROTOCOL)%'

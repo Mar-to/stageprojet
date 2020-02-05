@@ -54,6 +54,9 @@
         "sonata-project/block-bundle": "^3.11",
         "symfony/process": "^4.4"
     },
+    "repositories": [
+        { "type": "git", "url": "https://github.com/seballot/mongodb-odm.git" }
+    ],
     "require-dev": {
         "symfony/dotenv": "^4.4",
         "symfony/profiler-pack": "dev-master",

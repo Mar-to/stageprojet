@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 class CoreController extends GoGoController
 {
-    public function homeAction($force = true, DocumentManager $dm)
+    public function homeAction($force = false, DocumentManager $dm)
     {
         $sassHelper = new SaasHelper();
         if (!$force && $this->getParameter('use_as_saas') && $sassHelper->isRootProject()) return $this->redirectToRoute('gogo_saas_home');
