@@ -1,13 +1,13 @@
 Installation under Docker
 =========================
 
-With the Docker installation, you have all the required softwares installed in two containers (gogocarto and mongo)
+With the Docker installation, you have all the required softwares installed in two containers (`gogocarto` and `mongo`).
 
-* Go to the /docker sub-directory
+* Go to the `/docker` sub-directory.
 
-* Run `docker-compose build` to build the containers image
+* Run `docker-compose build` to build the container images.
 
-* Run `docker-compose up` to launch the containers
+* Run `docker-compose up` to launch the containers.
 
 * Enter the `gogocarto` container with this command: `docker exec -it gogocarto bash`
 
@@ -15,4 +15,4 @@ With the Docker installation, you have all the required softwares installed in t
 
 * **Warning**: During the `composer install`, when the script asks you for the parameters value, use `mongodb://mongo:27017` for the `mongodb_server` config instead of the default `mongodb://localhost:27017` value.
 
-* Go to `http://localhost/app_dev.php/project/initialize` to initialize the project
+* Go to `http://localhost/app_dev.php/project/initialize` to initialize the project.
