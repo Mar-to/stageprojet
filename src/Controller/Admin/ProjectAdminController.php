@@ -10,6 +10,11 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 class ProjectAdminController extends Controller
 {
+   public function __construct(DocumentManager $dm)
+   {
+    $this->dm = $dm;
+   }
+
    /**
      * Delete action.
      *
@@ -90,22 +95,22 @@ class ProjectAdminController extends Controller
         ));
     }
 
-    private function batchDelete($class, ProxyQueryInterface $queryProxy, DocumentManager $dm)
+    private function batchDelete($class, ProxyQueryInterface $queryProxy)
     {
         $queryBuilder = $queryProxy->getQuery();
 
         $i = 0;
         foreach ($queryBuilder->execute() as $object) {
-            $dm->remove($object);
+            $this->dm->remove($object);
             $this->dropDatabase($object);
 
             if ((++$i % 20) == 0) {
-                $dm->flush();
-                $dm->clear();
+                $this->dm->flush();
+                $this->dm->clear();
             }
         }
 
-        $dm->flush();
-        $dm->clear();
+        $this->dm->flush();
+        $this->dm->clear();
     }
 }

@@ -18,6 +18,12 @@ parameters:
     base_url: '%env(BASE_URL)%'
     instance_name: '%env(INSTANCE_NAME)%'
     contact_email: '%env(CONTACT_EMAIL)%'
+    oauth_communs_id: '%env(OAUTH_COMMUNS_ID)%'
+    oauth_communs_secret: '%env(PAUTH_COMMUNS_SECRET)%'
+    oauth_google_id: '%env(OAUTH_GOOGLE_ID)%'
+    oauth_google_secret: '%env(OAUTH_GOOGLE_SECRET)%'
+    oauth_facebook_id: '%env(OAUTH_FACEBOOK_ID)%'
+    oauth_facebook_secret: '%env(OAUTH_FACEBOOK_SECRET)%'
 
 services:
     # default configuration for services in *this* file

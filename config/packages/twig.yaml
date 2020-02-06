@@ -10,9 +10,9 @@ twig:
         use_as_saas: '%use_as_saas%'
         base_path: '%base_path%'
         contact_email: '%contact_email%'
-        oauth_communs: '%env(oauth_communs_id)%'
-        oauth_google: '%env(oauth_google_id)%'
-        oauth_facebook: '%env(oauth_facebook_id)%'
+        oauth_communs: '%oauth_communs_id%'
+        oauth_google: '%oauth_google_id%'
+        oauth_facebook: '%oauth_facebook_id%'
     paths:
         "%kernel.root_dir%/../web": RootDir
     form_themes:

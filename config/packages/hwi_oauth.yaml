@@ -40,8 +40,8 @@ hwi_oauth:
             access_token_url: https://login.lescommuns.org/auth/realms/master/protocol/openid-connect/token
             authorization_url: https://login.lescommuns.org/auth/realms/master/protocol/openid-connect/auth
             infos_url:         https://login.lescommuns.org/auth/realms/master/protocol/openid-connect/userinfo
-            client_id:      "%env(oauth_communs_id)%"
-            client_secret:  "%env(oauth_communs_secret)%"
+            client_id:      "%oauth_communs_id%"
+            client_secret:  "%oauth_communs_secret%"
             scope:          "email profile openid"
 
 # DEFAULT CONFIG OF THE BUNDLE
