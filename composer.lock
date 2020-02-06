@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c7a9fd2e95f013c57f88e566309a118d",
+    "content-hash": "c7773296a5014132784e7c8b332dfb4d",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -6039,6 +6039,28 @@
             "time": "2019-06-05T20:01:28+00:00"
         },
         {
+            "name": "symfony/apache-pack",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/apache-pack.git",
+                "reference": "3aa5818d73ad2551281fc58a75afd9ca82622e6c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/apache-pack/zipball/3aa5818d73ad2551281fc58a75afd9ca82622e6c",
+                "reference": "3aa5818d73ad2551281fc58a75afd9ca82622e6c",
+                "shasum": ""
+            },
+            "type": "symfony-pack",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A pack for Apache support in Symfony",
+            "time": "2017-12-12T01:46:35+00:00"
+        },
+        {
             "name": "symfony/asset",
             "version": "4.4.x-dev",
             "source": {
@@ -10428,6 +10450,7 @@
         "joshtronic/php-loremipsum": 20,
         "stof/doctrine-extensions-bundle": 20,
         "symfony-bundles/odm-fixtures-bundle": 20,
+        "symfony/apache-pack": 20,
         "symfony/profiler-pack": 20,
         "symfony/debug-pack": 20
     },

@@ -21,3 +21,5 @@ ssh_password
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+
+web/\.htaccess

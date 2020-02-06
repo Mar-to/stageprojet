@@ -52,7 +52,7 @@ gogo_api_taxonomy_mapping:
 # CONFIGURATION / INFOS
 gogo_api_manifest:
     path:     /api/manifest.{_format}
-    defaults: { _controller: App\Controller\APIController::getManifest, _format: json }
+    defaults: { _controller: App\Controller\APIController::getManifestAction, _format: json }
     requirements:
         methods: GET
         _format: json
