@@ -28,6 +28,7 @@ use FOS\UserBundle\Model\UserManagerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use joshtronic\LoremIpsum;
 use App\Services\ElementActionService;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 
 class ElementFormController extends GoGoController
 {
@@ -83,7 +84,7 @@ class ElementFormController extends GoGoController
 		if (!$configService->isUserAllowed($addEditName, $request, $session->get('userEmail')) && !$isEditingWithHash)
 		{
 			// creating simple form to let user enter a email address
-			$loginform = $this->get('form.factory')->createNamedBuilder('user', 'form')
+			$loginform = $this->get('form.factory')->createNamedBuilder('user', FormType::class)
 				->add('email', 'email', array('required' => false))
 				->getForm();
 
@@ -264,7 +265,7 @@ class ElementFormController extends GoGoController
 			$dm->flush();
 
 			$elementToUse = $editMode ? $realElement : $element;
-			$elementShowOnMapUrl = $elementToUse->getShowUrlFromController($this);
+			$elementShowOnMapUrl = $elementToUse->getShowUrlFromController($this->get('router'));
 
 			$noticeText = 'Merci de votre aide ! ';
 			if ($editMode) $noticeText .= 'Les modifications ont bien été prises en compte !';
@@ -335,18 +336,20 @@ class ElementFormController extends GoGoController
 	public function checkDuplicatesAction(Request $request, SessionInterface $session, DocumentManager $dm)
 	{
 		// a form with just a submit button
-		$checkDuplicatesForm = $this->get('form.factory')->createNamedBuilder('duplicates', 'form')->getForm();
+		$checkDuplicatesForm = $this->get('form.factory')->createNamedBuilder('duplicates', FormType::class)
+																->getForm();
 		if ($request->getMethod() == "POST")
 		{
 			// if user say that it's not a duplicate, we go back to add action with checkDuplicate to true
 			return $this->redirectToRoute('gogo_element_add', array('checkDuplicate' => true));
 		}
 		// check that duplicateselement are in session and are not empty
-		else if ($session->has('duplicatesElements') && count($session->get('duplicatesElements') > 0))
+		else if ($session->has('duplicatesElements') && count($session->get('duplicatesElements')) > 0)
 		{
 			$duplicates = $session->get('duplicatesElements');
-			return $this->render('element-form/check-for-duplicates.html.twig', array('duplicateForm' => $checkDuplicatesForm->createView(),
-																															    'duplicatesElements' => $duplicates));
+			return $this->render('element-form/check-for-duplicates.html.twig', array(
+				'duplicateForm' => $checkDuplicatesForm->createView(),
+				'duplicatesElements' => $duplicates));
 		}
 		// otherwise just redirect ot add action
 		else

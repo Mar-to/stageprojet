@@ -12,10 +12,14 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 class ConfigurationAdminController extends Controller
 {
+  public function __construct(DocumentManager $dm)
+  {
+    $this->dm = $dm;
+  }
+
   public function listAction()
   {
-    $dm = $this->admin->getModelManager()->getDocumentManager('App\Document\Configuration');
-    $configuration = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+    $configuration = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
 
     if ($configuration)
        return $this->redirect($this->admin->generateUrl('edit', ['id' => $configuration->getId()]));

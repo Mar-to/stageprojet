@@ -28,7 +28,7 @@ class ElementAdminController extends ElementAdminBulkController
             throw new NotFoundHttpException(sprintf('unable to find the object with id : %s', $id));
         }
 
-        return $this->redirect($object->getShowUrlFromController($this));
+        return $this->redirect($object->getShowUrlFromController($this->get('router')));
     }
 
     public function redirectBackAction()

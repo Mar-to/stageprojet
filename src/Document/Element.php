@@ -377,9 +377,10 @@ class Element
         if (!$needed) $this->setModerationState(ModerationState::NotNeeded);
     }
 
-    public function getShowUrlFromController($controller)
+    public function getShowUrlFromController($router)
     {
-        return str_replace('%23', '#', $controller->publicGenerateUrl('gogo_directory_showElement', array('id'=>$this->getId())));
+        $url = $router->generate('gogo_directory_showElement', array('id'=>$this->getId()));
+        return str_replace('%23', '#', $url);
     }
 
     public function updateRandomHash()
