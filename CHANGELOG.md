@@ -1,3 +1,7 @@
+v3.0.0
+======
+* MAJOR: Upgrade to php7 (mandatory) and symfony 4.4.
+
 v2.5.8
 ======
 * BUG: Import Categories with space at beginning or the end
