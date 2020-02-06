@@ -6,8 +6,7 @@ npm install
 composer install
 gulp build
 gulp production
-php bin/console db:migrate
-sh cache_clear.sh
+php bin/console cache:clear --env=prod
 
 sleep 10 && chmod 777 -R var/ &
 sleep 60 && chmod 777 -R var/ &
