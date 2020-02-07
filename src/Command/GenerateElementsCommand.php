@@ -22,7 +22,7 @@ class GenerateElementsCommand extends GoGoAbstractCommand
         parent::__construct($dm, $commandsLogger, $security);
     }
 
-    protected function gogoConfigure()
+    protected function gogoConfigure(): void
     {
        $this
         ->setName('app:elements:generate')
@@ -33,7 +33,7 @@ class GenerateElementsCommand extends GoGoAbstractCommand
     ;
     }
 
-    protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
+    protected function gogoExecute(DocumentManager $dm, InputInterface $input, OutputInterface $output): void
     {
       $this->output = $output;
 

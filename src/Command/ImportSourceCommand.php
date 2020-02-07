@@ -24,7 +24,7 @@ class ImportSourceCommand extends GoGoAbstractCommand
         parent::__construct($dm, $commandsLogger, $security);
     }
 
-    protected function gogoConfigure()
+    protected function gogoConfigure(): void
     {
        $this
         ->setName('app:elements:importSource')
@@ -32,7 +32,7 @@ class ImportSourceCommand extends GoGoAbstractCommand
         ->addArgument('sourceNameOrImportId', InputArgument::REQUIRED, 'The name of the source');
     }
 
-    protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
+    protected function gogoExecute(DocumentManager $dm, InputInterface $input, OutputInterface $output): void
     {
       try {
         $this->output = $output;

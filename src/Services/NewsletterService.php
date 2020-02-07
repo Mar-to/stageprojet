@@ -1,8 +1,9 @@
 <?php
+
 namespace App\Services;
 
+use App\Document\Element;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use App\Services\MailService;
 
 class NewsletterService
 {
@@ -11,14 +12,11 @@ class NewsletterService
     protected $mailService;
     protected $config;
 
-   /**
-   * Constructor
-   */
    public function __construct(DocumentManager $dm, MailService $mailService)
    {
       $this->dm = $dm;
       $this->mailService = $mailService;
-      $this->elementRepo = $this->dm->getRepository('App\Document\Element');
+      $this->elementRepo = $this->dm->getRepository(Element::class);
    }
 
    public function sendTo($user)

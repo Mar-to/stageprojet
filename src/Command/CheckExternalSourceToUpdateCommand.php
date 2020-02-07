@@ -23,14 +23,14 @@ class CheckExternalSourceToUpdateCommand extends GoGoAbstractCommand
       parent::__construct($dm, $commandsLogger, $security);
    }
 
-    protected function gogoConfigure()
+    protected function gogoConfigure(): void
     {
        $this
         ->setName('app:elements:checkExternalSourceToUpdate')
         ->setDescription('Check for updating external sources');
     }
 
-    protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
+    protected function gogoExecute(DocumentManager $dm, InputInterface $input, OutputInterface $output): void
     {
 
       $qb = $dm->createQueryBuilder('App\Document\ImportDynamic');

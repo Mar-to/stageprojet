@@ -79,15 +79,18 @@ class ConfigurationMailAdmin extends ConfigurationAbstractAdmin
                     ->add('reportResolvedMail',AdminType::class, $featureFormOption, $featureFormTypeOption)->end()
             ->end()
             ->tab('Newsletter')
-                ->with("Informations concernant lanewsletter", array('box_class' => 'box box-danger',
+                ->with("Informations concernant la newsletter", array('box_class' => 'box box-danger',
                     'description' => "Ce mail est envoyé automatiquement aux utilisateurs y ayant souscrit. Il donne la liste des derniers éléments ajoutés dans une zone
-                    géographique determinée</br></br>
+                    géographique determinée et optionnellement des nouvelles</br></br>
                     <b>Il est nécessaire d'inclure la variable <u>{{ newElements }}</u> et/ou <u>{{ pendingElements }}</u></b> qui seront respectivement remplacées par la liste des nouveaux élements et des nouveaux élements en attente de validation</br></br>
                     Il est possible d'inclure les variables suivantes dans les messages (en conservant les '{{}}' ) : </br>
+                    <ul>
+                    <li>{{ news }} la dernière nouvelle publiée</li>
                     <li>{{ user }} le nom ou l'adresse mail du contributeur</li>
                     <li>{{ homeUrl }} l'adresse de la page d'accueil du site</li>
                     <li>{{ userProfileUrl }} l'adresse de la page \"Mes paramètres\" dans l'espace utilisateur</li>
                     <li>{{ showOnMapBtn }} un bouton pour renvoyer vers la carte centrée sur la position de l'utilisateur</li>
+                    </ul>
                     </br>
                     <b>Une fois le mail sauvegardé</b>, vous pouvez cliquer sur le bouton <b>TESTER</b> pour visualiser le rendu"))->end()
                 ->with("Newsletter" . $this->getEmailTestLink($router, 'newsletter'), array('class' => 'col-md-12'))

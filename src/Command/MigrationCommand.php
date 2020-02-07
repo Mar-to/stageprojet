@@ -65,13 +65,13 @@ class MigrationCommand extends GoGoAbstractCommand
         parent::__construct($dm, $commandsLogger, $security);
     }
 
-    protected function gogoConfigure()
+    protected function gogoConfigure(): void
     {
         $this->setName('db:migrate')
              ->setDescription('Update datatabse each time after code update');
     }
 
-    protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
+    protected function gogoExecute(DocumentManager $dm, InputInterface $input, OutputInterface $output): void
     {
         $migrationState = $dm->createQueryBuilder('App\Document\MigrationState')->getQuery()->getSingleResult();
         if ($migrationState == null) // Meaning the migration state was not yet in the place in the code

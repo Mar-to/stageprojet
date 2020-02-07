@@ -22,7 +22,7 @@ class CheckVoteCommand extends GoGoAbstractCommand
       parent::__construct($dm, $commandsLogger, $security);
    }
 
-    protected function gogoConfigure()
+    protected function gogoConfigure(): void
     {
        $this
         ->setName('app:elements:checkvote')
@@ -30,7 +30,7 @@ class CheckVoteCommand extends GoGoAbstractCommand
     ;
     }
 
-    protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
+    protected function gogoExecute(DocumentManager $dm, InputInterface $input, OutputInterface $output): void
     {
       $elementRepo = $dm->getRepository('App\Document\Element');
       $elements = $elementRepo->findPendings();

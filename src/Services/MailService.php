@@ -1,6 +1,8 @@
 <?php
 namespace App\Services;
 
+use App\Document\Configuration;
+use App\Document\News;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use App\Document\UserInteractionReport;
 use App\Document\Element;
@@ -13,6 +15,7 @@ class MailService
 {
     protected $dm;
     protected $config;
+    private $newsRepository;
     protected $mailer;
     protected $router;
     protected $twig;
@@ -20,13 +23,11 @@ class MailService
     protected $email;
     protected $instanceName;
 
-	/**
-	* Constructor
-	*/
 	public function __construct(DocumentManager $dm, \Swift_Mailer $mailer, RouterInterface $router, Environment $twig, $baseUrl, $basePath, $saas, $fromEmail, $instanceName)
 	{
 	   $this->dm = $dm;
-       $this->config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
+       $this->config = $this->dm->getRepository(Configuration::class)->findConfiguration();
+       $this->newsRepository = $this->dm->getRepository(News::class);
        $this->mailer = $mailer;
        $this->router = $router;
        $this->twig = $twig;
@@ -182,6 +183,11 @@ class MailService
             {
                 $string = preg_replace('/({{((?:\s)+)?user((?:\s)+)?}})/i', $element->getDisplayName(), $string);
             }
+        }
+
+        if ('newsletter' === $mailType && $element instanceof User) {
+          $lastNews = $this->newsRepository->findLastPublishedNews($element->getLastNewsletterSentAt());
+          $string = preg_replace('/({{((?:\s)+)?news((?:\s)+)?}})/i', $lastNews ? $lastNews->getContent() : '', $string);
         }
 
         $homeUrl = $this->generateRoute('gogo_homepage');

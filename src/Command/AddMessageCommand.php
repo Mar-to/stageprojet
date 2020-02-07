@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Command\GoGoAbstractCommand;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use App\Document\GoGoLogUpdate;
@@ -14,14 +15,14 @@ use Symfony\Component\Console\Input\InputArgument;
  */
 class AddMessageCommand extends GoGoAbstractCommand
 {
-    protected function gogoConfigure()
+    protected function gogoConfigure(): void
     {
         $this->setName('gogolog:add:message')
              ->addArgument('message', InputArgument::REQUIRED, 'Message to add')
              ->setDescription('Update datatabse each time after code update');
     }
 
-    protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
+    protected function gogoExecute(DocumentManager $dm, InputInterface $input, OutputInterface $output): void
     {
         $log = new GoGoLogUpdate('info', $input->getArgument('message'));
 

@@ -21,14 +21,14 @@ class WebhooksPostCommand extends GoGoAbstractCommand
         parent::__construct($dm, $commandsLogger, $security);
     }
 
-    protected function gogoConfigure()
+    protected function gogoConfigure(): void
     {
        $this
         ->setName('app:webhooks:post')
         ->setDescription('Post the queued data to the given webhooks');
     }
 
-    protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
+    protected function gogoExecute(DocumentManager $dm, InputInterface $input, OutputInterface $output): void
     {
         $numPosts = $this->webhookService->processPosts(10);
 

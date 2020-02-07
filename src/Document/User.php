@@ -735,7 +735,7 @@ class User extends BaseUser
     /**
      * Get lastNewsletterSentAt
      *
-     * @return date $lastNewsletterSentAt
+     * @return \DateTime $lastNewsletterSentAt
      */
     public function getLastNewsletterSentAt()
     {

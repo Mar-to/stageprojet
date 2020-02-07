@@ -1,6 +1,7 @@
 <?php
 namespace App\Command;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,7 +13,7 @@ use App\Command\GoGoAbstractCommand;
 
 class ElementsRemoveOptionsCommand extends GoGoAbstractCommand
 {
-    protected function gogoConfigure()
+    protected function gogoConfigure(): void
     {
        $this
         ->setName('app:elements:removeOptions')
@@ -20,7 +21,7 @@ class ElementsRemoveOptionsCommand extends GoGoAbstractCommand
        ;
     }
 
-    protected function gogoExecute($dm, InputInterface $input, OutputInterface $output)
+    protected function gogoExecute(DocumentManager $dm, InputInterface $input, OutputInterface $output): void
     {
       try {
         $this->log("Elements remove options begin, options ids to remove : " . $input->getArgument('ids'));

@@ -1,11 +1,11 @@
 <?php
+
 namespace App\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
 use App\Document\GoGoLog;
 use App\Document\GoGoLogLevel;
@@ -15,6 +15,9 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class GoGoAbstractCommand extends Command
 {
+  protected $dm;
+  protected $logger;
+  protected $security;
    protected $output;
 
    public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger,
@@ -51,9 +54,9 @@ class GoGoAbstractCommand extends Command
       }
    }
 
-   protected function gogoExecute($dm, InputInterface $input, OutputInterface $output) {}
+   protected function gogoExecute(DocumentManager $dm, InputInterface $input, OutputInterface $output): void {}
 
-   protected function gogoConfigure() {}
+   protected function gogoConfigure(): void {}
 
    protected function log($message)
    {
