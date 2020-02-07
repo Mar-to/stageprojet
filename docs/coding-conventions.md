@@ -1,29 +1,30 @@
-Coding Coventions
-===============
+Coding Conventions
+==================
 
 Naming Convention
 -----------------
 
-Php
-- Folder : UperCamelCase
-- Classes : UpperCamelCase
+PHP
+- Folder: UperCamelCase
+- Classes: UpperCamelCase
 
-Html (twig templates), Javascript/TypeScrpits and CSS
-- folder : dashed-case
-- files-names : dashed-case
+HTML (twig templates), JavaScript/TypeScript and CSS
+- Folder: dashed-case
+- Filenames: dashed-case
 
-Javascript
-- Classes : UpperCamelCase
-- functionName : lowerCamelCase
-- variables : lowerCamelCase
+JavaScript
+- Classes: UpperCamelCase
+- functionName: lowerCamelCase
+- variables: lowerCamelCase
 
-Html/CSS
-- classes-and-ids : dashed-case
+HTML/CSS
+- Classes-and-ids: dashed-case
 
 Curly Bracket
 -------------
 
-Line return after functionName and parameters
+Line return after functionName and parameters:
+
 ```
 myFunction(myParameter)
 {
@@ -31,18 +32,18 @@ myFunction(myParameter)
 }
 ```
 
-Or inline function delcaration `function() { return foo; }`
-
+Or inline function declaration `function() { return foo; }`
 
 Code Indentation
-----------
+----------------
 
 Always use 3 spaces for indentation of code blocks
 
 Spaces Around Operators
-----------------------
+-----------------------
 
 Always put spaces around operators ( = + - * / ), and after commas:
+
 ```
 var x = y + z;
 var values = ["Volvo", "Saab", "Fiat"];
