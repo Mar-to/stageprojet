@@ -1,8 +1,45 @@
 FROM php:7.3-apache
 
-RUN apt-get update
-RUN apt-get install --yes cron g++ gettext libicu-dev openssl libc-client-dev libkrb5-dev libxml2-dev libfreetype6-dev libgd-dev libmcrypt-dev bzip2 libbz2-dev libtidy-dev libcurl4-openssl-dev libz-dev libmemcached-dev libxslt-dev gnupg nano git
-RUN apt-get -y install libzip-dev libsodium23
+ENV BUILD_PACKAGES \
+    libbz2-dev \
+    libc-client-dev \
+    libcurl4-openssl-dev \
+    libfreetype6-dev \
+    libgd-dev \
+    libicu-dev \
+    libkrb5-dev \
+    libmagickcore-dev \
+    libmagickwand-dev \
+    libmcrypt-dev \
+    libmemcached-dev \
+    libtidy-dev \
+    libxml2-dev \
+    libxslt-dev \
+    libz-dev \
+    libzip-dev
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bzip2 \
+    cron \
+    g++ \
+    gettext \
+    git \
+    gnupg \
+    imagemagick \
+    libfreetype6 \
+    libgd3 \
+    libmcrypt4 \
+    libmemcached11 \
+    libmemcachedutil2 \
+    libsodium23 \
+    libtidy5deb1 \
+    libxml2 \
+    libxslt1.1 \
+    libzip4 \
+    nano \
+    openssl \
+    unzip \
+    $BUILD_PACKAGES
 
 # PHP Configuration
 RUN docker-php-ext-install bcmath
@@ -26,20 +63,14 @@ RUN docker-php-ext-install xsl
 RUN docker-php-ext-install zip
 RUN docker-php-ext-configure hash --with-mhash
 
-RUN printf "\n" | pecl install libsodium \
-     && docker-php-ext-enable sodium
-
 # MongoDB extension
-RUN printf "\n" | pecl install mongodb \
-     && docker-php-ext-enable mongodb
+RUN pecl install mongodb && docker-php-ext-enable mongodb
 
-RUN printf "\n" | pecl install xdebug \
-     && docker-php-ext-enable xdebug
+# Xdebug
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 # Imagemagick
-RUN apt-get install --yes libmagickwand-dev libmagickcore-dev imagemagick
-RUN printf "\n" | pecl install imagick
-RUN docker-php-ext-enable imagick
+RUN pecl install imagick && docker-php-ext-enable imagick
 
 # Apache Configuration
 RUN a2enmod rewrite
@@ -58,7 +89,7 @@ RUN composer global require hirak/prestissimo --prefer-dist --no-progress --no-s
 
 # Node & NPM
 RUN curl -sL https://deb.nodesource.com/setup_10.x  | bash -
-RUN apt-get --yes install nodejs
+RUN apt-get install -y --no-install-recommends nodejs
 RUN curl -L https://npmjs.org/install.sh | sh
 
 # Gulp
@@ -71,6 +102,10 @@ COPY apache.conf /etc/apache2/sites-available/000-default.conf
 # We don't need this directory
 RUN rm -R /var/www/html
 
-WORKDIR /var/www
+# Purge (reduce package size)
+RUN apt-get remove -qq --purge -y $BUILD_PACKAGES \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get install unzip
+WORKDIR /var/www
