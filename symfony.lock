@@ -32,6 +32,9 @@
     "doctrine/common": {
         "version": "2.12.x-dev"
     },
+    "doctrine/data-fixtures": {
+        "version": "1.4.2"
+    },
     "doctrine/dbal": {
         "version": "2.10.x-dev"
     },
@@ -149,9 +152,6 @@
             "config/routes/hwi_oauth_routing.yaml"
         ]
     },
-    "incenteev/composer-parameter-handler": {
-        "version": "2.1.x-dev"
-    },
     "intervention/image": {
         "version": "2.5.1"
     },
@@ -185,7 +185,7 @@
         ]
     },
     "joshtronic/php-loremipsum": {
-        "version": "dev-master"
+        "version": "1.0.5"
     },
     "knplabs/knp-markdown-bundle": {
         "version": "1.8.1"
@@ -380,9 +380,6 @@
     },
     "swiftmailer/swiftmailer": {
         "version": "6.2-dev"
-    },
-    "symfony-bundles/odm-fixtures-bundle": {
-        "version": "1.x-dev"
     },
     "symfony/apache-pack": {
         "version": "1.0",
@@ -625,6 +622,9 @@
             "translations/.gitignore"
         ]
     },
+    "symfony/translation-contracts": {
+        "version": "2.0-dev"
+    },
     "symfony/twig-bridge": {
         "version": "4.4.x-dev"
     },
@@ -692,6 +692,9 @@
     },
     "twig/extra-bundle": {
         "version": "3.x-dev"
+    },
+    "twig/twig": {
+        "version": "2.x-dev"
     },
     "vich/uploader-bundle": {
         "version": "1.5",
