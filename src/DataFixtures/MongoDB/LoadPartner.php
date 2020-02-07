@@ -3,10 +3,9 @@
 namespace App\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
 use App\Document\Partner;
 use App\Document\PartnerImage;
-
+use Doctrine\Persistence\ObjectManager;
 use joshtronic\LoremIpsum;
 
 class LoadPartner implements FixtureInterface

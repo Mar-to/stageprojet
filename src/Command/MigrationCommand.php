@@ -23,7 +23,7 @@ class MigrationCommand extends GoGoAbstractCommand
     // -----------------------------------------------------------------
     // DO NOT REMOVE A SINGLE ELEMENT OF THOSE ARRAYS, ONLY ADD NEW ONES
     // -----------------------------------------------------------------
-    public $migrations = [
+    public static $migrations = [
       // v2.4.6
       'db.TileLayer.updateMany({name:"cartodb"}, {$set: {attribution:"&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> &copy; <a href=\"http://cartodb.com/attributions\">CartoDB</a>"}})',
       'db.TileLayer.updateMany({name:"hydda"}, {$set: {attribution:"Tiles courtesy of <a href=\"http://openstreetmap.se/\" target=\"_blank\">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a>"}})',
@@ -33,7 +33,7 @@ class MigrationCommand extends GoGoAbstractCommand
       'db.TileLayer.updateMany({name:"stamenWaterColor"}, {$set: {attribution:"Map tiles by <a href=\"http://stamen.com\">Stamen Design</a>, <a href=\"http://creativecommons.org/licenses/by/3.0\">CC BY 3.0</a> &mdash; Map data &copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a>"}})',
     ];
 
-    public $commands = [
+    public static $commands = [
       // v2.3.1
       "app:elements:updateJson all",
       // v2.3.4
@@ -42,7 +42,7 @@ class MigrationCommand extends GoGoAbstractCommand
       "app:elements:updateJson all"
     ];
 
-    public $messages = [
+    public static $messages = [
         // v2.3.0
         "Un champ <b>Image (url)</b> est maintenant disponible dans la confiugration du formulaire !",
         "Vous pouvez désormais customizer la popup qui s'affiche au survol d'un marqueur. Allez dans Personnalisation -> Marqueur / Popup",
@@ -86,8 +86,8 @@ class MigrationCommand extends GoGoAbstractCommand
             $dbNames = $dm->createQueryBuilder('App\Document\Project')->select('domainName')->hydrate(false)->getQuery()->execute()->toArray();
             foreach ($dbNames as $object) { $dbs[] = $object['domainName']; }
 
-            if (count($this->migrations) > $migrationState->getMigrationIndex()) {
-                $migrationsToRun = array_slice($this->migrations, $migrationState->getMigrationIndex());
+            if (count(self::$migrations) > $migrationState->getMigrationIndex()) {
+                $migrationsToRun = array_slice(self::$migrations, $migrationState->getMigrationIndex());
                 $migrationsToRun = array_unique($migrationsToRun);
                 foreach($dbs as $db) {
                     foreach($migrationsToRun as $migration) {
@@ -102,8 +102,8 @@ class MigrationCommand extends GoGoAbstractCommand
 
             // run them syncronously otherwise all the command will be run at once
             $this->asyncService->setRunSynchronously(true);
-            if (count($this->commands) > $migrationState->getCommandsIndex()) {
-                $commandsToRun = array_slice($this->commands, $migrationState->getCommandsIndex());
+            if (count(self::$commands) > $migrationState->getCommandsIndex()) {
+                $commandsToRun = array_slice(self::$commands, $migrationState->getCommandsIndex());
                 $commandsToRun = array_unique($commandsToRun);
                 $this->log(count($commandsToRun) . " commands to run");
                 foreach($dbs as $db) {
@@ -116,8 +116,8 @@ class MigrationCommand extends GoGoAbstractCommand
                 $this->log("No commands to run");
             }
 
-            if (count($this->messages) > $migrationState->getMessagesIndex()) {
-                $messagesToAdd = array_slice($this->messages, $migrationState->getMessagesIndex());
+            if (count(self::$messages) > $migrationState->getMessagesIndex()) {
+                $messagesToAdd = array_slice(self::$messages, $migrationState->getMessagesIndex());
                 $this->log(count($messagesToAdd) . " messages to add");
                 foreach($dbs as $db) {
                     $this->log("add message on project " . $db);
@@ -136,9 +136,9 @@ class MigrationCommand extends GoGoAbstractCommand
             $this->error("Error performing migrations: " . $message);
         }
 
-        $migrationState->setMigrationIndex(count($this->migrations));
-        $migrationState->setCommandsIndex(count($this->commands));
-        $migrationState->setMessagesIndex(count($this->messages));
+        $migrationState->setMigrationIndex(count(self::$migrations));
+        $migrationState->setCommandsIndex(count(self::$commands));
+        $migrationState->setMessagesIndex(count(self::$messages));
         $dm->flush();
     }
 

@@ -3,14 +3,11 @@
 namespace App\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
 use App\Document\Wrapper;
-
-
+use Doctrine\Persistence\ObjectManager;
 
 class LoadWrapper implements FixtureInterface
 {
-
   public function load(ObjectManager $manager)
   {
     $new_wrapper = new Wrapper();

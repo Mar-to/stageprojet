@@ -24,6 +24,7 @@ parameters:
     oauth_google_secret: '%env(OAUTH_GOOGLE_SECRET)%'
     oauth_facebook_id: '%env(OAUTH_FACEBOOK_ID)%'
     oauth_facebook_secret: '%env(OAUTH_FACEBOOK_SECRET)%'
+    doctrine_mongodb.odm.fixtures_dirs: ['src/DataFixtures/MongoDB']
 
 services:
     # default configuration for services in *this* file

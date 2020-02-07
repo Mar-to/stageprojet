@@ -14,12 +14,10 @@
 namespace App\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
-
 use App\Document\Taxonomy;
 use App\Document\Category;
 use App\Document\Option;
-
+use Doctrine\Persistence\ObjectManager;
 
 class LoadTaxonomy implements FixtureInterface
 {

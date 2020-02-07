@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures\MongoDB;
 
+use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use App\Document\Configuration;
 use App\Document\Configuration\ConfigurationHome;
@@ -15,10 +16,11 @@ use App\Document\FeatureConfiguration;
 use App\Document\InteractionConfiguration;
 use App\Document\Coordinates;
 use App\Document\TileLayer;
+use Doctrine\Persistence\ObjectManager;
 
-class LoadConfiguration
+class LoadConfiguration implements FixtureInterface
 {
-   public function load($dm, $container = null, $configToCopy = null, $contribConfig = null)
+   public function load(ObjectManager $dm, $container = null, $configToCopy = null, $contribConfig = null)
    {
       $configuration = new Configuration();
       $tileLayersToCopy = null;
