@@ -18,6 +18,6 @@ php bin/console doctrine:mongodb:fixtures:load
 
 # Make the var directories writeable by Apache
 chown -R www-data var/cache
-chown -R www-data var/logs
+chown -R www-data var/log
 chown -R www-data var/sessions
 chown -R www-data web/uploads
