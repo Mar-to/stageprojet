@@ -33,23 +33,7 @@ git clone https://gitlab.adullact.net/pixelhumain/GoGoCarto.git
 cd GoGoCarto/
 ```
 
-### Installing Dependencies
-
-PHP dependencies (Symfony, bundles...)
-
-```shell
-composer install
-```
-
-Workflow dependencies (compiling SASS and JavaScript)
-
-```shell
-npm install gulp
-npm install
-```
-
-Start
------
+### Initialize the Project
 
 Create an `.env.local` file containing:
 
@@ -57,57 +41,37 @@ Create an `.env.local` file containing:
 MONGODB_URL=mongodb://localhost:27017
 ```
 
-Dump assets:
+Execute the command:
 
 ```shell
-php bin/console assets:install --symlink web
+make init
 ```
 
-First build of JavaScript and CSS:
-
-```shell
-gulp build
-```
-
-Start watching for file change (automatic recompile):
-
-```shell
-gulp watch
-```
-
-Generate Database
------------------
-
-Go to Symfony console: `http://localhost/GoGoCarto/web/_console`
-
-Run the followings command:
-
-```shell
-doctrine:mongodb:schema:create
-doctrine:mongodb:generate:hydrators
-doctrine:mongodb:generate:proxies
-doctrine:mongodb:fixtures:load
-```
-
-The last command will generate a basic configuration.
-
-Then generate if necessary random points on the map:
-
-```shell
-app:elements:generate 200
-```
+It will:
+- install the dependencies
+- install and build the assets
+- load the fixtures
 
 Now initialize your project with the following route:
 
 `http://localhost/GoGoCarto/web/project/initialize`
 
+Start
+-----
+
+Start watching for file changes (automatic recompilation):
+
+```shell
+gulp watch
+```
+
 Updating your Install
 ---------------------
 
-Each time you want to update GoGoCarto, run the following script:
+Each time you want to update GoGoCarto, run:
 
 ```shell
-sh deploy.sh
+make deploy
 ```
 
 You can have a look to [the CHANGELOG](../CHANGELOG.md) to know what are the new features.
@@ -115,31 +79,31 @@ You can have a look to [the CHANGELOG](../CHANGELOG.md) to know what are the new
 Production
 ----------
 
-1. Dump assets in Symfony console to update the web/templates files:
+Dump assets in Symfony console to update the web/templates files:
 
 ```
 assets:install web
 ```
 
-2. Generate compressed JS and CSS files:
+Generate compressed JS and CSS files:
 
 ```
 gulp build
 gulp production
 ```
 
-3. Enable gz compression in your web server.
+Enable gz compression in your web server.
 
-4. In the distant console (http://yoursite.com/web/_console):
+In the distant console (http://yoursite.com/web/_console):
 
 ```
 cache:clear --env=prod
 ```
 
-5. Make sure that the var folder is writable `chmod -R 771 var/`.
+Make sure that the var folder is writable `chmod -R 771 var/`.
 
 Issues
--------
+------
 
 If when you create an element you have the issue "cannot load method bcmod from namespace ...",
 you need to install the bc-math module:
