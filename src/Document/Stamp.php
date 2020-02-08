@@ -3,37 +3,43 @@
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use JMS\Serializer\Annotation\Expose;
 
 /** @MongoDB\Document */
 class Stamp
 {
-   /**
+    /**
      * @var int
      * @MongoDB\Id(strategy="INCREMENT")
      */
-   public $id;
+    public $id;
 
-   /**
+    /**
      * @var string
      * @MongoDB\Field(type="string")
      */
-   public $name = "";
+    public $name = '';
 
-   /**
+    /**
      * @var bool
      * @MongoDB\Field(type="bool")
      */
-   public $isPublic = false;
+    public $isPublic = false;
 
-   // non persisted. Array of elements ids taged with this stamp
-   public $elementIds = [];
+    // non persisted. Array of elements ids taged with this stamp
+    public $elementIds = [];
 
-   public function __toString() { return $this->getName() ? $this->getName() : ""; }
+    public function __toString()
+    {
+        return $this->getName() ? $this->getName() : '';
+    }
 
-   public function toJson() { return $this->getId(); }
+    public function toJson()
+    {
+        return $this->getId();
+    }
+
     /**
-     * Get id
+     * Get id.
      *
      * @return int_id $id
      */
@@ -43,19 +49,21 @@ class Stamp
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
+     *
      * @return $this
      */
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string $name
      */
@@ -65,19 +73,21 @@ class Stamp
     }
 
     /**
-     * Set isPublic
+     * Set isPublic.
      *
      * @param bool $isPublic
+     *
      * @return $this
      */
     public function setIsPublic($isPublic)
     {
         $this->isPublic = $isPublic;
+
         return $this;
     }
 
     /**
-     * Get isPublic
+     * Get isPublic.
      *
      * @return bool $isPublic
      */
@@ -89,6 +99,7 @@ class Stamp
     public function setElementIds($elementIds)
     {
         $this->elementIds = $elementIds;
+
         return $this;
     }
 

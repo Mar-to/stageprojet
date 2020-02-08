@@ -5,83 +5,105 @@ namespace App\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /** @MongoDB\EmbeddedDocument
-* @MongoDB\Index(keys={"streetAddress"="asc"})
-*/
+ * @MongoDB\Index(keys={"streetAddress"="asc"})
+ */
 class PostalAddress
 {
-   /**
-   * @MongoDB\Field(type="string")
-   */
-   private $streetAddress;
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    private $streetAddress;
 
-   /**
-   * @MongoDB\Field(type="string")
-   */
-   private $addressLocality;
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    private $addressLocality;
 
-   /**
-   * @MongoDB\Field(type="string")
-   */
-   private $postalCode;
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    private $postalCode;
 
-   /**
-   * @MongoDB\Field(type="string")
-   */
-   private $addressCountry;
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    private $addressCountry;
 
-   /**
-   * @MongoDB\Field(type="string")
-   */
-   private $customFormatedAddress;
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    private $customFormatedAddress;
 
+    public function __construct($streetAddress = null, $addressLocality = null, $postalCode = null, $addressCountry = null, $customFormatedAddress = null)
+    {
+        $this->streetAddress = $streetAddress;
+        $this->addressLocality = $addressLocality;
+        $this->postalCode = $postalCode;
+        $this->addressCountry = $addressCountry;
+        $this->customFormatedAddress = $customFormatedAddress;
+    }
 
-   public function __construct($streetAddress = null, $addressLocality = null, $postalCode = null, $addressCountry = null, $customFormatedAddress = null)
-   {
-      $this->streetAddress = $streetAddress;
-      $this->addressLocality = $addressLocality;
-      $this->postalCode = $postalCode;
-      $this->addressCountry = $addressCountry;
-      $this->customFormatedAddress = $customFormatedAddress;
-   }
-
-   public function getDepartmentCode()
-   {
-     return substr($this->postalCode, 0, 2);
-   }
+    public function getDepartmentCode()
+    {
+        return substr($this->postalCode, 0, 2);
+    }
 
     public function getFormatedAddress()
     {
-      if ($this->customFormatedAddress) return $this->customFormatedAddress;
-      $result = "";
-      if ($this->streetAddress) $result .= $this->streetAddress;
-      if ($this->streetAddress && ($this->postalCode || $this->addressLocality)) $result .= ', ';
-      if ($this->postalCode) $result .= $this->postalCode . ' ';
-      if ($this->addressLocality) $result .= $this->addressLocality;
-      return $result;
+        if ($this->customFormatedAddress) {
+            return $this->customFormatedAddress;
+        }
+        $result = '';
+        if ($this->streetAddress) {
+            $result .= $this->streetAddress;
+        }
+        if ($this->streetAddress && ($this->postalCode || $this->addressLocality)) {
+            $result .= ', ';
+        }
+        if ($this->postalCode) {
+            $result .= $this->postalCode.' ';
+        }
+        if ($this->addressLocality) {
+            $result .= $this->addressLocality;
+        }
+
+        return $result;
     }
 
     public function isComplete()
     {
-      return $this->streetAddress && $this->addressLocality && $this->postalCode && $this->addressCountry;
+        return $this->streetAddress && $this->addressLocality && $this->postalCode && $this->addressCountry;
     }
 
     public function toJson()
     {
-        $result = "";
-        if ($this->streetAddress)   $result .=  '"streetAddress":'          . json_encode($this->getStreetAddress());
-        if ($this->addressLocality) $result .=', "addressLocality":'        . json_encode($this->getAddressLocality());
-        if ($this->postalCode)      $result .=', "postalCode":'             . json_encode($this->getPostalCode());
-        if ($this->addressCountry)  $result .=', "addressCountry":'         . json_encode($this->getAddressCountry());
-        if ($this->customFormatedAddress) $result .=', "customFormatedAddress" :' . json_encode($this->getCustomFormatedAddress());
+        $result = '';
+        if ($this->streetAddress) {
+            $result .= '"streetAddress":'.json_encode($this->getStreetAddress());
+        }
+        if ($this->addressLocality) {
+            $result .= ', "addressLocality":'.json_encode($this->getAddressLocality());
+        }
+        if ($this->postalCode) {
+            $result .= ', "postalCode":'.json_encode($this->getPostalCode());
+        }
+        if ($this->addressCountry) {
+            $result .= ', "addressCountry":'.json_encode($this->getAddressCountry());
+        }
+        if ($this->customFormatedAddress) {
+            $result .= ', "customFormatedAddress" :'.json_encode($this->getCustomFormatedAddress());
+        }
         $result = ltrim($result, ',');
-        $result = "{" . $result . "}";
+        $result = '{'.$result.'}';
+
         return $result;
     }
 
-   /**
-     * Set postalCode
+    /**
+     * Set postalCode.
      *
      * @param string $postalCode
+     *
      * @return $this
      */
     public function setPostalCode($postalCode)
@@ -92,7 +114,7 @@ class PostalAddress
     }
 
     /**
-     * Get postalCode
+     * Get postalCode.
      *
      * @return string $postalCode
      */
@@ -102,19 +124,21 @@ class PostalAddress
     }
 
     /**
-     * Set streetAddress
+     * Set streetAddress.
      *
      * @param string $streetAddress
+     *
      * @return $this
      */
     public function setStreetAddress($streetAddress)
     {
         $this->streetAddress = $streetAddress;
+
         return $this;
     }
 
     /**
-     * Get streetAddress
+     * Get streetAddress.
      *
      * @return string $streetAddress
      */
@@ -124,19 +148,21 @@ class PostalAddress
     }
 
     /**
-     * Set addressLocality
+     * Set addressLocality.
      *
      * @param string $addressLocality
+     *
      * @return $this
      */
     public function setAddressLocality($addressLocality)
     {
         $this->addressLocality = $addressLocality;
+
         return $this;
     }
 
     /**
-     * Get addressLocality
+     * Get addressLocality.
      *
      * @return string $addressLocality
      */
@@ -146,19 +172,21 @@ class PostalAddress
     }
 
     /**
-     * Set addressCountry
+     * Set addressCountry.
      *
      * @param string $addressCountry
+     *
      * @return $this
      */
     public function setAddressCountry($addressCountry)
     {
         $this->addressCountry = $addressCountry;
+
         return $this;
     }
 
     /**
-     * Get addressCountry
+     * Get addressCountry.
      *
      * @return string $addressCountry
      */
@@ -168,19 +196,21 @@ class PostalAddress
     }
 
     /**
-     * Set customFormatedAddress
+     * Set customFormatedAddress.
      *
      * @param string $customFormatedAddress
+     *
      * @return $this
      */
     public function setCustomFormatedAddress($customFormatedAddress)
     {
         $this->customFormatedAddress = $customFormatedAddress;
+
         return $this;
     }
 
     /**
-     * Get customFormatedAddress
+     * Get customFormatedAddress.
      *
      * @return string $customFormatedAddress
      */

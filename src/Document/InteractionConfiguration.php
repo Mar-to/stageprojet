@@ -3,8 +3,6 @@
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use App\Document\FeatureConfiguration;
-
 
 /** @MongoDB\EmbeddedDocument */
 class InteractionConfiguration extends FeatureConfiguration
@@ -21,37 +19,49 @@ class InteractionConfiguration extends FeatureConfiguration
     public function getAllowedRoles()
     {
         $roles = parent::getAllowedRoles();
-        if ($this->getAllowRoleAnonymousWithMail()) $roles[] = 'anonymous_with_mail';
+        if ($this->getAllowRoleAnonymousWithMail()) {
+            $roles[] = 'anonymous_with_mail';
+        }
+
         return $roles;
     }
 
     public function isAllowed($user, $iframe, $userEmail = null)
     {
-        if (!$this->getActive() || !$this->getActiveInIframe() && $iframe) return false;
+        if (!$this->getActive() || !$this->getActiveInIframe() && $iframe) {
+            return false;
+        }
+
         return parent::isAllowed($user, $iframe) ||
                 !$user && $userEmail && $this->getAllowRoleAnonymousWithMail();
     }
 
     public function isOnlyAllowedForAdmin()
     {
-        return $this->getAllowRoleAdmin() && !( $this->getAllowRoleUser() || $this->getAllowRoleAnonymous() || $this->getAllowRoleAnonymousWithMail());
+        return $this->getAllowRoleAdmin() && !($this->getAllowRoleUser() || $this->getAllowRoleAnonymous() || $this->getAllowRoleAnonymousWithMail());
     }
 
     /**
-     * Set allowRoleAnonymousWithMail
+     * Set allowRoleAnonymousWithMail.
      *
      * @param bool $allowRoleAnonymousWithMail
+     *
      * @return $this
      */
     public function setAllowRoleAnonymousWithMail($allowRoleAnonymousWithMail)
     {
         $this->allow_role_anonymous_with_mail = $allowRoleAnonymousWithMail;
+
         return $this;
     }
-    public function setAllow_role_anonymous_with_mail($value) { return $this->setAllowRoleAnonymousWithMail($value); }
+
+    public function setAllow_role_anonymous_with_mail($value)
+    {
+        return $this->setAllowRoleAnonymousWithMail($value);
+    }
 
     /**
-     * Get allowRoleAnonymousWithMail
+     * Get allowRoleAnonymousWithMail.
      *
      * @return bool $allowRoleAnonymousWithMail
      */

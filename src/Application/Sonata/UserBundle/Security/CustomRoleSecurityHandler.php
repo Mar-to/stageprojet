@@ -1,11 +1,11 @@
 <?php
+
 namespace App\Application\Sonata\UserBundle\Security;
 
-use Sonata\AdminBundle\Security\Handler\RoleSecurityHandler as RoleSecurityHandler;
 use Sonata\AdminBundle\Admin\AdminInterface;
+use Sonata\AdminBundle\Security\Handler\SecurityHandlerInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
-use Sonata\AdminBundle\Security\Handler\SecurityHandlerInterface;
 
 class CustomRoleSecurityHandler implements SecurityHandlerInterface
 {
@@ -18,16 +18,19 @@ class CustomRoleSecurityHandler implements SecurityHandlerInterface
     public function isGranted(AdminInterface $admin, $attributes, $object = null)
     {
         if (!is_array($attributes)) {
-            $attributes = array($attributes);
+            $attributes = [$attributes];
         }
 
         $adminCode = $admin->getCode();
         // use same permission for all option/categories objects
-        if (in_array($adminCode, ['admin.option_hidden', 'admin.option.lite_hidden', 'admin.categories.lite_hidden']))
+        if (in_array($adminCode, ['admin.option_hidden', 'admin.option.lite_hidden', 'admin.categories.lite_hidden'])) {
             $adminCode = 'admin.categories';
+        }
 
         // give access to all hidden objects, like the images objects
-        if (strpos($adminCode, 'hidden')) return true;
+        if (strpos($adminCode, 'hidden')) {
+            return true;
+        }
 
         foreach ($attributes as $pos => $attribute) {
             $attributes[$pos] = sprintf($this->getBaseRole($admin, $adminCode), $attribute);
@@ -38,7 +41,7 @@ class CustomRoleSecurityHandler implements SecurityHandlerInterface
         try {
             return $this->authorizationChecker->isGranted($this->superAdminRoles)
                 || $this->authorizationChecker->isGranted($attributes, $object)
-                || $this->authorizationChecker->isGranted(array($allRole), $object);
+                || $this->authorizationChecker->isGranted([$allRole], $object);
         } catch (AuthenticationCredentialsNotFoundException $e) {
             return false;
         }
@@ -49,7 +52,10 @@ class CustomRoleSecurityHandler implements SecurityHandlerInterface
      */
     public function getBaseRole(AdminInterface $admin, $adminCode = null)
     {
-        if (!$adminCode) $adminCode = $admin->getCode();
+        if (!$adminCode) {
+            $adminCode = $admin->getCode();
+        }
+
         return 'ROLE_'.str_replace('.', '_', strtoupper($adminCode)).'_%s';
     }
 
@@ -58,7 +64,7 @@ class CustomRoleSecurityHandler implements SecurityHandlerInterface
      */
     public function buildSecurityInformation(AdminInterface $admin)
     {
-        return array();
+        return [];
     }
 
     /**

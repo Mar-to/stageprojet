@@ -7,11 +7,11 @@ use Gedmo\Mapping\Annotation as Gedmo;
 
 abstract class GoGoLogLevel
 {
-    const Debug = "debug";
-    const Info = "info";
-    const Warning = "warning";
-    const Error = "error";
-    const Success = "success";
+    const Debug = 'debug';
+    const Info = 'info';
+    const Warning = 'warning';
+    const Error = 'error';
+    const Success = 'success';
 }
 
 /**
@@ -31,7 +31,7 @@ class GoGoLog
      */
     private $id;
 
-     /**
+    /**
      * @var string
      *
      * @MongoDB\Field(type="string")
@@ -39,7 +39,7 @@ class GoGoLog
      */
     private $level;
 
-     /**
+    /**
      * @var string
      *
      * @MongoDB\Field(type="string")
@@ -47,21 +47,21 @@ class GoGoLog
     private $message;
 
     /**
-     * Other informations stored into the log
+     * Other informations stored into the log.
      *
      * @MongoDB\Field(type="hash")
      */
     private $data = [];
 
-     /**
+    /**
      * @var bool
-     * When user click "dismiss" log, it will not appear again
+     *           When user click "dismiss" log, it will not appear again
      * @MongoDB\Field(type="bool")
      */
     private $hidden = false;
 
     /**
-     * @var date $createdAt
+     * @var date
      *
      * @MongoDB\Field(type="date")
      * @Gedmo\Timestampable(on="create")
@@ -75,7 +75,10 @@ class GoGoLog
         $this->data = $data;
     }
 
-    public function displayTimestamp() { return true; }
+    public function displayTimestamp()
+    {
+        return true;
+    }
 
     public function displayMessage()
     {
@@ -88,7 +91,7 @@ class GoGoLog
     }
 
     /**
-     * Get id
+     * Get id.
      *
      * @return int_id $id
      */
@@ -98,19 +101,21 @@ class GoGoLog
     }
 
     /**
-     * Set message
+     * Set message.
      *
      * @param string $message
+     *
      * @return $this
      */
     public function setMessage($message)
     {
         $this->message = $message;
+
         return $this;
     }
 
     /**
-     * Get message
+     * Get message.
      *
      * @return string $message
      */
@@ -120,19 +125,21 @@ class GoGoLog
     }
 
     /**
-     * Set createdAt
+     * Set createdAt.
      *
      * @param date $createdAt
+     *
      * @return $this
      */
     public function setCreatedAt($createdAt)
     {
         $this->createdAt = $createdAt;
+
         return $this;
     }
 
     /**
-     * Get createdAt
+     * Get createdAt.
      *
      * @return date $createdAt
      */
@@ -142,19 +149,21 @@ class GoGoLog
     }
 
     /**
-     * Set hidden
+     * Set hidden.
      *
      * @param bool $hidden
+     *
      * @return $this
      */
     public function setHidden($hidden)
     {
         $this->hidden = $hidden;
+
         return $this;
     }
 
     /**
-     * Get hidden
+     * Get hidden.
      *
      * @return bool $hidden
      */
@@ -164,19 +173,21 @@ class GoGoLog
     }
 
     /**
-     * Set level
+     * Set level.
      *
      * @param string $level
+     *
      * @return $this
      */
     public function setLevel($level)
     {
         $this->level = $level;
+
         return $this;
     }
 
     /**
-     * Get level
+     * Get level.
      *
      * @return string $level
      */
@@ -186,19 +197,21 @@ class GoGoLog
     }
 
     /**
-     * Set data
+     * Set data.
      *
      * @param hash $data
+     *
      * @return $this
      */
     public function setData($data)
     {
         $this->data = $data;
+
         return $this;
     }
 
     /**
-     * Get data
+     * Get data.
      *
      * @return hash $data
      */

@@ -3,16 +3,16 @@
 namespace App\Command;
 
 use App\Document\User;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use App\Services\NewsletterService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use App\Services\NewsletterService;
 
 final class NewsletterCommand extends GoGoAbstractCommand
 {
-  private $newsletterService;
+    private $newsletterService;
 
     public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger,
                                TokenStorageInterface $security,
@@ -24,7 +24,7 @@ final class NewsletterCommand extends GoGoAbstractCommand
 
     protected function gogoConfigure(): void
     {
-       $this
+        $this
           ->setName('app:users:sendNewsletter')
           ->setDescription('Send the newsletter to each user')
        ;
@@ -32,19 +32,18 @@ final class NewsletterCommand extends GoGoAbstractCommand
 
     protected function gogoExecute(DocumentManager $dm, InputInterface $input, OutputInterface $output): void
     {
-      $usersRepo = $dm->getRepository(User::class);
+        $usersRepo = $dm->getRepository(User::class);
 
-      $users = $usersRepo->findNeedsToReceiveNewsletter();
-      $nbrUsers = $users->count();
+        $users = $usersRepo->findNeedsToReceiveNewsletter();
+        $nbrUsers = $users->count();
 
-      foreach ($users as $key => $user)
-      {
-         $dm->persist($user);
-         $nreElements = $this->newsletterService->sendTo($user);
-         // $this->log('  -> User : ' . $user->getDisplayName() . ', location : ' . $user->getLocation() . ' / ' . $user->getNewsletterRange() . ' km -> Nre Elements : ' .  $nreElements);
-      }
+        foreach ($users as $key => $user) {
+            $dm->persist($user);
+            $nreElements = $this->newsletterService->sendTo($user);
+            // $this->log('  -> User : ' . $user->getDisplayName() . ', location : ' . $user->getLocation() . ' / ' . $user->getNewsletterRange() . ' km -> Nre Elements : ' .  $nreElements);
+        }
 
-      $dm->flush();
-      $this->log('Nombre newsletters envoyées : ' . $nbrUsers);
+        $dm->flush();
+        $this->log('Nombre newsletters envoyées : '.$nbrUsers);
     }
 }

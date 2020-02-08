@@ -10,25 +10,24 @@
  * @Last Modified time: 2018-07-08 16:45:09
  */
 
-
 namespace App\Repository;
+
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use App\Document\Taxonomy;
 
 class TaxonomyRepository extends DocumentRepository
 {
-  public function findTaxonomy()
-  {
-    $qb = $this->createQueryBuilder('App\Document\Taxonomy');
-    return $qb->getQuery()->getSingleResult();
-  }
+    public function findTaxonomy()
+    {
+        $qb = $this->createQueryBuilder('App\Document\Taxonomy');
 
-  public function findTaxonomyJson($getOnlyOptions = false)
-  {
-    $qb = $this->createQueryBuilder('App\Document\Taxonomy');
-    $taxonomy =  $qb->hydrate(false)->getQuery()->getSingleResult();
-    return $getOnlyOptions ? $taxonomy['optionsJson'] : $taxonomy['taxonomyJson'];
-  }
+        return $qb->getQuery()->getSingleResult();
+    }
+
+    public function findTaxonomyJson($getOnlyOptions = false)
+    {
+        $qb = $this->createQueryBuilder('App\Document\Taxonomy');
+        $taxonomy = $qb->hydrate(false)->getQuery()->getSingleResult();
+
+        return $getOnlyOptions ? $taxonomy['optionsJson'] : $taxonomy['taxonomyJson'];
+    }
 }
-
-

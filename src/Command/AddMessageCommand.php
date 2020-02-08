@@ -2,16 +2,15 @@
 
 namespace App\Command;
 
-use App\Command\GoGoAbstractCommand;
+use App\Document\GoGoLogUpdate;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use App\Document\GoGoLogUpdate;
-use Symfony\Component\Console\Input\InputArgument;
 
 /**
  * Command to update database when schema need migration
- * Also provide some update message in the admin dashboard
+ * Also provide some update message in the admin dashboard.
  */
 class AddMessageCommand extends GoGoAbstractCommand
 {

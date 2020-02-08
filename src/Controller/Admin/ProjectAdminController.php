@@ -2,20 +2,20 @@
 
 namespace App\Controller\Admin;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Sonata\AdminBundle\Controller\CRUDController as Controller;
-use Symfony\Component\Process\Process;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Symfony\Component\Process\Process;
 
 class ProjectAdminController extends Controller
 {
-   public function __construct(DocumentManager $dm)
-   {
-    $this->dm = $dm;
-   }
+    public function __construct(DocumentManager $dm)
+    {
+        $this->dm = $dm;
+    }
 
-   /**
+    /**
      * Delete action.
      *
      * @param int|string|null $id
@@ -31,13 +31,17 @@ class ProjectAdminController extends Controller
         $id = $request->get($this->admin->getIdParameter());
         $object = $this->admin->getObject($id);
 
-        if (!$object) throw $this->createNotFoundException(sprintf('unable to find the object with id : %s', $id));
+        if (!$object) {
+            throw $this->createNotFoundException(sprintf('unable to find the object with id : %s', $id));
+        }
         $this->admin->checkAccess('delete', $object);
 
         $preResponse = $this->preDelete($request, $object);
-        if ($preResponse !== null) return $preResponse;
+        if (null !== $preResponse) {
+            return $preResponse;
+        }
 
-        if ($this->getRestMethod() == 'DELETE') {
+        if ('DELETE' == $this->getRestMethod()) {
             // check the csrf token
             $this->validateCsrfToken('sonata.delete');
             $objectName = $this->admin->toString($object);
@@ -45,34 +49,33 @@ class ProjectAdminController extends Controller
             try {
                 $this->admin->delete($object);
                 $this->dropDatabase($object);
-                $this->addFlash('sonata_flash_success',$this->trans('flash_delete_success',array('%name%' => $this->escapeHtml($objectName)),'SonataAdminBundle'));
+                $this->addFlash('sonata_flash_success', $this->trans('flash_delete_success', ['%name%' => $this->escapeHtml($objectName)], 'SonataAdminBundle'));
             } catch (ModelManagerException $e) {
                 $this->handleModelManagerException($e);
-                $this->addFlash('sonata_flash_error',  $this->trans('flash_delete_error',array('%name%' => $this->escapeHtml($objectName)),'SonataAdminBundle'));
+                $this->addFlash('sonata_flash_error', $this->trans('flash_delete_error', ['%name%' => $this->escapeHtml($objectName)], 'SonataAdminBundle'));
             }
 
             return $this->redirectTo($object);
         }
 
-        return $this->render($this->admin->getTemplate('delete'), array(
+        return $this->render($this->admin->getTemplate('delete'), [
             'object' => $object,
             'action' => 'delete',
             'csrf_token' => $this->getCsrfToken('sonata.delete'),
-        ), null);
+        ], null);
     }
 
     private function dropDatabase($project)
     {
-      // Drop the database of this project
-      $commandline = 'mongo ' . $project->getDbName() .' --eval "db.dropDatabase()"';
-      $process = new Process($commandline);
-      return $process->start();
+        // Drop the database of this project
+        $commandline = 'mongo '.$project->getDbName().' --eval "db.dropDatabase()"';
+        $process = new Process($commandline);
+
+        return $process->start();
     }
 
     /**
      * Execute a batch delete.
-     *
-     * @param ProxyQueryInterface $query
      *
      * @return RedirectResponse
      *
@@ -91,7 +94,7 @@ class ProjectAdminController extends Controller
 
         return new RedirectResponse($this->admin->generateUrl(
             'list',
-            array('filter' => $this->admin->getFilterParameters())
+            ['filter' => $this->admin->getFilterParameters()]
         ));
     }
 
@@ -104,7 +107,7 @@ class ProjectAdminController extends Controller
             $this->dm->remove($object);
             $this->dropDatabase($object);
 
-            if ((++$i % 20) == 0) {
+            if (0 == (++$i % 20)) {
                 $this->dm->flush();
                 $this->dm->clear();
             }

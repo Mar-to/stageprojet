@@ -2,67 +2,67 @@
 
 namespace App\Controller;
 
-use App\Helper\SaasHelper;
-use Symfony\Component\HttpFoundation\Request;
+use App\Application\Sonata\UserBundle\Form\Type\RegistrationFormType;
+use App\Command\GoGoMainCommand;
+use App\DataFixtures\MongoDB\LoadConfiguration;
+use App\Document\Category;
+use App\Document\Configuration;
+use App\Document\Option;
 use App\Document\Project;
 use App\Document\ScheduledCommand;
-use App\Command\GoGoMainCommand;
-use Symfony\Component\HttpFoundation\Response;
-use App\Document\Configuration;
-use App\DataFixtures\MongoDB\LoadTileLayers;
-use App\Application\Sonata\UserBundle\Form\Type\RegistrationFormType;
-use App\Document\User;
-use FOS\UserBundle\Model\UserInterface;
-use App\DataFixtures\MongoDB\LoadConfiguration;
 use App\Document\Taxonomy;
-use App\Document\Category;
-use App\Document\Option;
-use Symfony\Component\Process\Process;
-use Symfony\Component\Routing\Annotation\Route;
+use App\Helper\SaasHelper;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use FOS\UserBundle\Model\UserInterface;
 use FOS\UserBundle\Model\UserManagerInterface;
 use FOS\UserBundle\Security\LoginManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ProjectController extends Controller
 {
     protected function isAuthorized()
     {
         $sassHelper = new SaasHelper();
+
         return $sassHelper->isRootProject();
     }
 
     protected function generateUrlForProject($project, $route = 'gogo_homepage')
     {
-        return 'http://' . $project->getDomainName() . '.' . $this->getParameter('base_url') . $this->generateUrl($route);
+        return 'http://'.$project->getDomainName().'.'.$this->getParameter('base_url').$this->generateUrl($route);
     }
 
-    public const TOTO = "yes";
+    public const TOTO = 'yes';
 
     public function createAction(Request $request, DocumentManager $dm)
     {
-        if (!$this->isAuthorized()) return $this->redirectToRoute('gogo_homepage');
+        if (!$this->isAuthorized()) {
+            return $this->redirectToRoute('gogo_homepage');
+        }
         $domain = $request->request->get('form')['domainName'];
-        if ($domain) // if submiting the form
-        {
+        if ($domain) { // if submiting the form
             $existingProject = $dm->getRepository(Project::class)->findOneByDomainName($domain);
             // fix a bug sometime the form says that the project already exist but actually we just created it
             // but it has not been initialized
             // so redirect to initialize project
-            if ($existingProject && $existingProject->getDataSize() == 0)
+            if ($existingProject && 0 == $existingProject->getDataSize()) {
                 return $this->redirect($this->generateUrlForProject($existingProject, 'gogo_saas_initialize_project'));
+            }
         }
 
         $project = new Project();
 
         $projectForm = $this->createFormBuilder($project)
-            ->add('name', null, array('required' => true))
-            ->add('domainName', null, array('required' => true))
+            ->add('name', null, ['required' => true])
+            ->add('domainName', null, ['required' => true])
             ->getForm();
 
         $projectForm->handleRequest($request);
-        if ($projectForm->isSubmitted() && $projectForm->isValid())
-        {
+        if ($projectForm->isSubmitted() && $projectForm->isValid()) {
             $dm->persist($project);
             $dm->flush();
             // initialize commands
@@ -85,12 +85,14 @@ class ProjectController extends Controller
             // Clone the root configuration into the new project
             // Due to conflicts between ODM, we get the Configuration from a Json API, and convert it to an object
             $baseUrl = $this->getParameter('base_url');
-            if ($baseUrl == 'saas.localhost') $baseUrl = "gogocarto.fr"; # Fixs for docker in localhost
-            $configUrl = 'http://' . $baseUrl . $this->generateUrl('gogo_api_configuration');
-            $configUrl = str_replace('index.php/', '', $configUrl); # Fix for localhost
+            if ('saas.localhost' == $baseUrl) {
+                $baseUrl = 'gogocarto.fr';
+            } // Fixs for docker in localhost
+            $configUrl = 'http://'.$baseUrl.$this->generateUrl('gogo_api_configuration');
+            $configUrl = str_replace('index.php/', '', $configUrl); // Fix for localhost
             $rootConfigToCopy = json_decode(file_get_contents($configUrl));
             $rootConfigToCopy->appName = $project->getName();
-            $rootConfigToCopy->appBaseLine = "";
+            $rootConfigToCopy->appBaseLine = '';
             $rootConfigToCopy->dbName = $project->getDbName();
             // Duplicate configuration
             $confLoader = new LoadConfiguration();
@@ -102,13 +104,12 @@ class ProjectController extends Controller
             $mainCategory->setPickingOptionText('Une catégorie principale');
             $projectOdm->persist($mainCategory);
 
-            $mains = array(
-                array('Catégorie 1'  , 'fa fa-recycle'     , '#98a100'),
-                array('Catégorie 2'  , 'fa fa-home'       , '#7e3200'),
-            );
+            $mains = [
+                ['Catégorie 1', 'fa fa-recycle', '#98a100'],
+                ['Catégorie 2', 'fa fa-home', '#7e3200'],
+            ];
 
-            foreach ($mains as $key => $main)
-            {
+            foreach ($mains as $key => $main) {
                 $new_main = new Option();
                 $new_main->setName($main[0]);
                 $new_main->setIcon($main[1]);
@@ -126,6 +127,7 @@ class ProjectController extends Controller
             $projectOdm->getSchemaManager()->updateIndexes();
 
             $url = $this->generateUrlForProject($project, 'gogo_saas_initialize_project');
+
             return $this->redirect($url);
         }
 
@@ -139,7 +141,9 @@ class ProjectController extends Controller
      */
     public function homeAction(DocumentManager $dm)
     {
-        if (!$this->isAuthorized()) return $this->redirectToRoute('gogo_homepage');
+        if (!$this->isAuthorized()) {
+            return $this->redirectToRoute('gogo_homepage');
+        }
 
         $repository = $dm->getRepository('App\Document\Project');
 
@@ -151,14 +155,16 @@ class ProjectController extends Controller
             $project->setHomeUrl($this->generateUrlForProject($project));
         }
 
-        return $this->render('saas/home.html.twig', array('projects' => $projects, 'config' => $config));
+        return $this->render('saas/home.html.twig', ['projects' => $projects, 'config' => $config]);
     }
 
     public function initializeAction(Request $request, DocumentManager $dm, UserManagerInterface $userManager,
                                      LoginManagerInterface $loginManager)
     {
         $users = $dm->getRepository('App\Document\User')->findAll();
-        if (count($users) > 0) return $this->redirectToRoute('gogo_homepage');
+        if (count($users) > 0) {
+            return $this->redirectToRoute('gogo_homepage');
+        }
 
         $user = $userManager->createUser();
 
@@ -167,7 +173,7 @@ class ProjectController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $user = $form->getData();
             $user->setEnabled(true);
-            $user->setRoles(array('ROLE_SUPER_ADMIN'));
+            $user->setRoles(['ROLE_SUPER_ADMIN']);
             $userManager->updateUser($user, true);
 
             $this->addFlash('success', "<b>Bienvenue dans votre espace Administrateur !</b></br>
@@ -182,6 +188,7 @@ class ProjectController extends Controller
         }
 
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+
         return $this->render('saas/projects/initialize.html.twig', ['form' => $form->createView(), 'config' => $config]);
     }
 
@@ -194,7 +201,8 @@ class ProjectController extends Controller
                 $user,
                 $response
             );
-        } catch (AccountStatusException $ex) { }
+        } catch (AccountStatusException $ex) {
+        }
     }
 
     // The project is being deleted by the owner
@@ -202,11 +210,12 @@ class ProjectController extends Controller
     {
         $saasHelper = new SaasHelper();
         $dbname = $saasHelper->getCurrentProjectCode();
-        $commandline = 'mongo ' . $dbname .' --eval "db.dropDatabase()"';
+        $commandline = 'mongo '.$dbname.' --eval "db.dropDatabase()"';
         $process = new Process($commandline);
         $process->start();
         $url = $this->generateUrl('gogo_project_delete_saas_record', ['dbName' => $dbname], true);
-        $url = str_replace($dbname . '.', '', $url);
+        $url = str_replace($dbname.'.', '', $url);
+
         return $this->redirect($url);
     }
 
@@ -215,7 +224,7 @@ class ProjectController extends Controller
         $command = "mongo --eval 'db.getMongo().getDBNames().indexOf(\"{$dbName}\")'";
         $process = new Process($command);
         $process->run();
-        $isDbEmpty = substr($process->getOutput(),-3) == "-1\n";
+        $isDbEmpty = "-1\n" == substr($process->getOutput(), -3);
         // As it is a public API, only allow delete if the db is empty
         if ($isDbEmpty) {
             $project = $dm->getRepository(Project::class)->findOneByDomainName($dbName);

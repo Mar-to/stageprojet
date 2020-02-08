@@ -3,12 +3,12 @@
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Accessor;
+use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
 
 /**
- * Option
+ * Option.
  *
  * @MongoDB\Document(repositoryClass="App\Repository\OptionRepository")
  * @MongoDB\Index(keys={"name"="text"})
@@ -35,7 +35,7 @@ class Option
      * @Groups({"semantic"})
      * @MongoDB\Field(type="string")
      */
-    private $name = "";
+    private $name = '';
 
     /**
      * @var string
@@ -175,12 +175,11 @@ class Option
     private $isFixture = false;
 
     /**
-    * @Accessor(getter="getOrderedSubcategories")
-    * @Exclude(if="object.getSubcategoriesCount() == 0")
-    * @MongoDB\ReferenceMany(targetDocument="App\Document\Category", mappedBy="parent",cascade={"persist", "remove"}, sort={"index"="ASC"})
-    */
+     * @Accessor(getter="getOrderedSubcategories")
+     * @Exclude(if="object.getSubcategoriesCount() == 0")
+     * @MongoDB\ReferenceMany(targetDocument="App\Document\Category", mappedBy="parent",cascade={"persist", "remove"}, sort={"index"="ASC"})
+     */
     private $subcategories;
-
 
     public function __construct()
     {
@@ -202,20 +201,27 @@ class Option
     public function getNameWithParent()
     {
         $result = '';
-        if ($this->getParentOption()) $result .= $this->getParentOption()->getName() . '@';
+        if ($this->getParentOption()) {
+            $result .= $this->getParentOption()->getName().'@';
+        }
         $result .= $this->getName();
+
         return $result;
     }
 
     public function getParentOption()
     {
-        if (!$this->parent) return null;
+        if (!$this->parent) {
+            return null;
+        }
+
         return $this->parent->parent;
     }
 
     public function getParentOptionId()
     {
         $parent = $this->getParentOption();
+
         return $parent ? $parent->getStringId() : null;
     }
 
@@ -228,11 +234,11 @@ class Option
     {
         $result = [];
         $parentOption = $option->getParentOption();
-        if ($parentOption)
-        {
+        if ($parentOption) {
             $result = $this->recursivelyAddParentOptionId($parentOption);
         }
         $result[] = $option->getId();
+
         return $result;
     }
 
@@ -246,9 +252,10 @@ class Option
         $result = [$option->getId()];
         foreach ($option->getSubcategories() as $categorie) {
             foreach ($categorie->getOptions() as $childOption) {
-               $result = array_merge($result, $this->recursivelyAddChilrenOptionIds($childOption));
+                $result = array_merge($result, $this->recursivelyAddChilrenOptionIds($childOption));
             }
         }
+
         return $result;
     }
 
@@ -263,27 +270,32 @@ class Option
         foreach ($option->getSubcategories() as $categorie) {
             $result[] = $categorie->getId();
             foreach ($categorie->getOptions() as $childOption) {
-               $result = array_merge($result, $this->recursivelyGetSubcategoriesIds($childOption));
+                $result = array_merge($result, $this->recursivelyGetSubcategoriesIds($childOption));
             }
         }
+
         return $result;
     }
 
     public function getSubcategoriesCount()
     {
-        if ($this->subcategories) return $this->subcategories->count();
+        if ($this->subcategories) {
+            return $this->subcategories->count();
+        }
+
         return 0;
     }
 
     public function getOrderedSubcategories()
     {
         $sortedCategories = is_array($this->subcategories) ? $this->subcategories : $this->subcategories->toArray();
-        usort( $sortedCategories , function ($a, $b) { return $a->getIndex() - $b->getIndex(); });
+        usort($sortedCategories, function ($a, $b) { return $a->getIndex() - $b->getIndex(); });
+
         return $sortedCategories;
     }
 
     /**
-     * Get id
+     * Get id.
      *
      * @return int_id $id
      */
@@ -308,19 +320,21 @@ class Option
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
+     *
      * @return $this
      */
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string $name
      */
@@ -330,19 +344,21 @@ class Option
     }
 
     /**
-     * Set nameShort
+     * Set nameShort.
      *
      * @param string $nameShort
+     *
      * @return $this
      */
     public function setNameShort($nameShort)
     {
         $this->nameShort = $nameShort;
+
         return $this;
     }
 
     /**
-     * Get nameShort
+     * Get nameShort.
      *
      * @return string $nameShort
      */
@@ -352,29 +368,33 @@ class Option
     }
 
     /**
-     * Add subcategory
+     * Add subcategory.
      *
      * @param App\Document\Category $subcategory
      */
     public function addSubcategory(\App\Document\Category $subcategory, $updateParent = true)
     {
-        if ($updateParent) $subcategory->setParent($this, false);
+        if ($updateParent) {
+            $subcategory->setParent($this, false);
+        }
         $this->subcategories[] = $subcategory;
     }
 
     /**
-     * Remove subcategory
+     * Remove subcategory.
      *
      * @param App\Document\Category $subcategory
      */
     public function removeSubcategory(\App\Document\Category $subcategory, $updateParent = true)
     {
-        if ($updateParent) $subcategory->setParent(null);
+        if ($updateParent) {
+            $subcategory->setParent(null);
+        }
         $this->subcategories->removeElement($subcategory);
     }
 
     /**
-     * Get subcategories
+     * Get subcategories.
      *
      * @return \Doctrine\Common\Collections\Collection $subcategories
      */
@@ -384,19 +404,21 @@ class Option
     }
 
     /**
-     * Set index
+     * Set index.
      *
      * @param int $index
+     *
      * @return $this
      */
     public function setIndex($index)
     {
         $this->index = $index;
+
         return $this;
     }
 
     /**
-     * Get index
+     * Get index.
      *
      * @return int $index
      */
@@ -406,20 +428,24 @@ class Option
     }
 
     /**
-     * Set color
+     * Set color.
      *
      * @param string $color
+     *
      * @return $this
      */
     public function setColor($color)
     {
-        if (strlen($color) == 6) $color = '#' . $color;
+        if (6 == strlen($color)) {
+            $color = '#'.$color;
+        }
         $this->color = $color;
+
         return $this;
     }
 
     /**
-     * Get color
+     * Get color.
      *
      * @return string $color
      */
@@ -429,20 +455,24 @@ class Option
     }
 
     /**
-     * Set color
+     * Set color.
      *
      * @param string $color
+     *
      * @return $this
      */
     public function setSoftColor($color)
     {
-        if (strlen($color) == 6) $color = '#' . $color;
+        if (6 == strlen($color)) {
+            $color = '#'.$color;
+        }
         $this->softColor = $color;
+
         return $this;
     }
 
     /**
-     * Get color
+     * Get color.
      *
      * @return string $color
      */
@@ -452,19 +482,21 @@ class Option
     }
 
     /**
-     * Set icon
+     * Set icon.
      *
      * @param string $icon
+     *
      * @return $this
      */
     public function setIcon($icon)
     {
         $this->icon = $icon;
+
         return $this;
     }
 
     /**
-     * Get icon
+     * Get icon.
      *
      * @return string $icon
      */
@@ -474,19 +506,21 @@ class Option
     }
 
     /**
-     * Set textHelper
+     * Set textHelper.
      *
      * @param string $textHelper
+     *
      * @return $this
      */
     public function setTextHelper($textHelper)
     {
         $this->textHelper = $textHelper;
+
         return $this;
     }
 
     /**
-     * Get textHelper
+     * Get textHelper.
      *
      * @return string $textHelper
      */
@@ -496,21 +530,23 @@ class Option
     }
 
     /**
-     * Set useIconForMarker
+     * Set useIconForMarker.
      *
-     * @param boolean $useIconForMarker
+     * @param bool $useIconForMarker
+     *
      * @return $this
      */
     public function setUseIconForMarker($useIconForMarker)
     {
         $this->useIconForMarker = $useIconForMarker;
+
         return $this;
     }
 
     /**
-     * Get useIconForMarker
+     * Get useIconForMarker.
      *
-     * @return boolean $useIconForMarker
+     * @return bool $useIconForMarker
      */
     public function getUseIconForMarker()
     {
@@ -518,21 +554,23 @@ class Option
     }
 
     /**
-     * Set useColorForMarker
+     * Set useColorForMarker.
      *
-     * @param boolean $useColorForMarker
+     * @param bool $useColorForMarker
+     *
      * @return $this
      */
     public function setUseColorForMarker($useColorForMarker)
     {
         $this->useColorForMarker = $useColorForMarker;
+
         return $this;
     }
 
     /**
-     * Get useColorForMarker
+     * Get useColorForMarker.
      *
-     * @return boolean $useColorForMarker
+     * @return bool $useColorForMarker
      */
     public function getUseColorForMarker()
     {
@@ -540,21 +578,23 @@ class Option
     }
 
     /**
-     * Set showOpenHours
+     * Set showOpenHours.
      *
-     * @param boolean $showOpenHours
+     * @param bool $showOpenHours
+     *
      * @return $this
      */
     public function setShowOpenHours($showOpenHours)
     {
         $this->showOpenHours = $showOpenHours;
+
         return $this;
     }
 
     /**
-     * Get showOpenHours
+     * Get showOpenHours.
      *
-     * @return boolean $showOpenHours
+     * @return bool $showOpenHours
      */
     public function getShowOpenHours()
     {
@@ -562,21 +602,23 @@ class Option
     }
 
     /**
-     * Set showExpanded
+     * Set showExpanded.
      *
-     * @param boolean $showExpanded
+     * @param bool $showExpanded
+     *
      * @return $this
      */
     public function setShowExpanded($showExpanded)
     {
         $this->showExpanded = $showExpanded;
+
         return $this;
     }
 
     /**
-     * Get showExpanded
+     * Get showExpanded.
      *
-     * @return boolean $showExpanded
+     * @return bool $showExpanded
      */
     public function getShowExpanded()
     {
@@ -584,9 +626,10 @@ class Option
     }
 
     /**
-     * Set parent
+     * Set parent.
      *
      * @param App\Document\Category $parent
+     *
      * @return $this
      */
     public function setParent(\App\Document\Category $parent)
@@ -601,7 +644,7 @@ class Option
     }
 
     /**
-     * Get parent
+     * Get parent.
      *
      * @return App\Document\Category $parent
      */
@@ -611,21 +654,23 @@ class Option
     }
 
     /**
-     * Set isFixture
+     * Set isFixture.
      *
-     * @param boolean $isFixture
+     * @param bool $isFixture
+     *
      * @return $this
      */
     public function setIsFixture($isFixture)
     {
         $this->isFixture = $isFixture;
+
         return $this;
     }
 
     /**
-     * Get isFixture
+     * Get isFixture.
      *
-     * @return boolean $isFixture
+     * @return bool $isFixture
      */
     public function getIsFixture()
     {
@@ -633,21 +678,23 @@ class Option
     }
 
     /**
-     * Set disableInInfoBar
+     * Set disableInInfoBar.
      *
-     * @param boolean $disableInInfoBar
+     * @param bool $disableInInfoBar
+     *
      * @return $this
      */
     public function setDisableInInfoBar($disableInInfoBar)
     {
         $this->disableInInfoBar = $disableInInfoBar;
+
         return $this;
     }
 
     /**
-     * Get disableInInfoBar
+     * Get disableInInfoBar.
      *
-     * @return boolean $disableInInfoBar
+     * @return bool $disableInInfoBar
      */
     public function getDisableInInfoBar()
     {
@@ -655,21 +702,23 @@ class Option
     }
 
     /**
-     * Set displayInMenu
+     * Set displayInMenu.
      *
-     * @param boolean $displayInMenu
+     * @param bool $displayInMenu
+     *
      * @return $this
      */
     public function setDisplayInMenu($displayInMenu)
     {
         $this->displayInMenu = $displayInMenu;
+
         return $this;
     }
 
     /**
-     * Get displayInMenu
+     * Get displayInMenu.
      *
-     * @return boolean $displayInMenu
+     * @return bool $displayInMenu
      */
     public function getDisplayInMenu()
     {
@@ -677,21 +726,23 @@ class Option
     }
 
     /**
-     * Set displayInInfoBar
+     * Set displayInInfoBar.
      *
-     * @param boolean $displayInInfoBar
+     * @param bool $displayInInfoBar
+     *
      * @return $this
      */
     public function setDisplayInInfoBar($displayInInfoBar)
     {
         $this->displayInInfoBar = $displayInInfoBar;
+
         return $this;
     }
 
     /**
-     * Get displayInInfoBar
+     * Get displayInInfoBar.
      *
-     * @return boolean $displayInInfoBar
+     * @return bool $displayInInfoBar
      */
     public function getDisplayInInfoBar()
     {
@@ -699,21 +750,23 @@ class Option
     }
 
     /**
-     * Set displayInForm
+     * Set displayInForm.
      *
-     * @param boolean $displayInForm
+     * @param bool $displayInForm
+     *
      * @return $this
      */
     public function setDisplayInForm($displayInForm)
     {
         $this->displayInForm = $displayInForm;
+
         return $this;
     }
 
     /**
-     * Get displayInForm
+     * Get displayInForm.
      *
-     * @return boolean $displayInForm
+     * @return bool $displayInForm
      */
     public function getDisplayInForm()
     {
@@ -721,21 +774,23 @@ class Option
     }
 
     /**
-     * Set displayChildrenInMenu
+     * Set displayChildrenInMenu.
      *
-     * @param boolean $displayChildrenInMenu
+     * @param bool $displayChildrenInMenu
+     *
      * @return $this
      */
     public function setDisplayChildrenInMenu($displayChildrenInMenu)
     {
         $this->displayChildrenInMenu = $displayChildrenInMenu;
+
         return $this;
     }
 
     /**
-     * Get displayChildrenInMenu
+     * Get displayChildrenInMenu.
      *
-     * @return boolean $displayChildrenInMenu
+     * @return bool $displayChildrenInMenu
      */
     public function getDisplayChildrenInMenu()
     {
@@ -743,21 +798,23 @@ class Option
     }
 
     /**
-     * Set displayChildrenInInfoBar
+     * Set displayChildrenInInfoBar.
      *
-     * @param boolean $displayChildrenInInfoBar
+     * @param bool $displayChildrenInInfoBar
+     *
      * @return $this
      */
     public function setDisplayChildrenInInfoBar($displayChildrenInInfoBar)
     {
         $this->displayChildrenInInfoBar = $displayChildrenInInfoBar;
+
         return $this;
     }
 
     /**
-     * Get displayChildrenInInfoBar
+     * Get displayChildrenInInfoBar.
      *
-     * @return boolean $displayChildrenInInfoBar
+     * @return bool $displayChildrenInInfoBar
      */
     public function getDisplayChildrenInInfoBar()
     {
@@ -765,21 +822,23 @@ class Option
     }
 
     /**
-     * Set displayChildrenInForm
+     * Set displayChildrenInForm.
      *
-     * @param boolean $displayChildrenInForm
+     * @param bool $displayChildrenInForm
+     *
      * @return $this
      */
     public function setDisplayChildrenInForm($displayChildrenInForm)
     {
         $this->displayChildrenInForm = $displayChildrenInForm;
+
         return $this;
     }
 
     /**
-     * Get displayChildrenInForm
+     * Get displayChildrenInForm.
      *
-     * @return boolean $displayChildrenInForm
+     * @return bool $displayChildrenInForm
      */
     public function getDisplayChildrenInForm()
     {
@@ -787,21 +846,23 @@ class Option
     }
 
     /**
-     * Set unexpandable
+     * Set unexpandable.
      *
-     * @param boolean $unexpandable
+     * @param bool $unexpandable
+     *
      * @return $this
      */
     public function setUnexpandable($unexpandable)
     {
         $this->unexpandable = $unexpandable;
+
         return $this;
     }
 
     /**
-     * Get unexpandable
+     * Get unexpandable.
      *
-     * @return boolean $unexpandable
+     * @return bool $unexpandable
      */
     public function getUnexpandable()
     {
@@ -809,19 +870,21 @@ class Option
     }
 
     /**
-     * Set customId
+     * Set customId.
      *
      * @param string $customId
+     *
      * @return $this
      */
     public function setCustomId($customId)
     {
         $this->customId = $customId;
+
         return $this;
     }
 
     /**
-     * Get customId
+     * Get customId.
      *
      * @return string $customId
      */
@@ -831,19 +894,21 @@ class Option
     }
 
     /**
-     * Set url
+     * Set url.
      *
      * @param string $url
+     *
      * @return $this
      */
     public function setUrl($url)
     {
         $this->url = $url;
+
         return $this;
     }
 
     /**
-     * Get url
+     * Get url.
      *
      * @return string $url
      */

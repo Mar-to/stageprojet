@@ -3,7 +3,6 @@
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use App\Document\InteractionType;
 
 abstract class ReportValue
 {
@@ -26,30 +25,31 @@ class UserInteractionReport extends UserInteraction
     private $value;
 
     /**
-    * @MongoDB\Field(type="string")
-    */
+     * @MongoDB\Field(type="string")
+     */
     private $comment;
 
     /**
-    * @MongoDB\Field(type="bool")
-    */
+     * @MongoDB\Field(type="bool")
+     */
     private $isResolved;
 
-
     /**
-     * Set value
+     * Set value.
      *
      * @param int $value
+     *
      * @return $this
      */
     public function setValue($value)
     {
         $this->value = $value;
+
         return $this;
     }
 
     /**
-     * Get value
+     * Get value.
      *
      * @return int $value
      */
@@ -59,19 +59,21 @@ class UserInteractionReport extends UserInteraction
     }
 
     /**
-     * Set comment
+     * Set comment.
      *
      * @param string $comment
+     *
      * @return $this
      */
     public function setComment($comment)
     {
         $this->comment = $comment;
+
         return $this;
     }
 
     /**
-     * Get comment
+     * Get comment.
      *
      * @return string $comment
      */
@@ -81,19 +83,21 @@ class UserInteractionReport extends UserInteraction
     }
 
     /**
-     * Set isResolved
+     * Set isResolved.
      *
      * @param bool $isResolved
+     *
      * @return $this
      */
     public function setIsResolved($isResolved)
     {
         $this->isResolved = $isResolved;
+
         return $this;
     }
 
     /**
-     * Get isResolved
+     * Get isResolved.
      *
      * @return bool $isResolved
      */

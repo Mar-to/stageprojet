@@ -17,19 +17,21 @@ class ConfigurationHome
     public $seeMoreButtonText;
 
     /**
-     * Set displayCategoriesToPick
+     * Set displayCategoriesToPick.
      *
      * @param bool $displayCategoriesToPick
+     *
      * @return $this
      */
     public function setDisplayCategoriesToPick($displayCategoriesToPick)
     {
         $this->displayCategoriesToPick = $displayCategoriesToPick;
+
         return $this;
     }
 
     /**
-     * Get displayCategoriesToPick
+     * Get displayCategoriesToPick.
      *
      * @return bool $displayCategoriesToPick
      */
@@ -39,19 +41,21 @@ class ConfigurationHome
     }
 
     /**
-     * Set addElementHintText
+     * Set addElementHintText.
      *
      * @param string $addElementHintText
+     *
      * @return $this
      */
     public function setAddElementHintText($addElementHintText)
     {
         $this->addElementHintText = $addElementHintText;
+
         return $this;
     }
 
     /**
-     * Get addElementHintText
+     * Get addElementHintText.
      *
      * @return string $addElementHintText
      */
@@ -61,19 +65,21 @@ class ConfigurationHome
     }
 
     /**
-     * Set seeMoreButtonText
+     * Set seeMoreButtonText.
      *
      * @param string $seeMoreButtonText
+     *
      * @return $this
      */
     public function setSeeMoreButtonText($seeMoreButtonText)
     {
         $this->seeMoreButtonText = $seeMoreButtonText;
+
         return $this;
     }
 
     /**
-     * Get seeMoreButtonText
+     * Get seeMoreButtonText.
      *
      * @return string $seeMoreButtonText
      */

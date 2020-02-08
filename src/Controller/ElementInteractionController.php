@@ -9,36 +9,31 @@
  * @Last Modified time: 2018-04-07 16:22:43
  */
 
-
 namespace App\Controller;
 
-
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Doctrine\ODM\MongoDB\DocumentManager;
-
-use App\Document\Element;
-use App\Document\ElementStatus;
 use App\Document\UserInteractionReport;
 use App\Services\ConfigurationService;
+use App\Services\ElementActionService;
 use App\Services\ElementVoteService;
 use App\Services\MailService;
-use App\Services\ElementActionService;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ElementInteractionController extends Controller
 {
     public function voteAction(Request $request, DocumentManager $dm, ConfigurationService $confService,
                                ElementVoteService $voteService)
     {
-        if (!$confService->isUserAllowed('vote', $request))
-            return $this->returnResponse($dm, false,"Désolé, vous n'êtes pas autorisé à voter !");
+        if (!$confService->isUserAllowed('vote', $request)) {
+            return $this->returnResponse($dm, false, "Désolé, vous n'êtes pas autorisé à voter !");
+        }
 
         // CHECK REQUEST IS VALID
-        if (!$request->get('elementId') || $request->get('value') === null)
-            return $this->returnResponse($dm, false,"Les paramètres du vote sont incomplets");
+        if (!$request->get('elementId') || null === $request->get('value')) {
+            return $this->returnResponse($dm, false, 'Les paramètres du vote sont incomplets');
+        }
 
         $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
 
@@ -51,12 +46,14 @@ class ElementInteractionController extends Controller
 
     public function reportErrorAction(Request $request, DocumentManager $dm, ConfigurationService $confService)
     {
-        if (!$confService->isUserAllowed('report', $request))
-            return $this->returnResponse($dm, false,"Désolé, vous n'êtes pas autorisé à signaler d'erreurs !");
+        if (!$confService->isUserAllowed('report', $request)) {
+            return $this->returnResponse($dm, false, "Désolé, vous n'êtes pas autorisé à signaler d'erreurs !");
+        }
 
         // CHECK REQUEST IS VALID
-        if (!$request->get('elementId') || $request->get('value') === null || !$request->get('userEmail'))
-            return $this->returnResponse($dm, false,"Les paramètres du signalement sont incomplets");
+        if (!$request->get('elementId') || null === $request->get('value') || !$request->get('userEmail')) {
+            return $this->returnResponse($dm, false, 'Les paramètres du signalement sont incomplets');
+        }
 
         $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
 
@@ -64,7 +61,9 @@ class ElementInteractionController extends Controller
         $report->setValue($request->get('value'));
         $report->updateUserInformation($this->container->get('security.token_storage'), $request->get('userEmail'));
         $comment = $request->get('comment');
-        if ($comment) $report->setComment($comment);
+        if ($comment) {
+            $report->setComment($comment);
+        }
 
         $element->addReport($report);
 
@@ -73,18 +72,20 @@ class ElementInteractionController extends Controller
         $dm->persist($element);
         $dm->flush();
 
-        return $this->returnResponse($dm, true, "Merci, votre signalement a bien été enregistré !");
+        return $this->returnResponse($dm, true, 'Merci, votre signalement a bien été enregistré !');
     }
 
     public function deleteAction(Request $request, DocumentManager $dm, ConfigurationService $confService,
                                  ElementActionService $elementActionService)
     {
-        if (!$confService->isUserAllowed('delete', $request))
-            return $this->returnResponse($dm, false,"Désolé, vous n'êtes pas autorisé à supprimer un élément !");
+        if (!$confService->isUserAllowed('delete', $request)) {
+            return $this->returnResponse($dm, false, "Désolé, vous n'êtes pas autorisé à supprimer un élément !");
+        }
 
         // CHECK REQUEST IS VALID
-        if (!$request->get('elementId'))
-            return $this->returnResponse($dm, false,"Les paramètres sont incomplets");
+        if (!$request->get('elementId')) {
+            return $this->returnResponse($dm, false, 'Les paramètres sont incomplets');
+        }
 
         $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
         $dm->persist($element);
@@ -100,12 +101,14 @@ class ElementInteractionController extends Controller
                                          ConfigurationService $confService,
                                          ElementActionService $elementActionService)
     {
-        if (!$confService->isUserAllowed('directModeration', $request))
-            return $this->returnResponse($dm, false,"Désolé, vous n'êtes pas autorisé à modérer cet élément !");
+        if (!$confService->isUserAllowed('directModeration', $request)) {
+            return $this->returnResponse($dm, false, "Désolé, vous n'êtes pas autorisé à modérer cet élément !");
+        }
 
         // CHECK REQUEST IS VALID
-        if (!$request->get('elementId'))
-            return $this->returnResponse($dm, false,"Les paramètres sont incomplets");
+        if (!$request->get('elementId')) {
+            return $this->returnResponse($dm, false, 'Les paramètres sont incomplets');
+        }
 
         $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
 
@@ -120,12 +123,14 @@ class ElementInteractionController extends Controller
     public function sendMailAction(Request $request, DocumentManager $dm, ConfigurationService $confService,
                                    MailService $mailService)
     {
-        if (!$confService->isUserAllowed('sendMail', $request))
-            return $this->returnResponse($dm, false,"Désolé, vous n'êtes pas autorisé à envoyer des mails !");
+        if (!$confService->isUserAllowed('sendMail', $request)) {
+            return $this->returnResponse($dm, false, "Désolé, vous n'êtes pas autorisé à envoyer des mails !");
+        }
 
         // CHECK REQUEST IS VALID
-        if (!$request->get('elementId') || !$request->get('subject') || !$request->get('content') || !$request->get('userEmail'))
-            return $this->returnResponse($dm, false,"Les paramètres sont incomplets");
+        if (!$request->get('elementId') || !$request->get('subject') || !$request->get('content') || !$request->get('userEmail')) {
+            return $this->returnResponse($dm, false, 'Les paramètres sont incomplets');
+        }
 
         $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
 
@@ -134,13 +139,13 @@ class ElementInteractionController extends Controller
         $senderMail = $request->get('userEmail');
 
         // TODO make it configurable
-        $mailSubject = 'Message reçu depuis la plateforme ' . $this->getParameter('instance_name');
+        $mailSubject = 'Message reçu depuis la plateforme '.$this->getParameter('instance_name');
         $mailContent =
-            "<p>Bonjour <i>" . $element->getName() . '</i>,</p>
-            <p>Vous avez reçu un message de la part de <a href="mailto:' . $senderMail . '">' . $senderMail . "</a></br>
+            '<p>Bonjour <i>'.$element->getName().'</i>,</p>
+            <p>Vous avez reçu un message de la part de <a href="mailto:'.$senderMail.'">'.$senderMail.'</a></br>
             </p>
-            <p><b>Titre du message</b></p><p> " . $request->get('subject') . "</p>
-            <p><b>Contenu</b></p><p> " . $request->get('content') . "</p>";
+            <p><b>Titre du message</b></p><p> '.$request->get('subject').'</p>
+            <p><b>Contenu</b></p><p> '.$request->get('content').'</p>';
 
         $mailService->sendMail($element->getEmail(), $mailSubject, $mailContent);
 
@@ -150,21 +155,25 @@ class ElementInteractionController extends Controller
     public function stampAction(Request $request, DocumentManager $dm)
     {
         // CHECK REQUEST IS VALID
-        if (!$request->get('stampId') || $request->get('value') === null || !$request->get('elementId'))
-            return $this->returnResponse($dm, false,"Les paramètres sont incomplets");
+        if (!$request->get('stampId') || null === $request->get('value') || !$request->get('elementId')) {
+            return $this->returnResponse($dm, false, 'Les paramètres sont incomplets');
+        }
 
         $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
         $stamp = $dm->getRepository('App\Document\Stamp')->find($request->get('stampId'));
         $user = $this->getUser();
 
-        if (!in_array($stamp, $user->getAllowedStamps()->toArray()))  return $this->returnResponse($dm, false,"Vous n'êtes pas autorisé à utiliser cette étiquette");
-
-        if ($request->get('value') == "true")
-        {
-            if (!in_array($stamp, $element->getStamps()->toArray())) $element->addStamp($stamp);
+        if (!in_array($stamp, $user->getAllowedStamps()->toArray())) {
+            return $this->returnResponse($dm, false, "Vous n'êtes pas autorisé à utiliser cette étiquette");
         }
-        else
+
+        if ('true' == $request->get('value')) {
+            if (!in_array($stamp, $element->getStamps()->toArray())) {
+                $element->addStamp($stamp);
+            }
+        } else {
             $element->removeStamp($stamp);
+        }
 
         $dm->persist($element);
         $dm->flush();
@@ -176,7 +185,9 @@ class ElementInteractionController extends Controller
     {
         $response['success'] = $success;
         $response['message'] = $message;
-        if ($data !== null) $response['data'] = $data;
+        if (null !== $data) {
+            $response['data'] = $data;
+        }
 
         $responseJson = json_encode($response);
         $response = new Response($responseJson);
@@ -184,7 +195,9 @@ class ElementInteractionController extends Controller
 
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
         $cors = $config->getApi()->getInternalApiAuthorizedDomains();
-        if ($cors) $response->headers->set('Access-Control-Allow-Origin', $cors);
+        if ($cors) {
+            $response->headers->set('Access-Control-Allow-Origin', $cors);
+        }
 
         return $response;
     }

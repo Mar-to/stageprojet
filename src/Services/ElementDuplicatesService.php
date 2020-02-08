@@ -6,26 +6,28 @@
  * @Last Modified by:   Sebastian Castro
  * @Last Modified time: 2018-06-06 08:25:48
  */
+
 namespace App\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 class ElementDuplicatesService
 {
-   public function __construct(DocumentManager $dm)
-   {
-      $this->dm = $dm;
-   }
+    public function __construct(DocumentManager $dm)
+    {
+        $this->dm = $dm;
+    }
 
-   public function checkForDuplicates($element, $includeDeleted = false, $hydrate = false, $distance = 1, $maxResults = 10)
-   {
-      $elements = $this->dm->getRepository('App\Document\Element')->findDuplicatesFor(
+    public function checkForDuplicates($element, $includeDeleted = false, $hydrate = false, $distance = 1, $maxResults = 10)
+    {
+        $elements = $this->dm->getRepository('App\Document\Element')->findDuplicatesFor(
          $element,
          $distance,
          $maxResults,
          $includeDeleted,
          $hydrate
       );
-      return $elements;
-   }
+
+        return $elements;
+    }
 }

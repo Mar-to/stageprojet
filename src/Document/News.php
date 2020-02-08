@@ -12,103 +12,103 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class News
 {
-  /**
-   * @var int
-   *
-   * @ODM\Id(strategy="INCREMENT")
-   */
-  private $id;
+    /**
+     * @var int
+     *
+     * @ODM\Id(strategy="INCREMENT")
+     */
+    private $id;
 
-  /**
-   * @var null|string
-   *
-   * @ODM\Field
-   */
-  private $title;
+    /**
+     * @var string|null
+     *
+     * @ODM\Field
+     */
+    private $title;
 
-  /**
-   * @var null|string
-   *
-   * @ODM\Field
-   */
-  private $content;
+    /**
+     * @var string|null
+     *
+     * @ODM\Field
+     */
+    private $content;
 
-  /**
-   * @var null|\DateTime
-   *
-   * @ODM\Field(type="date")
-   */
-  private $publicationDate;
+    /**
+     * @var \DateTime|null
+     *
+     * @ODM\Field(type="date")
+     */
+    private $publicationDate;
 
-  /**
-   * @var int
-   *
-   * @ODM\Field(type="int")
-   *
-   * @see NewsStatus
-   */
-  private $status = NewsStatus::DRAFT;
+    /**
+     * @var int
+     *
+     * @ODM\Field(type="int")
+     *
+     * @see NewsStatus
+     */
+    private $status = NewsStatus::DRAFT;
 
-  public function __construct()
-  {
-    $this->publicationDate = new \DateTime();
-  }
+    public function __construct()
+    {
+        $this->publicationDate = new \DateTime();
+    }
 
-  public function getId(): int
-  {
-    return $this->id;
-  }
+    public function getId(): int
+    {
+        return $this->id;
+    }
 
-  public function setTitle(string $title): News
-  {
-    $this->title = $title;
+    public function setTitle(string $title): News
+    {
+        $this->title = $title;
 
-    return $this;
-  }
+        return $this;
+    }
 
-  public function getTitle(): ?string
-  {
-    return $this->title;
-  }
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
 
-  public function setContent(string $content): News
-  {
-    $this->content = $content;
+    public function setContent(string $content): News
+    {
+        $this->content = $content;
 
-    return $this;
-  }
+        return $this;
+    }
 
-  public function getContent(): ?string
-  {
-    return $this->content;
-  }
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
 
-  public function setPublicationDate(\DateTime $publicationDate): News
-  {
-    $this->publicationDate = $publicationDate;
+    public function setPublicationDate(\DateTime $publicationDate): News
+    {
+        $this->publicationDate = $publicationDate;
 
-    return $this;
-  }
+        return $this;
+    }
 
-  public function getPublicationDate(): ?\DateTime
-  {
-    return $this->publicationDate;
-  }
+    public function getPublicationDate(): ?\DateTime
+    {
+        return $this->publicationDate;
+    }
 
-  public function setStatus(int $status): News
-  {
-    $this->status = $status;
+    public function setStatus(int $status): News
+    {
+        $this->status = $status;
 
-    return $this;
-  }
+        return $this;
+    }
 
-  public function getStatus(): int
-  {
-    return $this->status;
-  }
+    public function getStatus(): int
+    {
+        return $this->status;
+    }
 
-  public function __toString(): string
-  {
-    return sprintf('Nouvelle %s (%d)', $this->title, $this->id);
-  }
+    public function __toString(): string
+    {
+        return sprintf('Nouvelle %s (%d)', $this->title, $this->id);
+    }
 }

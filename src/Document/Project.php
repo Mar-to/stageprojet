@@ -2,15 +2,15 @@
 
 namespace App\Document;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
-* @MongoDB\Document
-* @Unique(fields="name")
-* @Unique(fields="domainName")
-*/
+ * @MongoDB\Document
+ * @Unique(fields="name")
+ * @Unique(fields="domainName")
+ */
 class Project
 {
     /**
@@ -21,15 +21,15 @@ class Project
     private $id;
 
     /**
-    * @MongoDB\Field(type="string")
-    */
+     * @MongoDB\Field(type="string")
+     */
     private $name;
 
     /**
-    * domain-name.my-server-url.org
-    *
-    * @MongoDB\Field(type="string")
-    */
+     * domain-name.my-server-url.org.
+     *
+     * @MongoDB\Field(type="string")
+     */
     private $domainName;
 
     // not persisted
@@ -45,7 +45,7 @@ class Project
     private $dataSize = 0;
 
     /**
-     * @var date $createdAt
+     * @var date
      *
      * @MongoDB\Field(type="date")
      * @Gedmo\Timestampable(on="create")
@@ -55,15 +55,18 @@ class Project
     /** @MongoDB\ReferenceMany(targetDocument="App\Document\ScheduledCommand", inversedBy="project", cascade={"all"}) */
     private $commands;
 
-    public function getDbName() { return $this->getDomainName(); }
-
-    function __toString()
+    public function getDbName()
     {
-        return $this->getName() ? $this->getName() : "";
+        return $this->getDomainName();
+    }
+
+    public function __toString()
+    {
+        return $this->getName() ? $this->getName() : '';
     }
 
     /**
-     * Get id
+     * Get id.
      *
      * @return int_id $id
      */
@@ -73,19 +76,21 @@ class Project
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
+     *
      * @return $this
      */
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string $name
      */
@@ -95,19 +100,21 @@ class Project
     }
 
     /**
-     * Set domainName
+     * Set domainName.
      *
      * @param string $domainName
+     *
      * @return $this
      */
     public function setDomainName($domainName)
     {
         $this->domainName = $domainName;
+
         return $this;
     }
 
     /**
-     * Get domainName
+     * Get domainName.
      *
      * @return string $domainName
      */
@@ -117,19 +124,21 @@ class Project
     }
 
     /**
-     * Set homeUrl
+     * Set homeUrl.
      *
      * @param string $homeUrl
+     *
      * @return $this
      */
     public function setHomeUrl($homeUrl)
     {
         $this->homeUrl = $homeUrl;
+
         return $this;
     }
 
     /**
-     * Get homeUrl
+     * Get homeUrl.
      *
      * @return string $homeUrl
      */
@@ -139,19 +148,21 @@ class Project
     }
 
     /**
-     * Set imageUrl
+     * Set imageUrl.
      *
      * @param string $imageUrl
+     *
      * @return $this
      */
     public function setImageUrl($imageUrl)
     {
         $this->imageUrl = $imageUrl;
+
         return $this;
     }
 
     /**
-     * Get imageUrl
+     * Get imageUrl.
      *
      * @return string $imageUrl
      */
@@ -161,19 +172,21 @@ class Project
     }
 
     /**
-     * Set description
+     * Set description.
      *
      * @param string $description
+     *
      * @return $this
      */
     public function setDescription($description)
     {
         $this->description = $description;
+
         return $this;
     }
 
     /**
-     * Get description
+     * Get description.
      *
      * @return string $description
      */
@@ -183,19 +196,21 @@ class Project
     }
 
     /**
-     * Set dataSize
+     * Set dataSize.
      *
      * @param int $dataSize
+     *
      * @return $this
      */
     public function setDataSize($dataSize)
     {
         $this->dataSize = $dataSize;
+
         return $this;
     }
 
     /**
-     * Get dataSize
+     * Get dataSize.
      *
      * @return int $dataSize
      */
@@ -205,19 +220,21 @@ class Project
     }
 
     /**
-     * Set createdAt
+     * Set createdAt.
      *
      * @param date $createdAt
+     *
      * @return $this
      */
     public function setCreatedAt($createdAt)
     {
         $this->createdAt = $createdAt;
+
         return $this;
     }
 
     /**
-     * Get createdAt
+     * Get createdAt.
      *
      * @return date $createdAt
      */
@@ -225,13 +242,14 @@ class Project
     {
         return $this->createdAt;
     }
+
     public function __construct()
     {
         $this->commands = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
-     * Add command
+     * Add command.
      *
      * @param App\Document\ScheduledCommand $command
      */
@@ -241,7 +259,7 @@ class Project
     }
 
     /**
-     * Remove command
+     * Remove command.
      *
      * @param App\Document\ScheduledCommand $command
      */
@@ -251,7 +269,7 @@ class Project
     }
 
     /**
-     * Get commands
+     * Get commands.
      *
      * @return \Doctrine\Common\Collections\Collection $commands
      */

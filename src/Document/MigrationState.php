@@ -5,7 +5,8 @@ namespace App\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
- * Keep a trace of the migrations already ran. See MigrationCommand
+ * Keep a trace of the migrations already ran. See MigrationCommand.
+ *
  * @MongoDB\Document
  */
 class MigrationState
@@ -29,7 +30,7 @@ class MigrationState
     private $messagesIndex = 0;
 
     /**
-     * Get id
+     * Get id.
      *
      * @return id $id
      */
@@ -39,19 +40,21 @@ class MigrationState
     }
 
     /**
-     * Set migrationIndex
+     * Set migrationIndex.
      *
      * @param int $migrationIndex
+     *
      * @return $this
      */
     public function setMigrationIndex($migrationIndex)
     {
         $this->migrationIndex = $migrationIndex;
+
         return $this;
     }
 
     /**
-     * Get migrationIndex
+     * Get migrationIndex.
      *
      * @return int $migrationIndex
      */
@@ -61,19 +64,21 @@ class MigrationState
     }
 
     /**
-     * Set messagesIndex
+     * Set messagesIndex.
      *
      * @param int $messagesIndex
+     *
      * @return $this
      */
     public function setMessagesIndex($messagesIndex)
     {
         $this->messagesIndex = $messagesIndex;
+
         return $this;
     }
 
     /**
-     * Get messagesIndex
+     * Get messagesIndex.
      *
      * @return int $messagesIndex
      */
@@ -83,25 +88,30 @@ class MigrationState
     }
 
     /**
-     * Set commandsIndex
+     * Set commandsIndex.
      *
      * @param int $commandsIndex
+     *
      * @return $this
      */
     public function setCommandsIndex($commandsIndex)
     {
         $this->commandsIndex = $commandsIndex;
+
         return $this;
     }
 
     /**
-     * Get commandsIndex
+     * Get commandsIndex.
      *
      * @return int $commandsIndex
      */
     public function getCommandsIndex()
     {
-        if (!$this->commandsIndex) $this->commandsIndex = 0;
+        if (!$this->commandsIndex) {
+            $this->commandsIndex = 0;
+        }
+
         return $this->commandsIndex;
     }
 }

@@ -1,16 +1,14 @@
 <?php
+
 namespace App\Command;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Output\OutputInterface;
-
-use App\Command\GoGoAbstractCommand;
+use App\Services\RandomCreationService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use App\Services\RandomCreationService;
 
 class GenerateElementsCommand extends GoGoAbstractCommand
 {
@@ -24,7 +22,7 @@ class GenerateElementsCommand extends GoGoAbstractCommand
 
     protected function gogoConfigure(): void
     {
-       $this
+        $this
         ->setName('app:elements:generate')
         ->setDescription('Generate random elements.')
         ->setHelp('This command allows you generate random elements')
@@ -35,10 +33,10 @@ class GenerateElementsCommand extends GoGoAbstractCommand
 
     protected function gogoExecute(DocumentManager $dm, InputInterface $input, OutputInterface $output): void
     {
-      $this->output = $output;
+        $this->output = $output;
 
-      $randomService->generate($input->getArgument('number'), $input->getArgument('generateVotes'));
+        $randomService->generate($input->getArgument('number'), $input->getArgument('generateVotes'));
 
-      $this->log('Element générés !');
+        $this->log('Element générés !');
     }
 }

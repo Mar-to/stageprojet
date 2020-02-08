@@ -9,14 +9,12 @@ use JMS\Serializer\Annotation\Expose;
 class Coordinates
 {
     /**
-     *
      * @Expose
      * @MongoDB\Field(type="float")
      */
     public $latitude = 0;
 
     /**
-     *
      * @Expose
      * @MongoDB\Field(type="float")
      */
@@ -29,19 +27,21 @@ class Coordinates
     }
 
     /**
-     * Set latitude
+     * Set latitude.
      *
      * @param float $latitude
+     *
      * @return $this
      */
     public function setLatitude($latitude)
     {
         $this->latitude = ($latitude * 100000) % (180 * 100000) / 100000;
+
         return $this;
     }
 
     /**
-     * Get latitude
+     * Get latitude.
      *
      * @return float $latitude
      */
@@ -51,19 +51,21 @@ class Coordinates
     }
 
     /**
-     * Set longitude
+     * Set longitude.
      *
      * @param float $longitude
+     *
      * @return $this
      */
     public function setLongitude($longitude)
     {
         $this->longitude = ($longitude * 100000) % (180 * 100000) / 100000;
+
         return $this;
     }
 
     /**
-     * Get longitude
+     * Get longitude.
      *
      * @return float $longitude
      */

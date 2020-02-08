@@ -2,39 +2,37 @@
 
 namespace App\DataFixtures\MongoDB;
 
-use Doctrine\Common\DataFixtures\FixtureInterface;
 use App\Document\Partner;
 use App\Document\PartnerImage;
+use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use joshtronic\LoremIpsum;
 
 class LoadPartner implements FixtureInterface
 {
-
-  public function load(ObjectManager $manager)
-  {
-    $lipsum = new LoremIpsum();
-
-    $new_partner = new Partner();
-
-    $new_partner->setName("Explications");
-    $new_partner->setContent("Cette page permet de lister des informations comme la description du projet, des partenaires etc.. Vous pouvez modifier le contenu depuis l'interface admin dans \"Contenu\" puis \"Qui sommes nous\"");
-    $new_partner->setWebsiteUrl("https://github.com/pixelhumain/GoGoCarto");
-    $manager->persist($new_partner);
-
-    $names = array('Texte numéro un','Texte numéro deux');
-    foreach ($names as $key => $name)
+    public function load(ObjectManager $manager)
     {
-      $new_partner = new Partner();
+        $lipsum = new LoremIpsum();
 
-      $new_partner->setName($name);
-      $new_partner->setContent($lipsum->words(rand(30,100)));
-      $new_partner->setLogo(new PartnerImage("http://lorempixel.com/300/300/abstract/" . $key));
-      $new_partner->setWebsiteUrl("www.partenaire.com");
-      $manager->persist($new_partner);
+        $new_partner = new Partner();
+
+        $new_partner->setName('Explications');
+        $new_partner->setContent("Cette page permet de lister des informations comme la description du projet, des partenaires etc.. Vous pouvez modifier le contenu depuis l'interface admin dans \"Contenu\" puis \"Qui sommes nous\"");
+        $new_partner->setWebsiteUrl('https://github.com/pixelhumain/GoGoCarto');
+        $manager->persist($new_partner);
+
+        $names = ['Texte numéro un', 'Texte numéro deux'];
+        foreach ($names as $key => $name) {
+            $new_partner = new Partner();
+
+            $new_partner->setName($name);
+            $new_partner->setContent($lipsum->words(rand(30, 100)));
+            $new_partner->setLogo(new PartnerImage('http://lorempixel.com/300/300/abstract/'.$key));
+            $new_partner->setWebsiteUrl('www.partenaire.com');
+            $manager->persist($new_partner);
+        }
+
+        // we trigger saving of all partners
+        $manager->flush();
     }
-
-    // we trigger saving of all partners
-    $manager->flush();
-  }
 }

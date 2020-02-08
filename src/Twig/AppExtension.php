@@ -2,11 +2,11 @@
 
 namespace App\Twig;
 
+use App\Helper\SaasHelper;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
-use App\Helper\SaasHelper;
-use Doctrine\ODM\MongoDB\DocumentManager;
 
 class AppExtension extends AbstractExtension
 {
@@ -17,10 +17,10 @@ class AppExtension extends AbstractExtension
 
     public function getFilters()
     {
-        return array(
-            new TwigFilter('json_decode', array($this, 'jsonDecode')),
-            new TwigFilter('values', array($this, 'values')),
-        );
+        return [
+            new TwigFilter('json_decode', [$this, 'jsonDecode']),
+            new TwigFilter('values', [$this, 'values']),
+        ];
     }
 
     public function jsonDecode($value)
@@ -35,16 +35,17 @@ class AppExtension extends AbstractExtension
 
     public function getFunctions()
     {
-        return array(
-            new TwigFunction('is_root_project', array($this, 'isRootProject')),
-            new TwigFunction('new_msgs_count', array($this, 'getNewMessagesCount')),
-            new TwigFunction('errors_count', array($this, 'getErrorsCount')),
-        );
+        return [
+            new TwigFunction('is_root_project', [$this, 'isRootProject']),
+            new TwigFunction('new_msgs_count', [$this, 'getNewMessagesCount']),
+            new TwigFunction('errors_count', [$this, 'getErrorsCount']),
+        ];
     }
 
     public function isRootProject()
     {
         $sassHelper = new SaasHelper();
+
         return $sassHelper->isRootProject();
     }
 

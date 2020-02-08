@@ -3,7 +3,6 @@
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use Gedmo\Mapping\Annotation as Gedmo;
 
 /** @MongoDB\Document(repositoryClass="App\Repository\TaxonomyRepository") */
 class Taxonomy
@@ -13,14 +12,14 @@ class Taxonomy
 
     /**
      * @var string
-     * The complete list of category and options in a hierarchic object
+     *             The complete list of category and options in a hierarchic object
      * @MongoDB\Field(type="string")
      */
     private $taxonomyJson;
 
     /**
      * @var string
-     * The list of all options flatten in an array
+     *             The list of all options flatten in an array
      * @MongoDB\Field(type="string")
      */
     private $optionsJson;
@@ -28,7 +27,7 @@ class Taxonomy
     public $preventUpdate = false;
 
     /**
-     * Get id
+     * Get id.
      *
      * @return id $id
      */
@@ -36,20 +35,23 @@ class Taxonomy
     {
         return $this->id;
     }
+
     /**
-     * Set taxonomyJson
+     * Set taxonomyJson.
      *
      * @param string $taxonomyJson
+     *
      * @return $this
      */
     public function setTaxonomyJson($taxonomyJson)
     {
         $this->taxonomyJson = $taxonomyJson;
+
         return $this;
     }
 
     /**
-     * Get taxonomyJson
+     * Get taxonomyJson.
      *
      * @return string $taxonomyJson
      */
@@ -59,19 +61,21 @@ class Taxonomy
     }
 
     /**
-     * Set optionsJson
+     * Set optionsJson.
      *
      * @param string $optionsJson
+     *
      * @return $this
      */
     public function setOptionsJson($optionsJson)
     {
         $this->optionsJson = $optionsJson;
+
         return $this;
     }
 
     /**
-     * Get optionsJson
+     * Get optionsJson.
      *
      * @return string $optionsJson
      */

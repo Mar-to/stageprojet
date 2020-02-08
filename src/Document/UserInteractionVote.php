@@ -3,7 +3,6 @@
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use App\Document\InteractionType;
 
 abstract class VoteValue
 {
@@ -27,25 +26,26 @@ class UserInteractionVote extends UserInteraction
     private $value;
 
     /**
-    * @MongoDB\Field(type="string")
-    */
+     * @MongoDB\Field(type="string")
+     */
     private $comment;
 
-
     /**
-     * Set value
+     * Set value.
      *
      * @param int $value
+     *
      * @return $this
      */
     public function setValue($value)
     {
         $this->value = $value;
+
         return $this;
     }
 
     /**
-     * Get value
+     * Get value.
      *
      * @return int $value
      */
@@ -55,19 +55,21 @@ class UserInteractionVote extends UserInteraction
     }
 
     /**
-     * Set comment
+     * Set comment.
      *
      * @param string $comment
+     *
      * @return $this
      */
     public function setComment($comment)
     {
         $this->comment = $comment;
+
         return $this;
     }
 
     /**
-     * Get comment
+     * Get comment.
      *
      * @return string $comment
      */

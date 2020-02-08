@@ -3,12 +3,10 @@
 namespace App\Command;
 
 use App\Services\WebhookService;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-
-use App\Command\GoGoAbstractCommand;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class WebhooksPostCommand extends GoGoAbstractCommand
@@ -23,7 +21,7 @@ class WebhooksPostCommand extends GoGoAbstractCommand
 
     protected function gogoConfigure(): void
     {
-       $this
+        $this
         ->setName('app:webhooks:post')
         ->setDescription('Post the queued data to the given webhooks');
     }
@@ -32,6 +30,6 @@ class WebhooksPostCommand extends GoGoAbstractCommand
     {
         $numPosts = $this->webhookService->processPosts(10);
 
-        $this->log('Nombre webhooks traités : ' . $numPosts);
+        $this->log('Nombre webhooks traités : '.$numPosts);
     }
 }

@@ -4,40 +4,41 @@ namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
-
 /** @MongoDB\EmbeddedDocument */
 class AutomatedMailConfiguration
 {
-   /** @MongoDB\Field(type="bool") */
-   public $active;
+    /** @MongoDB\Field(type="bool") */
+    public $active;
 
-   /** @MongoDB\Field(type="string") */
-   public $subject;
+    /** @MongoDB\Field(type="string") */
+    public $subject;
 
-   /** @MongoDB\Field(type="string") */
-   public $content;
+    /** @MongoDB\Field(type="string") */
+    public $content;
 
-   public function __construct($active = false, $subject = '', $content = '')
-   {
-      $this->setActive($active);
-      $this->setSubject($subject);
-      $this->setContent($content);
-   }
+    public function __construct($active = false, $subject = '', $content = '')
+    {
+        $this->setActive($active);
+        $this->setSubject($subject);
+        $this->setContent($content);
+    }
 
     /**
-     * Set active
+     * Set active.
      *
      * @param bool $active
+     *
      * @return $this
      */
     public function setActive($active)
     {
         $this->active = $active;
+
         return $this;
     }
 
     /**
-     * Get active
+     * Get active.
      *
      * @return bool $active
      */
@@ -47,19 +48,21 @@ class AutomatedMailConfiguration
     }
 
     /**
-     * Set subject
+     * Set subject.
      *
      * @param string $subject
+     *
      * @return $this
      */
     public function setSubject($subject)
     {
         $this->subject = $subject;
+
         return $this;
     }
 
     /**
-     * Get subject
+     * Get subject.
      *
      * @return string $subject
      */
@@ -69,19 +72,21 @@ class AutomatedMailConfiguration
     }
 
     /**
-     * Set content
+     * Set content.
      *
      * @param string $content
+     *
      * @return $this
      */
     public function setContent($content)
     {
         $this->content = $content;
+
         return $this;
     }
 
     /**
-     * Get content
+     * Get content.
      *
      * @return string $content
      */

@@ -3,7 +3,6 @@
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use Gedmo\Mapping\Annotation as Gedmo;
 
 abstract class PostStatus
 {
@@ -30,42 +29,46 @@ class WebhookPost
     private $data;
     private $url;
 
-    function __construct()
+    public function __construct()
     {
         $this->numAttempts = 0;
     }
 
-    function __toString()
+    public function __toString()
     {
         return (string) $this->getId();
     }
 
     /**
-     * Set num attempts
+     * Set num attempts.
      *
      * @param int $numAttempts
+     *
      * @return $this
      */
     public function setNumAttempts($numAttempts)
     {
         $this->numAttempts = $numAttempts;
+
         return $this;
     }
 
     /**
-     * Increment num attempts
+     * Increment num attempts.
      *
      * @param int $numAttempts
+     *
      * @return $this
      */
     public function incrementNumAttempts()
     {
-        $this->numAttempts++;
+        ++$this->numAttempts;
+
         return $this->numAttempts;
     }
 
     /**
-     * Get num attempts
+     * Get num attempts.
      *
      * @return int $numAttempts
      */
@@ -75,19 +78,21 @@ class WebhookPost
     }
 
     /**
-     * Set createdAt
+     * Set createdAt.
      *
      * @param \DateTime $createdAt
+     *
      * @return $this
      */
     public function setCreatedAt($createdAt)
     {
         $this->createdAt = $createdAt;
+
         return $this;
     }
 
     /**
-     * Get createdAt
+     * Get createdAt.
      *
      * @return \DateTime $createdAt
      */
@@ -97,19 +102,21 @@ class WebhookPost
     }
 
     /**
-     * Set webhook
+     * Set webhook.
      *
      * @param App\Document\Webhook $webhook
+     *
      * @return $this
      */
     public function setWebhook(\App\Document\Webhook $webhook)
     {
         $this->webhook = $webhook;
+
         return $this;
     }
 
     /**
-     * Get webhook
+     * Get webhook.
      *
      * @return App\Document\Webhook $webhook
      */
@@ -119,19 +126,21 @@ class WebhookPost
     }
 
     /**
-     * Set dispatched
+     * Set dispatched.
      *
      * @param bool $dispatched
+     *
      * @return $this
      */
     public function setDispatched($dispatched)
     {
         $this->dispatched = $dispatched;
+
         return $this;
     }
 
     /**
-     * Get dispatched
+     * Get dispatched.
      *
      * @return bool $dispatched
      */
@@ -139,22 +148,28 @@ class WebhookPost
     {
         return $this->dispatched;
     }
-    public function isDispatched() { return $this->getDispatched(); }
+
+    public function isDispatched()
+    {
+        return $this->getDispatched();
+    }
 
     /**
-     * Set nextAttemptAt
+     * Set nextAttemptAt.
      *
      * @param date $nextAttemptAt
+     *
      * @return $this
      */
     public function setNextAttemptAt($nextAttemptAt)
     {
         $this->nextAttemptAt = $nextAttemptAt;
+
         return $this;
     }
 
     /**
-     * Get nextAttemptAt
+     * Get nextAttemptAt.
      *
      * @return date $nextAttemptAt
      */
@@ -164,19 +179,21 @@ class WebhookPost
     }
 
     /**
-     * Set data
+     * Set data.
      *
      * @param string $data
+     *
      * @return $this
      */
     public function setData($data)
     {
         $this->data = $data;
+
         return $this;
     }
 
     /**
-     * Get data
+     * Get data.
      *
      * @return string $data
      */
@@ -186,19 +203,21 @@ class WebhookPost
     }
 
     /**
-     * Set url
+     * Set url.
      *
      * @param string $url
+     *
      * @return $this
      */
     public function setUrl($url)
     {
         $this->url = $url;
+
         return $this;
     }
 
     /**
-     * Get url
+     * Get url.
      *
      * @return string $url
      */
@@ -208,19 +227,21 @@ class WebhookPost
     }
 
     /**
-     * Set status
+     * Set status.
      *
      * @param string $status
+     *
      * @return $this
      */
     public function setStatus($status)
     {
         $this->status = $status;
+
         return $this;
     }
 
     /**
-     * Get status
+     * Get status.
      *
      * @return string $status
      */

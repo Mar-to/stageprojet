@@ -10,24 +10,18 @@
  * @Last Modified time: 2018-06-05 18:12:19
  */
 
-
 namespace App\Controller;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-
-use App\Document\Element;
-use App\Document\OptionValue;
 use App\Services\RandomCreationService;
-use joshtronic\LoremIpsum;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 class RandomCreationController extends Controller
 {
     public function generateAction($nombre, $generateVote = false, RandomCreationService $randomService)
     {
-	   $lastElementCreated = $randomService->generate($nombre, $generateVote);
+        $lastElementCreated = $randomService->generate($nombre, $generateVote);
 
-	   return new Response('Elements générés');
-  	}
+        return new Response('Elements générés');
+    }
 }

@@ -13,41 +13,34 @@
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 class PostalAddressType extends AbstractType
 {
-  /**
-   * @param FormBuilderInterface $builder
-   * @param array $options
-   */
-  public function buildForm(FormBuilderInterface $builder, array $options)
-  {
-    $builder
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
       ->add('streetAddress', HiddenType::class)
       ->add('addressLocality', HiddenType::class)
       ->add('postalCode', HiddenType::class)
-  	  ->add('addressCountry', HiddenType::class)
+      ->add('addressCountry', HiddenType::class)
       ->add('customFormatedAddress', HiddenType::class);
-  }
+    }
 
-  /**
-   * @param OptionsResolver $resolver
-   */
-  public function configureOptions(OptionsResolver $resolver)
-  {
-    $resolver->setDefaults(array(
-        'data_class' => 'App\Document\PostalAddress'
-    ));
-  }
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+        'data_class' => 'App\Document\PostalAddress',
+    ]);
+    }
 
-  /**
-  * @return string
-  */
-  public function getName()
-  {
-    return 'gogo_elementbundle_postal_address';
-  }
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return 'gogo_elementbundle_postal_address';
+    }
 }

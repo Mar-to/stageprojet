@@ -6,6 +6,6 @@ namespace App\Enum;
 
 final class NewsStatus
 {
-  public const DRAFT = 0;
-  public const PUBLISHED = 1;
+    public const DRAFT = 0;
+    public const PUBLISHED = 1;
 }

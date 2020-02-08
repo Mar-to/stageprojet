@@ -2,94 +2,94 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\Response;
 use App\Document\Coordinates;
 use App\Document\ElementStatus;
 use App\Document\ModerationState;
 use App\Services\MailService;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class MailTestController extends Controller
 {
-   public function __construct(DocumentManager $dm, MailService $mailService)
-   {
-      $this->dm = $dm;
-      $this->mailService = $mailService;
-   }
+    public function __construct(DocumentManager $dm, MailService $mailService)
+    {
+        $this->dm = $dm;
+        $this->mailService = $mailService;
+    }
 
-   public function draftAutomatedAction($mailType)
-   {
-      $draftResponse = $this->draftTest($mailType);
+    public function draftAutomatedAction($mailType)
+    {
+        $draftResponse = $this->draftTest($mailType);
 
-      if ($draftResponse == null) return new Response('No visible elements in database, please create an element');
+        if (null == $draftResponse) {
+            return new Response('No visible elements in database, please create an element');
+        }
 
-      if ($draftResponse['success'])
-      {
-         $mailContent = $this->mailService->draftTemplate($draftResponse['content']);
-         return $this->render('emails/test-emails.html.twig', array('subject' => $draftResponse['subject'], 'content' => $mailContent, 'mailType' => $mailType));
-      }
-      else
-      {
-         $this->addFlash('error', 'Error : ' . $draftResponse['message']);
-         return $this->redirectToRoute('admin_app_configuration_list');
-      }
-   }
+        if ($draftResponse['success']) {
+            $mailContent = $this->mailService->draftTemplate($draftResponse['content']);
 
-   public function sentTestAutomatedAction(Request $request, $mailType)
-   {
-      $mail = $request->get('email');
+            return $this->render('emails/test-emails.html.twig', ['subject' => $draftResponse['subject'], 'content' => $mailContent, 'mailType' => $mailType]);
+        } else {
+            $this->addFlash('error', 'Error : '.$draftResponse['message']);
 
-      if (!$mail) return new Response('Aucune adresse mail n\'a été renseignée');
+            return $this->redirectToRoute('admin_app_configuration_list');
+        }
+    }
 
-      $draftResponse = $this->draftTest($mailType);
+    public function sentTestAutomatedAction(Request $request, $mailType)
+    {
+        $mail = $request->get('email');
 
-      if ($draftResponse == null)
-      {
-         $this->addFlash('error', 'No elements in database, please create an element for email testing');
-         return $this->redirectToRoute('admin_app_configuration_list');
-      }
+        if (!$mail) {
+            return new Response('Aucune adresse mail n\'a été renseignée');
+        }
 
-      if ($draftResponse['success'])
-      {
-         $result = $this->mailService->sendMail($mail,$draftResponse['subject'], $draftResponse['content']);
-         if ($result['success'])
-          $this->addFlash('success', 'Le mail a bien été envoyé à ' . $mail . '</br>Si vous ne le voyez pas vérifiez dans vos SPAMs');
-         else
-          $this->addFlash('error', $result['message']);
-      }
-      else
-      {
-         $this->addFlash('error', 'Erreur : ' . $draftResponse['message']);
-      }
-      return $this->redirectToRoute('gogo_mail_draft_automated', array('mailType' => $mailType));
-   }
+        $draftResponse = $this->draftTest($mailType);
 
-  private function draftTest($mailType)
-  {
-     $options = null;
+        if (null == $draftResponse) {
+            $this->addFlash('error', 'No elements in database, please create an element for email testing');
 
-     if ($mailType == 'newsletter')
-     {
-        $element = $this->dm->getRepository('App\Document\User')->findOneByEnabled(true);
-        $element->setLocation('bordeaux');
-        $element->setGeo(new Coordinates(44.876,-0.512));
-        $qb = $this->dm->createQueryBuilder('App\Document\Element');
-        $qb->field('status')->gte(ElementStatus::AdminRefused);
-        $qb->field('moderationState')->notIn(array(ModerationState::GeolocError, ModerationState::NoOptionProvided));
-        $options = $qb->limit(30)->getQuery()->execute();
-     }
-     else
-     {
-      $element = $this->dm->getRepository('App\Document\Element')->findVisibles()->getSingleResult();
-     }
+            return $this->redirectToRoute('admin_app_configuration_list');
+        }
 
-     if (!$element) return null;
+        if ($draftResponse['success']) {
+            $result = $this->mailService->sendMail($mail, $draftResponse['subject'], $draftResponse['content']);
+            if ($result['success']) {
+                $this->addFlash('success', 'Le mail a bien été envoyé à '.$mail.'</br>Si vous ne le voyez pas vérifiez dans vos SPAMs');
+            } else {
+                $this->addFlash('error', $result['message']);
+            }
+        } else {
+            $this->addFlash('error', 'Erreur : '.$draftResponse['message']);
+        }
 
-     $draftResponse = $this->mailService->draftEmail($mailType, $element, "Un customMessage de test", $options);
-     return $draftResponse;
-  }
+        return $this->redirectToRoute('gogo_mail_draft_automated', ['mailType' => $mailType]);
+    }
+
+    private function draftTest($mailType)
+    {
+        $options = null;
+
+        if ('newsletter' == $mailType) {
+            $element = $this->dm->getRepository('App\Document\User')->findOneByEnabled(true);
+            $element->setLocation('bordeaux');
+            $element->setGeo(new Coordinates(44.876, -0.512));
+            $qb = $this->dm->createQueryBuilder('App\Document\Element');
+            $qb->field('status')->gte(ElementStatus::AdminRefused);
+            $qb->field('moderationState')->notIn([ModerationState::GeolocError, ModerationState::NoOptionProvided]);
+            $options = $qb->limit(30)->getQuery()->execute();
+        } else {
+            $element = $this->dm->getRepository('App\Document\Element')->findVisibles()->getSingleResult();
+        }
+
+        if (!$element) {
+            return null;
+        }
+
+        $draftResponse = $this->mailService->draftEmail($mailType, $element, 'Un customMessage de test', $options);
+
+        return $draftResponse;
+    }
 }

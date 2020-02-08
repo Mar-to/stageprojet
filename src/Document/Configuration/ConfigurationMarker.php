@@ -14,7 +14,7 @@ class ConfigurationMarker
     public $popupAlwaysVisible = false;
 
     /** @MongoDB\Field(type="string") */
-    public $popupTemplate = "{{ name }}";
+    public $popupTemplate = '{{ name }}';
 
     /** @MongoDB\Field(type="bool") */
     public $popupTemplateUseMarkDown = false;
@@ -29,34 +29,39 @@ class ConfigurationMarker
     public function updateFieldsUsedByTemplate()
     {
         $matches = [];
-        preg_match_all('/({{\s*[\w_|]*\s*}})/',$this->popupTemplate, $matches);
-        $newFields = array_map(function($match) {
+        preg_match_all('/({{\s*[\w_|]*\s*}})/', $this->popupTemplate, $matches);
+        $newFields = array_map(function ($match) {
             $fieldName = explode('|', preg_replace('/[{}\s]/', '', $match))[0];
-            if ($fieldName == "image") $fieldName = "images";
+            if ('image' == $fieldName) {
+                $fieldName = 'images';
+            }
+
             return $fieldName;
         }, $matches[0]);
         $oldFields = $this->fieldsUsedByTemplate;
 
         // if new fields different from old fields (order si not important)
-        if (count(array_diff(array_merge($newFields, $oldFields), array_intersect($newFields, $oldFields))) != 0) {
+        if (0 != count(array_diff(array_merge($newFields, $oldFields), array_intersect($newFields, $oldFields)))) {
             $this->setFieldsUsedByTemplate($newFields);
         }
     }
 
     /**
-     * Set displayPopup
+     * Set displayPopup.
      *
      * @param bool $displayPopup
+     *
      * @return $this
      */
     public function setDisplayPopup($displayPopup)
     {
         $this->displayPopup = $displayPopup;
+
         return $this;
     }
 
     /**
-     * Get displayPopup
+     * Get displayPopup.
      *
      * @return bool $displayPopup
      */
@@ -66,19 +71,21 @@ class ConfigurationMarker
     }
 
     /**
-     * Set popupAlwaysVisible
+     * Set popupAlwaysVisible.
      *
      * @param bool $popupAlwaysVisible
+     *
      * @return $this
      */
     public function setPopupAlwaysVisible($popupAlwaysVisible)
     {
         $this->popupAlwaysVisible = $popupAlwaysVisible;
+
         return $this;
     }
 
     /**
-     * Get popupAlwaysVisible
+     * Get popupAlwaysVisible.
      *
      * @return bool $popupAlwaysVisible
      */
@@ -88,20 +95,22 @@ class ConfigurationMarker
     }
 
     /**
-     * Set popupTemplate
+     * Set popupTemplate.
      *
      * @param string $popupTemplate
+     *
      * @return $this
      */
     public function setPopupTemplate($popupTemplate)
     {
         $this->popupTemplate = $popupTemplate;
         $this->updateFieldsUsedByTemplate();
+
         return $this;
     }
 
     /**
-     * Get popupTemplate
+     * Get popupTemplate.
      *
      * @return string $popupTemplate
      */
@@ -111,19 +120,21 @@ class ConfigurationMarker
     }
 
     /**
-     * Set popupTemplateUseMarkDown
+     * Set popupTemplateUseMarkDown.
      *
      * @param bool $popupTemplateUseMarkDown
+     *
      * @return $this
      */
     public function setPopupTemplateUseMarkDown($popupTemplateUseMarkDown)
     {
         $this->popupTemplateUseMarkDown = $popupTemplateUseMarkDown;
+
         return $this;
     }
 
     /**
-     * Get popupTemplateUseMarkDown
+     * Get popupTemplateUseMarkDown.
      *
      * @return bool $popupTemplateUseMarkDown
      */
@@ -133,19 +144,21 @@ class ConfigurationMarker
     }
 
     /**
-     * Set fieldsUsedByTemplate
+     * Set fieldsUsedByTemplate.
      *
      * @param hash $fieldsUsedByTemplate
+     *
      * @return $this
      */
     public function setFieldsUsedByTemplate($fieldsUsedByTemplate)
     {
         $this->fieldsUsedByTemplate = $fieldsUsedByTemplate;
+
         return $this;
     }
 
     /**
-     * Get fieldsUsedByTemplate
+     * Get fieldsUsedByTemplate.
      *
      * @return hash $fieldsUsedByTemplate
      */
@@ -155,19 +168,21 @@ class ConfigurationMarker
     }
 
     /**
-     * Set useClusters
+     * Set useClusters.
      *
      * @param bool $useClusters
+     *
      * @return $this
      */
     public function setUseClusters($useClusters)
     {
         $this->useClusters = $useClusters;
+
         return $this;
     }
 
     /**
-     * Get useClusters
+     * Get useClusters.
      *
      * @return bool $useClusters
      */

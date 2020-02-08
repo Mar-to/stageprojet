@@ -4,40 +4,34 @@ namespace App\Services;
 
 use App\Document\Configuration;
 use App\Document\ConfImage;
-use App\Document\User;
-use App\Document\Webhook;
-use App\Document\WebhookAction;
+use App\Document\InteractionType;
+use App\Document\UserInteractionContribution;
 use App\Document\WebhookFormat;
 use App\Document\WebhookPost;
-use App\Document\Element;
-use App\Document\InteractionType;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Response;
 use http\Exception\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Security\Core\Security;
-use App\Document\UserInteractionContribution;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class WebhookService
 {
-	protected $dm;
+    protected $dm;
 
-	protected $router;
+    protected $router;
 
     public function __construct(DocumentManager $dm, RouterInterface $router,
                                 TokenStorageInterface $securityContext,
                                 $baseUrl, $basePath)
     {
-    	 $this->dm = $dm;
-    	 $this->router = $router;
-         $this->securityContext = $securityContext;
-         $this->baseUrl = 'http://' . $baseUrl . $basePath;
-         $this->config = $this->dm->getRepository(Configuration::class)->findConfiguration();
+        $this->dm = $dm;
+        $this->router = $router;
+        $this->securityContext = $securityContext;
+        $this->baseUrl = 'http://'.$baseUrl.$basePath;
+        $this->config = $this->dm->getRepository(Configuration::class)->findConfiguration();
     }
 
     /**
@@ -51,20 +45,19 @@ class WebhookService
         ->limit($limit)
         ->getQuery()->execute();
 
-        if (!$contributions || $contributions->count() == 0) return 0;
+        if (!$contributions || 0 == $contributions->count()) {
+            return 0;
+        }
 
         $client = new Client();
         $contributionsToProceed = [];
         $postsToProceed = [];
 
         // PREPARE EACH POST (calculate data, url...)
-        foreach ($contributions as $contribution)
-        {
+        foreach ($contributions as $contribution) {
             $data = $this->calculateData($contribution);
-            foreach($contribution->getWebhookPosts() as $webhookPost)
-            {
-                if (!$webhookPost->getStatus())
-                {
+            foreach ($contribution->getWebhookPosts() as $webhookPost) {
+                if (!$webhookPost->getStatus()) {
                     $webhook = $webhookPost->getWebhook();
                     $webhookPost->setUrl($webhook->getUrl());
                     $jsonData = json_encode($this->formatData($webhook->getFormat(), $data));
@@ -76,8 +69,10 @@ class WebhookService
         }
 
         // CREATE POST REQUESTS
-        $requests = function() use($client, $postsToProceed) {
-            foreach($postsToProceed as $post) yield new \GuzzleHttp\Psr7\Request('POST', $post->getUrl() , [], $post->getData() );
+        $requests = function () use ($client, $postsToProceed) {
+            foreach ($postsToProceed as $post) {
+                yield new \GuzzleHttp\Psr7\Request('POST', $post->getUrl(), [], $post->getData());
+            }
         };
 
         // SEND REQUEST CONCURRENTLY AND HANDLE RESULTS
@@ -117,37 +112,36 @@ class WebhookService
     private function calculateData($contribution)
     {
         // STANDRD CONTIRBUTION
-        if ($contribution->getElement())
-        {
+        if ($contribution->getElement()) {
             $element = $contribution->getElement();
             $this->dm->refresh($element);
             $element->setPreventJsonUpdate(true);
-            $link = str_replace('%23', '#', $this->router->generate('gogo_directory_showElement', array('id'=>$element->getId()), true));
+            $link = str_replace('%23', '#', $this->router->generate('gogo_directory_showElement', ['id' => $element->getId()], true));
             $data = json_decode($element->getBaseJson(), true);
         }
         // BATCH CONTRIBUTION
-        else
-        {
-            $link = "";
+        else {
+            $link = '';
             $data = ['ids' => $contribution->getElementIds()];
         }
 
         $mappingType = [InteractionType::Deleted => 'delete', InteractionType::Add => 'add',     InteractionType::Edit => 'edit',
-                        InteractionType::Import => 'add',     InteractionType::Restored => 'add'];
+                        InteractionType::Import => 'add',     InteractionType::Restored => 'add', ];
         $result = [
             'action' => $mappingType[$contribution->getType()],
             'user' => $contribution->getUserDisplayName(),
             'link' => $link,
-            'data' => $data
+            'data' => $data,
         ];
         $result['text'] = $contribution->getElement() ? $this->getNotificationText($result) : $this->getBatchNotificationText($result);
+
         return $result;
     }
 
     private function getNotificationText($result)
     {
         $element = $this->config->getElementDisplayName();
-        switch($result['action']) {
+        switch ($result['action']) {
             case 'add':
                 return "**AJOUT** {$element} **{$result['data']['name']}** ajouté par {$result['user']}\n[Lien vers la fiche]({$result['link']})";
             case 'edit':
@@ -159,8 +153,8 @@ class WebhookService
         }
     }
 
-    protected $transTitle = [ 'add' => 'AJOUT', 'edit' => 'MODIFICATION', 'delete' => 'SUPPRESSION'];
-    protected $transText = [ 'add' => 'ajoutés', 'edit' => 'mis à jour', 'delete' => 'supprimés'];
+    protected $transTitle = ['add' => 'AJOUT', 'edit' => 'MODIFICATION', 'delete' => 'SUPPRESSION'];
+    protected $transText = ['add' => 'ajoutés', 'edit' => 'mis à jour', 'delete' => 'supprimés'];
 
     private function getBatchNotificationText($result)
     {
@@ -168,6 +162,7 @@ class WebhookService
         $title = $this->transTitle[$result['action']];
         $text = $this->transText[$result['action']];
         $count = count($result['data']['ids']);
+
         return "**{$title}** {$count} {$elements} {$text} par {$result['user']}";
     }
 
@@ -178,24 +173,24 @@ class WebhookService
 
         return $img
             ? $img->getImageUrl()
-            : str_replace('index.php/', '', $this->baseUrl . '/assets/img/default-icon.png');
+            : str_replace('index.php/', '', $this->baseUrl.'/assets/img/default-icon.png');
     }
 
     private function formatData($format, $data)
     {
-        switch($format) {
+        switch ($format) {
             case WebhookFormat::Raw:
                 return $data;
 
             case WebhookFormat::Mattermost:
                 return [
-                    "username" => $this->config->getAppName(),
-                    "icon_url" => $this->getBotIcon(),
-                    "text" => $data['text']
+                    'username' => $this->config->getAppName(),
+                    'icon_url' => $this->getBotIcon(),
+                    'text' => $data['text'],
                 ];
 
             case WebhookFormat::Slack:
-                return ["text" => $data['text']];
+                return ['text' => $data['text']];
 
             default:
                 throw new InvalidArgumentException(sprintf('The webhook format "%s" is invalid.', $format));

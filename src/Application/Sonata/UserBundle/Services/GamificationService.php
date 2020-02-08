@@ -9,39 +9,39 @@
 
 namespace App\Application\Sonata\UserBundle\Services;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use App\Document\UserInteractionReport;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Document\InteractionType;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
-class GamificationService {
+class GamificationService
+{
+    protected $interactionRepo;
 
-   protected $interactionRepo;
+    public function __construct(DocumentManager $dm)
+    {
+        $this->contribsRepo = $dm->getRepository('App\Document\UserInteractionContribution');
+        $this->votesRepo = $dm->getRepository('App\Document\UserInteractionVote');
+        $this->reportsRepo = $dm->getRepository('App\Document\UserInteractionReport');
+    }
 
-   public function __construct(DocumentManager $dm)
-   {
-      $this->contribsRepo = $dm->getRepository('App\Document\UserInteractionContribution');
-      $this->votesRepo = $dm->getRepository('App\Document\UserInteractionVote');
-      $this->reportsRepo = $dm->getRepository('App\Document\UserInteractionReport');
-   }
+    public function updateGamification($user)
+    {
+        if (!$user->getEmail()) {
+            return;
+        }
 
-   public function updateGamification($user)
-   {
-      if (!$user->getEmail()) return;
+        $contribs = $this->contribsRepo->findByUserEmail($user->getEmail());
 
-      $contribs = $this->contribsRepo->findByUserEmail($user->getEmail());
+        $contribs = array_filter($contribs, function ($interaction) {
+            return in_array($interaction->getType(), [InteractionType::Add, InteractionType::Edit]);
+        });
 
-      $contribs = array_filter($contribs, function($interaction) {
-         return in_array($interaction->getType(), [InteractionType::Add, InteractionType::Edit]);
-      });
+        $votes = $this->votesRepo->findByUserEmail($user->getEmail());
+        $reports = $this->reportsRepo->findByUserEmail($user->getEmail());
 
-      $votes = $this->votesRepo->findByUserEmail($user->getEmail());
-      $reports = $this->reportsRepo->findByUserEmail($user->getEmail());
-
-      $result = count($contribs) * 3 + count($reports) + count($votes);
-      $user->setGamification($result);
-      $user->setContributionsCount(count($contribs));
-      $user->setVotesCount(count($votes));
-      $user->setReportsCount(count($reports));
-   }
+        $result = count($contribs) * 3 + count($reports) + count($votes);
+        $user->setGamification($result);
+        $user->setContributionsCount(count($contribs));
+        $user->setVotesCount(count($votes));
+        $user->setReportsCount(count($reports));
+    }
 }

@@ -29,19 +29,21 @@ class ConfigurationMenu
     public $displayNumberOfElementRoundResults = false;
 
     /**
-     * Set width
+     * Set width.
      *
      * @param bool $width
+     *
      * @return $this
      */
     public function setWidth($width)
     {
         $this->width = $width;
+
         return $this;
     }
 
     /**
-     * Get width
+     * Get width.
      *
      * @return bool $width
      */
@@ -51,19 +53,21 @@ class ConfigurationMenu
     }
 
     /**
-     * Set smallWidthStyle
+     * Set smallWidthStyle.
      *
      * @param bool $smallWidthStyle
+     *
      * @return $this
      */
     public function setSmallWidthStyle($smallWidthStyle)
     {
         $this->smallWidthStyle = $smallWidthStyle;
+
         return $this;
     }
 
     /**
-     * Get smallWidthStyle
+     * Get smallWidthStyle.
      *
      * @return bool $smallWidthStyle
      */
@@ -73,19 +77,21 @@ class ConfigurationMenu
     }
 
     /**
-     * Set showOnePanePerMainOption
+     * Set showOnePanePerMainOption.
      *
      * @param bool $showOnePanePerMainOption
+     *
      * @return $this
      */
     public function setShowOnePanePerMainOption($showOnePanePerMainOption)
     {
         $this->showOnePanePerMainOption = $showOnePanePerMainOption;
+
         return $this;
     }
 
     /**
-     * Get showOnePanePerMainOption
+     * Get showOnePanePerMainOption.
      *
      * @return bool $showOnePanePerMainOption
      */
@@ -95,19 +101,21 @@ class ConfigurationMenu
     }
 
     /**
-     * Set showCheckboxForMainFilterPane
+     * Set showCheckboxForMainFilterPane.
      *
      * @param bool $showCheckboxForMainFilterPane
+     *
      * @return $this
      */
     public function setShowCheckboxForMainFilterPane($showCheckboxForMainFilterPane)
     {
         $this->showCheckboxForMainFilterPane = $showCheckboxForMainFilterPane;
+
         return $this;
     }
 
     /**
-     * Get showCheckboxForMainFilterPane
+     * Get showCheckboxForMainFilterPane.
      *
      * @return bool $showCheckboxForMainFilterPane
      */
@@ -117,19 +125,21 @@ class ConfigurationMenu
     }
 
     /**
-     * Set showCheckboxForSubFilterPane
+     * Set showCheckboxForSubFilterPane.
      *
      * @param bool $showCheckboxForSubFilterPane
+     *
      * @return $this
      */
     public function setShowCheckboxForSubFilterPane($showCheckboxForSubFilterPane)
     {
         $this->showCheckboxForSubFilterPane = $showCheckboxForSubFilterPane;
+
         return $this;
     }
 
     /**
-     * Get showCheckboxForSubFilterPane
+     * Get showCheckboxForSubFilterPane.
      *
      * @return bool $showCheckboxForSubFilterPane
      */
@@ -139,19 +149,21 @@ class ConfigurationMenu
     }
 
     /**
-     * Set displayNumberOfElementForEachCategory
+     * Set displayNumberOfElementForEachCategory.
      *
      * @param bool $displayNumberOfElementForEachCategory
+     *
      * @return $this
      */
     public function setDisplayNumberOfElementForEachCategory($displayNumberOfElementForEachCategory)
     {
         $this->displayNumberOfElementForEachCategory = $displayNumberOfElementForEachCategory;
+
         return $this;
     }
 
     /**
-     * Get displayNumberOfElementForEachCategory
+     * Get displayNumberOfElementForEachCategory.
      *
      * @return bool $displayNumberOfElementForEachCategory
      */
@@ -161,19 +173,21 @@ class ConfigurationMenu
     }
 
     /**
-     * Set displayNumberOfElementRoundResults
+     * Set displayNumberOfElementRoundResults.
      *
      * @param bool $displayNumberOfElementRoundResults
+     *
      * @return $this
      */
     public function setDisplayNumberOfElementRoundResults($displayNumberOfElementRoundResults)
     {
         $this->displayNumberOfElementRoundResults = $displayNumberOfElementRoundResults;
+
         return $this;
     }
 
     /**
-     * Get displayNumberOfElementRoundResults
+     * Get displayNumberOfElementRoundResults.
      *
      * @return bool $displayNumberOfElementRoundResults
      */

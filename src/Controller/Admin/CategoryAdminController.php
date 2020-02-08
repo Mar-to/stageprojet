@@ -2,10 +2,8 @@
 
 namespace App\Controller\Admin;
 
-use Sonata\AdminBundle\Controller\CRUDController as Controller;
-use Symfony\Component\HttpFoundation\Request;
-use App\Document\Category;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Sonata\AdminBundle\Controller\CRUDController as Controller;
 
 class CategoryAdminController extends Controller
 {
@@ -25,8 +23,8 @@ class CategoryAdminController extends Controller
         $config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
         $rootCategories = $this->dm->getRepository('App\Document\Category')->findRootCategories();
 
-        return $this->render('admin/list/tree_category.html.twig', array(
-            'categories' => $rootCategories, 'config' => $config
-        ), null);
+        return $this->render('admin/list/tree_category.html.twig', [
+            'categories' => $rootCategories, 'config' => $config,
+        ], null);
     }
 }

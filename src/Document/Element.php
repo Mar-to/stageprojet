@@ -13,11 +13,8 @@
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use JMS\Serializer\Annotation\Expose;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
-use App\Document\EmbeddedImage;
-use App\Document\AbstractFile;
 
 abstract class ElementStatus
 {
@@ -50,25 +47,25 @@ abstract class ModerationState
 }
 
 /**
-* @MongoDB\EmbeddedDocument
-* @Vich\Uploadable
-*/
+ * @MongoDB\EmbeddedDocument
+ * @Vich\Uploadable
+ */
 class ElementImage extends EmbeddedImage
 {
-    protected $vichUploadFileKey = "element_image";
+    protected $vichUploadFileKey = 'element_image';
 }
 
 /**
-* @MongoDB\EmbeddedDocument
-* @Vich\Uploadable
-*/
+ * @MongoDB\EmbeddedDocument
+ * @Vich\Uploadable
+ */
 class ElementFile extends AbstractFile
 {
-    protected $vichUploadFileKey = "element_file";
+    protected $vichUploadFileKey = 'element_file';
 }
 
 /**
- * Element
+ * Element.
  *
  * @MongoDB\Document(repositoryClass="App\Repository\ElementRepository")
  * @Vich\Uploadable
@@ -87,13 +84,15 @@ class Element
     public $id;
 
     /**
-     * See ElementStatus
+     * See ElementStatus.
+     *
      * @MongoDB\Field(type="int") @MongoDB\Index
      */
     private $status;
 
     /**
-     * If element need moderation we write here the type of modification needed
+     * If element need moderation we write here the type of modification needed.
+     *
      * @MongoDB\Field(type="int")
      */
     private $moderationState = 0;
@@ -127,7 +126,7 @@ class Element
     private $modifiedElement;
 
     /**
-     * Labels/Tags added to an element by specific organisations/people
+     * Labels/Tags added to an element by specific organisations/people.
      *
      * @MongoDB\ReferenceMany(targetDocument="App\Document\Stamp")
      */
@@ -140,8 +139,8 @@ class Element
     public $name;
 
     /**
-    * @MongoDB\EmbedOne(targetDocument="App\Document\Coordinates")
-    */
+     * @MongoDB\EmbedOne(targetDocument="App\Document\Coordinates")
+     */
     public $geo;
 
     /**
@@ -184,14 +183,14 @@ class Element
     private $openHours;
 
     /**
-     * Images, photos, logos, linked to an element
+     * Images, photos, logos, linked to an element.
      *
      * @MongoDB\EmbedMany(targetDocument="App\Document\ElementImage")
      */
     private $images;
 
     /**
-     * Files linked to an element
+     * Files linked to an element.
      *
      * @MongoDB\EmbedMany(targetDocument="App\Document\ElementFile")
      */
@@ -226,7 +225,7 @@ class Element
     public $sourceKey = '';
 
     /**
-     * The source from where the element has been imported or created
+     * The source from where the element has been imported or created.
      *
      * @MongoDB\ReferenceOne(targetDocument="App\Document\Import")
      */
@@ -242,22 +241,23 @@ class Element
     private $oldId;
 
     /**
-     * potential duplicates stored by detect duplicate bulk action
+     * potential duplicates stored by detect duplicate bulk action.
      *
      * @MongoDB\ReferenceMany(targetDocument="App\Document\Element")
      */
     private $potentialDuplicates;
 
     /**
-    * To simlifu duplicates process, we store the element which have been treated in the duplicates detection
-    * Because if we check duplicates for element A, and element B and C are detected as potential duplicates, then
-    * we do not detect duplicates for B and C
-    * @MongoDB\Field(type="bool", nullable=true)
-    */
+     * To simlifu duplicates process, we store the element which have been treated in the duplicates detection
+     * Because if we check duplicates for element A, and element B and C are detected as potential duplicates, then
+     * we do not detect duplicates for B and C.
+     *
+     * @MongoDB\Field(type="bool", nullable=true)
+     */
     private $isDuplicateNode = false;
 
     /**
-     * Mark some element as Non duplicates, so if we run again the duplicate detection they will not be detected
+     * Mark some element as Non duplicates, so if we run again the duplicate detection they will not be detected.
      *
      * @MongoDB\ReferenceMany(targetDocument="App\Document\Element")
      */
@@ -303,7 +303,7 @@ class Element
     private $adminJson;
 
     /**
-     * @var date $createdAt
+     * @var date
      *
      * @MongoDB\Field(type="date") @MongoDB\Index
      * @Gedmo\Timestampable(on="create")
@@ -311,31 +311,33 @@ class Element
     private $createdAt;
 
     /**
-     * @var date $updatedAt
+     * @var date
      *
      * @MongoDB\Field(type="date") @MongoDB\Index
      */
     private $updatedAt;
 
     /**
-    * @MongoDB\Field(type="string")
-    */
+     * @MongoDB\Field(type="string")
+     */
     private $randomHash;
 
     /**
-    * @MongoDB\Field(type="string")
-    */
+     * @MongoDB\Field(type="string")
+     */
     private $userOwnerEmail;
 
     /**
-    * Shorcut to know if this element is managed by a dynamic source
-    * @MongoDB\Field(type="bool")
-    */
+     * Shorcut to know if this element is managed by a dynamic source.
+     *
+     * @MongoDB\Field(type="bool")
+     */
     private $isExternal;
 
     /**
      * When actions are made by many person (like moderation, duplicates check...) we lock the elements currently proceed by someone
-     * so noone else make action on the same element
+     * so noone else make action on the same element.
+     *
      * @MongoDB\Field(type="int")
      */
     private $lockUntil = 0;
@@ -343,11 +345,13 @@ class Element
     private $preventJsonUpdate = false;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
-        if (!$this->getRandomHash()) $this->updateRandomHash();
+        if (!$this->getRandomHash()) {
+            $this->updateRandomHash();
+        }
         $this->potentialDuplicates = new \Doctrine\Common\Collections\ArrayCollection();
         $this->nonDuplicates = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -355,31 +359,40 @@ class Element
     // automatically resolve moderation error
     public function checkForModerationStillNeeded()
     {
-        if ($this->getModerationState() == ModerationState::NotNeeded) return;
+        if (ModerationState::NotNeeded == $this->getModerationState()) {
+            return;
+        }
 
         $needed = true;
 
         switch ($this->getModerationState()) {
             case ModerationState::VotesConflicts:
             case ModerationState::PendingForTooLong:
-                if (!$this->isPending()) $needed = false;
+                if (!$this->isPending()) {
+                    $needed = false;
+                }
                 break;
             case ModerationState::NoOptionProvided:
-                if (!$this->isDynamicImported() && $this->countOptionsValues() > 0)
+                if (!$this->isDynamicImported() && $this->countOptionsValues() > 0) {
                     $needed = false;
+                }
                 break;
             case ModerationState::GeolocError:
-                if ($this->getGeo()->getLatitude() != 0 && $this->getGeo()->getLongitude() != 0)
+                if (0 != $this->getGeo()->getLatitude() && 0 != $this->getGeo()->getLongitude()) {
                     $needed = false;
+                }
                 break;
         }
 
-        if (!$needed) $this->setModerationState(ModerationState::NotNeeded);
+        if (!$needed) {
+            $this->setModerationState(ModerationState::NotNeeded);
+        }
     }
 
     public function getShowUrlFromController($router)
     {
-        $url = $router->generate('gogo_directory_showElement', array('id'=>$this->getId()));
+        $url = $router->generate('gogo_directory_showElement', ['id' => $this->getId()]);
+
         return str_replace('%23', '#', $url);
     }
 
@@ -420,57 +433,69 @@ class Element
 
     public function getUnresolvedReports()
     {
-       if ($this->getReports() == null) return;
-       $reports = $this->getArrayFromCollection($this->getReports());
-       $result = array_filter($reports, function($e) { return !$e->getIsResolved(); });
-       return $result;
+        if (null == $this->getReports()) {
+            return;
+        }
+        $reports = $this->getArrayFromCollection($this->getReports());
+        $result = array_filter($reports, function ($e) { return !$e->getIsResolved(); });
+
+        return $result;
     }
 
     public function getContributionsAndResolvedReports()
     {
-        if ($this->getReports() == null || $this->getContributions() == null) return;
+        if (null == $this->getReports() || null == $this->getContributions()) {
+            return;
+        }
         $reports = $this->getArrayFromCollection($this->getReports());
         $contributions = $this->getArrayFromCollection($this->getContributions());
-        $resolvedReports = array_filter($reports, function($e) { return $e->getIsResolved(); });
-        $contributions = array_filter($contributions, function($e) { return $e->getStatus() ? $e->getStatus() > ElementStatus::ModifiedPendingVersion : false; });
+        $resolvedReports = array_filter($reports, function ($e) { return $e->getIsResolved(); });
+        $contributions = array_filter($contributions, function ($e) { return $e->getStatus() ? $e->getStatus() > ElementStatus::ModifiedPendingVersion : false; });
         $result = array_merge($resolvedReports, $contributions);
-        usort( $result, function ($a, $b) { return $b->getTimestamp() - $a->getTimestamp(); });
+        usort($result, function ($a, $b) { return $b->getTimestamp() - $a->getTimestamp(); });
+
         return $result;
     }
 
     public function hasValidContributionMadeBy($userEmail)
     {
         $contribs = $this->getArrayFromCollection($this->getContributions());
-        $userValidContributionsOnElement = array_filter($contribs, function($contribution) use ($userEmail) {
+        $userValidContributionsOnElement = array_filter($contribs, function ($contribution) use ($userEmail) {
             return $contribution->countAsValidContributionFrom($userEmail);
         });
+
         return count($userValidContributionsOnElement) > 0;
     }
 
     public function countOptionsValues()
     {
-        if (!$this->getOptionValues()) return 0;
-        if (is_array($this->getOptionValues())) return count($this->getOptionValues());
+        if (!$this->getOptionValues()) {
+            return 0;
+        }
+        if (is_array($this->getOptionValues())) {
+            return count($this->getOptionValues());
+        }
+
         return $this->getOptionValues()->count();
     }
 
     public function getSortedOptionsValues()
     {
         $sortedOptionsValues = [];
-        if ($this->optionValues)
-        {
+        if ($this->optionValues) {
             $sortedOptionsValues = is_array($this->optionValues) ? $this->optionValues : $this->optionValues->toArray();
-            usort( $sortedOptionsValues , function ($a, $b) { return $a->getIndex() - $b->getIndex(); });
+            usort($sortedOptionsValues, function ($a, $b) { return $a->getIndex() - $b->getIndex(); });
         }
+
         return $sortedOptionsValues;
     }
 
     public function getNonDuplicatesIds()
     {
         $result = [];
-        if ($this->nonDuplicates)
+        if ($this->nonDuplicates) {
             try {
-                 $result = array_map(function($nonDuplicate) {
+                $result = array_map(function ($nonDuplicate) {
                     return $nonDuplicate->getId();
                 }, $this->nonDuplicates->toArray());
             } catch (\Exception $e) {
@@ -478,41 +503,62 @@ class Element
                 $result = [];
                 $this->nonDuplicates = [];
             }
-        if ($this->getId()) $result[] = $this->getId();
+        }
+        if ($this->getId()) {
+            $result[] = $this->getId();
+        }
+
         return $result;
     }
 
-    public function isPotentialDuplicate() { return $this->moderationState == ModerationState::PotentialDuplicate; }
+    public function isPotentialDuplicate()
+    {
+        return ModerationState::PotentialDuplicate == $this->moderationState;
+    }
 
     public function getSortedDuplicates($duplicates = null)
     {
-        if (!$duplicates) $duplicates = $this->getPotentialDuplicates() ? $this->getPotentialDuplicates()->toArray() : null;
-        if (!$duplicates) return [];
+        if (!$duplicates) {
+            $duplicates = $this->getPotentialDuplicates() ? $this->getPotentialDuplicates()->toArray() : null;
+        }
+        if (!$duplicates) {
+            return [];
+        }
         $duplicates[] = $this;
-        usort($duplicates, function ($a, $b)
-        {
+        usort($duplicates, function ($a, $b) {
             // Keep in priority the one from our DB instead of the on dynamically imported
             $aIsDynamicImported = $a->isDynamicImported();
             $bIsDynamicImported = $b->isDynamicImported();
-            if ($aIsDynamicImported != $bIsDynamicImported) return $aIsDynamicImported - $bIsDynamicImported;
+            if ($aIsDynamicImported != $bIsDynamicImported) {
+                return $aIsDynamicImported - $bIsDynamicImported;
+            }
             // Or get the more recent
             $diffDays = (float) date_diff($a->getUpdatedAt(), $b->getUpdatedAt())->format('%d');
-            if ($diffDays != 0) return $diffDays;
+            if (0 != $diffDays) {
+                return $diffDays;
+            }
             // Or the one with more categories
             return $b->countOptionsValues() - $a->countOptionsValues();
         });
+
         return $duplicates;
     }
 
-    public function isDynamicImported() { return $this->isExternal; }
+    public function isDynamicImported()
+    {
+        return $this->isExternal;
+    }
 
     public function getJson($includePrivateJson, $includeAdminJson)
     {
         $result = $this->baseJson;
-        if ($includePrivateJson && $this->privateJson && $this->privateJson != '{}')
-           $result = substr($result , 0, -1) . ',' . substr($this->privateJson,1);
-        if ($includeAdminJson && $this->adminJson && $this->adminJson != '{}')
-           $result = substr($result , 0, -1) . ',' . substr($this->adminJson,1);
+        if ($includePrivateJson && $this->privateJson && '{}' != $this->privateJson) {
+            $result = substr($result, 0, -1).','.substr($this->privateJson, 1);
+        }
+        if ($includeAdminJson && $this->adminJson && '{}' != $this->adminJson) {
+            $result = substr($result, 0, -1).','.substr($this->adminJson, 1);
+        }
+
         return $result;
     }
 
@@ -523,12 +569,12 @@ class Element
 
     public function isPendingAdd()
     {
-        return $this->status == ElementStatus::PendingAdd;
+        return ElementStatus::PendingAdd == $this->status;
     }
 
     public function isPendingModification()
     {
-        return $this->status == ElementStatus::PendingModification;
+        return ElementStatus::PendingModification == $this->status;
     }
 
     public function isVisible()
@@ -543,22 +589,23 @@ class Element
 
     public function havePendingReports()
     {
-        return $this->moderationState == ModerationState::ReportsSubmitted;
+        return ModerationState::ReportsSubmitted == $this->moderationState;
     }
 
     public function getCurrContribution()
     {
         $contributions = $this->getContributions();
-        if (is_array($contributions))
-        {
+        if (is_array($contributions)) {
             if (count($contributions) > 0) {
                 $currContrib = array_slice($contributions, -1);
+
                 return array_pop($currContrib);
             }
+
             return null;
-        }
-        else
+        } else {
             return $contributions ? $contributions->last() : null;
+        }
     }
 
     public function getVotes()
@@ -568,8 +615,10 @@ class Element
 
     public function getVotesArray()
     {
-        if  (!$this->getCurrContribution() ||  is_array($this->getCurrContribution()->getVotes()))
+        if (!$this->getCurrContribution() || is_array($this->getCurrContribution()->getVotes())) {
             return [];
+        }
+
         return $this->getCurrContribution()->getVotes()->toArray();
     }
 
@@ -586,10 +635,12 @@ class Element
     public function getOptionIds()
     {
         $result = [];
-        if ($this->getOptionValues())
+        if ($this->getOptionValues()) {
             foreach ($this->getOptionValues() as $optionsValue) {
                 $result[] = (string) $optionsValue->getOptionId();
             }
+        }
+
         return $result;
     }
 
@@ -606,8 +657,7 @@ class Element
     public function setCustomData($data, $privateProps)
     {
         $privateData = [];
-        if ($data != null)
-        {
+        if (null != $data) {
             if (array_key_exists('email', $data)) {
                 $this->setEmail($data['email']);
             }
@@ -619,22 +669,32 @@ class Element
                 }
             }
         }
-        if ($this->getData() && $data) $data = array_merge($this->getData(), $data); // keeping also old data
+        if ($this->getData() && $data) {
+            $data = array_merge($this->getData(), $data);
+        } // keeping also old data
         $this->setData($data);
 
-        if ($this->getPrivateData() && $privateData) $privateData = array_merge($this->getPrivateData(), $privateData); // keeping also old data
+        if ($this->getPrivateData() && $privateData) {
+            $privateData = array_merge($this->getPrivateData(), $privateData);
+        } // keeping also old data
         $this->setPrivateData($privateData);
     }
 
     public function getProperty($key)
     {
-        if (property_exists($this,$key)) {
-            $method = 'get' . ucfirst($key);
-            if ($key == 'images') $method = 'getImagesUrls';
-            if ($key == 'files') $method = 'getFilesUrls';
+        if (property_exists($this, $key)) {
+            $method = 'get'.ucfirst($key);
+            if ('images' == $key) {
+                $method = 'getImagesUrls';
+            }
+            if ('files' == $key) {
+                $method = 'getFilesUrls';
+            }
+
             return $this->$method();
+        } else {
+            return $this->getCustomProperty($key);
         }
-        else return $this->getCustomProperty($key);
     }
 
     public function getCustomProperty($key)
@@ -643,24 +703,26 @@ class Element
     }
 
     /**
-     * Set status
+     * Set status.
      *
      * @param int $status
+     *
      * @return $this
      */
     public function setStatus($newStatus)
     {
         $this->status = $newStatus;
+
         return $this;
     }
 
     public function __toString()
     {
-        return $this->getName() ? $this->getName() : "";
+        return $this->getName() ? $this->getName() : '';
     }
 
     /**
-     * Get id
+     * Get id.
      *
      * @return custom_id $id
      */
@@ -670,30 +732,33 @@ class Element
     }
 
     /**
-     * Get id
+     * Get id.
      *
      * @return custom_id $id
      */
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
+     *
      * @return $this
      */
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string $name
      */
@@ -703,19 +768,21 @@ class Element
     }
 
     /**
-     * Set openHours
+     * Set openHours.
      *
      * @param object_id $openHours
+     *
      * @return $this
      */
     public function setOpenHours($openHours)
     {
         $this->openHours = $openHours;
+
         return $this;
     }
 
     /**
-     * Get openHours
+     * Get openHours.
      *
      * @return object_id $openHours
      */
@@ -725,7 +792,7 @@ class Element
     }
 
     /**
-     * Add optionValue
+     * Add optionValue.
      *
      * @param App\Document\OptionValue $optionValue
      */
@@ -735,7 +802,7 @@ class Element
     }
 
     /**
-     * Remove optionValue
+     * Remove optionValue.
      *
      * @param App\Document\OptionValue $optionValue
      */
@@ -745,7 +812,7 @@ class Element
     }
 
     /**
-     * Get optionValues
+     * Get optionValues.
      *
      * @return \Doctrine\Common\Collections\Collection $optionValues
      */
@@ -757,11 +824,12 @@ class Element
     public function setOptionValues($optionValues)
     {
         $this->optionValues = $optionValues;
+
         return $this;
     }
 
     /**
-     * Get status
+     * Get status.
      *
      * @return int $status
      */
@@ -771,19 +839,21 @@ class Element
     }
 
     /**
-     * Set compactJson
+     * Set compactJson.
      *
      * @param string $compactJson
+     *
      * @return $this
      */
     public function setCompactJson($compactJson)
     {
         $this->compactJson = $compactJson;
+
         return $this;
     }
 
     /**
-     * Get compactJson
+     * Get compactJson.
      *
      * @return string $compactJson
      */
@@ -793,19 +863,21 @@ class Element
     }
 
     /**
-     * Set baseJson
+     * Set baseJson.
      *
      * @param string $baseJson
+     *
      * @return $this
      */
     public function setBaseJson($baseJson)
     {
         $this->baseJson = $baseJson;
+
         return $this;
     }
 
     /**
-     * Get baseJson
+     * Get baseJson.
      *
      * @return string $baseJson
      */
@@ -815,7 +887,7 @@ class Element
     }
 
     /**
-     * Add report
+     * Add report.
      *
      * @param App\Document\Report $report
      */
@@ -827,7 +899,7 @@ class Element
     }
 
     /**
-     * Remove report
+     * Remove report.
      *
      * @param App\Document\Report $report
      */
@@ -837,7 +909,7 @@ class Element
     }
 
     /**
-     * Get reports
+     * Get reports.
      *
      * @return \Doctrine\Common\Collections\Collection $reports
      */
@@ -848,25 +920,31 @@ class Element
 
     private function getArrayFromCollection($collection)
     {
-        if ($collection == null) return [];
-        else if (is_array($collection)) return $collection;
-        else return $collection->toArray();
+        if (null == $collection) {
+            return [];
+        } elseif (is_array($collection)) {
+            return $collection;
+        } else {
+            return $collection->toArray();
+        }
     }
 
     /**
-     * Set created
+     * Set created.
      *
      * @param date $created
+     *
      * @return $this
      */
     public function setCreatedAt($created)
     {
         $this->createdAt = $createdAt;
+
         return $this;
     }
 
     /**
-     * Get created
+     * Get created.
      *
      * @return date $created
      */
@@ -876,19 +954,21 @@ class Element
     }
 
     /**
-     * Set updated
+     * Set updated.
      *
      * @param date $updated
+     *
      * @return $this
      */
     public function setUpdatedAt($updatedAt)
     {
         $this->updatedAt = $updatedAt;
+
         return $this;
     }
 
     /**
-     * Get updated
+     * Get updated.
      *
      * @return date $updated
      */
@@ -898,19 +978,21 @@ class Element
     }
 
     /**
-     * Set statusMessage
+     * Set statusMessage.
      *
      * @param string $statusMessage
+     *
      * @return $this
      */
     public function setModerationState($moderationState)
     {
         $this->moderationState = $moderationState;
+
         return $this;
     }
 
     /**
-     * Get statusMessage
+     * Get statusMessage.
      *
      * @return string $statusMessage
      */
@@ -920,19 +1002,21 @@ class Element
     }
 
     /**
-     * Set modifiedElement
+     * Set modifiedElement.
      *
      * @param App\Document\Element $modifiedElement
+     *
      * @return $this
      */
     public function setModifiedElement($modifiedElement)
     {
         $this->modifiedElement = $modifiedElement;
+
         return $this;
     }
 
     /**
-     * Get modifiedElement
+     * Get modifiedElement.
      *
      * @return App\Document\Element $modifiedElement
      */
@@ -942,19 +1026,21 @@ class Element
     }
 
     /**
-     * Set sourceKey
+     * Set sourceKey.
      *
      * @param string $sourceKey
+     *
      * @return $this
      */
     public function setSourceKey($sourceKey)
     {
         $this->sourceKey = $sourceKey;
+
         return $this;
     }
 
     /**
-     * Get sourceKey
+     * Get sourceKey.
      *
      * @return string $sourceKey
      */
@@ -964,7 +1050,7 @@ class Element
     }
 
     /**
-     * Add contribution
+     * Add contribution.
      *
      * @param App\Document\UserInteractionContribution $contribution
      */
@@ -975,7 +1061,7 @@ class Element
     }
 
     /**
-     * Remove contribution
+     * Remove contribution.
      *
      * @param App\Document\UserInteractionContribution $contribution
      */
@@ -985,7 +1071,7 @@ class Element
     }
 
     /**
-     * Get contributions
+     * Get contributions.
      *
      * @return \Doctrine\Common\Collections\Collection $contributions
      */
@@ -994,32 +1080,39 @@ class Element
         // Sometime the association between Element and Contribution is broken, and so
         // need to sensure the contribution exists
         // #UglyFix
-        if (!$this->contributions) return [];
+        if (!$this->contributions) {
+            return [];
+        }
         $contribs = [];
         foreach ($this->contributions as $contrib) {
             try {
-                if ($contrib->getCreatedAt() != null) array_push($contribs, $contrib);
+                if (null != $contrib->getCreatedAt()) {
+                    array_push($contribs, $contrib);
+                }
             } catch (\Exception $e) {
                 $this->removeContribution($contrib);
             }
         }
+
         return $contribs;
     }
 
     /**
-     * Set oldId
+     * Set oldId.
      *
      * @param string $oldId
+     *
      * @return $this
      */
     public function setOldId($oldId)
     {
         $this->oldId = $oldId;
+
         return $this;
     }
 
     /**
-     * Get oldId
+     * Get oldId.
      *
      * @return string $oldId
      */
@@ -1029,19 +1122,21 @@ class Element
     }
 
     /**
-     * Set geo
+     * Set geo.
      *
      * @param App\Document\Coordinates $geo
+     *
      * @return $this
      */
     public function setGeo(\App\Document\Coordinates $geo)
     {
         $this->geo = $geo;
+
         return $this;
     }
 
     /**
-     * Get geo
+     * Get geo.
      *
      * @return App\Document\Coordinates $geo
      */
@@ -1051,19 +1146,21 @@ class Element
     }
 
     /**
-     * Set address
+     * Set address.
      *
      * @param App\Document\PostalAddress $address
+     *
      * @return $this
      */
     public function setAddress(\App\Document\PostalAddress $address)
     {
         $this->address = $address;
+
         return $this;
     }
 
     /**
-     * Get address
+     * Get address.
      *
      * @return App\Document\PostalAddress $address
      */
@@ -1073,19 +1170,21 @@ class Element
     }
 
     /**
-     * Set adminJson
+     * Set adminJson.
      *
      * @param string $adminJson
+     *
      * @return $this
      */
     public function setAdminJson($adminJson)
     {
         $this->adminJson = $adminJson;
+
         return $this;
     }
 
     /**
-     * Get adminJson
+     * Get adminJson.
      *
      * @return string $adminJson
      */
@@ -1095,19 +1194,21 @@ class Element
     }
 
     /**
-     * Set optionsString
+     * Set optionsString.
      *
      * @param string $optionsString
+     *
      * @return $this
      */
     public function setOptionsString($optionsString)
     {
         $this->optionsString = $optionsString;
+
         return $this;
     }
 
     /**
-     * Get optionsString
+     * Get optionsString.
      *
      * @return string $optionsString
      */
@@ -1117,19 +1218,21 @@ class Element
     }
 
     /**
-     * Set randomHash
+     * Set randomHash.
      *
      * @param string $randomHash
+     *
      * @return $this
      */
     public function setRandomHash($randomHash)
     {
         $this->randomHash = $randomHash;
+
         return $this;
     }
 
     /**
-     * Get randomHash
+     * Get randomHash.
      *
      * @return string $randomHash
      */
@@ -1139,19 +1242,21 @@ class Element
     }
 
     /**
-     * Set userOwnerEmail
+     * Set userOwnerEmail.
      *
      * @param string $userOwnerEmail
+     *
      * @return $this
      */
     public function setUserOwnerEmail($userOwnerEmail)
     {
         $this->userOwnerEmail = $userOwnerEmail;
+
         return $this;
     }
 
     /**
-     * Get userOwnerEmail
+     * Get userOwnerEmail.
      *
      * @return string $userOwnerEmail
      */
@@ -1161,7 +1266,7 @@ class Element
     }
 
     /**
-     * Add stamp
+     * Add stamp.
      *
      * @param App\Document\Stamp $stamp
      */
@@ -1171,7 +1276,7 @@ class Element
     }
 
     /**
-     * Remove stamp
+     * Remove stamp.
      *
      * @param App\Document\Stamp $stamp
      */
@@ -1182,11 +1287,11 @@ class Element
 
     public function getStampIds()
     {
-        return array_map( function($el) { return $el->getId(); }, $this->getStamps()->toArray());
+        return array_map(function ($el) { return $el->getId(); }, $this->getStamps()->toArray());
     }
 
     /**
-     * Get stamps
+     * Get stamps.
      *
      * @return \Doctrine\Common\Collections\Collection $stamps
      */
@@ -1196,19 +1301,21 @@ class Element
     }
 
     /**
-     * Set privateJson
+     * Set privateJson.
      *
      * @param string $privateJson
+     *
      * @return $this
      */
     public function setPrivateJson($privateJson)
     {
         $this->privateJson = $privateJson;
+
         return $this;
     }
 
     /**
-     * Get privateJson
+     * Get privateJson.
      *
      * @return string $privateJson
      */
@@ -1218,7 +1325,7 @@ class Element
     }
 
     /**
-     * Add image
+     * Add image.
      *
      * @param App\Document\Image $image
      */
@@ -1227,17 +1334,18 @@ class Element
         $this->images[] = $image;
     }
 
-
     public function setImages($images)
     {
-        if (!is_array($images)) $images = $images->toArray();
-        $this->images = array_filter($images, function($el) {
-            return ($el->getExternalImageUrl() != '' || $el->getFileUrl() != '');
+        if (!is_array($images)) {
+            $images = $images->toArray();
+        }
+        $this->images = array_filter($images, function ($el) {
+            return '' != $el->getExternalImageUrl() || '' != $el->getFileUrl();
         });
     }
 
     /**
-     * Remove image
+     * Remove image.
      *
      * @param App\Document\Image $image
      */
@@ -1247,7 +1355,7 @@ class Element
     }
 
     /**
-     * Get images
+     * Get images.
      *
      * @return \Doctrine\Common\Collections\Collection $images
      */
@@ -1258,19 +1366,25 @@ class Element
 
     public function getImagesArray()
     {
-        if (!$this->images) return [];
+        if (!$this->images) {
+            return [];
+        }
+
         return is_array($this->images) ? $this->images : $this->images->toArray();
     }
 
     public function getImagesUrls()
     {
         $result = [];
-        foreach ($this->images as $image) $result[] = $image->getImageUrl();
+        foreach ($this->images as $image) {
+            $result[] = $image->getImageUrl();
+        }
+
         return $result;
     }
 
     /**
-     * Add potentialDuplicate
+     * Add potentialDuplicate.
      *
      * @param App\Document\Element $potentialDuplicate
      */
@@ -1280,7 +1394,7 @@ class Element
     }
 
     /**
-     * Remove potentialDuplicate
+     * Remove potentialDuplicate.
      *
      * @param App\Document\Element $potentialDuplicate
      */
@@ -1290,7 +1404,7 @@ class Element
     }
 
     /**
-     * Get potentialDuplicates
+     * Get potentialDuplicates.
      *
      * @return \Doctrine\Common\Collections\Collection $potentialDuplicates
      */
@@ -1302,11 +1416,12 @@ class Element
     public function clearPotentialDuplicates()
     {
         $this->potentialDuplicates = [];
+
         return $this;
     }
 
     /**
-     * Add nonDuplicate
+     * Add nonDuplicate.
      *
      * @param App\Document\Element $nonDuplicate
      */
@@ -1316,7 +1431,7 @@ class Element
     }
 
     /**
-     * Remove nonDuplicate
+     * Remove nonDuplicate.
      *
      * @param App\Document\Element $nonDuplicate
      */
@@ -1326,7 +1441,7 @@ class Element
     }
 
     /**
-     * Get nonDuplicates
+     * Get nonDuplicates.
      *
      * @return \Doctrine\Common\Collections\Collection $nonDuplicates
      */
@@ -1336,19 +1451,21 @@ class Element
     }
 
     /**
-     * Set isDuplicateNode
+     * Set isDuplicateNode.
      *
      * @param bool $isDuplicateNode
+     *
      * @return $this
      */
     public function setIsDuplicateNode($isDuplicateNode)
     {
         $this->isDuplicateNode = $isDuplicateNode;
+
         return $this;
     }
 
     /**
-     * Get isDuplicateNode
+     * Get isDuplicateNode.
      *
      * @return bool $isDuplicateNode
      */
@@ -1358,19 +1475,21 @@ class Element
     }
 
     /**
-     * Set lockUntil
+     * Set lockUntil.
      *
      * @param int $lockUntil
+     *
      * @return $this
      */
     public function setLockUntil($lockUntil)
     {
         $this->lockUntil = $lockUntil;
+
         return $this;
     }
 
     /**
-     * Get lockUntil
+     * Get lockUntil.
      *
      * @return int $lockUntil
      */
@@ -1380,19 +1499,21 @@ class Element
     }
 
     /**
-     * Set source
+     * Set source.
      *
      * @param App\Document\Import $source
+     *
      * @return $this
      */
     public function setSource(\App\Document\Import $source)
     {
         $this->source = $source;
+
         return $this;
     }
 
     /**
-     * Get source
+     * Get source.
      *
      * @return App\Document\Import $source
      */
@@ -1402,19 +1523,21 @@ class Element
     }
 
     /**
-     * Set data
+     * Set data.
      *
      * @param hash $data
+     *
      * @return $this
      */
     public function setData($data)
     {
         $this->data = $data;
+
         return $this;
     }
 
     /**
-     * Get data
+     * Get data.
      *
      * @return hash $data
      */
@@ -1424,19 +1547,21 @@ class Element
     }
 
     /**
-     * Set data
+     * Set data.
      *
      * @param hash $data
+     *
      * @return $this
      */
     public function setPrivateData($data)
     {
         $this->privateData = $data;
+
         return $this;
     }
 
     /**
-     * Get data
+     * Get data.
      *
      * @return hash $data
      */
@@ -1445,54 +1570,68 @@ class Element
         return $this->privateData;
     }
 
-        /**
-     * Set email
+    /**
+     * Set email.
      *
      * @param string $email
+     *
      * @return $this
      */
     public function setEmail($email)
     {
         $this->email = $email;
+
         return $this;
     }
 
     /**
-     * Get email
+     * Get email.
      *
      * @return string $email
      */
     public function getEmail()
     {
-        if ($this->email) return $this->email;
-        if ($this->data && array_key_exists('email', $this->data)) return $this->data['email'];
-        if ($this->privateData && array_key_exists('email', $this->privateData)) return $this->privateData['email'];
-        return "";
-    }
+        if ($this->email) {
+            return $this->email;
+        }
+        if ($this->data && array_key_exists('email', $this->data)) {
+            return $this->data['email'];
+        }
+        if ($this->privateData && array_key_exists('email', $this->privateData)) {
+            return $this->privateData['email'];
+        }
 
+        return '';
+    }
 
     public function setPreventJsonUpdate($preventJsonUpdate)
     {
         $this->preventJsonUpdate = $preventJsonUpdate;
+
         return $this;
     }
 
-    public function getPreventJsonUpdate() { return $this->preventJsonUpdate || false;}
+    public function getPreventJsonUpdate()
+    {
+        return $this->preventJsonUpdate || false;
+    }
 
     /**
-     * Set isExternal
+     * Set isExternal.
      *
      * @param bool $isExternal
+     *
      * @return $this
      */
     public function setIsExternal($isExternal)
     {
         $this->isExternal = $isExternal;
+
         return $this;
     }
 
     /**
-     * Get isExternal
+     * Get isExternal.
      *
      * @return bool $isExternal
      */
@@ -1502,7 +1641,7 @@ class Element
     }
 
     /**
-     * Add file
+     * Add file.
      *
      * @param App\Document\ElementFile $file
      */
@@ -1513,14 +1652,16 @@ class Element
 
     public function setFiles($files)
     {
-        if (!is_array($files)) $files = $files->toArray();
-        $this->files = array_filter($files, function($el) {
-            return $el->getFileUrl() != '';
+        if (!is_array($files)) {
+            $files = $files->toArray();
+        }
+        $this->files = array_filter($files, function ($el) {
+            return '' != $el->getFileUrl();
         });
     }
 
     /**
-     * Remove file
+     * Remove file.
      *
      * @param App\Document\ElementFile $file
      */
@@ -1530,7 +1671,7 @@ class Element
     }
 
     /**
-     * Get files
+     * Get files.
      *
      * @return \Doctrine\Common\Collections\Collection $files
      */
@@ -1541,14 +1682,20 @@ class Element
 
     public function getFilesArray()
     {
-        if (!$this->files) return [];
+        if (!$this->files) {
+            return [];
+        }
+
         return is_array($this->files) ? $this->files : $this->files->toArray();
     }
 
     public function getFilesUrls()
     {
         $result = [];
-        foreach ($this->files as $file) $result[] = $file->getFileUrl();
+        foreach ($this->files as $file) {
+            $result[] = $file->getFileUrl();
+        }
+
         return $result;
     }
 }

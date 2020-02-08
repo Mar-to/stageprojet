@@ -2,9 +2,9 @@
 
 namespace App\Document;
 
+use App\Services\User;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Gedmo\Mapping\Annotation as Gedmo;
-use App\Services\User;
 
 abstract class InteractionType
 {
@@ -56,7 +56,7 @@ class UserInteraction
      *
      * @MongoDB\Field(type="string")
      */
-    protected $userEmail = "no email";
+    protected $userEmail = 'no email';
 
     /**
      * @var \stdClass
@@ -85,7 +85,7 @@ class UserInteraction
     private $resolvedMessage;
 
     /**
-     * @var date $createdAt
+     * @var date
      *
      * @MongoDB\Field(type="date")
      * @Gedmo\Timestampable(on="create")
@@ -93,7 +93,7 @@ class UserInteraction
     protected $createdAt;
 
     /**
-     * @var date $updatedAt
+     * @var date
      *
      * @MongoDB\Field(type="date")
      */
@@ -104,11 +104,11 @@ class UserInteraction
      */
     protected $webhookPosts;
 
-
     public function getTimestamp()
     {
-        $date = in_array($this->type, [InteractionType::Report,InteractionType::Vote]) ? $this->createdAt : $this->updatedAt;
-        return $date == null ? 0 : $date->getTimestamp();
+        $date = in_array($this->type, [InteractionType::Report, InteractionType::Vote]) ? $this->createdAt : $this->updatedAt;
+
+        return null == $date ? 0 : $date->getTimestamp();
     }
 
     public function updateTimestamp()
@@ -118,28 +118,27 @@ class UserInteraction
 
     public function isAdminContribution()
     {
-        return $this->getUserRole() == UserRoles::Admin;
+        return UserRoles::Admin == $this->getUserRole();
     }
 
     public function updateUserInformation($securityContext, $email = null, $directModerationWithHash = false)
     {
         $user = $securityContext->getToken() ? $securityContext->getToken()->getUser() : null;
         $user = is_object($user) ? $user : null;
-        if ($user)
-        {
+        if ($user) {
             $this->setUserEmail($user->getEmail());
             $this->setUserRole($user->isAdmin() ? UserRoles::Admin : UserRoles::Loggued);
-        }
-        else
-        {
-            if ($email)
-            {
+        } else {
+            if ($email) {
                 $this->setUserEmail($email);
                 $this->setUserRole(UserRoles::AnonymousWithEmail);
+            } else {
+                $this->setUserRole(UserRoles::Anonymous);
             }
-            else $this->setUserRole(UserRoles::Anonymous);
 
-            if ($directModerationWithHash) $this->setUserRole(UserRoles::AnonymousWithHash);
+            if ($directModerationWithHash) {
+                $this->setUserRole(UserRoles::AnonymousWithHash);
+            }
         }
     }
 
@@ -147,59 +146,62 @@ class UserInteraction
     {
         $user = $securityContext->getToken() ? $securityContext->getToken()->getUser() : null;
         $user = is_object($user) ? $user : null;
-        if ($user)
-        {
+        if ($user) {
             $this->setResolvedBy($user->getEmail());
-        }
-        else
-        {
-            if ($email)                          $this->setResolvedBy($email);
-            else if ($directModerationWithHash)  $this->setResolvedBy('Anonymous with hash');
-            else                                 $this->setResolvedBy('Anonymous');
+        } else {
+            if ($email) {
+                $this->setResolvedBy($email);
+            } elseif ($directModerationWithHash) {
+                $this->setResolvedBy('Anonymous with hash');
+            } else {
+                $this->setResolvedBy('Anonymous');
+            }
         }
         $this->updateTimestamp();
     }
 
     public function isMadeBy($user, $userEmail)
     {
-        if (is_object($user))
+        if (is_object($user)) {
             return $this->getUserEmail() == $user->getEmail();
-        else
-            return ($userEmail && $this->getUserEmail() == $userEmail);
+        } else {
+            return $userEmail && $this->getUserEmail() == $userEmail;
+        }
     }
 
     public function getUserDisplayName()
     {
-        return $this->getUserRole() == UserRoles::Anonymous ? "" : $this->getUserEmail();
+        return UserRoles::Anonymous == $this->getUserRole() ? '' : $this->getUserEmail();
     }
 
     // used for Report and Vote children class. Overwrite this function like in UserInteractionContribution
     public function toJson()
     {
-        $result = "{";
-        $result .=  '"type":'      . $this->getType();
-        $result .=', "value":'     . $this->getValue();
-        $result .=', "comment":'  . json_encode($this->getComment());
-        $result .=', "userEmail":"' . $this->getUserEmail() . '"';
-        $result .=', "userRole" :' . $this->getUserRole();
-        $result .=', "createdAt" :"'. $this->formatDate($this->getCreatedAt()) . '"';
-        $result .= "}";
+        $result = '{';
+        $result .= '"type":'.$this->getType();
+        $result .= ', "value":'.$this->getValue();
+        $result .= ', "comment":'.json_encode($this->getComment());
+        $result .= ', "userEmail":"'.$this->getUserEmail().'"';
+        $result .= ', "userRole" :'.$this->getUserRole();
+        $result .= ', "createdAt" :"'.$this->formatDate($this->getCreatedAt()).'"';
+        $result .= '}';
+
         return $result;
     }
 
     protected function formatDate($date)
     {
-        if (!$this->getCreatedAt()) return "";
-        return date_format($this->getCreatedAt(),"d/m/Y à H:i");
+        if (!$this->getCreatedAt()) {
+            return '';
+        }
+
+        return date_format($this->getCreatedAt(), 'd/m/Y à H:i');
     }
-
-
-
 
     // ------------------------ GETTER AND SETTERS ----------------------------
 
     /**
-     * Get id
+     * Get id.
      *
      * @return id $id
      */
@@ -209,19 +211,21 @@ class UserInteraction
     }
 
     /**
-     * Set type
+     * Set type.
      *
      * @param int $type
+     *
      * @return $this
      */
     public function setType($type)
     {
         $this->type = $type;
+
         return $this;
     }
 
     /**
-     * Get type
+     * Get type.
      *
      * @return int $type
      */
@@ -231,19 +235,21 @@ class UserInteraction
     }
 
     /**
-     * Set userRole
+     * Set userRole.
      *
      * @param string $userRole
+     *
      * @return $this
      */
     public function setUserRole($userRole)
     {
         $this->userRole = $userRole;
+
         return $this;
     }
 
     /**
-     * Get userRole
+     * Get userRole.
      *
      * @return string $userRole
      */
@@ -253,19 +259,21 @@ class UserInteraction
     }
 
     /**
-     * Set userEmail
+     * Set userEmail.
      *
      * @param string $userEmail
+     *
      * @return $this
      */
     public function setUserEmail($userEmail)
     {
         $this->userEmail = $userEmail;
+
         return $this;
     }
 
     /**
-     * Get userEmail
+     * Get userEmail.
      *
      * @return string $userEmail
      */
@@ -275,19 +283,21 @@ class UserInteraction
     }
 
     /**
-     * Set element
+     * Set element.
      *
      * @param App\Document\Element $element
+     *
      * @return $this
      */
     public function setElement(\App\Document\Element $element)
     {
         $this->element = $element;
+
         return $this;
     }
 
     /**
-     * Get element
+     * Get element.
      *
      * @return App\Document\Element $element
      */
@@ -297,19 +307,21 @@ class UserInteraction
     }
 
     /**
-     * Set createdAt
+     * Set createdAt.
      *
      * @param date $createdAt
+     *
      * @return $this
      */
     public function setCreatedAt($createdAt)
     {
         $this->createdAt = $createdAt;
+
         return $this;
     }
 
     /**
-     * Get createdAt
+     * Get createdAt.
      *
      * @return date $createdAt
      */
@@ -319,19 +331,21 @@ class UserInteraction
     }
 
     /**
-     * Set updatedAt
+     * Set updatedAt.
      *
      * @param date $updatedAt
+     *
      * @return $this
      */
     public function setUpdatedAt($updatedAt)
     {
         $this->updatedAt = $updatedAt;
+
         return $this;
     }
 
     /**
-     * Get updatedAt
+     * Get updatedAt.
      *
      * @return date $updatedAt
      */
@@ -341,19 +355,21 @@ class UserInteraction
     }
 
     /**
-     * Set resolvedBy
+     * Set resolvedBy.
      *
      * @param string $resolvedBy
+     *
      * @return $this
      */
     public function setResolvedBy($resolvedBy)
     {
         $this->resolvedBy = $resolvedBy;
+
         return $this;
     }
 
     /**
-     * Get resolvedBy
+     * Get resolvedBy.
      *
      * @return string $resolvedBy
      */
@@ -363,19 +379,21 @@ class UserInteraction
     }
 
     /**
-     * Set resolvedMessage
+     * Set resolvedMessage.
      *
      * @param string $resolvedMessage
+     *
      * @return $this
      */
     public function setResolvedMessage($resolvedMessage)
     {
         $this->resolvedMessage = $resolvedMessage;
+
         return $this;
     }
 
     /**
-     * Get resolvedMessage
+     * Get resolvedMessage.
      *
      * @return string $resolvedMessage
      */
@@ -385,7 +403,7 @@ class UserInteraction
     }
 
     /**
-     * Add webhookPost
+     * Add webhookPost.
      *
      * @param App\Document\WebhookPost $webhookPost
      */
@@ -395,7 +413,7 @@ class UserInteraction
     }
 
     /**
-     * Remove webhookPost
+     * Remove webhookPost.
      *
      * @param App\Document\WebhookPost $webhookPost
      */
@@ -405,7 +423,7 @@ class UserInteraction
     }
 
     /**
-     * Get webhookPosts
+     * Get webhookPosts.
      *
      * @return \Doctrine\Common\Collections\Collection $webhookPosts
      */
@@ -417,6 +435,7 @@ class UserInteraction
     public function clearWebhookPosts()
     {
         $this->webhookPosts = [];
+
         return $this;
     }
 }

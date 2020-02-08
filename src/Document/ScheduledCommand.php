@@ -5,8 +5,8 @@ namespace App\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
-* @MongoDB\Document
-*/
+ * @MongoDB\Document
+ */
 class ScheduledCommand
 {
     /**
@@ -15,13 +15,13 @@ class ScheduledCommand
     private $id;
 
     /**
-    * @MongoDB\ReferenceOne(targetDocument="App\Document\Project", inversedBy="commands")
-    */
+     * @MongoDB\ReferenceOne(targetDocument="App\Document\Project", inversedBy="commands")
+     */
     public $project;
 
     /**
-    * @MongoDB\Field(type="string")
-    */
+     * @MongoDB\Field(type="string")
+     */
     public $commandName;
 
     /**
@@ -29,9 +29,8 @@ class ScheduledCommand
      */
     private $nextExecutionAt = null;
 
-
     /**
-     * Get id
+     * Get id.
      *
      * @return int_id $id
      */
@@ -41,19 +40,21 @@ class ScheduledCommand
     }
 
     /**
-     * Set project
+     * Set project.
      *
      * @param App\Document\Project $project
+     *
      * @return $this
      */
     public function setProject(\App\Document\Project $project)
     {
         $this->project = $project;
+
         return $this;
     }
 
     /**
-     * Get project
+     * Get project.
      *
      * @return App\Document\Project $project
      */
@@ -63,19 +64,21 @@ class ScheduledCommand
     }
 
     /**
-     * Set commandName
+     * Set commandName.
      *
      * @param string $commandName
+     *
      * @return $this
      */
     public function setCommandName($commandName)
     {
         $this->commandName = $commandName;
+
         return $this;
     }
 
     /**
-     * Get commandName
+     * Get commandName.
      *
      * @return string $commandName
      */
@@ -85,19 +88,21 @@ class ScheduledCommand
     }
 
     /**
-     * Set nextExecutionAt
+     * Set nextExecutionAt.
      *
      * @param date $nextExecutionAt
+     *
      * @return $this
      */
     public function setNextExecutionAt($nextExecutionAt)
     {
         $this->nextExecutionAt = $nextExecutionAt;
+
         return $this;
     }
 
     /**
-     * Get nextExecutionAt
+     * Get nextExecutionAt.
      *
      * @return date $nextExecutionAt
      */

@@ -2,9 +2,8 @@
 
 namespace App\Controller\Admin;
 
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Services\ValidationType;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 // Split this big controller into two classes
 class ElementAdminController extends ElementAdminBulkController
@@ -33,7 +32,7 @@ class ElementAdminController extends ElementAdminBulkController
 
     public function redirectBackAction()
     {
-        return $this->redirect($this->admin->generateUrl('list', array('filter' => $this->admin->getFilterParameters())));
+        return $this->redirect($this->admin->generateUrl('list', ['filter' => $this->admin->getFilterParameters()]));
     }
 
     public function showEditAction($id = null)
@@ -60,12 +59,12 @@ class ElementAdminController extends ElementAdminBulkController
         $this->get('twig')->getRuntime(\Symfony\Component\Form\FormRenderer::class)
              ->setTheme($view, $this->admin->getFormTheme());
 
-        return $this->render('admin/edit/edit_element.html.twig', array(
+        return $this->render('admin/edit/edit_element.html.twig', [
             'action' => 'edit',
             'form' => $view,
             'object' => $object,
             'elements' => $this->admin->getShow(),
-        ), null);
+        ], null);
     }
 
     public function editAction($id = null)
@@ -88,7 +87,6 @@ class ElementAdminController extends ElementAdminBulkController
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
-
             //TODO: remove this check for 4.0
             if (method_exists($this->admin, 'preValidate')) {
                 $this->admin->preValidate($object);
@@ -100,21 +98,20 @@ class ElementAdminController extends ElementAdminBulkController
                 try {
                     $message = $request->get('custom_message') ? $request->get('custom_message') : '';
 
-                    if ($request->get('submit_update_json'))
-                    {
+                    if ($request->get('submit_update_json')) {
                         $this->jsonGenerator->updateJsonRepresentation($object);
-                    }
-                    elseif ($object->isPending() && ($request->get('submit_accept') || $request->get('submit_refuse')))
-                    {
+                    } elseif ($object->isPending() && ($request->get('submit_accept') || $request->get('submit_refuse'))) {
                         $this->elementActionService->resolve($object, $request->get('submit_accept'), ValidationType::Admin, $message);
-                    }
-                    else
-                    {
+                    } else {
                         $sendMail = $request->get('send_mail');
 
-                        if ($request->get('submit_delete'))  { $this->elementActionService->delete($object, $sendMail, $message); }
-                        else if ($request->get('submit_restore')) { $this->elementActionService->restore($object, $sendMail, $message); }
-                        else { $this->elementActionService->edit($object, $sendMail, $message); }
+                        if ($request->get('submit_delete')) {
+                            $this->elementActionService->delete($object, $sendMail, $message);
+                        } elseif ($request->get('submit_restore')) {
+                            $this->elementActionService->restore($object, $sendMail, $message);
+                        } else {
+                            $this->elementActionService->edit($object, $sendMail, $message);
+                        }
                     }
 
                     $object = $this->admin->update($object);
@@ -123,26 +120,26 @@ class ElementAdminController extends ElementAdminBulkController
                         'sonata_flash_success',
                         $this->trans(
                             'flash_edit_success',
-                            array('%name%' => $this->escapeHtml($this->admin->toString($object))),
+                            ['%name%' => $this->escapeHtml($this->admin->toString($object))],
                             'SonataAdminBundle'
                         )
                     );
 
-                    if ($request->get('submit_redirect'))
+                    if ($request->get('submit_redirect')) {
                         return new RedirectResponse(
                             $this->admin->generateUrl('list')
                         );
-
+                    }
                 } catch (ModelManagerException $e) {
                     $this->handleModelManagerException($e);
 
                     $isFormValid = false;
                 } catch (LockException $e) {
-                    $this->addFlash('sonata_flash_error', $this->trans('flash_lock_error', array(
+                    $this->addFlash('sonata_flash_error', $this->trans('flash_lock_error', [
                         '%name%' => $this->escapeHtml($this->admin->toString($object)),
                         '%link_start%' => '<a href="'.$this->admin->generateObjectUrl('edit', $object).'">',
                         '%link_end%' => '</a>',
-                    ), 'SonataAdminBundle'));
+                    ], 'SonataAdminBundle'));
                 }
             }
 
@@ -153,7 +150,7 @@ class ElementAdminController extends ElementAdminBulkController
                         'sonata_flash_error',
                         $this->trans(
                             'flash_edit_error',
-                            array('%name%' => $this->escapeHtml($this->admin->toString($object))),
+                            ['%name%' => $this->escapeHtml($this->admin->toString($object))],
                             'SonataAdminBundle'
                         )
                     );

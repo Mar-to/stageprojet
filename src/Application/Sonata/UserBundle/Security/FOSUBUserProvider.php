@@ -1,16 +1,15 @@
 <?php
+
 namespace App\Application\Sonata\UserBundle\Security;
 
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\FOSUBUserProvider as BaseClass;
-
 use Symfony\Component\Security\Core\User\UserInterface;
-
 
 class FOSUBUserProvider extends BaseClass
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function connect(UserInterface $user, UserResponseInterface $response)
     {
@@ -22,7 +21,7 @@ class FOSUBUserProvider extends BaseClass
         $setter_id = $setter.'Id';
         $setter_token = $setter.'AccessToken';
         //we "disconnect" previously connected users
-        if (null !== $previousUser = $this->userManager->findUserBy(array($property => $username))) {
+        if (null !== $previousUser = $this->userManager->findUserBy([$property => $username])) {
             $previousUser->$setter_id(null);
             $previousUser->$setter_token(null);
             $this->userManager->updateUser($previousUser);
@@ -32,13 +31,14 @@ class FOSUBUserProvider extends BaseClass
         $user->$setter_token($response->getAccessToken());
         $this->userManager->updateUser($user);
     }
+
     /**
      * {@inheritdoc}
      */
     public function loadUserByOAuthUserResponse(UserResponseInterface $response)
     {
         $username = $response->getUsername();
-        $user = $this->userManager->findUserBy(array($this->getProperty($response) => $username));
+        $user = $this->userManager->findUserBy([$this->getProperty($response) => $username]);
 
         //when the user is registrating
         if (null === $user) {
@@ -62,14 +62,16 @@ class FOSUBUserProvider extends BaseClass
             $user->setEnabled(true);
 
             $this->userManager->updateUser($user);
+
             return $user;
         }
         //if user exists - go with the HWIOAuth way
         $user = parent::loadUserByOAuthUserResponse($response);
         $serviceName = $response->getResourceOwner()->getName();
-        $setter = 'set' . ucfirst($serviceName) . 'Data';
+        $setter = 'set'.ucfirst($serviceName).'Data';
         //update access token
         $user->$setter($response->getAccessToken());
+
         return $user;
     }
 }

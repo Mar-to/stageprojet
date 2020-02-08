@@ -77,11 +77,11 @@ class RegistrationFormType extends AbstractType
             ->add('newsletterFrequency', $choiceType, array_merge([
                 'label' => 'form.newsletterFrequency',
                 'translation_domain' => 'SonataUserBundle',
-                'choices'  => array(
+                'choices' => [
                     'Jamais' => 0,
                     'Chaque semaine' => 1,
                     'Chaque mois' => 2,
-                ),
+                ],
                 'expanded' => true,  'multiple' => false,
                 'required' => false, 'placeholder' => false,
             ], $this->mergeOptions))

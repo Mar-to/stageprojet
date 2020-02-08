@@ -12,15 +12,15 @@
 
 namespace App\Controller;
 
-use App\Controller\GoGoController;
-use Symfony\Component\HttpFoundation\Request;
 use App\Services\GoGoCartoJsService;
+use Symfony\Component\HttpFoundation\Request;
 
 class DirectoryController extends GoGoController
 {
-  public function renderAction(Request $request, GoGoCartoJsService $gogoJsService)
-  {
-    $gogoConfig = $gogoJsService->getConfig();
-    return $this->render('directory/directory.html.twig', array('gogoConfig' => $gogoConfig));
-  }
+    public function renderAction(Request $request, GoGoCartoJsService $gogoJsService)
+    {
+        $gogoConfig = $gogoJsService->getConfig();
+
+        return $this->render('directory/directory.html.twig', ['gogoConfig' => $gogoConfig]);
+    }
 }

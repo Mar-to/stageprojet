@@ -4,7 +4,6 @@ namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
-
 /** @MongoDB\Document */
 class TileLayer
 {
@@ -30,13 +29,13 @@ class TileLayer
      */
     private $position;
 
-    function __toString()
+    public function __toString()
     {
-        return $this->getName() ? $this->getName() : "";
+        return $this->getName() ? $this->getName() : '';
     }
 
     /**
-     * Get id
+     * Get id.
      *
      * @return int_id $id
      */
@@ -46,19 +45,21 @@ class TileLayer
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
+     *
      * @return $this
      */
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string $name
      */
@@ -68,19 +69,21 @@ class TileLayer
     }
 
     /**
-     * Set url
+     * Set url.
      *
      * @param string $url
+     *
      * @return $this
      */
     public function setUrl($url)
     {
         $this->url = $url;
+
         return $this;
     }
 
     /**
-     * Get url
+     * Get url.
      *
      * @return string $url
      */
@@ -90,19 +93,21 @@ class TileLayer
     }
 
     /**
-     * Set position
+     * Set position.
      *
      * @param int $position
+     *
      * @return $this
      */
     public function setPosition($position)
     {
         $this->position = $position;
+
         return $this;
     }
 
     /**
-     * Get position
+     * Get position.
      *
      * @return int $position
      */
@@ -112,19 +117,21 @@ class TileLayer
     }
 
     /**
-     * Set attribution
+     * Set attribution.
      *
      * @param string $attribution
+     *
      * @return $this
      */
     public function setAttribution($attribution)
     {
         $this->attribution = $attribution;
+
         return $this;
     }
 
     /**
-     * Get attribution
+     * Get attribution.
      *
      * @return string $attribution
      */

@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use Symfony\Component\Process\Process;
+use App\Helper\SaasHelper;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\PhpExecutableFinder;
-use App\Helper\SaasHelper;
+use Symfony\Component\Process\Process;
 
 class AsyncService
 {
@@ -29,20 +29,23 @@ class AsyncService
 
     public function callCommand($commandName, $arguments = [], $dbname = null)
     {
-        if ($dbname === null) {
+        if (null === $dbname) {
             $saasHelper = new SaasHelper();
             $dbname = $saasHelper->getCurrentProjectCode();
         }
 
-        $commandline = $this->phpPath . ' ' . $this->consolePath;
-        $commandline .= ' --env=' . $this->env;
-        $commandline .= ' ' . $commandName;
+        $commandline = $this->phpPath.' '.$this->consolePath;
+        $commandline .= ' --env='.$this->env;
+        $commandline .= ' '.$commandName;
         foreach ($arguments as $key => $arg) {
-            $commandline .= ' ' . $arg;
+            $commandline .= ' '.$arg;
         }
-        $commandline .= ' ' . $dbname;
+        $commandline .= ' '.$dbname;
         $commandline .= ' > /tmp/command.log 2>/tmp/command.log';
-        if (!$this->runSynchronously) $commandline .= ' &';
+        if (!$this->runSynchronously) {
+            $commandline .= ' &';
+        }
+
         return $this->runProcess($commandline);
     }
 
@@ -50,7 +53,9 @@ class AsyncService
     {
         $process = new Process($commandline);
         $process->start();
-        if ($this->runSynchronously) $process->wait();
+        if ($this->runSynchronously) {
+            $process->wait();
+        }
 
         return $process->getPid();
     }
@@ -60,7 +65,7 @@ class AsyncService
         $consolePath = $this->consolePath;
 
         if (!$this->filesystem->isAbsolutePath($consolePath)) {
-            $consolePath = $this->rootDir . '/../' . $consolePath;
+            $consolePath = $this->rootDir.'/../'.$consolePath;
         }
 
         if (!$this->filesystem->exists($consolePath)) {

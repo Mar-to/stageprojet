@@ -14,14 +14,15 @@
     in the source iterator. I've been modified the getValue method so I can use a hash, using the label as a key. See ElementAdmin.php
     to see ho it is used
 */
+
 namespace App\Application\Sonata\Exporter\Source;
 
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Exporter\Exception\InvalidMethodCallException;
+use Exporter\Source\SourceIteratorInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyPath;
-use Exporter\Source\SourceIteratorInterface;
 
 class DoctrineODMQuerySourceIterator implements SourceIteratorInterface
 {
@@ -147,7 +148,7 @@ class DoctrineODMQuerySourceIterator implements SourceIteratorInterface
     /**
      * @param $value
      *
-     * @return null|string
+     * @return string|null
      */
     protected function getValue($value, $name)
     {

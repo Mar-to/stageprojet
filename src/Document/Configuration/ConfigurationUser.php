@@ -26,19 +26,21 @@ class ConfigurationUser
     public $loginWithFacebook = false;
 
     /**
-     * Set enableRegistration
+     * Set enableRegistration.
      *
      * @param bool $enableRegistration
+     *
      * @return $this
      */
     public function setEnableRegistration($enableRegistration)
     {
         $this->enableRegistration = $enableRegistration;
+
         return $this;
     }
 
     /**
-     * Get enableRegistration
+     * Get enableRegistration.
      *
      * @return bool $enableRegistration
      */
@@ -48,19 +50,21 @@ class ConfigurationUser
     }
 
     /**
-     * Set sendConfirmationEmail
+     * Set sendConfirmationEmail.
      *
      * @param bool $sendConfirmationEmail
+     *
      * @return $this
      */
     public function setSendConfirmationEmail($sendConfirmationEmail)
     {
         $this->sendConfirmationEmail = $sendConfirmationEmail;
+
         return $this;
     }
 
     /**
-     * Get sendConfirmationEmail
+     * Get sendConfirmationEmail.
      *
      * @return bool $sendConfirmationEmail
      */
@@ -70,19 +74,21 @@ class ConfigurationUser
     }
 
     /**
-     * Set loginWithLesCommuns
+     * Set loginWithLesCommuns.
      *
      * @param bool $loginWithLesCommuns
+     *
      * @return $this
      */
     public function setLoginWithLesCommuns($loginWithLesCommuns)
     {
         $this->loginWithLesCommuns = $loginWithLesCommuns;
+
         return $this;
     }
 
     /**
-     * Get loginWithLesCommuns
+     * Get loginWithLesCommuns.
      *
      * @return bool $loginWithLesCommuns
      */
@@ -92,19 +98,21 @@ class ConfigurationUser
     }
 
     /**
-     * Set loginWithMonPrintemps
+     * Set loginWithMonPrintemps.
      *
      * @param bool $loginWithMonPrintemps
+     *
      * @return $this
      */
     public function setLoginWithMonPrintemps($loginWithMonPrintemps)
     {
         $this->loginWithMonPrintemps = $loginWithMonPrintemps;
+
         return $this;
     }
 
     /**
-     * Get loginWithMonPrintemps
+     * Get loginWithMonPrintemps.
      *
      * @return bool $loginWithMonPrintemps
      */
@@ -114,19 +122,21 @@ class ConfigurationUser
     }
 
     /**
-     * Set loginWithGoogle
+     * Set loginWithGoogle.
      *
      * @param bool $loginWithGoogle
+     *
      * @return $this
      */
     public function setLoginWithGoogle($loginWithGoogle)
     {
         $this->loginWithGoogle = $loginWithGoogle;
+
         return $this;
     }
 
     /**
-     * Get loginWithGoogle
+     * Get loginWithGoogle.
      *
      * @return bool $loginWithGoogle
      */
@@ -136,19 +146,21 @@ class ConfigurationUser
     }
 
     /**
-     * Set loginWithFacebook
+     * Set loginWithFacebook.
      *
      * @param bool $loginWithFacebook
+     *
      * @return $this
      */
     public function setLoginWithFacebook($loginWithFacebook)
     {
         $this->loginWithFacebook = $loginWithFacebook;
+
         return $this;
     }
 
     /**
-     * Get loginWithFacebook
+     * Get loginWithFacebook.
      *
      * @return bool $loginWithFacebook
      */

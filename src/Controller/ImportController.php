@@ -10,19 +10,12 @@
  * @Last Modified time: 2018-06-05 18:12:14
  */
 
-
 namespace App\Controller;
 
-
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Doctrine\ODM\MongoDB\DocumentManager;
-
-use App\Document\Element;
-use App\Document\OptionValue;
 use App\Services\RandomCreationService;
-use joshtronic\LoremIpsum;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 class ImportController extends Controller
 {
@@ -36,8 +29,8 @@ class ImportController extends Controller
     public function availableOptionsAction(DocumentManager $dm)
     {
         $options = $dm->getRepository('App\Document\Option')->findAll();
-        $bottomOptions = array_filter($options, function($option) { return $option->getSubcategoriesCount() == 0;});
-        $optionsNames = array_map(function($option) { return $option->getNameWithParent(); }, $bottomOptions);
+        $bottomOptions = array_filter($options, function ($option) { return 0 == $option->getSubcategoriesCount(); });
+        $optionsNames = array_map(function ($option) { return $option->getNameWithParent(); }, $bottomOptions);
 
         return new Response(join('<br>', $optionsNames));
     }
@@ -45,12 +38,13 @@ class ImportController extends Controller
     public function currStateAction($id, DocumentManager $dm)
     {
         $import = $dm->getRepository('App\Document\Import')->find($id);
-        $responseArray = array(
-            "state" => $import->getCurrState(),
-            "message" => $import->getCurrMessage()
-        );
+        $responseArray = [
+            'state' => $import->getCurrState(),
+            'message' => $import->getCurrMessage(),
+        ];
         $response = new Response(json_encode($responseArray));
         $response->headers->set('Content-Type', 'application/json');
+
         return $response;
     }
 }

@@ -9,12 +9,11 @@
  * file that was distributed with this source code.
  */
 
-
 namespace App\Document;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Sonata\UserBundle\Document\BaseUser as BaseUser;
 use Sonata\UserBundle\Model\UserInterface;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 abstract class NewsletterFrequencyOptions
 {
@@ -30,44 +29,50 @@ abstract class NewsletterFrequencyOptions
  */
 class User extends BaseUser
 {
-     /**
+    /**
      * @MongoDB\Id(strategy="auto")
      */
     protected $id;
 
     /**
-     * Address of the user. Can be a simple postalCode, or a more precise address
+     * Address of the user. Can be a simple postalCode, or a more precise address.
+     *
      * @MongoDB\Field(type="string")
      */
     protected $location;
 
     /**
-    * Geolocalisation of the location attribute
-    * @MongoDB\EmbedOne(targetDocument="App\Document\Coordinates")
-    */
+     * Geolocalisation of the location attribute.
+     *
+     * @MongoDB\EmbedOne(targetDocument="App\Document\Coordinates")
+     */
     public $geo;
 
     /**
      * Newletter sending the recently added elements
-     * See NewsletterFrequencyOptions
+     * See NewsletterFrequencyOptions.
+     *
      * @MongoDB\Field(type="int")
      */
     protected $newsletterFrequency;
 
     /**
-     * We send to user the recently added elements in a specific range in km from location
+     * We send to user the recently added elements in a specific range in km from location.
+     *
      * @MongoDB\Field(type="int")
      */
     public $newsletterRange;
 
     /**
-     * The date where the last newsletter has been sent
+     * The date where the last newsletter has been sent.
+     *
      * @MongoDB\Field(type="date")
      */
     protected $lastNewsletterSentAt;
 
     /**
-     * The date where the next newsletter has to be send
+     * The date where the next newsletter has to be send.
+     *
      * @MongoDB\Field(type="date")
      */
     protected $nextNewsletterDate;
@@ -93,7 +98,8 @@ class User extends BaseUser
     protected $votesCount;
 
     /**
-     * Private Labels/Tags than the user can use
+     * Private Labels/Tags than the user can use.
+     *
      * @MongoDB\ReferenceMany(targetDocument="App\Document\Stamp", cascade={"all"})
      */
     protected $allowedStamps;
@@ -123,13 +129,13 @@ class User extends BaseUser
     protected $emailCanonical;
 
     /**
-     * @var boolean
+     * @var bool
      * @MongoDB\Field(type="boolean")
      */
     protected $enabled;
 
     /**
-     * The salt to use for hashing
+     * The salt to use for hashing.
      *
      * @var string
      * @MongoDB\Field(type="string")
@@ -159,7 +165,7 @@ class User extends BaseUser
     protected $lastLogin;
 
     /**
-     * Random string sent to the user email address in order to verify it
+     * Random string sent to the user email address in order to verify it.
      *
      * @var string
      * @MongoDB\Field(type="string")
@@ -179,13 +185,13 @@ class User extends BaseUser
     protected $groups;
 
     /**
-     * @var boolean
+     * @var bool
      * @MongoDB\Field(type="boolean")
      */
     protected $locked;
 
     /**
-     * @var boolean
+     * @var bool
      * @MongoDB\Field(type="boolean")
      */
     protected $expired;
@@ -203,7 +209,7 @@ class User extends BaseUser
     protected $roles;
 
     /**
-     * @var boolean
+     * @var bool
      * @MongoDB\Field(type="boolean")
      */
     protected $credentialsExpired;
@@ -214,7 +220,7 @@ class User extends BaseUser
      */
     protected $credentialsExpireAt;
 
-     /**
+    /**
      * @var \DateTime
      * @MongoDB\Field(type="date")
      */
@@ -378,11 +384,11 @@ class User extends BaseUser
      */
     public static function getGenderList()
     {
-        return array(
+        return [
             UserInterface::GENDER_UNKNOWN => 'gender_unknown',
             UserInterface::GENDER_FEMALE => 'gender_female',
             UserInterface::GENDER_MALE => 'gender_male',
-        );
+        ];
     }
 
     public function getId()
@@ -392,7 +398,7 @@ class User extends BaseUser
 
     public function isAdmin()
     {
-       return in_array("ROLE_ADMIN", $this->getRoles()) || in_array("ROLE_SUPER_ADMIN", $this->getRoles());
+        return in_array('ROLE_ADMIN', $this->getRoles()) || in_array('ROLE_SUPER_ADMIN', $this->getRoles());
     }
 
     public function hasRole($role)
@@ -403,6 +409,7 @@ class User extends BaseUser
     public function setGamification($value)
     {
         $this->gamification = $value;
+
         return $this;
     }
 
@@ -413,20 +420,32 @@ class User extends BaseUser
 
     public function createToken()
     {
-        if (!$this->getToken()) $this->setToken(uniqid());
+        if (!$this->getToken()) {
+            $this->setToken(uniqid());
+        }
     }
 
-    public function addVoteCount() { $this->votesCount++; }
-    public function addReportsCount() { $this->votesCount++; }
-    public function addContributionCount() { $this->votesCount++; }
+    public function addVoteCount()
+    {
+        ++$this->votesCount;
+    }
+
+    public function addReportsCount()
+    {
+        ++$this->votesCount;
+    }
+
+    public function addContributionCount()
+    {
+        ++$this->votesCount;
+    }
 
     public function updateNextNewsletterDate()
     {
-        if ($this->getNewsletterFrequency() == 0) $this->setNextNewsletterDate(null);
-        else
-        {
-            switch ($this->getNewsletterFrequency())
-            {
+        if (0 == $this->getNewsletterFrequency()) {
+            $this->setNextNewsletterDate(null);
+        } else {
+            switch ($this->getNewsletterFrequency()) {
                 case NewsletterFrequencyOptions::Weekly: $interval = new \DateInterval('P7D'); break;
                 case NewsletterFrequencyOptions::Monthly: $interval = new \DateInterval('P1M'); break;
             }
@@ -437,13 +456,17 @@ class User extends BaseUser
 
     public function getDisplayName()
     {
-        if ($this->getUsername()) return $this->getUsername();
+        if ($this->getUsername()) {
+            return $this->getUsername();
+        }
+
         return $this->getEmail();
     }
+
     /**
-     * Get enabled
+     * Get enabled.
      *
-     * @return boolean $enabled
+     * @return bool $enabled
      */
     public function getEnabled()
     {
@@ -451,33 +474,37 @@ class User extends BaseUser
     }
 
     /**
-     * Set Enabled
+     * Set Enabled.
      *
-     * @param boolean $salt
+     * @param bool $salt
+     *
      * @return $this
      */
     public function setEnabled($enabled)
     {
         $this->enabled = $enabled;
+
         return $this;
     }
 
     /**
-     * Set salt
+     * Set salt.
      *
      * @param string $salt
+     *
      * @return $this
      */
     public function setSalt($salt)
     {
         $this->salt = $salt;
+
         return $this;
     }
 
     /**
-     * Get locked
+     * Get locked.
      *
-     * @return boolean $locked
+     * @return bool $locked
      */
     public function getLocked()
     {
@@ -485,21 +512,23 @@ class User extends BaseUser
     }
 
     /**
-     * Set Locked
+     * Set Locked.
      *
-     * @param boolean $salt
+     * @param bool $salt
+     *
      * @return $this
      */
     public function setLocked($locked)
     {
         $this->locked = $locked;
+
         return $this;
     }
 
     /**
-     * Get expired
+     * Get expired.
      *
-     * @return boolean $expired
+     * @return bool $expired
      */
     public function getExpired()
     {
@@ -507,21 +536,23 @@ class User extends BaseUser
     }
 
     /**
-     * Set Expired
+     * Set Expired.
      *
-     * @param boolean $salt
+     * @param bool $salt
+     *
      * @return $this
      */
     public function setExpired($expired)
     {
         $this->expired = $expired;
+
         return $this;
     }
 
     /**
-     * Get credentialsExpired
+     * Get credentialsExpired.
      *
-     * @return boolean $credentialsExpired
+     * @return bool $credentialsExpired
      */
     public function getCredentialsExpired()
     {
@@ -529,32 +560,35 @@ class User extends BaseUser
     }
 
     /**
-     * Set CredentialsExpired
+     * Set CredentialsExpired.
      *
-     * @param boolean $salt
+     * @param bool $salt
+     *
      * @return $this
      */
     public function setCredentialsExpired($credentialsExpired)
     {
         $this->credentialsExpired = $credentialsExpired;
+
         return $this;
     }
 
-
     /**
-     * Set contributionsCount
+     * Set contributionsCount.
      *
      * @param int $contributionsCount
+     *
      * @return $this
      */
     public function setContributionsCount($contributionsCount)
     {
         $this->contributionsCount = $contributionsCount;
+
         return $this;
     }
 
     /**
-     * Get contributionsCount
+     * Get contributionsCount.
      *
      * @return int $contributionsCount
      */
@@ -564,19 +598,21 @@ class User extends BaseUser
     }
 
     /**
-     * Set reportsCount
+     * Set reportsCount.
      *
      * @param int $reportsCount
+     *
      * @return $this
      */
     public function setReportsCount($reportsCount)
     {
         $this->reportsCount = $reportsCount;
+
         return $this;
     }
 
     /**
-     * Get reportsCount
+     * Get reportsCount.
      *
      * @return int $reportsCount
      */
@@ -586,19 +622,21 @@ class User extends BaseUser
     }
 
     /**
-     * Set votesCount
+     * Set votesCount.
      *
      * @param int $votesCount
+     *
      * @return $this
      */
     public function setVotesCount($votesCount)
     {
         $this->votesCount = $votesCount;
+
         return $this;
     }
 
     /**
-     * Get votesCount
+     * Get votesCount.
      *
      * @return int $votesCount
      */
@@ -608,19 +646,21 @@ class User extends BaseUser
     }
 
     /**
-     * Set location
+     * Set location.
      *
      * @param string $location
+     *
      * @return $this
      */
     public function setLocation($location)
     {
         $this->location = $location;
+
         return $this;
     }
 
     /**
-     * Get location
+     * Get location.
      *
      * @return string $location
      */
@@ -630,19 +670,21 @@ class User extends BaseUser
     }
 
     /**
-     * Set geo
+     * Set geo.
      *
      * @param App\Document\Coordinates $geo
+     *
      * @return $this
      */
     public function setGeo(\App\Document\Coordinates $geo)
     {
         $this->geo = $geo;
+
         return $this;
     }
 
     /**
-     * Get geo
+     * Get geo.
      *
      * @return App\Document\Coordinates $geo
      */
@@ -652,22 +694,26 @@ class User extends BaseUser
     }
 
     /**
-     * Set newsletterFrequency
+     * Set newsletterFrequency.
      *
      * @param int $newsletterFrequency
+     *
      * @return $this
      */
     public function setNewsletterFrequency($newsletterFrequency)
     {
         // reset last newsletter sent at to now when user check to receive newsletter
-        if ($this->getNewsletterFrequency() == 0 && $newsletterFrequency > 0) $this->setLastNewsletterSentAt(new \DateTime());
+        if (0 == $this->getNewsletterFrequency() && $newsletterFrequency > 0) {
+            $this->setLastNewsletterSentAt(new \DateTime());
+        }
         $this->newsletterFrequency = $newsletterFrequency;
         $this->updateNextNewsletterDate();
+
         return $this;
     }
 
     /**
-     * Get newsletterFrequency
+     * Get newsletterFrequency.
      *
      * @return int $newsletterFrequency
      */
@@ -677,19 +723,21 @@ class User extends BaseUser
     }
 
     /**
-     * Set newsletterRange
+     * Set newsletterRange.
      *
      * @param int $newsletterRange
+     *
      * @return $this
      */
     public function setNewsletterRange($newsletterRange)
     {
         $this->newsletterRange = $newsletterRange;
+
         return $this;
     }
 
     /**
-     * Get newsletterRange
+     * Get newsletterRange.
      *
      * @return int $newsletterRange
      */
@@ -699,19 +747,21 @@ class User extends BaseUser
     }
 
     /**
-     * Set nextNewsletterDate
+     * Set nextNewsletterDate.
      *
      * @param date $nextNewsletterDate
+     *
      * @return $this
      */
     public function setNextNewsletterDate($nextNewsletterDate)
     {
         $this->nextNewsletterDate = $nextNewsletterDate;
+
         return $this;
     }
 
     /**
-     * Get nextNewsletterDate
+     * Get nextNewsletterDate.
      *
      * @return date $nextNewsletterDate
      */
@@ -721,19 +771,21 @@ class User extends BaseUser
     }
 
     /**
-     * Set lastNewsletterSentAt
+     * Set lastNewsletterSentAt.
      *
      * @param date $lastNewsletterSentAt
+     *
      * @return $this
      */
     public function setLastNewsletterSentAt($lastNewsletterSentAt)
     {
         $this->lastNewsletterSentAt = $lastNewsletterSentAt;
+
         return $this;
     }
 
     /**
-     * Get lastNewsletterSentAt
+     * Get lastNewsletterSentAt.
      *
      * @return \DateTime $lastNewsletterSentAt
      */
@@ -743,7 +795,7 @@ class User extends BaseUser
     }
 
     /**
-     * Add allowedStamp
+     * Add allowedStamp.
      *
      * @param App\Document\Stamp $allowedStamp
      */
@@ -753,7 +805,7 @@ class User extends BaseUser
     }
 
     /**
-     * Remove allowedStamp
+     * Remove allowedStamp.
      *
      * @param App\Document\Stamp $allowedStamp
      */
@@ -763,7 +815,7 @@ class User extends BaseUser
     }
 
     /**
-     * Get allowedStamps
+     * Get allowedStamps.
      *
      * @return \Doctrine\Common\Collections\Collection $allowedStamps
      */
@@ -773,19 +825,21 @@ class User extends BaseUser
     }
 
     /**
-     * Set communsUid
+     * Set communsUid.
      *
      * @param string $communsUid
+     *
      * @return $this
      */
     public function setCommunsUid($communsUid)
     {
         $this->communsUid = $communsUid;
+
         return $this;
     }
 
     /**
-     * Get communsUid
+     * Get communsUid.
      *
      * @return string $communsUid
      */
@@ -795,19 +849,21 @@ class User extends BaseUser
     }
 
     /**
-     * Set communsName
+     * Set communsName.
      *
      * @param string $communsName
+     *
      * @return $this
      */
     public function setCommunsName($communsName)
     {
         $this->communsName = $communsName;
+
         return $this;
     }
 
     /**
-     * Get communsName
+     * Get communsName.
      *
      * @return string $communsName
      */
@@ -817,19 +873,21 @@ class User extends BaseUser
     }
 
     /**
-     * Set communsData
+     * Set communsData.
      *
      * @param string $communsData
+     *
      * @return $this
      */
     public function setCommunsData($communsData)
     {
         $this->communsData = $communsData;
+
         return $this;
     }
 
     /**
-     * Get communsData
+     * Get communsData.
      *
      * @return string $communsData
      */

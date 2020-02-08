@@ -3,11 +3,12 @@
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Accessor;
+use JMS\Serializer\Annotation\Exclude;
 
 /**
- * Category
+ * Category.
+ *
  * @MongoDB\HasLifecycleCallbacks
  * @MongoDB\Document(repositoryClass="App\Repository\CategoryRepository")
  */
@@ -15,7 +16,7 @@ class Category
 {
     /**
      * @var int
-     *  @Exclude
+     * @Exclude
      * @MongoDB\Id(strategy="INCREMENT")
      */
     private $id;
@@ -25,7 +26,7 @@ class Category
      *
      * @MongoDB\Field(type="string")
      */
-    private $name = "";
+    private $name = '';
 
     /**
      * @var string
@@ -145,13 +146,12 @@ class Category
     private $isRootCategory = false;
 
     /**
-    * @Accessor(getter="getOrderedOptions")
-    * Force ordering cause the RefeenceMany sort property does not work when the options order have been modified after been loaded in the original order
-    * @Exclude(if="object.getOptionsCount() == 0")
-    * @MongoDB\ReferenceMany(targetDocument="App\Document\Option", mappedBy="parent", cascade={"persist", "remove"}, sort={"index"="ASC"})
-    */
+     * @Accessor(getter="getOrderedOptions")
+     * Force ordering cause the RefeenceMany sort property does not work when the options order have been modified after been loaded in the original order
+     * @Exclude(if="object.getOptionsCount() == 0")
+     * @MongoDB\ReferenceMany(targetDocument="App\Document\Option", mappedBy="parent", cascade={"persist", "remove"}, sort={"index"="ASC"})
+     */
     private $options;
-
 
     public function __construct()
     {
@@ -160,27 +160,32 @@ class Category
 
     public function __toString()
     {
-        $parentName = $this->getParent() ? $this->getParent()->getName() . '/' : '';
-        return "(Groupe) " . $parentName . $this->getName();
+        $parentName = $this->getParent() ? $this->getParent()->getName().'/' : '';
+
+        return '(Groupe) '.$parentName.$this->getName();
     }
 
     /** @MongoDB\PreFlush */
     public function onPreFlush()
     {
-        $haveNoParent = $this->getParent() === null;
+        $haveNoParent = null === $this->getParent();
         $this->setIsRootCategory($haveNoParent);
     }
 
     public function getOptionsCount()
     {
-        if ($this->options) return $this->options->count();
+        if ($this->options) {
+            return $this->options->count();
+        }
+
         return 0;
     }
 
     public function getOrderedOptions()
     {
         $sortedOptions = is_array($this->options) ? $this->options : $this->options->toArray();
-        usort( $sortedOptions , function ($a, $b) { return $a->getIndex() - $b->getIndex(); });
+        usort($sortedOptions, function ($a, $b) { return $a->getIndex() - $b->getIndex(); });
+
         return $sortedOptions;
     }
 
@@ -195,14 +200,15 @@ class Category
         foreach ($category->getOptions() as $option) {
             $result[] = $option->getId();
             foreach ($option->getSubcategories() as $childCategory) {
-               $result = array_merge($result, $this->recursivelyGetOptionsIds($childCategory));
+                $result = array_merge($result, $this->recursivelyGetOptionsIds($childCategory));
             }
         }
+
         return $result;
     }
 
     /**
-     * Get id
+     * Get id.
      *
      * @return int_id $id
      */
@@ -212,19 +218,21 @@ class Category
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
+     *
      * @return $this
      */
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string $name
      */
@@ -234,19 +242,21 @@ class Category
     }
 
     /**
-     * Set nameShort
+     * Set nameShort.
      *
      * @param string $nameShort
+     *
      * @return $this
      */
     public function setNameShort($nameShort)
     {
         $this->nameShort = $nameShort;
+
         return $this;
     }
 
     /**
-     * Get nameShort
+     * Get nameShort.
      *
      * @return string $nameShort
      */
@@ -256,7 +266,7 @@ class Category
     }
 
     /**
-     * Add option
+     * Add option.
      *
      * @param App\Document\Option $option
      */
@@ -267,7 +277,7 @@ class Category
     }
 
     /**
-     * Remove option
+     * Remove option.
      *
      * @param App\Document\Option $option
      */
@@ -277,7 +287,7 @@ class Category
     }
 
     /**
-     * Get options
+     * Get options.
      *
      * @return \Doctrine\Common\Collections\Collection $options
      */
@@ -287,19 +297,21 @@ class Category
     }
 
     /**
-     * Set index
+     * Set index.
      *
      * @param int $index
+     *
      * @return $this
      */
     public function setIndex($index)
     {
         $this->index = $index;
+
         return $this;
     }
 
     /**
-     * Get index
+     * Get index.
      *
      * @return int $index
      */
@@ -309,21 +321,23 @@ class Category
     }
 
     /**
-     * Set singleOption
+     * Set singleOption.
      *
-     * @param boolean $singleOption
+     * @param bool $singleOption
+     *
      * @return $this
      */
     public function setSingleOption($singleOption)
     {
         $this->singleOption = $singleOption;
+
         return $this;
     }
 
     /**
-     * Get singleOption
+     * Get singleOption.
      *
-     * @return boolean $singleOption
+     * @return bool $singleOption
      */
     public function getSingleOption()
     {
@@ -331,21 +345,23 @@ class Category
     }
 
     /**
-     * Set enableDescription
+     * Set enableDescription.
      *
-     * @param boolean $enableDescription
+     * @param bool $enableDescription
+     *
      * @return $this
      */
     public function setEnableDescription($enableDescription)
     {
         $this->enableDescription = $enableDescription;
+
         return $this;
     }
 
     /**
-     * Get enableDescription
+     * Get enableDescription.
      *
-     * @return boolean $enableDescription
+     * @return bool $enableDescription
      */
     public function getEnableDescription()
     {
@@ -353,19 +369,21 @@ class Category
     }
 
     /**
-     * Set pickingOptionText
+     * Set pickingOptionText.
      *
      * @param string $pickingOptionText
+     *
      * @return $this
      */
     public function setPickingOptionText($pickingOptionText)
     {
         $this->pickingOptionText = $pickingOptionText;
+
         return $this;
     }
 
     /**
-     * Get pickingOptionText
+     * Get pickingOptionText.
      *
      * @return string $pickingOptionText
      */
@@ -375,21 +393,23 @@ class Category
     }
 
     /**
-     * Set showExpanded
+     * Set showExpanded.
      *
-     * @param boolean $showExpanded
+     * @param bool $showExpanded
+     *
      * @return $this
      */
     public function setShowExpanded($showExpanded)
     {
         $this->showExpanded = $showExpanded;
+
         return $this;
     }
 
     /**
-     * Get showExpanded
+     * Get showExpanded.
      *
-     * @return boolean $showExpanded
+     * @return bool $showExpanded
      */
     public function getShowExpanded()
     {
@@ -397,21 +417,23 @@ class Category
     }
 
     /**
-     * Set unexpandable
+     * Set unexpandable.
      *
-     * @param boolean $unexpandable
+     * @param bool $unexpandable
+     *
      * @return $this
      */
     public function setUnexpandable($unexpandable)
     {
         $this->unexpandable = $unexpandable;
+
         return $this;
     }
 
     /**
-     * Get unexpandable
+     * Get unexpandable.
      *
-     * @return boolean $unexpandable
+     * @return bool $unexpandable
      */
     public function getUnexpandable()
     {
@@ -419,9 +441,10 @@ class Category
     }
 
     /**
-     * Set parent
+     * Set parent.
      *
      * @param App\Document\Option $parent
+     *
      * @return $this
      */
     public function setParent($parent, $updateParent = true)
@@ -430,17 +453,21 @@ class Category
             // Circular reference
         } else {
             // clearing old parent
-            if ($updateParent && $this->parent) $this->parent->removeSubcategory($this, false);
+            if ($updateParent && $this->parent) {
+                $this->parent->removeSubcategory($this, false);
+            }
 
             $this->parent = $parent;
-            if ($updateParent && $parent) $parent->addSubcategory($this, false);
+            if ($updateParent && $parent) {
+                $parent->addSubcategory($this, false);
+            }
         }
 
         return $this;
     }
 
     /**
-     * Get parent
+     * Get parent.
      *
      * @return App\Document\Option $parent
      */
@@ -450,21 +477,23 @@ class Category
     }
 
     /**
-     * Set isFixture
+     * Set isFixture.
      *
-     * @param boolean $isFixture
+     * @param bool $isFixture
+     *
      * @return $this
      */
     public function setIsFixture($isFixture)
     {
         $this->isFixture = $isFixture;
+
         return $this;
     }
 
     /**
-     * Get isFixture
+     * Get isFixture.
      *
-     * @return boolean $isFixture
+     * @return bool $isFixture
      */
     public function getIsFixture()
     {
@@ -472,21 +501,23 @@ class Category
     }
 
     /**
-     * Set isMandatory
+     * Set isMandatory.
      *
-     * @param boolean $isMandatory
+     * @param bool $isMandatory
+     *
      * @return $this
      */
     public function setIsMandatory($isMandatory)
     {
         $this->isMandatory = $isMandatory;
+
         return $this;
     }
 
     /**
-     * Get isMandatory
+     * Get isMandatory.
      *
-     * @return boolean $isMandatory
+     * @return bool $isMandatory
      */
     public function getIsMandatory()
     {
@@ -494,21 +525,23 @@ class Category
     }
 
     /**
-     * Set useFreeTags
+     * Set useFreeTags.
      *
-     * @param boolean $useFreeTags
+     * @param bool $useFreeTags
+     *
      * @return $this
      */
     public function setUseFreeTags($useFreeTags)
     {
         $this->useFreeTags = $useFreeTags;
+
         return $this;
     }
 
     /**
-     * Get useFreeTags
+     * Get useFreeTags.
      *
-     * @return boolean $useFreeTags
+     * @return bool $useFreeTags
      */
     public function getUseFreeTags()
     {
@@ -516,21 +549,23 @@ class Category
     }
 
     /**
-     * Set isRootCategory
+     * Set isRootCategory.
      *
-     * @param boolean $isRootCategory
+     * @param bool $isRootCategory
+     *
      * @return $this
      */
     public function setIsRootCategory($isRootCategory)
     {
         $this->isRootCategory = $isRootCategory;
+
         return $this;
     }
 
     /**
-     * Get isRootCategory
+     * Get isRootCategory.
      *
-     * @return boolean $isRootCategory
+     * @return bool $isRootCategory
      */
     public function getIsRootCategory()
     {
@@ -538,21 +573,23 @@ class Category
     }
 
     /**
-     * Set displayInMenu
+     * Set displayInMenu.
      *
-     * @param boolean $displayInMenu
+     * @param bool $displayInMenu
+     *
      * @return $this
      */
     public function setDisplayInMenu($displayInMenu)
     {
         $this->displayInMenu = $displayInMenu;
+
         return $this;
     }
 
     /**
-     * Get displayInMenu
+     * Get displayInMenu.
      *
-     * @return boolean $displayInMenu
+     * @return bool $displayInMenu
      */
     public function getDisplayInMenu()
     {
@@ -560,21 +597,23 @@ class Category
     }
 
     /**
-     * Set displayInInfoBar
+     * Set displayInInfoBar.
      *
-     * @param boolean $displayInInfoBar
+     * @param bool $displayInInfoBar
+     *
      * @return $this
      */
     public function setDisplayInInfoBar($displayInInfoBar)
     {
         $this->displayInInfoBar = $displayInInfoBar;
+
         return $this;
     }
 
     /**
-     * Get displayInInfoBar
+     * Get displayInInfoBar.
      *
-     * @return boolean $displayInInfoBar
+     * @return bool $displayInInfoBar
      */
     public function getDisplayInInfoBar()
     {
@@ -582,21 +621,23 @@ class Category
     }
 
     /**
-     * Set displayInForm
+     * Set displayInForm.
      *
-     * @param boolean $displayInForm
+     * @param bool $displayInForm
+     *
      * @return $this
      */
     public function setDisplayInForm($displayInForm)
     {
         $this->displayInForm = $displayInForm;
+
         return $this;
     }
 
     /**
-     * Get displayInForm
+     * Get displayInForm.
      *
-     * @return boolean $displayInForm
+     * @return bool $displayInForm
      */
     public function getDisplayInForm()
     {
@@ -604,21 +645,23 @@ class Category
     }
 
     /**
-     * Set useForFiltering
+     * Set useForFiltering.
      *
-     * @param boolean $useForFiltering
+     * @param bool $useForFiltering
+     *
      * @return $this
      */
     public function setUseForFiltering($useForFiltering)
     {
         $this->useForFiltering = $useForFiltering;
+
         return $this;
     }
 
     /**
-     * Get useForFiltering
+     * Get useForFiltering.
      *
-     * @return boolean $useForFiltering
+     * @return bool $useForFiltering
      */
     public function getUseForFiltering()
     {
@@ -626,21 +669,23 @@ class Category
     }
 
     /**
-     * Set displaySuboptionsInline
+     * Set displaySuboptionsInline.
      *
-     * @param boolean $displaySuboptionsInline
+     * @param bool $displaySuboptionsInline
+     *
      * @return $this
      */
     public function setDisplaySuboptionsInline($displaySuboptionsInline)
     {
         $this->displaySuboptionsInline = $displaySuboptionsInline;
+
         return $this;
     }
 
     /**
-     * Get displaySuboptionsInline
+     * Get displaySuboptionsInline.
      *
-     * @return boolean $displaySuboptionsInline
+     * @return bool $displaySuboptionsInline
      */
     public function getDisplaySuboptionsInline()
     {

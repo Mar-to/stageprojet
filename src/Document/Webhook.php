@@ -33,13 +33,13 @@ class Webhook
     /** @MongoDB\Field(type="string") */
     public $url;
 
-    function __toString()
+    public function __toString()
     {
-        return $this->getUrl() ? $this->getUrl() : "";
+        return $this->getUrl() ? $this->getUrl() : '';
     }
 
     /**
-     * Get id
+     * Get id.
      *
      * @return int $id
      */
@@ -49,19 +49,21 @@ class Webhook
     }
 
     /**
-     * Set format
+     * Set format.
      *
      * @param string $format
+     *
      * @return $this
      */
     public function setFormat($format)
     {
         $this->format = $format;
+
         return $this;
     }
 
     /**
-     * Get format
+     * Get format.
      *
      * @return string $format
      */
@@ -71,19 +73,21 @@ class Webhook
     }
 
     /**
-     * Set url
+     * Set url.
      *
      * @param string $url
+     *
      * @return $this
      */
     public function setUrl($url)
     {
         $this->url = $url;
+
         return $this;
     }
 
     /**
-     * Get url
+     * Get url.
      *
      * @return string $url
      */

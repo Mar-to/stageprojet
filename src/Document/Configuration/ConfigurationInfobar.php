@@ -19,24 +19,25 @@ class ConfigurationInfobar
     /** @MongoDB\Field(type="string") */
     public $bodyTemplate = null;
 
-     /** @MongoDB\Field(type="bool") */
+    /** @MongoDB\Field(type="bool") */
     public $bodyTemplateUseMarkDown = true;
 
-
     /**
-     * Set width
+     * Set width.
      *
      * @param int $width
+     *
      * @return $this
      */
     public function setWidth($width)
     {
         $this->width = $width;
+
         return $this;
     }
 
     /**
-     * Get width
+     * Get width.
      *
      * @return int $width
      */
@@ -46,19 +47,21 @@ class ConfigurationInfobar
     }
 
     /**
-     * Set bodyTemplate
+     * Set bodyTemplate.
      *
      * @param string $bodyTemplate
+     *
      * @return $this
      */
     public function setBodyTemplate($bodyTemplate)
     {
         $this->bodyTemplate = $bodyTemplate;
+
         return $this;
     }
 
     /**
-     * Get bodyTemplate
+     * Get bodyTemplate.
      *
      * @return string $bodyTemplate
      */
@@ -68,19 +71,21 @@ class ConfigurationInfobar
     }
 
     /**
-     * Set headerTemplate
+     * Set headerTemplate.
      *
      * @param string $headerTemplate
+     *
      * @return $this
      */
     public function setHeaderTemplate($headerTemplate)
     {
         $this->headerTemplate = $headerTemplate;
+
         return $this;
     }
 
     /**
-     * Get headerTemplate
+     * Get headerTemplate.
      *
      * @return string $headerTemplate
      */
@@ -90,19 +95,21 @@ class ConfigurationInfobar
     }
 
     /**
-     * Set headerTemplateUseMarkDown
+     * Set headerTemplateUseMarkDown.
      *
      * @param bool $headerTemplateUseMarkDown
+     *
      * @return $this
      */
     public function setHeaderTemplateUseMarkDown($headerTemplateUseMarkDown)
     {
         $this->headerTemplateUseMarkDown = $headerTemplateUseMarkDown;
+
         return $this;
     }
 
     /**
-     * Get headerTemplateUseMarkDown
+     * Get headerTemplateUseMarkDown.
      *
      * @return bool $headerTemplateUseMarkDown
      */
@@ -112,19 +119,21 @@ class ConfigurationInfobar
     }
 
     /**
-     * Set bodyTemplateUseMarkDown
+     * Set bodyTemplateUseMarkDown.
      *
      * @param bool $bodyTemplateUseMarkDown
+     *
      * @return $this
      */
     public function setBodyTemplateUseMarkDown($bodyTemplateUseMarkDown)
     {
         $this->bodyTemplateUseMarkDown = $bodyTemplateUseMarkDown;
+
         return $this;
     }
 
     /**
-     * Get bodyTemplateUseMarkDown
+     * Get bodyTemplateUseMarkDown.
      *
      * @return bool $bodyTemplateUseMarkDown
      */

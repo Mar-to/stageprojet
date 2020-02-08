@@ -10,55 +10,43 @@
  * @Last Modified time: 2018-01-19 13:04:59
  */
 
-
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-use Symfony\Component\Form\Extension\Core\Type\TimeType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-
-
-
 class DailyTimeSlotType extends AbstractType
 {
-  /**
-   * @param FormBuilderInterface $builder
-   * @param array $options
-   */
-  public function buildForm(FormBuilderInterface $builder, array $options)
-  {
-      $builder->add('slot1start', TimeType::class,array(
-                            'widget' =>'single_text',
-                            'required' => 'false'))
-              ->add('slot1end', TimeType::class,array(
-                            'widget' =>'single_text',
-                            'required' => 'false'))
-              ->add('slot2start', TimeType::class,array(
-                            'widget' =>'single_text',
-                            'required' => 'false'))
-              ->add('slot2end', TimeType::class,array(
-                            'widget' =>'single_text',
-                            'required' => 'false'));
-  }
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder->add('slot1start', TimeType::class, [
+                            'widget' => 'single_text',
+                            'required' => 'false', ])
+              ->add('slot1end', TimeType::class, [
+                            'widget' => 'single_text',
+                            'required' => 'false', ])
+              ->add('slot2start', TimeType::class, [
+                            'widget' => 'single_text',
+                            'required' => 'false', ])
+              ->add('slot2end', TimeType::class, [
+                            'widget' => 'single_text',
+                            'required' => 'false', ]);
+    }
 
-  /**
-   * @param OptionsResolver $resolver
-   */
-  public function configureOptions(OptionsResolver $resolver)
-  {
-      $resolver->setDefaults(array(
-          'data_class' => 'App\Document\DailyTimeSlot'
-      ));
-  }
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+          'data_class' => 'App\Document\DailyTimeSlot',
+      ]);
+    }
 
-  /**
-  * @return string
-  */
-  public function getName()
-  {
-    return 'gogo_elementbundle_dayhoraire';
-  }
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return 'gogo_elementbundle_dayhoraire';
+    }
 }

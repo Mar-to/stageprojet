@@ -11,21 +11,21 @@
 
 namespace App\Application\Sonata\UserBundle\Controller;
 
+use App\Application\Sonata\UserBundle\Form\Handler\RegistrationFormHandler;
+use App\Application\Sonata\UserBundle\Form\Type\RegistrationFormType;
+use App\Document\User;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use FOS\UserBundle\Doctrine\UserManager;
 use FOS\UserBundle\Model\UserInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\AccountStatusException;
 
-use App\Application\Sonata\UserBundle\Form\Type\RegistrationFormType;
-use App\Document\User;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use FOS\UserBundle\Doctrine\UserManager;
-use App\Application\Sonata\UserBundle\Form\Handler\RegistrationFormHandler;
 /**
  * This class is inspired from the FOS RegistrationController.
  *
@@ -42,6 +42,7 @@ class RegistrationFOSUser1Controller extends Controller
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
         if (!$config->getUser()->getEnableRegistration()) {
             $session->getFlashBag()->add('error', "Désolé, vous n'êtes pas autorisé à créer un compte.");
+
             return $this->redirectToRoute('gogo_directory');
         }
 
@@ -185,9 +186,6 @@ class RegistrationFOSUser1Controller extends Controller
 
     /**
      * Authenticate a user with Symfony Security.
-     *
-     * @param UserInterface $user
-     * @param Response      $response
      */
     protected function authenticateUser(UserInterface $user, Response $response)
     {

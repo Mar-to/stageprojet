@@ -11,16 +11,14 @@
 
 namespace App\Application\Sonata\UserBundle\Form\Handler;
 
-use FOS\UserBundle\Model\UserManagerInterface;
-use FOS\UserBundle\Model\UserInterface;
-use FOS\UserBundle\Mailer\MailerInterface;
-use FOS\UserBundle\Util\TokenGeneratorInterface;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Form\FormError;
 use App\Document\Coordinates;
+use FOS\UserBundle\Mailer\MailerInterface;
+use FOS\UserBundle\Model\UserInterface;
+use FOS\UserBundle\Model\UserManagerInterface;
+use FOS\UserBundle\Util\TokenGeneratorInterface;
 use Geocoder\ProviderAggregator;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class RegistrationFormHandler
 {
@@ -38,7 +36,7 @@ class RegistrationFormHandler
     }
 
     /**
-     * @param boolean $confirmation
+     * @param bool $confirmation
      */
     public function process($form, $confirmation = false)
     {
@@ -52,35 +50,41 @@ class RegistrationFormHandler
             $user = $form->getData();
 
             $usersSameEmail = $this->userManager->findUserByEmail($user->getEmail());
-            $alreadyUsedEmail = $usersSameEmail === null ? false : count($usersSameEmail) > 1;
+            $alreadyUsedEmail = null === $usersSameEmail ? false : count($usersSameEmail) > 1;
 
-            $userSameName   = $this->userManager->findUserByUsername($user->getUsername());
-            $alreadyUsedUserName = $userSameName === null ? false : count($userSameName);
+            $userSameName = $this->userManager->findUserByUsername($user->getUsername());
+            $alreadyUsedUserName = null === $userSameName ? false : count($userSameName);
 
             $locoationSetToReceiveNewsletter = $user->getNewsletterFrequency() > 0 && !$user->getLocation();
 
             $geocodeError = false;
             if ($user->getLocation()) {
-                try
-                {
+                try {
                     $geocoded = $this->geocoder->using('google_maps')->geocode($user->getLocation())
                                 ->first()->getCoordinates();
                     $user->setGeo(new Coordinates($geocoded->getLatitude(), $geocoded->getLongitude()));
+                } catch (\Exception $error) {
+                    $geocodeError = true;
                 }
-                catch (\Exception $error) { $geocodeError = true; }
             }
 
-            if ($form->isSubmitted() && $form->isValid() && !$alreadyUsedEmail && !$alreadyUsedUserName && !$locoationSetToReceiveNewsletter && !$geocodeError)
-            {
+            if ($form->isSubmitted() && $form->isValid() && !$alreadyUsedEmail && !$alreadyUsedUserName && !$locoationSetToReceiveNewsletter && !$geocodeError) {
                 $this->onSuccess($user, $confirmation);
+
                 return true;
-            }
-            else
-            {
-               if ($alreadyUsedEmail) $form->get('email')->addError(new FormError('Cet email est déjà utilisé'));
-               if ($alreadyUsedUserName) $form->get('username')->addError(new FormError("Ce nom d'utilisateur est déjà pris !"));
-               if ($locoationSetToReceiveNewsletter) $form->get('location')->addError(new FormError("Si vous voulez recevoir les nouveaux ajouts, vous devez renseigner une adresse"));
-               if ($geocodeError) $form->get('location')->addError(new FormError("Impossible de localiser cette adresse"));
+            } else {
+                if ($alreadyUsedEmail) {
+                    $form->get('email')->addError(new FormError('Cet email est déjà utilisé'));
+                }
+                if ($alreadyUsedUserName) {
+                    $form->get('username')->addError(new FormError("Ce nom d'utilisateur est déjà pris !"));
+                }
+                if ($locoationSetToReceiveNewsletter) {
+                    $form->get('location')->addError(new FormError('Si vous voulez recevoir les nouveaux ajouts, vous devez renseigner une adresse'));
+                }
+                if ($geocodeError) {
+                    $form->get('location')->addError(new FormError('Impossible de localiser cette adresse'));
+                }
             }
         }
 
@@ -88,7 +92,7 @@ class RegistrationFormHandler
     }
 
     /**
-     * @param boolean $confirmation
+     * @param bool $confirmation
      */
     protected function onSuccess(UserInterface $user, $confirmation)
     {

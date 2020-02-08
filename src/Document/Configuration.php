@@ -2,20 +2,19 @@
 
 namespace App\Document;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use Gedmo\Mapping\Annotation as Gedmo;
-use App\Document\ConfImage;
-use App\Document\Configuration\ConfigurationUser;
-use App\Document\Configuration\ConfigurationMenu;
-use App\Document\Configuration\ConfigurationInfobar;
 use App\Document\Configuration\ConfigurationApi;
 use App\Document\Configuration\ConfigurationHome;
+use App\Document\Configuration\ConfigurationInfobar;
 use App\Document\Configuration\ConfigurationMarker;
+use App\Document\Configuration\ConfigurationMenu;
+use App\Document\Configuration\ConfigurationUser;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Gedmo\Mapping\Annotation as Gedmo;
 use OzdemirBurak\Iris\Color\Hex;
 use OzdemirBurak\Iris\Color\Rgba;
 
 /**
- * Main Configuration
+ * Main Configuration.
  *
  * @MongoDB\Document(repositoryClass="App\Repository\ConfigurationRepository")
  */
@@ -25,7 +24,7 @@ class Configuration implements \JsonSerializable
     private $id;
 
     /** @MongoDB\Field(type="string") */
-    protected $dbName = "gogocarto_default";
+    protected $dbName = 'gogocarto_default';
 
     // ----------------------------
     // --------- BASICS -----------
@@ -38,9 +37,9 @@ class Configuration implements \JsonSerializable
     protected $appNameShort;
 
     /**
-    * @MongoDB\Field(type="string")
-    * @Gedmo\Slug(fields={"appName"}, updatable=false)
-    */
+     * @MongoDB\Field(type="string")
+     * @Gedmo\Slug(fields={"appName"}, updatable=false)
+     */
     protected $appSlug;
 
     /** @MongoDB\Field(type="string") */
@@ -51,7 +50,7 @@ class Configuration implements \JsonSerializable
     protected $appTags;
 
     /** @MongoDB\Field(type="string") */
-    protected $dataLicenseUrl = "https://opendatacommons.org/licenses/odbl/summary/";
+    protected $dataLicenseUrl = 'https://opendatacommons.org/licenses/odbl/summary/';
 
     // ----------------------------
     // --------- IMAGES -----------
@@ -75,16 +74,16 @@ class Configuration implements \JsonSerializable
     // The strings to describe an element of the directory (it can be a "point" an "organization" ...)
 
     /** @MongoDB\Field(type="string") */
-    protected $elementDisplayName = "élément"; // element
+    protected $elementDisplayName = 'élément'; // element
 
     /** @MongoDB\Field(type="string") */
     protected $elementDisplayNameDefinite = "l'élément"; // the element
 
     /** @MongoDB\Field(type="string") */
-    protected $elementDisplayNameIndefinite = "un élément"; // an element
+    protected $elementDisplayNameIndefinite = 'un élément'; // an element
 
     /** @MongoDB\Field(type="string") */
-    protected $elementDisplayNamePlural = "éléments"; // elements
+    protected $elementDisplayNamePlural = 'éléments'; // elements
 
     // ----------------------------
     // --------- GENRAL -----------
@@ -184,7 +183,7 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\EmbedOne(targetDocument="App\Document\InteractionConfiguration") */
     protected $editFeature;
 
-     /** @MongoDB\EmbedOne(targetDocument="App\Document\InteractionConfiguration") */
+    /** @MongoDB\EmbedOne(targetDocument="App\Document\InteractionConfiguration") */
     protected $deleteFeature;
 
     /** @MongoDB\EmbedOne(targetDocument="App\Document\InteractionConfiguration") */
@@ -211,7 +210,6 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\Field(type="string") */
     protected $collaborativeModerationExplanations;
 
-
     // -------------------------
     // --------- MAP -----------
     // -------------------------
@@ -231,13 +229,13 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\Field(type="float") */
     protected $defaultNorthEastBoundsLat;
 
-     /** @MongoDB\Field(type="float") */
+    /** @MongoDB\Field(type="float") */
     protected $defaultNorthEastBoundsLng;
 
-     /** @MongoDB\Field(type="float") */
+    /** @MongoDB\Field(type="float") */
     protected $defaultSouthWestBoundsLat;
 
-     /** @MongoDB\Field(type="float") */
+    /** @MongoDB\Field(type="float") */
     protected $defaultSouthWestBoundsLng;
 
     /** @MongoDB\Field(type="bool") */
@@ -245,9 +243,6 @@ class Configuration implements \JsonSerializable
 
     /** @MongoDB\Field(type="bool") */
     protected $saveTileLayerInCookies = true;
-
-
-
 
     // -------------------------
     // ------ MAP POPUP --------
@@ -261,7 +256,6 @@ class Configuration implements \JsonSerializable
 
     /** @MongoDB\Field(type="bool") */
     protected $customPopupShowOnlyOnce;
-
 
     // ----------------------------
     // ---------- MAILS -----------
@@ -292,8 +286,6 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\EmbedOne(targetDocument="App\Document\AutomatedMailConfiguration") */
     protected $newsletterMail;
 
-
-
     // ----------------------------
     // ---------- FORM ------------
     // ----------------------------
@@ -313,7 +305,6 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\Field(type="string") */
     protected $elementFormFieldsJson = "[{\"type\":\"taxonomy\",\"label\":\"Choisissez la ou les catégories par ordre d'importance\",\"name\":\"taxonomy\"},{\"type\":\"separator\",\"label\":\"Séparateur de section\",\"name\":\"separator-1539422234804\"},{\"type\":\"header\",\"subtype\":\"h1\",\"label\":\"Informations\"},{\"type\":\"title\",\"required\":true,\"label\":\"Titre de la fiche\",\"name\":\"name\",\"maxlength\":\"80\",\"icon\":\"gogo-icon-account-circle\"},{\"type\":\"textarea\",\"required\":true,\"label\":\"Description courte\",\"name\":\"description\",\"subtype\":\"textarea\",\"maxlength\":\"250\"},{\"type\":\"textarea\",\"label\":\"Description longue\",\"name\":\"descriptionMore\",\"subtype\":\"textarea\",\"maxlength\":\"600\"},{\"type\":\"address\",\"label\":\"Adresse complète\",\"name\":\"address\",\"icon\":\"gogo-icon-marker-symbol\"},{\"type\":\"separator\",\"label\":\"Séparateur de section\",\"name\":\"separator-1539423917238\"},{\"type\":\"header\",\"subtype\":\"h1\",\"label\":\"Contact (optionnel)\"},{\"type\":\"text\",\"subtype\":\"tel\",\"label\":\"Téléphone\",\"name\":\"telephone\"},{\"type\":\"email\",\"label\":\"Mail\",\"name\":\"email\"},{\"type\":\"text\",\"subtype\":\"url\",\"label\":\"Site web\",\"name\":\"website\"},{\"type\":\"separator\",\"label\":\"Séparateur de section\",\"name\":\"separator-1539424058076\"},{\"type\":\"header\",\"subtype\":\"h1\",\"label\":\"Horaires (optionnel)\"},{\"type\":\"openhours\",\"label\":\"Horaires\",\"name\":\"openhours\"}]";
 
-
     // ----------------------------
     // -------- IMPORTS -----------
     // ----------------------------
@@ -323,7 +314,6 @@ class Configuration implements \JsonSerializable
 
     /** @MongoDB\Field(type="string") */
     protected $iconImport;
-
 
     // -------------------------
     // --------- STYLE ---------
@@ -403,7 +393,6 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\Field(type="string") */
     protected $interactiveSectionColor;
 
-
     // -------------------------
     // ---- CUSTOM ASSETS ------
     // -------------------------
@@ -427,10 +416,9 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\EmbedOne(targetDocument="App\Document\Configuration\ConfigurationApi") */
     protected $api;
 
-
     public function __toString()
     {
-        return "Configuration Générale";
+        return 'Configuration Générale';
     }
 
     public function __construct()
@@ -479,7 +467,7 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Get id
+     * Get id.
      *
      * @return int_id $id
      */
@@ -491,24 +479,29 @@ class Configuration implements \JsonSerializable
     public function getColor($colorString)
     {
         try {
-            if (strpos($colorString, '#') !== false) return new Hex($colorString);
-            else return new Rgba($colorString);
+            if (false !== strpos($colorString, '#')) {
+                return new Hex($colorString);
+            } else {
+                return new Rgba($colorString);
+            }
         } catch (\Exception $e) {
-            return new Hex("#000");
+            return new Hex('#000');
         }
     }
+
     public function getDefaultColor($colorName)
     {
-        $method = "getDefault" . ucfirst($colorName);
-        if (method_exists($this, $method))
+        $method = 'getDefault'.ucfirst($colorName);
+        if (method_exists($this, $method)) {
             return $this->$method();
-        else
+        } else {
             return null;
+        }
     }
 
     public function getDefaultBounds()
     {
-        return [ [$this->defaultNorthEastBoundsLat, $this->defaultNorthEastBoundsLng], [$this->defaultSouthWestBoundsLat, $this->defaultSouthWestBoundsLng] ];
+        return [[$this->defaultNorthEastBoundsLat, $this->defaultNorthEastBoundsLng], [$this->defaultSouthWestBoundsLat, $this->defaultSouthWestBoundsLng]];
     }
 
     public function getElementFormFields()
@@ -516,41 +509,43 @@ class Configuration implements \JsonSerializable
         return json_decode($this->getElementFormFieldsJson());
     }
 
-
     /* --------------------------------------- */
     /*              DEFAULT COLORS
     /* ---------------------------------------- */
 
-        public function getDefaultSecondaryColor()
+    public function getDefaultSecondaryColor()
     {
         return $this->secondaryColor ? $this->secondaryColor : $this->primaryColor;
     }
 
     public function getDefaultBackgroundColor()
     {
-        return $this->backgroundColor ? $this->backgroundColor : "#ffffff";
+        return $this->backgroundColor ? $this->backgroundColor : '#ffffff';
     }
 
     public function getDefaultHeaderColor()
     {
-        return $this->headerColor ? $this->headerColor : ($this->theme == "transiscope" ? "#ffffff" : $this->getDefaultTextDarkColor());
+        return $this->headerColor ? $this->headerColor : ('transiscope' == $this->theme ? '#ffffff' : $this->getDefaultTextDarkColor());
     }
 
     public function getDefaultDisableColor()
     {
-        if ($this->disableColor) return $this->disableColor;
+        if ($this->disableColor) {
+            return $this->disableColor;
+        }
         $textColor = $this->getColor($this->getDefaultTextContentColor());
+
         return $textColor->isDark() ? $textColor->lighten(40)->__toString() : $textColor->darken(40)->__toString();
     }
 
     public function getDefaultSearchBarColor()
     {
-        return $this->searchBarColor ? $this->searchBarColor : ($this->theme == "transiscope" ? $this->getDefaultTextDarkColor() : $this->primaryColor);
+        return $this->searchBarColor ? $this->searchBarColor : ('transiscope' == $this->theme ? $this->getDefaultTextDarkColor() : $this->primaryColor);
     }
 
     public function getDefaultPendingColor()
     {
-        return $this->pendingColor ? $this->pendingColor : "#555555";
+        return $this->pendingColor ? $this->pendingColor : '#555555';
     }
 
     public function getDefaultInteractiveSectionColor()
@@ -560,7 +555,7 @@ class Configuration implements \JsonSerializable
 
     public function getDefaultContentBackgroundColor()
     {
-        return $this->contentBackgroundColor ? $this->contentBackgroundColor : "#ffffff";
+        return $this->contentBackgroundColor ? $this->contentBackgroundColor : '#ffffff';
     }
 
     public function getDefaultContentBackgroundElementBodyColor()
@@ -572,44 +567,60 @@ class Configuration implements \JsonSerializable
     {
         $content = $this->getColor($this->getDefaultContentBackgroundColor());
         $background = $this->getColor($this->getDefaultBackgroundColor());
-        if ($content->isDark())
+        if ($content->isDark()) {
             return $background->isDark() ? $background : $content->lighten(10);
-        else
+        } else {
             return $background->isLight() ? $background : $content->darken(10);
+        }
     }
 
     public function getDefaultTextDarkColor()
     {
-        if ($this->textDarkColor) return $this->textDarkColor;
+        if ($this->textDarkColor) {
+            return $this->textDarkColor;
+        }
         $textColor = $this->getColor($this->textColor);
-        return $textColor->isDark() ? $this->textColor : "#272727";
+
+        return $textColor->isDark() ? $this->textColor : '#272727';
     }
 
     public function getDefaultTextDarkSoftColor()
     {
-        if ($this->textDarkSoftColor) return $this->textDarkSoftColor;
+        if ($this->textDarkSoftColor) {
+            return $this->textDarkSoftColor;
+        }
         $color = $this->getColor($this->getDefaultTextDarkColor());
+
         return $color->lighten(15)->__toString();
     }
 
     public function getDefaultTextLightColor()
     {
-        if ($this->textLightColor) return $this->textLightColor;
+        if ($this->textLightColor) {
+            return $this->textLightColor;
+        }
         $textColor = $this->getColor($this->textColor);
-        return $textColor->isLight() ? $this->textColor : "#ffffff";
+
+        return $textColor->isLight() ? $this->textColor : '#ffffff';
     }
 
     public function getDefaultTextLightSoftColor()
     {
-        if ($this->textLightSoftColor) return $this->textLightSoftColor;
+        if ($this->textLightSoftColor) {
+            return $this->textLightSoftColor;
+        }
         $color = $this->getColor($this->getDefaultTextLightColor());
+
         return $color->darken(15)->__toString();
     }
 
     public function getDefaultHeaderTextColor()
     {
-        if ($this->headerTextColor) return $this->headerTextColor;
+        if ($this->headerTextColor) {
+            return $this->headerTextColor;
+        }
         $headerBgd = $this->getColor($this->getDefaultHeaderColor());
+
         return $headerBgd->isLight() ? $this->getDefaultTextDarkColor() : $this->getDefaultTextLightColor();
     }
 
@@ -621,23 +632,26 @@ class Configuration implements \JsonSerializable
     public function getDefaultTextContentColor()
     {
         $contentBgd = $this->getColor($this->getDefaultContentBackgroundColor());
+
         return $contentBgd->isLight() ? $this->getDefaultTextDarkColor() : $this->getDefaultTextLightColor();
     }
 
     public function getDefaultTextSoftContentColor()
     {
         $contentBgd = $this->getColor($this->getDefaultContentBackgroundColor());
+
         return $contentBgd->isLight() ? $this->getDefaultTextDarkSoftColor() : $this->getDefaultTextLightSoftColor();
     }
 
     public function getDefaultErrorColor()
     {
-        return $this->errorColor ? $this->errorColor : "#B90303";
+        return $this->errorColor ? $this->errorColor : '#B90303';
     }
 
     public function getDefaultModalBackgroundColor()
     {
         $contentBgd = $this->getColor($this->getDefaultContentBackgroundColor());
+
         return $contentBgd->isDark() ? $this->getDefaultContentBackgroundColor() : $this->getDefaultTextDarkColor();
     }
 
@@ -650,21 +664,22 @@ class Configuration implements \JsonSerializable
     /*             END DEFAULT COLORS
     /* ---------------------------------------- */
 
-
     /**
-     * Set favoriteFeature
+     * Set favoriteFeature.
      *
      * @param App\Document\FeatureConfiguration $favoriteFeature
+     *
      * @return $this
      */
     public function setFavoriteFeature(\App\Document\FeatureConfiguration $favoriteFeature)
     {
         $this->favoriteFeature = $favoriteFeature;
+
         return $this;
     }
 
     /**
-     * Get favoriteFeature
+     * Get favoriteFeature.
      *
      * @return App\Document\FeatureConfiguration $favoriteFeature
      */
@@ -674,19 +689,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set shareFeature
+     * Set shareFeature.
      *
      * @param App\Document\FeatureConfiguration $shareFeature
+     *
      * @return $this
      */
     public function setShareFeature(\App\Document\FeatureConfiguration $shareFeature)
     {
         $this->shareFeature = $shareFeature;
+
         return $this;
     }
 
     /**
-     * Get shareFeature
+     * Get shareFeature.
      *
      * @return App\Document\FeatureConfiguration $shareFeature
      */
@@ -696,19 +713,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set exportIframeFeature
+     * Set exportIframeFeature.
      *
      * @param App\Document\FeatureConfiguration $exportIframeFeature
+     *
      * @return $this
      */
     public function setExportIframeFeature(\App\Document\FeatureConfiguration $exportIframeFeature)
     {
         $this->exportIframeFeature = $exportIframeFeature;
+
         return $this;
     }
 
     /**
-     * Get exportIframeFeature
+     * Get exportIframeFeature.
      *
      * @return App\Document\FeatureConfiguration $exportIframeFeature
      */
@@ -718,19 +737,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set directionsFeature
+     * Set directionsFeature.
      *
      * @param App\Document\FeatureConfiguration $directionsFeature
+     *
      * @return $this
      */
     public function setDirectionsFeature(\App\Document\FeatureConfiguration $directionsFeature)
     {
         $this->directionsFeature = $directionsFeature;
+
         return $this;
     }
 
     /**
-     * Get directionsFeature
+     * Get directionsFeature.
      *
      * @return App\Document\FeatureConfiguration $directionsFeature
      */
@@ -740,19 +761,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set reportFeature
+     * Set reportFeature.
      *
      * @param App\Document\FeatureConfiguration $reportFeature
+     *
      * @return $this
      */
     public function setReportFeature(\App\Document\FeatureConfiguration $reportFeature)
     {
         $this->reportFeature = $reportFeature;
+
         return $this;
     }
 
     /**
-     * Get reportFeature
+     * Get reportFeature.
      *
      * @return App\Document\FeatureConfiguration $reportFeature
      */
@@ -762,19 +785,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set pendingFeature
+     * Set pendingFeature.
      *
      * @param App\Document\FeatureConfiguration $pendingFeature
+     *
      * @return $this
      */
     public function setPendingFeature(\App\Document\FeatureConfiguration $pendingFeature)
     {
         $this->pendingFeature = $pendingFeature;
+
         return $this;
     }
 
     /**
-     * Get pendingFeature
+     * Get pendingFeature.
      *
      * @return App\Document\FeatureConfiguration $pendingFeature
      */
@@ -784,19 +809,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set addFeature
+     * Set addFeature.
      *
      * @param App\Document\FeatureConfiguration $addFeature
+     *
      * @return $this
      */
     public function setAddFeature(\App\Document\InteractionConfiguration $addFeature)
     {
         $this->addFeature = $addFeature;
+
         return $this;
     }
 
     /**
-     * Get addFeature
+     * Get addFeature.
      *
      * @return App\Document\FeatureConfiguration $addFeature
      */
@@ -806,19 +833,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set editFeature
+     * Set editFeature.
      *
      * @param App\Document\FeatureConfiguration $editFeature
+     *
      * @return $this
      */
     public function setEditFeature(\App\Document\InteractionConfiguration $editFeature)
     {
         $this->editFeature = $editFeature;
+
         return $this;
     }
 
     /**
-     * Get editFeature
+     * Get editFeature.
      *
      * @return App\Document\FeatureConfiguration $editFeature
      */
@@ -828,19 +857,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set deleteFeature
+     * Set deleteFeature.
      *
      * @param App\Document\FeatureConfiguration $deleteFeature
+     *
      * @return $this
      */
     public function setDeleteFeature(\App\Document\InteractionConfiguration $deleteFeature)
     {
         $this->deleteFeature = $deleteFeature;
+
         return $this;
     }
 
     /**
-     * Get deleteFeature
+     * Get deleteFeature.
      *
      * @return App\Document\FeatureConfiguration $deleteFeature
      */
@@ -850,19 +881,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set collaborativeModeration
+     * Set collaborativeModeration.
      *
      * @param App\Document\FeatureConfiguration $collaborativeModeration
+     *
      * @return $this
      */
     public function setCollaborativeModeration(\App\Document\InteractionConfiguration $collaborativeModeration)
     {
         $this->collaborativeModeration = $collaborativeModeration;
+
         return $this;
     }
 
     /**
-     * Get collaborativeModeration
+     * Get collaborativeModeration.
      *
      * @return App\Document\FeatureConfiguration $collaborativeModeration
      */
@@ -872,19 +905,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set directModeration
+     * Set directModeration.
      *
      * @param App\Document\FeatureConfiguration $directModeration
+     *
      * @return $this
      */
     public function setDirectModeration(\App\Document\InteractionConfiguration $directModeration)
     {
         $this->directModeration = $directModeration;
+
         return $this;
     }
 
     /**
-     * Get directModeration
+     * Get directModeration.
      *
      * @return App\Document\FeatureConfiguration $directModeration
      */
@@ -894,19 +929,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set minVoteToChangeStatus
+     * Set minVoteToChangeStatus.
      *
      * @param int $minVoteToChangeStatus
+     *
      * @return $this
      */
     public function setMinVoteToChangeStatus($minVoteToChangeStatus)
     {
         $this->minVoteToChangeStatus = $minVoteToChangeStatus;
+
         return $this;
     }
 
     /**
-     * Get minVoteToChangeStatus
+     * Get minVoteToChangeStatus.
      *
      * @return int $minVoteToChangeStatus
      */
@@ -916,19 +953,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set maxOppositeVoteTolerated
+     * Set maxOppositeVoteTolerated.
      *
      * @param int $maxOppositeVoteTolerated
+     *
      * @return $this
      */
     public function setMaxOppositeVoteTolerated($maxOppositeVoteTolerated)
     {
         $this->maxOppositeVoteTolerated = $maxOppositeVoteTolerated;
+
         return $this;
     }
 
     /**
-     * Get maxOppositeVoteTolerated
+     * Get maxOppositeVoteTolerated.
      *
      * @return int $maxOppositeVoteTolerated
      */
@@ -938,19 +977,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set minDayBetweenContributionAndCollaborativeValidation
+     * Set minDayBetweenContributionAndCollaborativeValidation.
      *
      * @param int $minDayBetweenContributionAndCollaborativeValidation
+     *
      * @return $this
      */
     public function setMinDayBetweenContributionAndCollaborativeValidation($minDayBetweenContributionAndCollaborativeValidation)
     {
         $this->minDayBetweenContributionAndCollaborativeValidation = $minDayBetweenContributionAndCollaborativeValidation;
+
         return $this;
     }
 
     /**
-     * Get minDayBetweenContributionAndCollaborativeValidation
+     * Get minDayBetweenContributionAndCollaborativeValidation.
      *
      * @return int $minDayBetweenContributionAndCollaborativeValidation
      */
@@ -960,19 +1001,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set defaultTileLayer
+     * Set defaultTileLayer.
      *
      * @param App\Document\TileLayer $defaultTileLayer
+     *
      * @return $this
      */
     public function setDefaultTileLayer(\App\Document\TileLayer $defaultTileLayer)
     {
         $this->defaultTileLayer = $defaultTileLayer;
+
         return $this;
     }
 
     /**
-     * Get defaultTileLayer
+     * Get defaultTileLayer.
      *
      * @return App\Document\TileLayer $defaultTileLayer
      */
@@ -982,19 +1025,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set defaultNorthEastBoundsLat
+     * Set defaultNorthEastBoundsLat.
      *
      * @param float $defaultNorthEastBoundsLat
+     *
      * @return $this
      */
     public function setDefaultNorthEastBoundsLat($defaultNorthEastBoundsLat)
     {
         $this->defaultNorthEastBoundsLat = $defaultNorthEastBoundsLat;
+
         return $this;
     }
 
     /**
-     * Get defaultNorthEastBoundsLat
+     * Get defaultNorthEastBoundsLat.
      *
      * @return float $defaultNorthEastBoundsLat
      */
@@ -1004,19 +1049,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set defaultNorthEastBoundsLng
+     * Set defaultNorthEastBoundsLng.
      *
      * @param float $defaultNorthEastBoundsLng
+     *
      * @return $this
      */
     public function setDefaultNorthEastBoundsLng($defaultNorthEastBoundsLng)
     {
         $this->defaultNorthEastBoundsLng = $defaultNorthEastBoundsLng;
+
         return $this;
     }
 
     /**
-     * Get defaultNorthEastBoundsLng
+     * Get defaultNorthEastBoundsLng.
      *
      * @return float $defaultNorthEastBoundsLng
      */
@@ -1026,19 +1073,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set defaultSouthWestBoundsLat
+     * Set defaultSouthWestBoundsLat.
      *
      * @param float $defaultSouthWestBoundsLat
+     *
      * @return $this
      */
     public function setDefaultSouthWestBoundsLat($defaultSouthWestBoundsLat)
     {
         $this->defaultSouthWestBoundsLat = $defaultSouthWestBoundsLat;
+
         return $this;
     }
 
     /**
-     * Get defaultSouthWestBoundsLat
+     * Get defaultSouthWestBoundsLat.
      *
      * @return float $defaultSouthWestBoundsLat
      */
@@ -1048,19 +1097,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set defaultSouthWestBoundsLng
+     * Set defaultSouthWestBoundsLng.
      *
      * @param float $defaultSouthWestBoundsLng
+     *
      * @return $this
      */
     public function setDefaultSouthWestBoundsLng($defaultSouthWestBoundsLng)
     {
         $this->defaultSouthWestBoundsLng = $defaultSouthWestBoundsLng;
+
         return $this;
     }
 
     /**
-     * Get defaultSouthWestBoundsLng
+     * Get defaultSouthWestBoundsLng.
      *
      * @return float $defaultSouthWestBoundsLng
      */
@@ -1070,20 +1121,24 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set primaryColor
+     * Set primaryColor.
      *
      * @param string $primaryColor
+     *
      * @return $this
      */
     public function setPrimaryColor($primaryColor)
     {
-        if (strlen($primaryColor) == 6) $primaryColor = '#' . $primaryColor;
+        if (6 == strlen($primaryColor)) {
+            $primaryColor = '#'.$primaryColor;
+        }
         $this->primaryColor = $primaryColor;
+
         return $this;
     }
 
     /**
-     * Get primaryColor
+     * Get primaryColor.
      *
      * @return string $primaryColor
      */
@@ -1093,32 +1148,38 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set secondaryColor
+     * Set secondaryColor.
      *
      * @param string $secondaryColor
+     *
      * @return $this
      */
     public function setSecondaryColor($secondaryColor)
     {
-        if (strlen($secondaryColor) == 6) $secondaryColor = '#' . $secondaryColor;
+        if (6 == strlen($secondaryColor)) {
+            $secondaryColor = '#'.$secondaryColor;
+        }
         $this->secondaryColor = $secondaryColor;
+
         return $this;
     }
 
     /**
-     * Set collaborativeModerationFeature
+     * Set collaborativeModerationFeature.
      *
      * @param App\Document\FeatureConfiguration $collaborativeModerationFeature
+     *
      * @return $this
      */
     public function setCollaborativeModerationFeature(\App\Document\FeatureConfiguration $collaborativeModerationFeature)
     {
         $this->collaborativeModerationFeature = $collaborativeModerationFeature;
+
         return $this;
     }
 
     /**
-     * Get collaborativeModerationFeature
+     * Get collaborativeModerationFeature.
      *
      * @return App\Document\FeatureConfiguration $collaborativeModerationFeature
      */
@@ -1128,19 +1189,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set directModerationFeature
+     * Set directModerationFeature.
      *
      * @param App\Document\FeatureConfiguration $directModerationFeature
+     *
      * @return $this
      */
     public function setDirectModerationFeature(\App\Document\FeatureConfiguration $directModerationFeature)
     {
         $this->directModerationFeature = $directModerationFeature;
+
         return $this;
     }
 
     /**
-     * Get directModerationFeature
+     * Get directModerationFeature.
      *
      * @return App\Document\FeatureConfiguration $directModerationFeature
      */
@@ -1150,19 +1213,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set mainFont
+     * Set mainFont.
      *
      * @param string $mainFont
+     *
      * @return $this
      */
     public function setMainFont($mainFont)
     {
         $this->mainFont = $mainFont;
+
         return $this;
     }
 
     /**
-     * Get mainFont
+     * Get mainFont.
      *
      * @return string $mainFont
      */
@@ -1172,19 +1237,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set titleFont
+     * Set titleFont.
      *
      * @param string $titleFont
+     *
      * @return $this
      */
     public function setTitleFont($titleFont)
     {
         $this->titleFont = $titleFont;
+
         return $this;
     }
 
     /**
-     * Get titleFont
+     * Get titleFont.
      *
      * @return string $titleFont
      */
@@ -1194,19 +1261,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set customCSS
+     * Set customCSS.
      *
      * @param string $customCSS
+     *
      * @return $this
      */
     public function setCustomCSS($customCSS)
     {
         $this->customCSS = $customCSS;
+
         return $this;
     }
 
     /**
-     * Get customCSS
+     * Get customCSS.
      *
      * @return string $customCSS
      */
@@ -1216,19 +1285,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set sendMailFeature
+     * Set sendMailFeature.
      *
      * @param App\Document\InteractionConfiguration $sendMailFeature
+     *
      * @return $this
      */
     public function setSendMailFeature(\App\Document\InteractionConfiguration $sendMailFeature)
     {
         $this->sendMailFeature = $sendMailFeature;
+
         return $this;
     }
 
     /**
-     * Get sendMailFeature
+     * Get sendMailFeature.
      *
      * @return App\Document\InteractionConfiguration $sendMailFeature
      */
@@ -1238,19 +1309,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set customJavascript
+     * Set customJavascript.
      *
      * @param string $customJavascript
+     *
      * @return $this
      */
     public function setCustomJavascript($customJavascript)
     {
         $this->customJavascript = $customJavascript;
+
         return $this;
     }
 
     /**
-     * Get customJavascript
+     * Get customJavascript.
      *
      * @return string $customJavascript
      */
@@ -1260,19 +1333,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set appName
+     * Set appName.
      *
      * @param string $appName
+     *
      * @return $this
      */
     public function setAppName($appName)
     {
         $this->appName = $appName;
+
         return $this;
     }
 
     /**
-     * Get appName
+     * Get appName.
      *
      * @return string $appName
      */
@@ -1282,19 +1357,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set appBaseline
+     * Set appBaseline.
      *
      * @param string $appBaseline
+     *
      * @return $this
      */
     public function setAppBaseline($appBaseline)
     {
         $this->appBaseline = $appBaseline;
+
         return $this;
     }
 
     /**
-     * Get appBaseline
+     * Get appBaseline.
      *
      * @return string $appBaseline
      */
@@ -1304,19 +1381,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set appTags
+     * Set appTags.
      *
      * @param string $appTags
+     *
      * @return $this
      */
     public function setAppTags($appTags)
     {
         $this->appTags = $appTags;
+
         return $this;
     }
 
     /**
-     * Get appTags
+     * Get appTags.
      *
      * @return string $appTags
      */
@@ -1326,19 +1405,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set elementDisplayNameDefinite
+     * Set elementDisplayNameDefinite.
      *
      * @param string $elementDisplayNameDefinite
+     *
      * @return $this
      */
     public function setElementDisplayNameDefinite($elementDisplayNameDefinite)
     {
         $this->elementDisplayNameDefinite = $elementDisplayNameDefinite;
+
         return $this;
     }
 
     /**
-     * Get elementDisplayNameDefinite
+     * Get elementDisplayNameDefinite.
      *
      * @return string $elementDisplayNameDefinite
      */
@@ -1348,19 +1429,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set elementDisplayNameIndefinite
+     * Set elementDisplayNameIndefinite.
      *
      * @param string $elementDisplayNameIndefinite
+     *
      * @return $this
      */
     public function setElementDisplayNameIndefinite($elementDisplayNameIndefinite)
     {
         $this->elementDisplayNameIndefinite = $elementDisplayNameIndefinite;
+
         return $this;
     }
 
     /**
-     * Get elementDisplayNameIndefinite
+     * Get elementDisplayNameIndefinite.
      *
      * @return string $elementDisplayNameIndefinite
      */
@@ -1370,19 +1453,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set elementDisplayNamePlural
+     * Set elementDisplayNamePlural.
      *
      * @param string $elementDisplayNamePlural
+     *
      * @return $this
      */
     public function setElementDisplayNamePlural($elementDisplayNamePlural)
     {
         $this->elementDisplayNamePlural = $elementDisplayNamePlural;
+
         return $this;
     }
 
     /**
-     * Get elementDisplayNamePlural
+     * Get elementDisplayNamePlural.
      *
      * @return string $elementDisplayNamePlural
      */
@@ -1392,19 +1477,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set fontImport
+     * Set fontImport.
      *
      * @param string $fontImport
+     *
      * @return $this
      */
     public function setFontImport($fontImport)
     {
         $this->fontImport = $fontImport;
+
         return $this;
     }
 
     /**
-     * Get fontImport
+     * Get fontImport.
      *
      * @return string $fontImport
      */
@@ -1414,19 +1501,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set iconImport
+     * Set iconImport.
      *
      * @param string $iconImport
+     *
      * @return $this
      */
     public function setIconImport($iconImport)
     {
         $this->iconImport = $iconImport;
+
         return $this;
     }
 
     /**
-     * Get iconImport
+     * Get iconImport.
      *
      * @return string $iconImport
      */
@@ -1436,19 +1525,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set elementDisplayName
+     * Set elementDisplayName.
      *
      * @param string $elementDisplayName
+     *
      * @return $this
      */
     public function setElementDisplayName($elementDisplayName)
     {
         $this->elementDisplayName = $elementDisplayName;
+
         return $this;
     }
 
     /**
-     * Get elementDisplayName
+     * Get elementDisplayName.
      *
      * @return string $elementDisplayName
      */
@@ -1458,19 +1549,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set collaborativeModerationExplanations
+     * Set collaborativeModerationExplanations.
      *
      * @param string $collaborativeModerationExplanations
+     *
      * @return $this
      */
     public function setCollaborativeModerationExplanations($collaborativeModerationExplanations)
     {
         $this->collaborativeModerationExplanations = $collaborativeModerationExplanations;
+
         return $this;
     }
 
     /**
-     * Get collaborativeModerationExplanations
+     * Get collaborativeModerationExplanations.
      *
      * @return string $collaborativeModerationExplanations
      */
@@ -1480,19 +1573,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set appSlug
+     * Set appSlug.
      *
      * @param string $appSlug
+     *
      * @return $this
      */
     public function setAppSlug($appSlug)
     {
         $this->appSlug = $appSlug;
+
         return $this;
     }
 
     /**
-     * Get appSlug
+     * Get appSlug.
      *
      * @return string $appSlug
      */
@@ -1502,19 +1597,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set addMail
+     * Set addMail.
      *
      * @param App\Document\AutomatedMailConfiguration $addMail
+     *
      * @return $this
      */
     public function setAddMail(\App\Document\AutomatedMailConfiguration $addMail)
     {
         $this->addMail = $addMail;
+
         return $this;
     }
 
     /**
-     * Get addMail
+     * Get addMail.
      *
      * @return App\Document\AutomatedMailConfiguration $addMail
      */
@@ -1524,19 +1621,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set editMail
+     * Set editMail.
      *
      * @param App\Document\AutomatedMailConfiguration $editMail
+     *
      * @return $this
      */
     public function setEditMail(\App\Document\AutomatedMailConfiguration $editMail)
     {
         $this->editMail = $editMail;
+
         return $this;
     }
 
     /**
-     * Get editMail
+     * Get editMail.
      *
      * @return App\Document\AutomatedMailConfiguration $editMail
      */
@@ -1546,19 +1645,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set deleteMail
+     * Set deleteMail.
      *
      * @param App\Document\AutomatedMailConfiguration $deleteMail
+     *
      * @return $this
      */
     public function setDeleteMail(\App\Document\AutomatedMailConfiguration $deleteMail)
     {
         $this->deleteMail = $deleteMail;
+
         return $this;
     }
 
     /**
-     * Get deleteMail
+     * Get deleteMail.
      *
      * @return App\Document\AutomatedMailConfiguration $deleteMail
      */
@@ -1568,19 +1669,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set validationMail
+     * Set validationMail.
      *
      * @param App\Document\AutomatedMailConfiguration $validationMail
+     *
      * @return $this
      */
     public function setValidationMail(\App\Document\AutomatedMailConfiguration $validationMail)
     {
         $this->validationMail = $validationMail;
+
         return $this;
     }
 
     /**
-     * Get validationMail
+     * Get validationMail.
      *
      * @return App\Document\AutomatedMailConfiguration $validationMail
      */
@@ -1590,19 +1693,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set refusedMail
+     * Set refusedMail.
      *
      * @param App\Document\AutomatedMailConfiguration $refusedMail
+     *
      * @return $this
      */
     public function setRefusedMail(\App\Document\AutomatedMailConfiguration $refusedMail)
     {
         $this->refusedMail = $refusedMail;
+
         return $this;
     }
 
     /**
-     * Get refusedMail
+     * Get refusedMail.
      *
      * @return App\Document\AutomatedMailConfiguration $refusedMail
      */
@@ -1612,19 +1717,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set refusalMail
+     * Set refusalMail.
      *
      * @param App\Document\AutomatedMailConfiguration $refusalMail
+     *
      * @return $this
      */
     public function setRefusalMail(\App\Document\AutomatedMailConfiguration $refusalMail)
     {
         $this->refusalMail = $refusalMail;
+
         return $this;
     }
 
     /**
-     * Get refusalMail
+     * Get refusalMail.
      *
      * @return App\Document\AutomatedMailConfiguration $refusalMail
      */
@@ -1634,19 +1741,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set elementFormIntroText
+     * Set elementFormIntroText.
      *
      * @param string $elementFormIntroText
+     *
      * @return $this
      */
     public function setElementFormIntroText($elementFormIntroText)
     {
         $this->elementFormIntroText = $elementFormIntroText;
+
         return $this;
     }
 
     /**
-     * Get elementFormIntroText
+     * Get elementFormIntroText.
      *
      * @return string $elementFormIntroText
      */
@@ -1656,19 +1765,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set elementFormValidationText
+     * Set elementFormValidationText.
      *
      * @param string $elementFormValidationText
+     *
      * @return $this
      */
     public function setElementFormValidationText($elementFormValidationText)
     {
         $this->elementFormValidationText = $elementFormValidationText;
+
         return $this;
     }
 
     /**
-     * Get elementFormValidationText
+     * Get elementFormValidationText.
      *
      * @return string $elementFormValidationText
      */
@@ -1678,19 +1789,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set maxDaysLeavingAnElementPending
+     * Set maxDaysLeavingAnElementPending.
      *
      * @param int $maxDaysLeavingAnElementPending
+     *
      * @return $this
      */
     public function setMaxDaysLeavingAnElementPending($maxDaysLeavingAnElementPending)
     {
         $this->maxDaysLeavingAnElementPending = $maxDaysLeavingAnElementPending;
+
         return $this;
     }
 
     /**
-     * Get maxDaysLeavingAnElementPending
+     * Get maxDaysLeavingAnElementPending.
      *
      * @return int $maxDaysLeavingAnElementPending
      */
@@ -1700,19 +1813,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set reportResolvedMail
+     * Set reportResolvedMail.
      *
      * @param App\Document\AutomatedMailConfiguration $reportResolvedMail
+     *
      * @return $this
      */
     public function setReportResolvedMail(\App\Document\AutomatedMailConfiguration $reportResolvedMail)
     {
         $this->reportResolvedMail = $reportResolvedMail;
+
         return $this;
     }
 
     /**
-     * Get reportResolvedMail
+     * Get reportResolvedMail.
      *
      * @return App\Document\AutomatedMailConfiguration $reportResolvedMail
      */
@@ -1722,19 +1837,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set minVoteToForceChangeStatus
+     * Set minVoteToForceChangeStatus.
      *
      * @param int $minVoteToForceChangeStatus
+     *
      * @return $this
      */
     public function setMinVoteToForceChangeStatus($minVoteToForceChangeStatus)
     {
         $this->minVoteToForceChangeStatus = $minVoteToForceChangeStatus;
+
         return $this;
     }
 
     /**
-     * Get minVoteToForceChangeStatus
+     * Get minVoteToForceChangeStatus.
      *
      * @return int $minVoteToForceChangeStatus
      */
@@ -1744,19 +1861,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set customDashboard
+     * Set customDashboard.
      *
      * @param string $customDashboard
+     *
      * @return $this
      */
     public function setCustomDashboard($customDashboard)
     {
         $this->customDashboard = $customDashboard;
+
         return $this;
     }
 
     /**
-     * Get customDashboard
+     * Get customDashboard.
      *
      * @return string $customDashboard
      */
@@ -1766,19 +1885,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set elementFormOwningText
+     * Set elementFormOwningText.
      *
      * @param string $elementFormOwningText
+     *
      * @return $this
      */
     public function setElementFormOwningText($elementFormOwningText)
     {
         $this->elementFormOwningText = $elementFormOwningText;
+
         return $this;
     }
 
     /**
-     * Get elementFormOwningText
+     * Get elementFormOwningText.
      *
      * @return string $elementFormOwningText
      */
@@ -1788,19 +1909,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set newsletterMail
+     * Set newsletterMail.
      *
      * @param App\Document\AutomatedMailConfiguration $newsletterMail
+     *
      * @return $this
      */
     public function setNewsletterMail(\App\Document\AutomatedMailConfiguration $newsletterMail)
     {
         $this->newsletterMail = $newsletterMail;
+
         return $this;
     }
 
     /**
-     * Get newsletterMail
+     * Get newsletterMail.
      *
      * @return App\Document\AutomatedMailConfiguration $newsletterMail
      */
@@ -1810,19 +1933,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set stampFeature
+     * Set stampFeature.
      *
      * @param App\Document\FeatureConfiguration $stampFeature
+     *
      * @return $this
      */
     public function setStampFeature(\App\Document\FeatureConfiguration $stampFeature)
     {
         $this->stampFeature = $stampFeature;
+
         return $this;
     }
 
     /**
-     * Get stampFeature
+     * Get stampFeature.
      *
      * @return App\Document\FeatureConfiguration $stampFeature
      */
@@ -1832,19 +1957,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set customPopupText
+     * Set customPopupText.
      *
      * @param string $customPopupText
+     *
      * @return $this
      */
     public function setCustomPopupText($customPopupText)
     {
         $this->customPopupText = $customPopupText;
+
         return $this;
     }
 
     /**
-     * Get customPopupText
+     * Get customPopupText.
      *
      * @return string $customPopupText
      */
@@ -1854,19 +1981,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set customPopupId
+     * Set customPopupId.
      *
      * @param int $customPopupId
+     *
      * @return $this
      */
     public function setCustomPopupId($customPopupId)
     {
         $this->customPopupId = $customPopupId;
+
         return $this;
     }
 
     /**
-     * Get customPopupId
+     * Get customPopupId.
      *
      * @return int $customPopupId
      */
@@ -1876,19 +2005,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set customPopupShowOnlyOnce
+     * Set customPopupShowOnlyOnce.
      *
      * @param bool $customPopupShowOnlyOnce
+     *
      * @return $this
      */
     public function setCustomPopupShowOnlyOnce($customPopupShowOnlyOnce)
     {
         $this->customPopupShowOnlyOnce = $customPopupShowOnlyOnce;
+
         return $this;
     }
 
     /**
-     * Get customPopupShowOnlyOnce
+     * Get customPopupShowOnlyOnce.
      *
      * @return bool $customPopupShowOnlyOnce
      */
@@ -1898,19 +2029,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set customPopupFeature
+     * Set customPopupFeature.
      *
      * @param App\Document\FeatureConfiguration $customPopupFeature
+     *
      * @return $this
      */
     public function setCustomPopupFeature(\App\Document\FeatureConfiguration $customPopupFeature)
     {
         $this->customPopupFeature = $customPopupFeature;
+
         return $this;
     }
 
     /**
-     * Get customPopupFeature
+     * Get customPopupFeature.
      *
      * @return App\Document\FeatureConfiguration $customPopupFeature
      */
@@ -1920,19 +2053,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set elementFormGeocodingHelp
+     * Set elementFormGeocodingHelp.
      *
      * @param string $elementFormGeocodingHelp
+     *
      * @return $this
      */
     public function setElementFormGeocodingHelp($elementFormGeocodingHelp)
     {
         $this->elementFormGeocodingHelp = $elementFormGeocodingHelp;
+
         return $this;
     }
 
     /**
-     * Get elementFormGeocodingHelp
+     * Get elementFormGeocodingHelp.
      *
      * @return string $elementFormGeocodingHelp
      */
@@ -1941,22 +2076,22 @@ class Configuration implements \JsonSerializable
         return $this->elementFormGeocodingHelp;
     }
 
-
-
     /**
-     * Set activateHomePage
+     * Set activateHomePage.
      *
      * @param bool $activateHomePage
+     *
      * @return $this
      */
     public function setActivateHomePage($activateHomePage)
     {
         $this->activateHomePage = $activateHomePage;
+
         return $this;
     }
 
     /**
-     * Get activateHomePage
+     * Get activateHomePage.
      *
      * @return bool $activateHomePage
      */
@@ -1966,19 +2101,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set backgroundImage
+     * Set backgroundImage.
      *
      * @param App\Document\ConfImage $backgroundImage
+     *
      * @return $this
      */
     public function setBackgroundImage($backgroundImage)
     {
         $this->backgroundImage = $backgroundImage;
+
         return $this;
     }
 
     /**
-     * Get backgroundImage
+     * Get backgroundImage.
      *
      * @return App\Document\ConfImage $backgroundImage
      */
@@ -1988,19 +2125,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set displayCategories
+     * Set displayCategories.
      *
      * @param bool $displayCategories
+     *
      * @return $this
      */
     public function setDisplayCategories($displayCategories)
     {
         $this->displayCategories = $displayCategories;
+
         return $this;
     }
 
     /**
-     * Get displayCategories
+     * Get displayCategories.
      *
      * @return bool $displayCategories
      */
@@ -2010,19 +2149,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set addElementHint
+     * Set addElementHint.
      *
      * @param string $addElementHint
+     *
      * @return $this
      */
     public function setAddElementHint($addElementHint)
     {
         $this->addElementHint = $addElementHint;
+
         return $this;
     }
 
     /**
-     * Get addElementHint
+     * Get addElementHint.
      *
      * @return string $addElementHint
      */
@@ -2032,19 +2173,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set seeMoreButton
+     * Set seeMoreButton.
      *
      * @param string $seeMoreButton
+     *
      * @return $this
      */
     public function setSeeMoreButton($seeMoreButton)
     {
         $this->seeMoreButton = $seeMoreButton;
+
         return $this;
     }
 
     /**
-     * Get seeMoreButton
+     * Get seeMoreButton.
      *
      * @return string $seeMoreButton
      */
@@ -2054,42 +2197,49 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set home
+     * Set home.
      *
      * @param App\Document\ConfigurationHome $home
+     *
      * @return $this
      */
     public function setHome(\App\Document\Configuration\ConfigurationHome $home)
     {
         $this->home = $home;
+
         return $this;
     }
 
     /**
-     * Get home
+     * Get home.
      *
      * @return App\Document\ConfigurationHome $home
      */
     public function getHome()
     {
-        if(!$this->home) $this->home = new ConfigurationHome();
+        if (!$this->home) {
+            $this->home = new ConfigurationHome();
+        }
+
         return $this->home;
     }
 
     /**
-     * Set logo
+     * Set logo.
      *
      * @param App\Document\ConfImage $logo
+     *
      * @return $this
      */
     public function setLogo($logo)
     {
         $this->logo = $logo;
+
         return $this;
     }
 
     /**
-     * Get logo
+     * Get logo.
      *
      * @return App\Document\ConfImage $logo
      */
@@ -2099,19 +2249,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set logoInline
+     * Set logoInline.
      *
      * @param App\Document\ConfImage $logoInline
+     *
      * @return $this
      */
     public function setLogoInline($logoInline)
     {
         $this->logoInline = $logoInline;
+
         return $this;
     }
 
     /**
-     * Get logoInline
+     * Get logoInline.
      *
      * @return App\Document\ConfImage $logoInline
      */
@@ -2121,19 +2273,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set socialShareImage
+     * Set socialShareImage.
      *
      * @param App\Document\ConfImage $socialShareImage
+     *
      * @return $this
      */
     public function setSocialShareImage($socialShareImage)
     {
         $this->socialShareImage = $socialShareImage;
+
         return $this;
     }
 
     /**
-     * Get socialShareImage
+     * Get socialShareImage.
      *
      * @return App\Document\ConfImage $socialShareImage
      */
@@ -2143,19 +2297,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set favicon
+     * Set favicon.
      *
      * @param App\Document\ConfImage $favicon
+     *
      * @return $this
      */
     public function setFavicon($favicon)
     {
         $this->favicon = $favicon;
+
         return $this;
     }
 
     /**
-     * Get favicon
+     * Get favicon.
      *
      * @return App\Document\ConfImage $favicon
      */
@@ -2165,19 +2321,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set activatePartnersPage
+     * Set activatePartnersPage.
      *
      * @param bool $activatePartnersPage
+     *
      * @return $this
      */
     public function setActivatePartnersPage($activatePartnersPage)
     {
         $this->activatePartnersPage = $activatePartnersPage;
+
         return $this;
     }
 
     /**
-     * Get activatePartnersPage
+     * Get activatePartnersPage.
      *
      * @return bool $activatePartnersPage
      */
@@ -2187,19 +2345,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set partnerPageTitle
+     * Set partnerPageTitle.
      *
      * @param string $partnerPageTitle
+     *
      * @return $this
      */
     public function setPartnerPageTitle($partnerPageTitle)
     {
         $this->partnerPageTitle = $partnerPageTitle;
+
         return $this;
     }
 
     /**
-     * Get partnerPageTitle
+     * Get partnerPageTitle.
      *
      * @return string $partnerPageTitle
      */
@@ -2209,19 +2369,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set activateAbouts
+     * Set activateAbouts.
      *
      * @param bool $activateAbouts
+     *
      * @return $this
      */
     public function setActivateAbouts($activateAbouts)
     {
         $this->activateAbouts = $activateAbouts;
+
         return $this;
     }
 
     /**
-     * Get activateAbouts
+     * Get activateAbouts.
      *
      * @return bool $activateAbouts
      */
@@ -2231,19 +2393,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set aboutHeaderTitle
+     * Set aboutHeaderTitle.
      *
      * @param string $aboutHeaderTitle
+     *
      * @return $this
      */
     public function setAboutHeaderTitle($aboutHeaderTitle)
     {
         $this->aboutHeaderTitle = $aboutHeaderTitle;
+
         return $this;
     }
 
     /**
-     * Get aboutHeaderTitle
+     * Get aboutHeaderTitle.
      *
      * @return string $aboutHeaderTitle
      */
@@ -2253,34 +2417,39 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set user
+     * Set user.
      *
      * @param App\Document\Configuration\ConfigurationUser $user
+     *
      * @return $this
      */
     public function setUser(\App\Document\Configuration\ConfigurationUser $user)
     {
         $this->user = $user;
+
         return $this;
     }
 
     /**
-     * Get user
+     * Get user.
      *
      * @return App\Document\Configuration\ConfigurationUser $user
      */
     public function getUser()
     {
-        if (!$this->user) $this->user = new ConfigurationUser();
+        if (!$this->user) {
+            $this->user = new ConfigurationUser();
+        }
+
         return $this->user;
     }
 
     public function setDbName($dbName)
     {
         $this->dbName = $dbName;
+
         return $this;
     }
-
 
     public function getDbName()
     {
@@ -2288,65 +2457,77 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set menu
+     * Set menu.
      *
      * @param App\Document\Configuration\ConfigurationMenu $menu
+     *
      * @return $this
      */
     public function setMenu(\App\Document\Configuration\ConfigurationMenu $menu)
     {
         $this->menu = $menu;
+
         return $this;
     }
 
     /**
-     * Get menu
+     * Get menu.
      *
      * @return App\Document\Configuration\ConfigurationMenu $menu
      */
     public function getMenu()
     {
-        if(!$this->menu) $this->menu = new ConfigurationMenu();
+        if (!$this->menu) {
+            $this->menu = new ConfigurationMenu();
+        }
+
         return $this->menu;
     }
 
     /**
-     * Set infobar
+     * Set infobar.
      *
      * @param App\Document\Configuration\ConfigurationInfobar $infobar
+     *
      * @return $this
      */
     public function setInfobar(\App\Document\Configuration\ConfigurationInfobar $infobar)
     {
         $this->infobar = $infobar;
+
         return $this;
     }
 
     /**
-     * Get infobar
+     * Get infobar.
      *
      * @return App\Document\Configuration\ConfigurationInfobar $infobar
      */
     public function getInfobar()
     {
-        if(!$this->infobar) $this->infobar = new ConfigurationInfobar();
+        if (!$this->infobar) {
+            $this->infobar = new ConfigurationInfobar();
+        }
+
         return $this->infobar;
     }
 
     /**
-     * Set elementFormFieldsJson
+     * Set elementFormFieldsJson.
      *
      * @param string $elementFormFieldsJson
+     *
      * @return $this
      */
     public function setElementFormFieldsJson($elementFormFieldsJson)
     {
         $this->elementFormFieldsJson = $elementFormFieldsJson;
+
         return $this;
     }
 
     /**
-     * Get elementFormFieldsJson
+     * Get elementFormFieldsJson.
      *
      * @return string $elementFormFieldsJson
      */
@@ -2356,134 +2537,161 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set listModeFeature
+     * Set listModeFeature.
      *
      * @param App\Document\FeatureConfiguration $listModeFeature
+     *
      * @return $this
      */
     public function setListModeFeature(\App\Document\FeatureConfiguration $listModeFeature)
     {
         $this->listModeFeature = $listModeFeature;
+
         return $this;
     }
 
     /**
-     * Get listModeFeature
+     * Get listModeFeature.
      *
      * @return App\Document\FeatureConfiguration $listModeFeature
      */
     public function getListModeFeature()
     {
-        if(!$this->listModeFeature) $this->listModeFeature = new FeatureConfiguration();
+        if (!$this->listModeFeature) {
+            $this->listModeFeature = new FeatureConfiguration();
+        }
+
         return $this->listModeFeature;
     }
 
     /**
-     * Set searchPlaceFeature
+     * Set searchPlaceFeature.
      *
      * @param App\Document\FeatureConfiguration $searchPlaceFeature
+     *
      * @return $this
      */
     public function setSearchPlaceFeature(\App\Document\FeatureConfiguration $searchPlaceFeature)
     {
         $this->searchPlaceFeature = $searchPlaceFeature;
+
         return $this;
     }
 
     /**
-     * Get searchPlaceFeature
+     * Get searchPlaceFeature.
      *
      * @return App\Document\FeatureConfiguration $searchPlaceFeature
      */
     public function getSearchPlaceFeature()
     {
-        if(!$this->searchPlaceFeature) $this->searchPlaceFeature = new FeatureConfiguration();
+        if (!$this->searchPlaceFeature) {
+            $this->searchPlaceFeature = new FeatureConfiguration();
+        }
+
         return $this->searchPlaceFeature;
     }
 
     /**
-     * Set searchGeolocateFeature
+     * Set searchGeolocateFeature.
      *
      * @param App\Document\FeatureConfiguration $searchGeolocateFeature
+     *
      * @return $this
      */
     public function setSearchGeolocateFeature(\App\Document\FeatureConfiguration $searchGeolocateFeature)
     {
         $this->searchGeolocateFeature = $searchGeolocateFeature;
+
         return $this;
     }
 
     /**
-     * Get searchGeolocateFeature
+     * Get searchGeolocateFeature.
      *
      * @return App\Document\FeatureConfiguration $searchGeolocateFeature
      */
     public function getSearchGeolocateFeature()
     {
-        if(!$this->searchGeolocateFeature) $this->searchGeolocateFeature = new FeatureConfiguration();
+        if (!$this->searchGeolocateFeature) {
+            $this->searchGeolocateFeature = new FeatureConfiguration();
+        }
+
         return $this->searchGeolocateFeature;
     }
 
     /**
-     * Set layersFeature
+     * Set layersFeature.
      *
      * @param App\Document\FeatureConfiguration $layersFeature
+     *
      * @return $this
      */
     public function setLayersFeature(\App\Document\FeatureConfiguration $layersFeature)
     {
         $this->layersFeature = $layersFeature;
+
         return $this;
     }
 
     /**
-     * Get layersFeature
+     * Get layersFeature.
      *
      * @return App\Document\FeatureConfiguration $layersFeature
      */
     public function getLayersFeature()
     {
-        if(!$this->layersFeature) $this->layersFeature = new FeatureConfiguration();
+        if (!$this->layersFeature) {
+            $this->layersFeature = new FeatureConfiguration();
+        }
+
         return $this->layersFeature;
     }
 
     /**
-     * Set mapDefaultViewFeature
+     * Set mapDefaultViewFeature.
      *
      * @param App\Document\FeatureConfiguration $mapDefaultViewFeature
+     *
      * @return $this
      */
     public function setMapDefaultViewFeature(\App\Document\FeatureConfiguration $mapDefaultViewFeature)
     {
         $this->mapDefaultViewFeature = $mapDefaultViewFeature;
+
         return $this;
     }
 
     /**
-     * Get mapDefaultViewFeature
+     * Get mapDefaultViewFeature.
      *
      * @return App\Document\FeatureConfiguration $mapDefaultViewFeature
      */
     public function getMapDefaultViewFeature()
     {
-        if(!$this->mapDefaultViewFeature) $this->mapDefaultViewFeature = new FeatureConfiguration();
+        if (!$this->mapDefaultViewFeature) {
+            $this->mapDefaultViewFeature = new FeatureConfiguration();
+        }
+
         return $this->mapDefaultViewFeature;
     }
 
     /**
-     * Set saveViewportInCookies
+     * Set saveViewportInCookies.
      *
      * @param bool $saveViewportInCookies
+     *
      * @return $this
      */
     public function setSaveViewportInCookies($saveViewportInCookies)
     {
         $this->saveViewportInCookies = $saveViewportInCookies;
+
         return $this;
     }
 
     /**
-     * Get saveViewportInCookies
+     * Get saveViewportInCookies.
      *
      * @return bool $saveViewportInCookies
      */
@@ -2493,19 +2701,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set saveTileLayerInCookies
+     * Set saveTileLayerInCookies.
      *
      * @param bool $saveTileLayerInCookies
+     *
      * @return $this
      */
     public function setSaveTileLayerInCookies($saveTileLayerInCookies)
     {
         $this->saveTileLayerInCookies = $saveTileLayerInCookies;
+
         return $this;
     }
 
     /**
-     * Get saveTileLayerInCookies
+     * Get saveTileLayerInCookies.
      *
      * @return bool $saveTileLayerInCookies
      */
@@ -2515,65 +2725,77 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set searchElementsFeature
+     * Set searchElementsFeature.
      *
      * @param App\Document\FeatureConfiguration $searchElementsFeature
+     *
      * @return $this
      */
     public function setSearchElementsFeature(\App\Document\FeatureConfiguration $searchElementsFeature)
     {
         $this->searchElementsFeature = $searchElementsFeature;
+
         return $this;
     }
 
     /**
-     * Get searchElementsFeature
+     * Get searchElementsFeature.
      *
      * @return App\Document\FeatureConfiguration $searchElementsFeature
      */
     public function getSearchElementsFeature()
     {
-        if(!$this->searchElementsFeature) $this->searchElementsFeature = new FeatureConfiguration();
+        if (!$this->searchElementsFeature) {
+            $this->searchElementsFeature = new FeatureConfiguration();
+        }
+
         return $this->searchElementsFeature;
     }
 
     /**
-     * Set api
+     * Set api.
      *
      * @param App\Document\Configuration\ConfigurationApi $api
+     *
      * @return $this
      */
     public function setApi(\App\Document\Configuration\ConfigurationApi $api)
     {
         $this->api = $api;
+
         return $this;
     }
 
     /**
-     * Get api
+     * Get api.
      *
      * @return App\Document\Configuration\ConfigurationApi $api
      */
     public function getApi()
     {
-        if(!$this->api) $this->api = new ConfigurationApi();
+        if (!$this->api) {
+            $this->api = new ConfigurationApi();
+        }
+
         return $this->api;
     }
 
     /**
-     * Set theme
+     * Set theme.
      *
      * @param string $theme
+     *
      * @return $this
      */
     public function setTheme($theme)
     {
         $this->theme = $theme;
+
         return $this;
     }
 
     /**
-     * Get theme
+     * Get theme.
      *
      * @return string $theme
      */
@@ -2582,21 +2804,22 @@ class Configuration implements \JsonSerializable
         return $this->theme;
     }
 
-
     /**
-     * Set textColor
+     * Set textColor.
      *
      * @param string $textColor
+     *
      * @return $this
      */
     public function setTextColor($textColor)
     {
         $this->textColor = $textColor;
+
         return $this;
     }
 
     /**
-     * Get textColor
+     * Get textColor.
      *
      * @return string $textColor
      */
@@ -2606,7 +2829,7 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Get secondaryColor
+     * Get secondaryColor.
      *
      * @return string $secondaryColor
      */
@@ -2616,19 +2839,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set backgroundColor
+     * Set backgroundColor.
      *
      * @param string $backgroundColor
+     *
      * @return $this
      */
     public function setBackgroundColor($backgroundColor)
     {
         $this->backgroundColor = $backgroundColor;
+
         return $this;
     }
 
     /**
-     * Get backgroundColor
+     * Get backgroundColor.
      *
      * @return string $backgroundColor
      */
@@ -2638,19 +2863,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set homeBackgroundColor
+     * Set homeBackgroundColor.
      *
      * @param string $homeBackgroundColor
+     *
      * @return $this
      */
     public function setHomeBackgroundColor($homeBackgroundColor)
     {
         $this->homeBackgroundColor = $homeBackgroundColor;
+
         return $this;
     }
 
     /**
-     * Get homeBackgroundColor
+     * Get homeBackgroundColor.
      *
      * @return string $homeBackgroundColor
      */
@@ -2660,19 +2887,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set textDarkColor
+     * Set textDarkColor.
      *
      * @param string $textDarkColor
+     *
      * @return $this
      */
     public function setTextDarkColor($textDarkColor)
     {
         $this->textDarkColor = $textDarkColor;
+
         return $this;
     }
 
     /**
-     * Get textDarkColor
+     * Get textDarkColor.
      *
      * @return string $textDarkColor
      */
@@ -2682,19 +2911,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set textDarkSoftColor
+     * Set textDarkSoftColor.
      *
      * @param string $textDarkSoftColor
+     *
      * @return $this
      */
     public function setTextDarkSoftColor($textDarkSoftColor)
     {
         $this->textDarkSoftColor = $textDarkSoftColor;
+
         return $this;
     }
 
     /**
-     * Get textDarkSoftColor
+     * Get textDarkSoftColor.
      *
      * @return string $textDarkSoftColor
      */
@@ -2704,19 +2935,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set textLightColor
+     * Set textLightColor.
      *
      * @param string $textLightColor
+     *
      * @return $this
      */
     public function setTextLightColor($textLightColor)
     {
         $this->textLightColor = $textLightColor;
+
         return $this;
     }
 
     /**
-     * Get textLightColor
+     * Get textLightColor.
      *
      * @return string $textLightColor
      */
@@ -2726,19 +2959,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set textLightSoftColor
+     * Set textLightSoftColor.
      *
      * @param string $textLightSoftColor
+     *
      * @return $this
      */
     public function setTextLightSoftColor($textLightSoftColor)
     {
         $this->textLightSoftColor = $textLightSoftColor;
+
         return $this;
     }
 
     /**
-     * Get textLightSoftColor
+     * Get textLightSoftColor.
      *
      * @return string $textLightSoftColor
      */
@@ -2748,19 +2983,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set contentBackgroundColor
+     * Set contentBackgroundColor.
      *
      * @param string $contentBackgroundColor
+     *
      * @return $this
      */
     public function setContentBackgroundColor($contentBackgroundColor)
     {
         $this->contentBackgroundColor = $contentBackgroundColor;
+
         return $this;
     }
 
     /**
-     * Get contentBackgroundColor
+     * Get contentBackgroundColor.
      *
      * @return string $contentBackgroundColor
      */
@@ -2770,19 +3007,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set headerColor
+     * Set headerColor.
      *
      * @param string $headerColor
+     *
      * @return $this
      */
     public function setHeaderColor($headerColor)
     {
         $this->headerColor = $headerColor;
+
         return $this;
     }
 
     /**
-     * Get headerColor
+     * Get headerColor.
      *
      * @return string $headerColor
      */
@@ -2792,19 +3031,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set headerTextColor
+     * Set headerTextColor.
      *
      * @param string $headerTextColor
+     *
      * @return $this
      */
     public function setHeaderTextColor($headerTextColor)
     {
         $this->headerTextColor = $headerTextColor;
+
         return $this;
     }
 
     /**
-     * Get headerTextColor
+     * Get headerTextColor.
      *
      * @return string $headerTextColor
      */
@@ -2814,19 +3055,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set headerHoverColor
+     * Set headerHoverColor.
      *
      * @param string $headerHoverColor
+     *
      * @return $this
      */
     public function setHeaderHoverColor($headerHoverColor)
     {
         $this->headerHoverColor = $headerHoverColor;
+
         return $this;
     }
 
     /**
-     * Get headerHoverColor
+     * Get headerHoverColor.
      *
      * @return string $headerHoverColor
      */
@@ -2836,19 +3079,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set searchBarColor
+     * Set searchBarColor.
      *
      * @param string $searchBarColor
+     *
      * @return $this
      */
     public function setSearchBarColor($searchBarColor)
     {
         $this->searchBarColor = $searchBarColor;
+
         return $this;
     }
 
     /**
-     * Get searchBarColor
+     * Get searchBarColor.
      *
      * @return string $searchBarColor
      */
@@ -2858,19 +3103,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set disableColor
+     * Set disableColor.
      *
      * @param string $disableColor
+     *
      * @return $this
      */
     public function setDisableColor($disableColor)
     {
         $this->disableColor = $disableColor;
+
         return $this;
     }
 
     /**
-     * Get disableColor
+     * Get disableColor.
      *
      * @return string $disableColor
      */
@@ -2880,19 +3127,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set errorColor
+     * Set errorColor.
      *
      * @param string $errorColor
+     *
      * @return $this
      */
     public function setErrorColor($errorColor)
     {
         $this->errorColor = $errorColor;
+
         return $this;
     }
 
     /**
-     * Get errorColor
+     * Get errorColor.
      *
      * @return string $errorColor
      */
@@ -2902,19 +3151,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set pendingColor
+     * Set pendingColor.
      *
      * @param string $pendingColor
+     *
      * @return $this
      */
     public function setPendingColor($pendingColor)
     {
         $this->pendingColor = $pendingColor;
+
         return $this;
     }
 
     /**
-     * Get pendingColor
+     * Get pendingColor.
      *
      * @return string $pendingColor
      */
@@ -2924,19 +3175,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set interactiveSectionColor
+     * Set interactiveSectionColor.
      *
      * @param string $interactiveSectionColor
+     *
      * @return $this
      */
     public function setInteractiveSectionColor($interactiveSectionColor)
     {
         $this->interactiveSectionColor = $interactiveSectionColor;
+
         return $this;
     }
 
     /**
-     * Get interactiveSectionColor
+     * Get interactiveSectionColor.
      *
      * @return string $interactiveSectionColor
      */
@@ -2946,19 +3199,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set contentBackgroundElementBodyColor
+     * Set contentBackgroundElementBodyColor.
      *
      * @param string $contentBackgroundElementBodyColor
+     *
      * @return $this
      */
     public function setContentBackgroundElementBodyColor($contentBackgroundElementBodyColor)
     {
         $this->contentBackgroundElementBodyColor = $contentBackgroundElementBodyColor;
+
         return $this;
     }
 
     /**
-     * Get contentBackgroundElementBodyColor
+     * Get contentBackgroundElementBodyColor.
      *
      * @return string $contentBackgroundElementBodyColor
      */
@@ -2968,42 +3223,49 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set marker
+     * Set marker.
      *
      * @param App\Document\Configuration\ConfigurationMarker $marker
+     *
      * @return $this
      */
     public function setMarker(\App\Document\Configuration\ConfigurationMarker $marker)
     {
         $this->marker = $marker;
+
         return $this;
     }
 
     /**
-     * Get marker
+     * Get marker.
      *
      * @return App\Document\Configuration\ConfigurationMarker $marker
      */
     public function getMarker()
     {
-        if(!$this->marker) $this->marker = new ConfigurationMarker();
+        if (!$this->marker) {
+            $this->marker = new ConfigurationMarker();
+        }
+
         return $this->marker;
     }
 
     /**
-     * Set dataLicenseUrl
+     * Set dataLicenseUrl.
      *
      * @param string $dataLicenseUrl
+     *
      * @return $this
      */
     public function setDataLicenseUrl($dataLicenseUrl)
     {
         $this->dataLicenseUrl = $dataLicenseUrl;
+
         return $this;
     }
 
     /**
-     * Get dataLicenseUrl
+     * Get dataLicenseUrl.
      *
      * @return string $dataLicenseUrl
      */
@@ -3013,19 +3275,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set searchExcludingWords
+     * Set searchExcludingWords.
      *
      * @param string $searchExcludingWords
+     *
      * @return $this
      */
     public function setSearchExcludingWords($searchExcludingWords)
     {
         $this->searchExcludingWords = $searchExcludingWords;
+
         return $this;
     }
 
     /**
-     * Get searchExcludingWords
+     * Get searchExcludingWords.
      *
      * @return string $searchExcludingWords
      */
@@ -3035,19 +3299,21 @@ class Configuration implements \JsonSerializable
     }
 
     /**
-     * Set appNameShort
+     * Set appNameShort.
      *
      * @param string $appNameShort
+     *
      * @return $this
      */
     public function setAppNameShort($appNameShort)
     {
         $this->appNameShort = $appNameShort;
+
         return $this;
     }
 
     /**
-     * Get appNameShort
+     * Get appNameShort.
      *
      * @return string $appNameShort
      */

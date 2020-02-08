@@ -5,7 +5,7 @@ namespace App\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
- * About
+ * About.
  *
  * @MongoDB\Document(repositoryClass="App\Repository\AboutRepository")
  */
@@ -18,14 +18,14 @@ class About
      */
     private $id;
 
-     /**
+    /**
      * @var string
      *
      * @MongoDB\Field(type="string")
      */
     private $name;
 
-     /**
+    /**
      * @var string
      *
      * @MongoDB\Field(type="string")
@@ -38,9 +38,8 @@ class About
      */
     private $position;
 
-
     /**
-     * Get id
+     * Get id.
      *
      * @return int
      */
@@ -50,7 +49,7 @@ class About
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
      *
@@ -64,7 +63,7 @@ class About
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -74,7 +73,7 @@ class About
     }
 
     /**
-     * Set content
+     * Set content.
      *
      * @param string $content
      *
@@ -88,7 +87,7 @@ class About
     }
 
     /**
-     * Get content
+     * Get content.
      *
      * @return string
      */
@@ -98,19 +97,21 @@ class About
     }
 
     /**
-     * Set position
+     * Set position.
      *
      * @param int $position
+     *
      * @return $this
      */
     public function setPosition($position)
     {
         $this->position = $position;
+
         return $this;
     }
 
     /**
-     * Get position
+     * Get position.
      *
      * @return int $position
      */

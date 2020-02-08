@@ -1,8 +1,8 @@
 <?php
+
 namespace App\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class ConfigurationService
@@ -11,23 +11,27 @@ class ConfigurationService
     protected $securityContext;
     protected $config;
 
-	/**
-	* Constructor
-	*/
-	public function __construct(DocumentManager $dm, TokenStorageInterface $securityContext)
-	{
-	   $this->dm = $dm;
-	   $this->securityContext = $securityContext;
-       $this->config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
-	}
+    /**
+     * Constructor.
+     */
+    public function __construct(DocumentManager $dm, TokenStorageInterface $securityContext)
+    {
+        $this->dm = $dm;
+        $this->securityContext = $securityContext;
+        $this->config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
+    }
 
-	public function isUserAllowed($featureName, $request = null, $email = null)
-	{
-        if ($email === null && $request !== null) $email = $request->get('userEmail');
+    public function isUserAllowed($featureName, $request = null, $email = null)
+    {
+        if (null === $email && null !== $request) {
+            $email = $request->get('userEmail');
+        }
 
         $user = $this->securityContext->getToken()->getUser();
 
-        if ($user == 'anon.') $user = null;
+        if ('anon.' == $user) {
+            $user = null;
+        }
 
         $feature = $this->getFeatureConfig($featureName);
 
@@ -42,16 +46,15 @@ class ConfigurationService
 
     public function getFeatureConfig($featureName)
     {
-        switch($featureName)
-        {
-            case 'report':              $feature = $this->config->getReportFeature();break;
-            case 'add':                 $feature = $this->config->getAddFeature();break;
-            case 'edit':                $feature = $this->config->getEditFeature();break;
-            case 'directModeration':    $feature = $this->config->getDirectModerationFeature();break;
-            case 'delete':              $feature = $this->config->getDeleteFeature();break;
-            case 'vote':                $feature = $this->config->getCollaborativeModerationFeature();break;
-            case 'pending':             $feature = $this->config->getPendingFeature();break;
-            case 'sendMail':            $feature = $this->config->getSendMailFeature();break;
+        switch ($featureName) {
+            case 'report':              $feature = $this->config->getReportFeature(); break;
+            case 'add':                 $feature = $this->config->getAddFeature(); break;
+            case 'edit':                $feature = $this->config->getEditFeature(); break;
+            case 'directModeration':    $feature = $this->config->getDirectModerationFeature(); break;
+            case 'delete':              $feature = $this->config->getDeleteFeature(); break;
+            case 'vote':                $feature = $this->config->getCollaborativeModerationFeature(); break;
+            case 'pending':             $feature = $this->config->getPendingFeature(); break;
+            case 'sendMail':            $feature = $this->config->getSendMailFeature(); break;
         }
 
         return $feature;

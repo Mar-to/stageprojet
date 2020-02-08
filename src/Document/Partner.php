@@ -3,17 +3,15 @@
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
-use App\Document\PartnerImage;
 
 /**
- * Partner
+ * Partner.
  *
  * @MongoDB\Document(repositoryClass="App\Repository\PartnerRepository")
  */
 class Partner
 {
-     /**
+    /**
      * @var int
      *
      * @MongoDB\Id(strategy="INCREMENT")
@@ -41,7 +39,7 @@ class Partner
      */
     private $logo;
 
-   /**
+    /**
      * @var string
      *
      * @MongoDB\Field(type="string")
@@ -57,8 +55,9 @@ class Partner
     public function __constructor()
     {
     }
+
     /**
-     * Get id
+     * Get id.
      *
      * @return int
      */
@@ -68,7 +67,7 @@ class Partner
     }
 
     /**
-     * Set content
+     * Set content.
      *
      * @param string $content
      *
@@ -82,7 +81,7 @@ class Partner
     }
 
     /**
-     * Get content
+     * Get content.
      *
      * @return string
      */
@@ -92,7 +91,7 @@ class Partner
     }
 
     /**
-     * Set websiteUrl
+     * Set websiteUrl.
      *
      * @param string $websiteUrl
      *
@@ -101,11 +100,12 @@ class Partner
     public function setWebsiteUrl($webSiteUrl)
     {
         $this->websiteUrl = $webSiteUrl;
+
         return $this;
     }
 
     /**
-     * Get websiteUrl
+     * Get websiteUrl.
      *
      * @return string
      */
@@ -115,7 +115,7 @@ class Partner
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
      *
@@ -129,7 +129,7 @@ class Partner
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -139,19 +139,21 @@ class Partner
     }
 
     /**
-     * Set position
+     * Set position.
      *
      * @param int $position
+     *
      * @return $this
      */
     public function setPosition($position)
     {
         $this->position = $position;
+
         return $this;
     }
 
     /**
-     * Get position
+     * Get position.
      *
      * @return int $position
      */
@@ -161,19 +163,21 @@ class Partner
     }
 
     /**
-     * Set logo
+     * Set logo.
      *
      * @param App\Document\PartnerImage $logo
+     *
      * @return $this
      */
     public function setLogo($logo)
     {
         $this->logo = $logo;
+
         return $this;
     }
 
     /**
-     * Get logo
+     * Get logo.
      *
      * @return App\Document\PartnerImage $logo
      */

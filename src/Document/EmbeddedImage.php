@@ -4,27 +4,25 @@ namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
-use App\Helper\SaasHelper;
-use App\Document\AbstractFile;
 
 /**
-* @MongoDB\EmbeddedDocument
-* @Vich\Uploadable
-*/
+ * @MongoDB\EmbeddedDocument
+ * @Vich\Uploadable
+ */
 class EmbeddedImage extends AbstractFile
 {
-    protected $vichUploadFileKey = "image";
+    protected $vichUploadFileKey = 'image';
 
     /**
      * @var string
-     * Instead of uploading a file, we can give an external url to an image
+     *             Instead of uploading a file, we can give an external url to an image
      * @MongoDB\Field(type="string")
      */
-    public $externalImageUrl = "";
+    public $externalImageUrl = '';
 
     public function __toString()
     {
-      return $this->fileName ?: $this->externalImageUrl;
+        return $this->fileName ?: $this->externalImageUrl;
     }
 
     public function toJson()
@@ -32,7 +30,10 @@ class EmbeddedImage extends AbstractFile
         return json_encode($this->getImageUrl());
     }
 
-    public function isExternalFile() { return $this->fileUrl == "" && $this->externalImageUrl != ""; }
+    public function isExternalFile()
+    {
+        return '' == $this->fileUrl && '' != $this->externalImageUrl;
+    }
 
     public function getImageUrl($suffix = '', $extension = '')
     {
@@ -52,19 +53,21 @@ class EmbeddedImage extends AbstractFile
     }
 
     /**
-     * Set externalImageUrl
+     * Set externalImageUrl.
      *
      * @param string $externalImageUrl
+     *
      * @return $this
      */
     public function setExternalImageUrl($externalImageUrl)
     {
         $this->externalImageUrl = $externalImageUrl;
+
         return $this;
     }
 
     /**
-     * Get externalImageUrl
+     * Get externalImageUrl.
      *
      * @return string $externalImageUrl
      */
@@ -73,7 +76,7 @@ class EmbeddedImage extends AbstractFile
         return $this->externalImageUrl;
     }
 
-    public function __construct($imageUrl = "")
+    public function __construct($imageUrl = '')
     {
         $this->externalImageUrl = $imageUrl;
     }

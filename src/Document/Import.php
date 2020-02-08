@@ -3,38 +3,35 @@
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\HttpFoundation\File\File;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
-use App\Document\AbstractFile;
-
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-
-use Gedmo\Mapping\Annotation as Gedmo;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 abstract class ImportState
 {
-    const Started = "started";
-    const Downloading = "downloading";
-    const InProgress = "in_progress";
-    const Completed = "completed";
-    const Errors = "errors";
-    const Failed = "failed";
+    const Started = 'started';
+    const Downloading = 'downloading';
+    const InProgress = 'in_progress';
+    const Completed = 'completed';
+    const Errors = 'errors';
+    const Failed = 'failed';
 }
 
 /**
-* @MongoDB\Document
-* @Vich\Uploadable
-* Import data into GoGoCarto. the data can imported through a static file, or via API url
-* The Import can be made once for all (static import) or dynamically every X days (ImportDynamic)
-*
-* @MongoDB\InheritanceType("SINGLE_COLLECTION")
-* @MongoDB\DiscriminatorField("type")
-* @MongoDB\DiscriminatorMap({"normal"="Import", "dynamic"="ImportDynamic"})
-*/
+ * @MongoDB\Document
+ * @Vich\Uploadable
+ * Import data into GoGoCarto. the data can imported through a static file, or via API url
+ * The Import can be made once for all (static import) or dynamically every X days (ImportDynamic)
+ *
+ * @MongoDB\InheritanceType("SINGLE_COLLECTION")
+ * @MongoDB\DiscriminatorField("type")
+ * @MongoDB\DiscriminatorMap({"normal"="Import", "dynamic"="ImportDynamic"})
+ */
 class Import extends AbstractFile
 {
-    protected $vichUploadFileKey = "import_file";
+    protected $vichUploadFileKey = 'import_file';
 
     /**
      * @var int
@@ -50,7 +47,7 @@ class Import extends AbstractFile
 
     /**
      * @var string
-     * Url of API to get the data
+     *             Url of API to get the data
      * @MongoDB\Field(type="string")
      */
     private $url;
@@ -92,32 +89,33 @@ class Import extends AbstractFile
     private $geocodeIfNecessary = false;
 
     /**
-    * @MongoDB\ReferenceMany(targetDocument="App\Document\GoGoLog", cascade={"all"})
-    */
+     * @MongoDB\ReferenceMany(targetDocument="App\Document\GoGoLog", cascade={"all"})
+     */
     private $logs;
 
     /**
      * State of the import when processing. Type of ImportState
      * When processing import, this variable is being updated in realtime, so the client can follow
-     * the state of the import also in realtime
+     * the state of the import also in realtime.
+     *
      * @MongoDB\Field(type="string")
      */
     private $currState;
 
     /**
-     * A message can be added to the state information
+     * A message can be added to the state information.
+     *
      * @MongoDB\Field(type="string")
      */
     private $currMessage;
 
     /**
      * After importing some Data, if the user hard delete some elements, their ids will be remembered
-     * so next time we do not import them again
+     * so next time we do not import them again.
      *
      * @MongoDB\Field(type="collection")
      */
     private $idsToIgnore = [];
-
 
     /**
      * @MongoDB\Field(type="hash")
@@ -140,13 +138,14 @@ class Import extends AbstractFile
     private $newTaxonomyToMap = false;
 
     /**
-     * Custom code made by the user to be run on the $data object when importing
+     * Custom code made by the user to be run on the $data object when importing.
+     *
      * @MongoDB\Field(type="string")
      */
-    private $customCode = "<?php";
+    private $customCode = '<?php';
 
     /**
-     * @var date $lastRefresh
+     * @var date
      *
      * @MongoDB\Field(type="date")
      */
@@ -164,14 +163,20 @@ class Import extends AbstractFile
      */
     private $updatedAt;
 
-
-    public function __construct() {
-        $this->logs = new \Doctrine\Common\Collections\ArrayCollection();;
+    public function __construct()
+    {
+        $this->logs = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-    public function __toString() { return "Import " . $this->sourceName; }
+    public function __toString()
+    {
+        return 'Import '.$this->sourceName;
+    }
 
-    public function isDynamicImport() { return false; }
+    public function isDynamicImport()
+    {
+        return false;
+    }
 
     public function addIdToIgnore($id)
     {
@@ -188,7 +193,7 @@ class Import extends AbstractFile
      */
     public function validate(ExecutionContextInterface $context)
     {
-        if (preg_match("/new |process|mongo|this|symfony|exec|passthru|shell_exec|system|proc_open|popen|curl_exec|curl_multi_exec|parse_ini_file|show_source|var_dump|print_r/i", $this->customCode)) {
+        if (preg_match('/new |process|mongo|this|symfony|exec|passthru|shell_exec|system|proc_open|popen|curl_exec|curl_multi_exec|parse_ini_file|show_source|var_dump|print_r/i', $this->customCode)) {
             $context->buildViolation("Il est interdit d'utiliser les mots suivants: new , process, mongo, this, symfony, exec, passthru, shell_exec, system, proc_open, popen, curl_exec, curl_multi_exec, parse_ini_file, show_source, var_dump, print_r... Merci de ne pas faire de betises !")
                 ->atPath('customCode')
                 ->addViolation();
@@ -196,7 +201,7 @@ class Import extends AbstractFile
     }
 
     /**
-     * Get id
+     * Get id.
      *
      * @return int_id $id
      */
@@ -206,19 +211,21 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set parentCategoryToCreateOptions
+     * Set parentCategoryToCreateOptions.
      *
      * @param App\Document\Category $parentCategoryToCreateOptions
+     *
      * @return $this
      */
     public function setParentCategoryToCreateOptions(\App\Document\Category $parentCategoryToCreateOptions)
     {
         $this->parentCategoryToCreateOptions = $parentCategoryToCreateOptions;
+
         return $this;
     }
 
     /**
-     * Get parentCategoryToCreateOptions
+     * Get parentCategoryToCreateOptions.
      *
      * @return App\Document\Category $parentCategoryToCreateOptions
      */
@@ -228,19 +235,21 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set url
+     * Set url.
      *
      * @param string $url
+     *
      * @return $this
      */
     public function setUrl($url)
     {
         $this->url = $url;
+
         return $this;
     }
 
     /**
-     * Get url
+     * Get url.
      *
      * @return string $url
      */
@@ -250,19 +259,21 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set createMissingOptions
+     * Set createMissingOptions.
      *
      * @param bool $createMissingOptions
+     *
      * @return $this
      */
     public function setCreateMissingOptions($createMissingOptions)
     {
         $this->createMissingOptions = $createMissingOptions;
+
         return $this;
     }
 
     /**
-     * Get createMissingOptions
+     * Get createMissingOptions.
      *
      * @return bool $createMissingOptions
      */
@@ -272,19 +283,21 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set geocodeIfNecessary
+     * Set geocodeIfNecessary.
      *
      * @param bool $geocodeIfNecessary
+     *
      * @return $this
      */
     public function setGeocodeIfNecessary($geocodeIfNecessary)
     {
         $this->geocodeIfNecessary = $geocodeIfNecessary;
+
         return $this;
     }
 
     /**
-     * Get geocodeIfNecessary
+     * Get geocodeIfNecessary.
      *
      * @return bool $geocodeIfNecessary
      */
@@ -294,7 +307,7 @@ class Import extends AbstractFile
     }
 
     /**
-     * Add optionsToAddToEachElement
+     * Add optionsToAddToEachElement.
      *
      * @param App\Document\Option $optionsToAddToEachElement
      */
@@ -304,7 +317,7 @@ class Import extends AbstractFile
     }
 
     /**
-     * Remove optionsToAddToEachElement
+     * Remove optionsToAddToEachElement.
      *
      * @param App\Document\Option $optionsToAddToEachElement
      */
@@ -314,7 +327,7 @@ class Import extends AbstractFile
     }
 
     /**
-     * Get optionsToAddToEachElement
+     * Get optionsToAddToEachElement.
      *
      * @return \Doctrine\Common\Collections\Collection $optionsToAddToEachElement
      */
@@ -324,19 +337,21 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set sourceName
+     * Set sourceName.
      *
      * @param string $sourceName
+     *
      * @return $this
      */
     public function setSourceName($sourceName)
     {
         $this->sourceName = $sourceName;
+
         return $this;
     }
 
     /**
-     * Get sourceName
+     * Get sourceName.
      *
      * @return string $sourceName
      */
@@ -346,7 +361,7 @@ class Import extends AbstractFile
     }
 
     /**
-     * Add log
+     * Add log.
      *
      * @param App\Document\GoGoLog $log
      */
@@ -356,7 +371,7 @@ class Import extends AbstractFile
     }
 
     /**
-     * Remove log
+     * Remove log.
      *
      * @param App\Document\GoGoLog $log
      */
@@ -366,31 +381,34 @@ class Import extends AbstractFile
     }
 
     /**
-     * Get logs
+     * Get logs.
      *
      * @return \Doctrine\Common\Collections\Collection $logs
      */
     public function getLogs()
     {
         $logs = is_array($this->logs) ? $this->logs : $this->logs->toArray();
-        usort( $logs, function ($a, $b) { return $b->getCreatedAt()->getTimestamp() - $a->getCreatedAt()->getTimestamp(); });
+        usort($logs, function ($a, $b) { return $b->getCreatedAt()->getTimestamp() - $a->getCreatedAt()->getTimestamp(); });
+
         return $logs;
     }
 
     /**
-     * Set currState
+     * Set currState.
      *
      * @param string $currState
+     *
      * @return $this
      */
     public function setCurrState($currState)
     {
         $this->currState = $currState;
+
         return $this;
     }
 
     /**
-     * Get currState
+     * Get currState.
      *
      * @return string $currState
      */
@@ -400,19 +418,21 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set currMessage
+     * Set currMessage.
      *
      * @param string $currMessage
+     *
      * @return $this
      */
     public function setCurrMessage($currMessage)
     {
         $this->currMessage = $currMessage;
+
         return $this;
     }
 
     /**
-     * Get currMessage
+     * Get currMessage.
      *
      * @return string $currMessage
      */
@@ -422,19 +442,21 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set idsToIgnore
+     * Set idsToIgnore.
      *
      * @param collection $idsToIgnore
+     *
      * @return $this
      */
     public function setIdsToIgnore($idsToIgnore)
     {
         $this->idsToIgnore = $idsToIgnore;
+
         return $this;
     }
 
     /**
-     * Get idsToIgnore
+     * Get idsToIgnore.
      *
      * @return collection $idsToIgnore
      */
@@ -444,19 +466,21 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set needToHaveOptionsOtherThanTheOnesAddedToEachElements
+     * Set needToHaveOptionsOtherThanTheOnesAddedToEachElements.
      *
      * @param bool $needToHaveOptionsOtherThanTheOnesAddedToEachElements
+     *
      * @return $this
      */
     public function setNeedToHaveOptionsOtherThanTheOnesAddedToEachElements($needToHaveOptionsOtherThanTheOnesAddedToEachElements)
     {
         $this->needToHaveOptionsOtherThanTheOnesAddedToEachElements = $needToHaveOptionsOtherThanTheOnesAddedToEachElements;
+
         return $this;
     }
 
     /**
-     * Get needToHaveOptionsOtherThanTheOnesAddedToEachElements
+     * Get needToHaveOptionsOtherThanTheOnesAddedToEachElements.
      *
      * @return bool $needToHaveOptionsOtherThanTheOnesAddedToEachElements
      */
@@ -466,19 +490,21 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set fieldToCheckElementHaveBeenUpdated
+     * Set fieldToCheckElementHaveBeenUpdated.
      *
      * @param string $fieldToCheckElementHaveBeenUpdated
+     *
      * @return $this
      */
     public function setFieldToCheckElementHaveBeenUpdated($fieldToCheckElementHaveBeenUpdated)
     {
         $this->fieldToCheckElementHaveBeenUpdated = $fieldToCheckElementHaveBeenUpdated;
+
         return $this;
     }
 
     /**
-     * Get fieldToCheckElementHaveBeenUpdated
+     * Get fieldToCheckElementHaveBeenUpdated.
      *
      * @return string $fieldToCheckElementHaveBeenUpdated
      */
@@ -488,19 +514,21 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set ontologyMapping
+     * Set ontologyMapping.
      *
      * @param hash $ontologyMapping
+     *
      * @return $this
      */
     public function setOntologyMapping($ontologyMapping)
     {
         $this->ontologyMapping = $ontologyMapping;
+
         return $this;
     }
 
     /**
-     * Get ontologyMapping
+     * Get ontologyMapping.
      *
      * @return hash $ontologyMapping
      */
@@ -510,19 +538,21 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set taxonomyMapping
+     * Set taxonomyMapping.
      *
      * @param hash $taxonomyMapping
+     *
      * @return $this
      */
     public function setTaxonomyMapping($taxonomyMapping)
     {
         $this->taxonomyMapping = $taxonomyMapping;
+
         return $this;
     }
 
     /**
-     * Get taxonomyMapping
+     * Get taxonomyMapping.
      *
      * @return hash $taxonomyMapping
      */
@@ -532,19 +562,21 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set customCode
+     * Set customCode.
      *
      * @param string $customCode
+     *
      * @return $this
      */
     public function setCustomCode($customCode)
     {
         $this->customCode = $customCode;
+
         return $this;
     }
 
     /**
-     * Get customCode
+     * Get customCode.
      *
      * @return string $customCode
      */
@@ -554,19 +586,21 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set lastRefresh
+     * Set lastRefresh.
      *
      * @param date $lastRefresh
+     *
      * @return $this
      */
     public function setLastRefresh($lastRefresh)
     {
         $this->lastRefresh = $lastRefresh;
+
         return $this;
     }
 
     /**
-     * Get lastRefresh
+     * Get lastRefresh.
      *
      * @return date $lastRefresh
      */
@@ -576,19 +610,21 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set createdAt
+     * Set createdAt.
      *
      * @param date $createdAt
+     *
      * @return $this
      */
     public function setCreatedAt($createdAt)
     {
         $this->createdAt = $createdAt;
+
         return $this;
     }
 
     /**
-     * Get createdAt
+     * Get createdAt.
      *
      * @return date $createdAt
      */
@@ -598,19 +634,21 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set newOntologyToMap
+     * Set newOntologyToMap.
      *
      * @param bool $newOntologyToMap
+     *
      * @return $this
      */
     public function setNewOntologyToMap($newOntologyToMap)
     {
         $this->newOntologyToMap = $newOntologyToMap;
+
         return $this;
     }
 
     /**
-     * Get newOntologyToMap
+     * Get newOntologyToMap.
      *
      * @return bool $newOntologyToMap
      */
@@ -620,19 +658,21 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set newTaxonomyToMap
+     * Set newTaxonomyToMap.
      *
      * @param bool $newTaxonomyToMap
+     *
      * @return $this
      */
     public function setNewTaxonomyToMap($newTaxonomyToMap)
     {
         $this->newTaxonomyToMap = $newTaxonomyToMap;
+
         return $this;
     }
 
     /**
-     * Get newTaxonomyToMap
+     * Get newTaxonomyToMap.
      *
      * @return bool $newTaxonomyToMap
      */
@@ -642,19 +682,21 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set preventImportIfNoCategories
+     * Set preventImportIfNoCategories.
      *
      * @param bool $preventImportIfNoCategories
+     *
      * @return $this
      */
     public function setPreventImportIfNoCategories($preventImportIfNoCategories)
     {
         $this->preventImportIfNoCategories = $preventImportIfNoCategories;
+
         return $this;
     }
 
     /**
-     * Get preventImportIfNoCategories
+     * Get preventImportIfNoCategories.
      *
      * @return bool $preventImportIfNoCategories
      */

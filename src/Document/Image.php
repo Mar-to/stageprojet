@@ -4,7 +4,6 @@ namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
-use App\Document\EmbeddedImage;
 
 /*
 * @MongoDB\Document
@@ -12,13 +11,15 @@ use App\Document\EmbeddedImage;
 */
 class Image extends EmbeddedImage
 {
-   /**
+    /**
      * @var int
      *
      * @MongoDB\Id(strategy="INCREMENT")
      */
-   private $id;
+    private $id;
 
-   public function getId() { return $this->id; }
+    public function getId()
+    {
+        return $this->id;
+    }
 }
-

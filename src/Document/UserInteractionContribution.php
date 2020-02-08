@@ -3,14 +3,13 @@
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use Gedmo\Mapping\Annotation as Gedmo;
 
 /** @MongoDB\Document */
 class UserInteractionContribution extends UserInteraction
 {
     /**
      * @var int
-     * ElementStatus
+     *          ElementStatus
      * @MongoDB\Field(type="int")
      * @MongoDB\Index
      */
@@ -41,7 +40,7 @@ class UserInteractionContribution extends UserInteraction
 
     public function hasBeenAccepted()
     {
-        return $this->status !== null && $this->status > 0;
+        return null !== $this->status && $this->status > 0;
     }
 
     public function countAsValidContributionFrom($userEmail)
@@ -49,7 +48,7 @@ class UserInteractionContribution extends UserInteraction
         return $this->getUserEmail() == $userEmail
                && in_array($this->getType(), [InteractionType::Add, InteractionType::Edit])
                && $this->getStatus() > 0
-               && $this->getStatus() != ElementStatus::ModifiedByOwner;
+               && ElementStatus::ModifiedByOwner != $this->getStatus();
     }
 
     public function __construct()
@@ -59,33 +58,38 @@ class UserInteractionContribution extends UserInteraction
 
     public function toJson()
     {
-        $result = "{";
-        $result .=  '"type":'              . $this->getType();
-        if ($this->getStatus()) $result .=', "status":'            . $this->getStatus();
-        $result .=', "user":'             . json_encode($this->getUserDisplayName());
-        $result .=', "userRole":'          . $this->getUserRole();
-        $result .=', "resolvedMessage":' . json_encode($this->getResolvedMessage());
-        $result .=', "resolvedBy":"'      . $this->getResolvedBy() . '"';
-        $result .=', "updatedAt":"'       . $this->formatDate($this->getCreatedAt()) . '"';
-        $result .=', "createdAt":"'       . $this->formatDate($this->getUpdatedAt()) . '"';
-        $result .= "}";
+        $result = '{';
+        $result .= '"type":'.$this->getType();
+        if ($this->getStatus()) {
+            $result .= ', "status":'.$this->getStatus();
+        }
+        $result .= ', "user":'.json_encode($this->getUserDisplayName());
+        $result .= ', "userRole":'.$this->getUserRole();
+        $result .= ', "resolvedMessage":'.json_encode($this->getResolvedMessage());
+        $result .= ', "resolvedBy":"'.$this->getResolvedBy().'"';
+        $result .= ', "updatedAt":"'.$this->formatDate($this->getCreatedAt()).'"';
+        $result .= ', "createdAt":"'.$this->formatDate($this->getUpdatedAt()).'"';
+        $result .= '}';
+
         return $result;
     }
 
     /**
-     * Set status
+     * Set status.
      *
      * @param int $status
+     *
      * @return $this
      */
     public function setStatus($status)
     {
         $this->status = $status;
+
         return $this;
     }
 
     /**
-     * Get status
+     * Get status.
      *
      * @return int $status
      */
@@ -95,7 +99,7 @@ class UserInteractionContribution extends UserInteraction
     }
 
     /**
-     * Add vote
+     * Add vote.
      *
      * @param App\Document\UserInteractionVote $vote
      */
@@ -105,7 +109,7 @@ class UserInteractionContribution extends UserInteraction
     }
 
     /**
-     * Remove vote
+     * Remove vote.
      *
      * @param App\Document\UserInteractionVote $vote
      */
@@ -115,7 +119,7 @@ class UserInteractionContribution extends UserInteraction
     }
 
     /**
-     * Get votes
+     * Get votes.
      *
      * @return \Doctrine\Common\Collections\Collection $votes
      */
@@ -125,19 +129,21 @@ class UserInteractionContribution extends UserInteraction
     }
 
     /**
-     * Set elementIds
+     * Set elementIds.
      *
      * @param collection $elementIds
+     *
      * @return $this
      */
     public function setElementIds($elementIds)
     {
         $this->elementIds = $elementIds;
+
         return $this;
     }
 
     /**
-     * Get elementIds
+     * Get elementIds.
      *
      * @return collection $elementIds
      */
@@ -149,6 +155,7 @@ class UserInteractionContribution extends UserInteraction
     public function addElementId($id)
     {
         $this->elementIds[] = $id;
+
         return $this;
     }
 }

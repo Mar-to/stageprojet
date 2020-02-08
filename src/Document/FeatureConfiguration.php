@@ -4,7 +4,6 @@ namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
-
 /** @MongoDB\EmbeddedDocument */
 class FeatureConfiguration
 {
@@ -35,39 +34,53 @@ class FeatureConfiguration
     public function getAllowedRoles()
     {
         $roles = [];
-        if ($this->getAllowRoleAnonymous()) $roles[] = 'anonymous';
-        if ($this->getAllowRoleUser()) $roles[] = 'user';
-        if ($this->getAllowRoleAdmin()) $roles[] = 'admin';
+        if ($this->getAllowRoleAnonymous()) {
+            $roles[] = 'anonymous';
+        }
+        if ($this->getAllowRoleUser()) {
+            $roles[] = 'user';
+        }
+        if ($this->getAllowRoleAdmin()) {
+            $roles[] = 'admin';
+        }
+
         return $roles;
     }
 
     public function isAllowed($user, $iframe, $userEmail = null)
     {
-        if (!$this->getActive() || !$this->getActiveInIframe() && $iframe) return false;
-        if (!$user) return $this->getAllowRoleAnonymous();
-        return  $user->hasRole('ROLE_USER')  && $this->getAllowRoleUser() ||
+        if (!$this->getActive() || !$this->getActiveInIframe() && $iframe) {
+            return false;
+        }
+        if (!$user) {
+            return $this->getAllowRoleAnonymous();
+        }
+
+        return  $user->hasRole('ROLE_USER') && $this->getAllowRoleUser() ||
                 $user->isAdmin() && $this->getAllowRoleAdmin();
     }
 
     public function isOnlyAllowedForAdmin()
     {
-        return $this->getAllowRoleAdmin() && !( $this->getAllowRoleUser() || $this->getAllowRoleAnonymous());
+        return $this->getAllowRoleAdmin() && !($this->getAllowRoleUser() || $this->getAllowRoleAnonymous());
     }
 
     /**
-     * Set active
+     * Set active.
      *
      * @param bool $active
+     *
      * @return $this
      */
     public function setActive($active)
     {
         $this->active = $active;
+
         return $this;
     }
 
     /**
-     * Get active
+     * Get active.
      *
      * @return bool $active
      */
@@ -77,19 +90,21 @@ class FeatureConfiguration
     }
 
     /**
-     * Set activeInIframe
+     * Set activeInIframe.
      *
      * @param bool $activeInIframe
+     *
      * @return $this
      */
     public function setActiveInIframe($activeInIframe)
     {
         $this->activeInIframe = $activeInIframe;
+
         return $this;
     }
 
     /**
-     * Get activeInIframe
+     * Get activeInIframe.
      *
      * @return bool $activeInIframe
      */
@@ -99,20 +114,26 @@ class FeatureConfiguration
     }
 
     /**
-     * Set allowRoleAnonymous
+     * Set allowRoleAnonymous.
      *
      * @param bool $allowRoleAnonymous
+     *
      * @return $this
      */
     public function setAllowRoleAnonymous($allowRoleAnonymous)
     {
         $this->allow_role_anonymous = $allowRoleAnonymous;
+
         return $this;
     }
-    public function setAllow_role_anonymous($value) { return $this->setAllowRoleAnonymous($value); }
+
+    public function setAllow_role_anonymous($value)
+    {
+        return $this->setAllowRoleAnonymous($value);
+    }
 
     /**
-     * Get allowRoleAnonymous
+     * Get allowRoleAnonymous.
      *
      * @return bool $allowRoleAnonymous
      */
@@ -122,20 +143,26 @@ class FeatureConfiguration
     }
 
     /**
-     * Set allowRoleUser
+     * Set allowRoleUser.
      *
      * @param bool $allowRoleUser
+     *
      * @return $this
      */
     public function setAllowRoleUser($allowRoleUser)
     {
         $this->allow_role_user = $allowRoleUser;
+
         return $this;
     }
-    public function setAllow_role_user($value) { return $this->setAllowRoleUser($value); }
+
+    public function setAllow_role_user($value)
+    {
+        return $this->setAllowRoleUser($value);
+    }
 
     /**
-     * Get allowRoleUser
+     * Get allowRoleUser.
      *
      * @return bool $allowRoleUser
      */
@@ -145,20 +172,26 @@ class FeatureConfiguration
     }
 
     /**
-     * Set allowRoleAdmin
+     * Set allowRoleAdmin.
      *
      * @param bool $allowRoleAdmin
+     *
      * @return $this
      */
     public function setAllowRoleAdmin($allowRoleAdmin)
     {
         $this->allow_role_admin = $allowRoleAdmin;
+
         return $this;
     }
-    public function setAllow_role_admin($value) { return $this->setAllowRoleAdmin($value); }
+
+    public function setAllow_role_admin($value)
+    {
+        return $this->setAllowRoleAdmin($value);
+    }
 
     /**
-     * Get allowRoleAdmin
+     * Get allowRoleAdmin.
      *
      * @return bool $allowRoleAdmin
      */

@@ -14,25 +14,28 @@ class ConfigurationApi
     public $protectPublicApiWithToken = true;
 
     /**
-     * List of the custom properties we don't want to share in the public API
+     * List of the custom properties we don't want to share in the public API.
+     *
      * @MongoDB\Field(type="collection")
      */
     public $publicApiPrivateProperties = [];
 
     /**
-     * Set internalApiAuthorizedDomains
+     * Set internalApiAuthorizedDomains.
      *
      * @param string $internalApiAuthorizedDomains
+     *
      * @return $this
      */
     public function setInternalApiAuthorizedDomains($internalApiAuthorizedDomains)
     {
         $this->internalApiAuthorizedDomains = $internalApiAuthorizedDomains;
+
         return $this;
     }
 
     /**
-     * Get internalApiAuthorizedDomains
+     * Get internalApiAuthorizedDomains.
      *
      * @return string $internalApiAuthorizedDomains
      */
@@ -42,19 +45,21 @@ class ConfigurationApi
     }
 
     /**
-     * Set protectPublicApiWithToken
+     * Set protectPublicApiWithToken.
      *
      * @param bool $protectPublicApiWithToken
+     *
      * @return $this
      */
     public function setProtectPublicApiWithToken($protectPublicApiWithToken)
     {
         $this->protectPublicApiWithToken = $protectPublicApiWithToken;
+
         return $this;
     }
 
     /**
-     * Get protectPublicApiWithToken
+     * Get protectPublicApiWithToken.
      *
      * @return bool $protectPublicApiWithToken
      */
@@ -64,19 +69,21 @@ class ConfigurationApi
     }
 
     /**
-     * Set publicApiPrivateProperties
+     * Set publicApiPrivateProperties.
      *
      * @param collection $publicApiPrivateProperties
+     *
      * @return $this
      */
     public function setPublicApiPrivateProperties($publicApiPrivateProperties)
     {
         $this->publicApiPrivateProperties = $publicApiPrivateProperties;
+
         return $this;
     }
 
     /**
-     * Get publicApiPrivateProperties
+     * Get publicApiPrivateProperties.
      *
      * @return collection $publicApiPrivateProperties
      */

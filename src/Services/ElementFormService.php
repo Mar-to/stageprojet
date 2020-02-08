@@ -10,16 +10,14 @@
  * @Last Modified time: 2018-06-06 11:27:49
  */
 
-
 namespace App\Services;
 
 use App\Document\OptionValue;
-use App\Services\ElementActionService;
 
 class ElementFormService
 {
-	/**
-     * Constructor
+    /**
+     * Constructor.
      */
     public function __construct(ElementActionService $elementActionService)
     {
@@ -38,11 +36,11 @@ class ElementFormService
 
         $this->updateOwner($element, $request, $userEmail);
 
-        if ($isPendingModif)
-        {
+        if ($isPendingModif) {
             $updatedElement = $this->elementActionService->savePendingModification($element);
+        } else {
+            $updatedElement = $element;
         }
-        else $updatedElement = $element;
 
         return [$updatedElement, $isMinorModif];
     }
@@ -64,11 +62,12 @@ class ElementFormService
         $sameOptionValues = $element->getOptionIds() == $originalElement->getOptionIds();
         $nonImportantAttributes = ['geo', 'openHours'];
         foreach ($attributesChanged as $index => $attribute) {
-           if ($attribute == 'optionValues' && $sameOptionValues || strpos($attribute, 'Json') !== false || in_array($attribute, $nonImportantAttributes)) {
-              unset($attributesChanged[$index]);
-           }
+            if ('optionValues' == $attribute && $sameOptionValues || false !== strpos($attribute, 'Json') || in_array($attribute, $nonImportantAttributes)) {
+                unset($attributesChanged[$index]);
+            }
         }
-        return count($attributesChanged) == 0;
+
+        return 0 == count($attributesChanged);
     }
 
     private function updateOptionsValues($element, $request)
@@ -79,8 +78,7 @@ class ElementFormService
 
         $element->resetOptionsValues();
 
-        foreach($optionValues as $optionValue)
-        {
+        foreach ($optionValues as $optionValue) {
             $new_optionValue = new OptionValue();
             $new_optionValue->setOptionId($optionValue['id']);
             $new_optionValue->setIndex($optionValue['index']);
@@ -101,11 +99,10 @@ class ElementFormService
     {
         // add HTTP:// to url if needed
         $webSiteUrl = $element->getWebsite();
-        if ($webSiteUrl && $webSiteUrl != '')
-        {
+        if ($webSiteUrl && '' != $webSiteUrl) {
             $parsed = parse_url($webSiteUrl);
             if (empty($parsed['scheme'])) {
-                $webSiteUrl = 'http://' . ltrim($webSiteUrl, '/');
+                $webSiteUrl = 'http://'.ltrim($webSiteUrl, '/');
             }
             $element->setWebsite($webSiteUrl);
         }
@@ -113,7 +110,10 @@ class ElementFormService
 
     private function updateOwner($element, $request, $userEmail)
     {
-        if ($request->get('owning')) $element->setUserOwnerEmail($userEmail);
-        else $element->setUserOwnerEmail(null);
+        if ($request->get('owning')) {
+            $element->setUserOwnerEmail($userEmail);
+        } else {
+            $element->setUserOwnerEmail(null);
+        }
     }
 }

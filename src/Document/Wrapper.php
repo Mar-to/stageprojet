@@ -5,7 +5,7 @@ namespace App\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
- * Wrapper
+ * Wrapper.
  *
  * @MongoDB\Document(repositoryClass="App\Repository\WrapperRepository")
  */
@@ -39,7 +39,6 @@ class Wrapper
      */
     private $rawContent;
 
-
     /**
      * @var string
      *
@@ -60,10 +59,8 @@ class Wrapper
      */
     private $position;
 
-
-
     /**
-     * Get id
+     * Get id.
      *
      * @return int
      */
@@ -73,7 +70,7 @@ class Wrapper
     }
 
     /**
-     * Set title
+     * Set title.
      *
      * @param string $title
      *
@@ -87,7 +84,7 @@ class Wrapper
     }
 
     /**
-     * Get title
+     * Get title.
      *
      * @return string
      */
@@ -97,7 +94,7 @@ class Wrapper
     }
 
     /**
-     * Set content
+     * Set content.
      *
      * @param string $content
      *
@@ -111,7 +108,7 @@ class Wrapper
     }
 
     /**
-     * Get content
+     * Get content.
      *
      * @return string
      */
@@ -121,7 +118,7 @@ class Wrapper
     }
 
     /**
-     * Set backgroundColor
+     * Set backgroundColor.
      *
      * @param string $backgroundColor
      *
@@ -135,7 +132,7 @@ class Wrapper
     }
 
     /**
-     * Get backgroundColor
+     * Get backgroundColor.
      *
      * @return string
      */
@@ -145,19 +142,21 @@ class Wrapper
     }
 
     /**
-     * Set position
+     * Set position.
      *
      * @param int $position
+     *
      * @return $this
      */
     public function setPosition($position)
     {
         $this->position = $position;
+
         return $this;
     }
 
     /**
-     * Get position
+     * Get position.
      *
      * @return int $position
      */
@@ -167,19 +166,21 @@ class Wrapper
     }
 
     /**
-     * Set textColor
+     * Set textColor.
      *
      * @param string $textColor
+     *
      * @return $this
      */
     public function setTextColor($textColor)
     {
         $this->textColor = $textColor;
+
         return $this;
     }
 
     /**
-     * Get textColor
+     * Get textColor.
      *
      * @return string $textColor
      */
@@ -189,19 +190,21 @@ class Wrapper
     }
 
     /**
-     * Set rawContent
+     * Set rawContent.
      *
      * @param string $rawContent
+     *
      * @return $this
      */
     public function setRawContent($rawContent)
     {
         $this->rawContent = $rawContent;
+
         return $this;
     }
 
     /**
-     * Get rawContent
+     * Get rawContent.
      *
      * @return string $rawContent
      */

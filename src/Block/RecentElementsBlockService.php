@@ -1,17 +1,14 @@
 <?php
 
 namespace App\Block;
+
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Sonata\AdminBundle\Admin\Pool;
-use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\BlockBundle\Block\BlockContextInterface;
 use Sonata\BlockBundle\Block\Service\AbstractBlockService;
-use Sonata\BlockBundle\Model\BlockInterface;
-use Sonata\CoreBundle\Model\ManagerInterface;
 use Sonata\CoreBundle\Model\Metadata;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use App\Document\ElementStatus;
 use Twig\Environment;
 
 /**
@@ -24,11 +21,11 @@ class RecentElementsBlockService extends AbstractBlockService
      * @var Pool
      */
     private $adminPool;
+
     /**
-     * @param string           $name
-     * @param EngineInterface  $templating
-     * @param DocumentManager $dm
-     * @param Pool             $adminPool
+     * @param string          $name
+     * @param EngineInterface $templating
+     * @param Pool            $adminPool
      */
     public function __construct(Environment $twig, DocumentManager $dm, Pool $adminPool = null)
     {
@@ -36,46 +33,49 @@ class RecentElementsBlockService extends AbstractBlockService
         $this->adminPool = $adminPool;
         parent::__construct($twig);
     }
+
     /**
      * {@inheritdoc}
      */
     public function execute(BlockContextInterface $blockContext, Response $response = null)
     {
-        $parameters = array(
+        $parameters = [
             'context' => $blockContext,
             'settings' => $blockContext->getSettings(),
             'block' => $blockContext->getBlock(),
             'results' => $this->manager->createQueryBuilder('App\Document\Element')
-						    ->field('status')->equals($blockContext->getSettings()['filterStatus'])
-						    ->sort('updatedAt', 'DESC')
-						    ->limit($blockContext->getSettings()['number'])
-						    ->getQuery()
-						    ->execute(),
+                            ->field('status')->equals($blockContext->getSettings()['filterStatus'])
+                            ->sort('updatedAt', 'DESC')
+                            ->limit($blockContext->getSettings()['number'])
+                            ->getQuery()
+                            ->execute(),
             'admin_pool' => $this->adminPool,
-        );
+        ];
 
         return $this->renderResponse($blockContext->getTemplate(), $parameters, $response);
     }
+
     /**
      * {@inheritdoc}
      */
     public function configureSettings(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'number' => 5,
             'title' => 'Derniers elements',
             'class' => '',
             'filterStatus' => 0,
             'template' => 'admin/blocks/block_recent_elements.html.twig',
-        ));
+        ]);
     }
+
     /**
      * {@inheritdoc}
      */
     public function getBlockMetadata($code = null)
     {
-        return new Metadata($this->getName(), (!is_null($code) ? $code : $this->getName()), false, 'BiopenGeoDirectoryBundle', array(
+        return new Metadata($this->getName(), (!is_null($code) ? $code : $this->getName()), false, 'BiopenGeoDirectoryBundle', [
             'class' => 'fa fa-pencil',
-        ));
+        ]);
     }
 }
