@@ -15,8 +15,13 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 class MailTestController extends Controller
 {
-   public function draftAutomatedAction(Request $request, SessionInterface $session, MailService $mailService,
-                                        $mailType)
+   public function __construct(DocumentManager $dm, MailService $mailService)
+   {
+      $this->dm = $dm;
+      $this->mailService = $mailService;
+   }
+
+   public function draftAutomatedAction($mailType)
    {
       $draftResponse = $this->draftTest($mailType);
 
@@ -24,18 +29,17 @@ class MailTestController extends Controller
 
       if ($draftResponse['success'])
       {
-         $mailContent = $mailService->draftTemplate($draftResponse['content']);
+         $mailContent = $this->mailService->draftTemplate($draftResponse['content']);
          return $this->render('emails/test-emails.html.twig', array('subject' => $draftResponse['subject'], 'content' => $mailContent, 'mailType' => $mailType));
       }
       else
       {
-         $session->getFlashBag()->add('error', 'Error : ' . $draftResponse['message']);
+         $this->addFlash('error', 'Error : ' . $draftResponse['message']);
          return $this->redirectToRoute('admin_app_configuration_list');
       }
    }
 
-   public function sentTestAutomatedAction(Request $request, SessionInterface $session, MailService $mailService,
-                                           $mailType)
+   public function sentTestAutomatedAction(Request $request, $mailType)
    {
       $mail = $request->get('email');
 
@@ -45,47 +49,47 @@ class MailTestController extends Controller
 
       if ($draftResponse == null)
       {
-         $session->getFlashBag()->add('error', 'No elements in database, please create an element for email testing');
+         $this->addFlash('error', 'No elements in database, please create an element for email testing');
          return $this->redirectToRoute('admin_app_configuration_list');
       }
 
       if ($draftResponse['success'])
       {
-         $result = $mailService->sendMail($mail,$draftResponse['subject'], $draftResponse['content']);
+         $result = $this->mailService->sendMail($mail,$draftResponse['subject'], $draftResponse['content']);
          if ($result['success'])
-          $session->getFlashBag()->add('success', 'Le mail a bien été envoyé à ' . $mail . '</br>Si vous ne le voyez pas vérifiez dans vos SPAMs');
+          $this->addFlash('success', 'Le mail a bien été envoyé à ' . $mail . '</br>Si vous ne le voyez pas vérifiez dans vos SPAMs');
          else
-          $session->getFlashBag()->add('error', $result['message']);
+          $this->addFlash('error', $result['message']);
       }
       else
       {
-         $session->getFlashBag()->add('error', 'Erreur : ' . $draftResponse['message']);
+         $this->addFlash('error', 'Erreur : ' . $draftResponse['message']);
       }
       return $this->redirectToRoute('gogo_mail_draft_automated', array('mailType' => $mailType));
    }
 
-  private function draftTest($mailType, DocumentManager $dm, MailService $mailService)
+  private function draftTest($mailType)
   {
      $options = null;
 
      if ($mailType == 'newsletter')
      {
-        $element = $dm->getRepository('App\Document\User')->findOneByEnabled(true);
+        $element = $this->dm->getRepository('App\Document\User')->findOneByEnabled(true);
         $element->setLocation('bordeaux');
         $element->setGeo(new Coordinates(44.876,-0.512));
-        $qb = $dm->createQueryBuilder('App\Document\Element');
+        $qb = $this->dm->createQueryBuilder('App\Document\Element');
         $qb->field('status')->gte(ElementStatus::AdminRefused);
         $qb->field('moderationState')->notIn(array(ModerationState::GeolocError, ModerationState::NoOptionProvided));
         $options = $qb->limit(30)->getQuery()->execute();
      }
      else
      {
-      $element = $dm->getRepository('App\Document\Element')->findVisibles()->getSingleResult();
+      $element = $this->dm->getRepository('App\Document\Element')->findVisibles()->getSingleResult();
      }
 
      if (!$element) return null;
 
-     $draftResponse = $mailService->draftEmail($mailType, $element, "Un customMessage de test", $options);
+     $draftResponse = $this->mailService->draftEmail($mailType, $element, "Un customMessage de test", $options);
      return $draftResponse;
   }
 }

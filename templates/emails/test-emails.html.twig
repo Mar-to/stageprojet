@@ -2,7 +2,7 @@
 {% block sonata_admin_content %}
 
   {% block notice %}
-      {% include 'SonataCoreBundle:FlashMessage:render.html.twig' %}
+      {% include '@SonataCore/FlashMessage/render.html.twig' %}
   {% endblock notice %}
 
   <h2 style="text-align:center; font-weight:bold;">Test du rendu du mail {{ mailType | upper }}</h2>
