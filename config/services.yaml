@@ -221,6 +221,8 @@ services:
     admin.news:
         class: App\Admin\NewsAdmin
         arguments: [~, App\Document\News, 'PixSortableBehaviorBundle:SortableAdmin']
+        calls:
+            - [setTemplate, ['list', 'admin/list/list_news.html.twig']]
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: emailing, label: Nouvelles (newsletter) }
 
