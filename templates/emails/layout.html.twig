@@ -2,24 +2,24 @@
             height: 100%;
             padding: 30px 45px">
   <div class="header" style="background-color : {{ config.getDefaultColor('contentBackgroundColor') }};
-              max-width: 700px;              
+              max-width: 700px;
               color: {{ config.textColor }};
               margin: 0 auto;
               border-radius: 5px;
               font-weight: normal;
               overflow: hidden;
-              text-align: center;
               font-family: Arial, sans-serif;
               line-height: 26px;
               font-size: 15px;">
     <div style="text-align:center;
                 padding: 10px;
                 border-radius: 5px 5px 0 0;
+                border-bottom: 1px solid #eaeaea;
                 background-color: {{ config.getDefaultColor('headerColor') }};">
         <a href="{{ homeUrl }}">
           {% if config.logo and config.logo.imageUrl %}
             <img src="{{ config.logo.imageUrl }}" alt="{{ config.appName }}" title="{{ config.appName }}"
-                   style="max-height: 100px;    
+                   style="max-height: 100px;
                           color: white;
                           font-family: sans-serif;
                           max-width: 100%;" />

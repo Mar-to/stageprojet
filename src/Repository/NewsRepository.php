@@ -10,15 +10,14 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 
 final class NewsRepository extends DocumentRepository
 {
-  public function findLastPublishedNews(\DateTime $lastNewsletterSentAt): ?News
+  public function findLastPublishedNews(\DateTime $lastNewsletterSentAt)
   {
     return $this->createQueryBuilder()
       ->field('status')->equals(NewsStatus::PUBLISHED)
       ->sort('publicationDate', 'desc')
       ->field('publicationDate')->lte(new \DateTime())
       ->field('publicationDate')->gte($lastNewsletterSentAt)
-      ->limit(1)
       ->getQuery()
-      ->getSingleResult();
+      ->execute();
   }
 }

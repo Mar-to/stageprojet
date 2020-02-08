@@ -1,5 +1,5 @@
 <table style="width:100%">
-  {% for element in elements|slice(0,19) %}
+  {% for element in elements|slice(0,9) %}
 
     <tr style="">
       <td style="text-align: left;
@@ -58,6 +58,6 @@
     </tr>
   {% endfor %}
 </table>
-{% if elements|length > 20 %}
-<p style="margin-top: 20px;font-weight: bold;">... Et {{ elements|length - 20 }} autres à découvrir sur le site !</p>
+{% if elements|length > 10 %}
+<p style="margin-top: 20px;font-weight: bold;text-align: center;">... Et {{ elements|length - 10 }} autres à découvrir sur le site !</p>
 {% endif %}

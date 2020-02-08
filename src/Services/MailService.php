@@ -187,7 +187,12 @@ class MailService
 
         if ('newsletter' === $mailType && $element instanceof User) {
           $lastNews = $this->newsRepository->findLastPublishedNews($element->getLastNewsletterSentAt());
-          $string = preg_replace('/({{((?:\s)+)?news((?:\s)+)?}})/i', $lastNews ? $lastNews->getContent() : '', $string);
+          $content = '';
+          foreach ($lastNews as $news) {
+              $content .= $this->twig->render('emails/news.html.twig',
+                    ['news' => $news, 'config' => $this->config]);
+          }
+          $string = preg_replace('/({{((?:\s)+)?news((?:\s)+)?}})/i', $content, $string);
         }
 
         $homeUrl = $this->generateRoute('gogo_homepage');
