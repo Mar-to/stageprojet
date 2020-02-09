@@ -6,35 +6,37 @@
   {% block body_user_before_content %}
   {% endblock %}
 
-  <i class="gogo-icon-menu menu-user-button" onclick="showMenu()"></i>
-  <div id="menu-overlay" onclick="hideMenu()"></div>
-
   {% if is_user_allowed('add') or is_user_allowed('edit') or is_user_allowed('vote') or is_user_allowed('report') %}
-  <div id="menu-user" class="menu-user side-nav">
-    <ul>
-      <li class="title">Menu</li>
+    <i class="gogo-icon-menu menu-user-button" onclick="showMenu()"></i>
+    <div id="menu-overlay" onclick="hideMenu()"></div>
 
-      <a href="{{ path('gogo_user_profile') }}">
-        <li><i class="gogo-icon-filters-1"></i>Mes Paramètres</li>
-      </a>
+    <div id="menu-user" class="menu-user side-nav">
+      <ul>
+        <li class="title">Menu</li>
 
-      {% if is_user_allowed('add') or is_user_allowed('edit') %}
-        <a href="{{ path('gogo_user_contributions') }}"><li><i class="gogo-icon-edit"></i>Mes contributions</li></a>
-      {% endif %}
-
-      {% if is_user_allowed('vote') %}
-        <a href="{{ path('gogo_user_votes') }}">
-          <li><i class="gogo-icon-vote"></i>Mes votes</li>
+        <a href="{{ path('gogo_user_profile') }}">
+          <li><i class="gogo-icon-filters-1"></i>Mes Paramètres</li>
         </a>
-      {% endif %}
 
-      {% if is_user_allowed('report') %}
-        <a href="{{ path('gogo_user_reports') }}">
-          <li><i class="gogo-icon-exclamation-1"></i>Mes signalements</li>
-        </a>
-      {% endif %}
-    </ul>
-  </div>
+        {% if is_user_allowed('add') or is_user_allowed('edit') %}
+          <a href="{{ path('gogo_user_contributions') }}">
+            <li><i class="gogo-icon-edit"></i>Mes contributions</li>
+          </a>
+        {% endif %}
+
+        {% if is_user_allowed('vote') %}
+          <a href="{{ path('gogo_user_votes') }}">
+            <li><i class="gogo-icon-vote"></i>Mes votes</li>
+          </a>
+        {% endif %}
+
+        {% if is_user_allowed('report') %}
+          <a href="{{ path('gogo_user_reports') }}">
+            <li><i class="gogo-icon-exclamation-1"></i>Mes signalements</li>
+          </a>
+        {% endif %}
+      </ul>
+    </div>
   {% endif %}
 
   <section>
