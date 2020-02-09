@@ -3,6 +3,7 @@
 namespace App\Twig;
 
 use App\Helper\SaasHelper;
+use App\Services\ConfigurationService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
@@ -10,9 +11,10 @@ use Twig\TwigFunction;
 
 class AppExtension extends AbstractExtension
 {
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, ConfigurationService $configService)
     {
         $this->dm = $dm;
+        $this->configService = $configService;
     }
 
     public function getFilters()
@@ -39,6 +41,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('is_root_project', [$this, 'isRootProject']),
             new TwigFunction('new_msgs_count', [$this, 'getNewMessagesCount']),
             new TwigFunction('errors_count', [$this, 'getErrorsCount']),
+            new TwigFunction('is_user_allowed', [$this, 'isUserAllowed']),
         ];
     }
 
@@ -57,5 +60,10 @@ class AppExtension extends AbstractExtension
     public function getErrorsCount()
     {
         return count($this->dm->getRepository('App\Document\GoGoLog')->findBy(['level' => 'error', 'hidden' => false]));
+    }
+
+    public function isUserAllowed($featureName)
+    {
+        return $this->configService->isUserAllowed($featureName);
     }
 }

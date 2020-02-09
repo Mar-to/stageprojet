@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Document\Coordinates;
 use App\Document\InteractionType;
+use App\Services\ConfigurationService;
 use App\Form\UserProfileType;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Geocoder\ProviderAggregator;
@@ -13,9 +14,15 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class UserController extends GoGoController
 {
-    public function userSpaceAction()
+    public function userSpaceAction(ConfigurationService $confService)
     {
-        return $this->render('user/user-space.html.twig');
+        if ($confService->isUserAllowed('add') || $confService->isUserAllowed('edit') ||
+            $confService->isUserAllowed('vote') || $confService->isUserAllowed('report')) {
+            return $this->render('user/user-space.html.twig');
+        } else {
+            return $this->redirectToRoute('gogo_user_profile');
+        }
+
     }
 
     public function contributionsAction(DocumentManager $dm)
