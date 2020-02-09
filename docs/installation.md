@@ -78,13 +78,6 @@ You can have a look to [the CHANGELOG](../CHANGELOG.md) to know what are the new
 Issues
 ------
 
-If when you create an element you have the issue "cannot load method bcmod from namespace ...",
-you need to install the bc-math module:
-
-```
-sudo apt install php7.3-bcmath
-```
-
 If memory limits while using Composer:
 
 ```shell
