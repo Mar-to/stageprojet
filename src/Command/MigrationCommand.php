@@ -53,6 +53,8 @@ class MigrationCommand extends GoGoAbstractCommand
         'Vous pouvez maintenant configurer des mot clés à exclure dans la recherche des éléments. Rendez-vous dans Personnalisation -> La Carte -> Onglet Recherche',
         // v2.5
         "Il est maintenant possible de <b>téléverser des images et des fichiers</b> depuis le formulaire d'ajout d'un élément ! Paramétrez ces nouveaux champs dans Modèle de Données -> Formulaire",
+        // v3.0
+        "Vous pouvez maintenant écrire des actualités qui seront incluses dans la newsletter automatique! Allez dans Mails/Newsletter -> Actualités"
     ];
 
     public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger,

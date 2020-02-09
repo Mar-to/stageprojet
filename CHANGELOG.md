@@ -1,6 +1,7 @@
 v3.0.0
 ======
 * MAJOR: Upgrade to php7 (mandatory) and symfony 4.4.
+* Feature: Ability to includes news in the automated newsletter
 
 v2.5.8
 ======

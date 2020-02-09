@@ -224,7 +224,7 @@ services:
         calls:
             - [setTemplate, ['list', 'admin/list/list_news.html.twig']]
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: emailing, label: Nouvelles (newsletter) }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: emailing, label: Actualités (newsletter) }
 
     admin.api_config:
         class: App\Admin\ConfigurationAPIAdmin
