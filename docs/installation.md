@@ -10,7 +10,7 @@ Quick Install
 
 - **Docker containers**: please follow the instructions [here](installation_docker.md).
 
-Requirements
+Manual Install: Requirements
 ------------
 
 1. PHP 7
@@ -25,12 +25,10 @@ Consider the [Docker installation](installation_docker.md) if you run into troub
 Installation
 ------------
 
-### Cloning Repository (clone dev branch)
+### Cloning Repository
 
 ```shell
-cd path-to-php-server-folder (default linux /var/www/html, windows c:/wamp/www... )
 git clone https://gitlab.adullact.net/pixelhumain/GoGoCarto.git
-cd GoGoCarto/
 ```
 
 ### Initialize the Project
@@ -65,42 +63,17 @@ Start watching for file changes (automatic recompilation):
 gulp watch
 ```
 
-Updating your Install
+Updating your Production Install
 ---------------------
 
 Each time you want to update GoGoCarto, run:
 
 ```shell
-make deploy
+make gogo-update
 ```
 
 You can have a look to [the CHANGELOG](../CHANGELOG.md) to know what are the new features.
 
-Production
-----------
-
-Dump assets in Symfony console to update the web/templates files:
-
-```
-assets:install web
-```
-
-Generate compressed JS and CSS files:
-
-```
-gulp build
-gulp production
-```
-
-Enable gz compression in your web server.
-
-In the distant console (http://yoursite.com/web/_console):
-
-```
-cache:clear --env=prod
-```
-
-Make sure that the var folder is writable `chmod -R 771 var/`.
 
 Issues
 ------

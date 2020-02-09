@@ -5,6 +5,7 @@ EXEC_PHP      = php
 SYMFONY       = $(EXEC_PHP) bin/console
 COMPOSER      = composer
 NPM           = npm
+GIT           = git
 GULP          = gulp
 DOCKER        = docker-compose
 .DEFAULT_GOAL = help
@@ -19,7 +20,7 @@ help: ## Outputs this help screen
 composer-install: composer.lock ## Install Composer vendors according to the current composer.lock file
 	$(COMPOSER) install
 
-update: composer.json ## Update vendors according to the composer.json file
+composer-update: composer.json ## Update vendors according to the composer.json file
 	$(COMPOSER) update
 
 ## —— Symfony —————————————
@@ -92,6 +93,19 @@ cs-fix: ## Run php-cs-fixer and fix the code
 	./vendor/bin/php-cs-fixer fix src/
 
 ## —— Deploy & Prod ———————
-deploy: ## Deploy the project
-	$(SHELL) ./update_gogocarto.sh
+gogo-update: ## Update a PROD server to the lastest version of gogocarto
+	$(GIT) reset --hard master
+	$(GIT) pull origin master
+	$(NPM) install
+	$(COMPOSER) install
+	$(GULP) build
+	$(GULP) production
+	$(SYMFONY) cache:clear --env=prod
+
+	sleep 10 && chmod 777 -R var/ &
+	sleep 60 && chmod 777 -R var/ &
+	sleep 120 && chmod 777 -R var/ &
+	sleep 300 && chmod 777 -R var/ &
+	sleep 600 && chmod 777 -R var/ &
+	sleep 2000 && chmod 777 -R var/ &
 
