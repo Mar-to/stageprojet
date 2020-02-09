@@ -5,7 +5,8 @@
   {% include 'modals/loginModal.html.twig' %}
 {% endblock %}
 
-<header>
+{% set noheader = app.request.get('noheader') %}
+<header {% if noheader %}class="hidden" style="display:none"{% endif %}>
 <nav>
 	<div id="menu" class="row">
 

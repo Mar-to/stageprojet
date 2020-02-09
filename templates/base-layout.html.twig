@@ -22,7 +22,7 @@
 <body class="gogo-load-css {% if pageName is defined %}{{ pageName }}{% endif %} base-layout"> {# use this class to load the css vendors encapsulated inside gogocarto.css #}
 
   {# Header #}
-  {{ render(controller('App\\Controller\\CoreController::headerAction', {'title': navTitle|default(''), 'iframe': app.request.get('iframe') } ))}}
+  {{ render(controller('App\\Controller\\CoreController::headerAction', {'title': navTitle|default(''), 'iframe': app.request.get('iframe'), 'noheader': app.request.get('noheader') } ))}}
 
   {% block body %}
   {% endblock %}
