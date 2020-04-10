@@ -112,3 +112,15 @@ db.Configuration.updateMany( { } , { $set: { 'defautTileLayer': DBRef("TileLayer
 db.Element.updateMany({moderationState: 4}, {$set: {moderationState: 0, isDuplicateNode: false}, $unset: { potentialDuplicates: 1} })
 
 db.MigrationState.updateMany({}, { $set: { migrationIndex: 0}})
+
+db.Element.find({'data.image': {$exists: true}}).forEach(function(e) {
+    newImage = {
+      externalImageUrl: e.data.image.replace('http://', 'https://'),
+      updatedAt: ISODate("2020-02-14T00:00:01Z")
+    };
+    images = e.images || [];
+    images.push(newImage);
+    e.images = images;
+    delete e.data.image;
+    db.Element.save(e);
+});
