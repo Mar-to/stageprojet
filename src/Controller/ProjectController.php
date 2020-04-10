@@ -178,8 +178,7 @@ class ProjectController extends Controller
 
             $this->addFlash('success', "<b>Bienvenue dans votre espace Administrateur !</b></br>
                 L'aventure commence tout juste pour vous, il vous faut maintenant commencer à configurer votre site :)</br>
-                Je vous invite à consulter les <a target='_blank' href='https://video.colibris-outilslibres.org/video-channels/gogocarto_channel/videos'>vidéos tutoriels</a> pour vous apprendre à configurer votre carte !</br>
-                Si vous avez des questions (après avoir regardé ces vidéos) rendez vous sur <a target='_blank' href='https://chat.lescommuns.org/channel/gogocarto'>le chat #gogocarto</a> !");
+                <a target='_blank' href='https://doc.gogocarto.fr/'>Consulter la documentation</a> pour vous aider à démarrer ! Tutoriels vidéos, foire aux questions...");
             $response = $this->redirectToRoute('sonata_admin_dashboard');
 
             $this->authenticateUser($user, $response, $loginManager);
