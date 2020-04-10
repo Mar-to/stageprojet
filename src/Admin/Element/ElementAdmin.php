@@ -9,6 +9,8 @@
 namespace App\Admin\Element;
 
 // custom iterator
+use Application\Sonata\Exporter\Source\DoctrineODMQuerySourceIterator;
+use Sonata\DoctrineMongoDBAdminBundle\Datagrid\ProxyQuery;
 
 // There is a chain of inherance to split ElementAdmin in different files
 // ElementAdminShowEdit inherit from ElementAdminList wich inherit from ElementAdminFilters and so on..
@@ -18,22 +20,58 @@ class ElementAdmin extends ElementAdminShowEdit
     {
         $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
         $basicFields = [
-      'id' => 'id',
-      'name' => 'name',
-      'categories' => 'optionsString',
-      'latitude' => 'geo.latitude',
-      'longitude' => 'geo.longitude',
-      'streetAddress' => 'address.streetAddress',
-      'addressLocality' => 'address.addressLocality',
-      'postalCode' => 'address.postalCode',
-      'addressCountry' => 'address.addressCountry',
-    ];
-        $publicProperties = $dm->getRepository('App\Document\Element')->findAllCustomProperties($onlypublic = true);
+          'id' => 'id',
+          'name' => 'name',
+          'categories' => 'optionsString',
+          'latitude' => 'geo.latitude',
+          'longitude' => 'geo.longitude',
+          'streetAddress' => 'address.streetAddress',
+          'addressLocality' => 'address.addressLocality',
+          'postalCode' => 'address.postalCode',
+          'addressCountry' => 'address.addressCountry',
+          'status' => 'status',
+          'moderationState' => 'moderationState',
+          'source' => 'sourceKey',
+          'images' => 'images',
+          'files' => 'files'
+        ];
+        $props = $dm->getRepository('App\Document\Element')->findPublicCustomProperties();
         $customFields = [];
-        foreach ($publicProperties as $key => $prop) {
-            $customFields[$prop] = 'data';
+        foreach ($props as $key => $prop) {
+          if (!isset($basicFields[$prop])) $customFields[$prop] = 'data';
+        }
+
+        $props = $dm->getRepository('App\Document\Element')->findPrivateCustomProperties();
+        foreach ($props as $key => $prop) {
+          if (!isset($basicFields[$prop])) $customFields[$prop] = 'privateData';
         }
 
         return array_merge($basicFields, $customFields);
+    }
+
+    public function getDataSourceIterator()
+    {
+      $datagrid = $this->getDatagrid();
+      $datagrid->buildPager();
+
+      $fields = [];
+
+      foreach ($this->getExportFields() as $key => $field) {
+          $label = $this->getTranslationLabel($field, 'export', 'label');
+          $transLabel = $this->trans($label);
+
+          // NEXT_MAJOR: Remove this hack, because all field labels will be translated with the major release
+          // No translation key exists
+          if ($transLabel == $label) {
+              $fields[$key] = $field;
+          } else {
+              $fields[$transLabel] = $field;
+          }
+      }
+
+      $datagrid->buildPager();
+      $query = $datagrid->getQuery();
+
+      return new ElementSourceIterator($query instanceof ProxyQuery ? $query->getQuery() : $query, $fields);
     }
 }

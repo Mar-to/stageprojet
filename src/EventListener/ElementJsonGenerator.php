@@ -91,23 +91,22 @@ class ElementJsonGenerator
         // OPTIONS VALUES (= TAXONOMY)
         $sortedOptionsValues = $element->getSortedOptionsValues();
         $optValuesLength = count($sortedOptionsValues);
-        $optionsString = '';
+        $elementOptions = [];
         $optionsFullJson = [];
         if ($sortedOptionsValues) {
             for ($i = 0; $i < $optValuesLength; ++$i) {
                 $optionValue = $sortedOptionsValues[$i];
                 if (isset($options[$optionValue->getOptionId()])) {
-                    $optionName = json_encode($options[$optionValue->getOptionId()]['name']);
-                    $optionsString .= $optionName.',';
-                    $optionsFullJson[] = $sortedOptionsValues[$i]->toJson($optionName);
+                    $optionName = $options[$optionValue->getOptionId()]['name'];
+                    $elementOptions[] = $optionName;
+                    $optionsFullJson[] = $sortedOptionsValues[$i]->toJson(json_encode($optionName));
                 } else {
                     $element->removeOptionValue($sortedOptionsValues[$i]);
                 }
             }
         }
-        $optionsString = rtrim($optionsString, ',');
-        $baseJson .= ',"categories": ['.$optionsString.'],';
-        $element->setOptionsString($optionsString); // we also update optionsString attribute which is used in exporting from element admin list
+        $baseJson .= ',"categories": ' . json_encode($elementOptions) . ',';
+        $element->setOptionsString(implode(',', $elementOptions)); // we also update optionsString attribute which is used in exporting from element admin list
         // Options values with description
         if (count($optionsFullJson)) {
             $baseJson .= '"categoriesFull": ['.implode(',', $optionsFullJson).'],';

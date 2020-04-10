@@ -27,6 +27,7 @@ class ElementAdminBulkController extends Controller
         $this->interactionService = $interactionService;
         $this->asyncService = $asyncService;
         $this->elementActionService = $elementActionService;
+        $this->jsonGenerator = $jsonGenerator;
         $this->dm = $dm;
     }
 

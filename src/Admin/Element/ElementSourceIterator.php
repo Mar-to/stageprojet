@@ -15,7 +15,7 @@
     to see ho it is used
 */
 
-namespace App\Application\Sonata\Exporter\Source;
+namespace App\Admin\Element;
 
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
@@ -24,7 +24,7 @@ use Exporter\Source\SourceIteratorInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyPath;
 
-class DoctrineODMQuerySourceIterator implements SourceIteratorInterface
+class ElementSourceIterator implements SourceIteratorInterface
 {
     /**
      * @var Query
@@ -84,7 +84,7 @@ class DoctrineODMQuerySourceIterator implements SourceIteratorInterface
         $data = [];
 
         foreach ($this->propertyPaths as $name => $propertyPath) {
-            $data[$name] = $this->getValue($this->propertyAccessor->getValue($current, $propertyPath), $name);
+            $data[$name] =   $this->getValue($this->propertyAccessor->getValue($current, $propertyPath), $name);
         }
 
         $this->query->getDocumentManager()->getUnitOfWork()->detach($current);
@@ -153,13 +153,13 @@ class DoctrineODMQuerySourceIterator implements SourceIteratorInterface
     protected function getValue($value, $name)
     {
         if (is_array($value)) {
-            $value = array_key_exists($name, $value) ? $value[$name] : null;
+            $value = array_key_exists($name, $value) ? $value[$name] : implode(',', $value);
         } elseif ($value instanceof \Traversable) {
-            $value = null;
+            $value = implode(',', $value->toArray());
         } elseif ($value instanceof \DateTimeInterface) {
             $value = $value->format($this->dateTimeFormat);
         } elseif (is_object($value)) {
-            $value = (string) $value;
+            $value = (string) $object;
         }
 
         return $value;

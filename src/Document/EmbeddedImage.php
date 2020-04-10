@@ -22,7 +22,7 @@ class EmbeddedImage extends AbstractFile
 
     public function __toString()
     {
-        return $this->fileName ?: $this->externalImageUrl;
+        return $this->getImageUrl();
     }
 
     public function toJson()
