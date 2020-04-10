@@ -52,9 +52,13 @@
   <div class="file-field input-field">
     <div class="btn btn-pick-file btn-neutral">
       <span class="fa fa-upload"></span>
-      {% set accept = field.type == 'images' ? 'image/*' : field.accept %}
+      {% if field.type == 'images' %}
+        {% set accept = 'image/*' %}
+      {% elseif field.accept is defined %}
+        {% set accept = field.accept %}
+      {% endif %}
       <input type="file" name="element[{{field.name}}][__count__][file][file]"
-             {% if accept %}accept="{{ accept|replace({" ": ','}) }}"{% endif %}>
+             {% if accept is defined %}accept="{{ accept|replace({" ": ','}) }}"{% endif %}>
     </div>
     <div class="file-path-wrapper">
       <input class="file-path validate" type="text">
