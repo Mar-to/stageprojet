@@ -73,6 +73,15 @@ services:
         $instanceName: '%instance_name%'
         $fromEmail: '%from_email%'
 
+    # Overide FOS Registration Controller
+    App\Controller\RegistrationController:
+      tags: ['controller.service_arguments']
+      arguments:
+        - "@event_dispatcher"
+        - "@fos_user.registration.form.factory"
+        - "@fos_user.user_manager"
+        - "@security.token_storage"
+
     App\Application\Sonata\UserBundle\Form\Type\RegistrationFormType:
       arguments: [ "%fos_user.model.user.class%" ]
       tags:
