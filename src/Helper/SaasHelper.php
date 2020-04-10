@@ -40,7 +40,7 @@ class SaasHelper
         }
 
         if (false !== strpos($url, 'localhost')) {
-            $url .= explode('/app', $_SERVER['SCRIPT_NAME'])[0];
+            $url = str_replace($_SERVER['SCRIPT_NAME'], '', $url);
         } // ugly fix to support localhost !
 
         return $url;
