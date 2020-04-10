@@ -23,6 +23,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use FOS\UserBundle\Model\UserManagerInterface;
 use FOS\UserBundle\Security\LoginManagerInterface;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -82,7 +83,7 @@ class ElementFormController extends GoGoController
         if (!$configService->isUserAllowed($addEditName, $request, $session->get('userEmail')) && !$isEditingWithHash) {
             // creating simple form to let user enter a email address
             $loginform = $this->get('form.factory')->createNamedBuilder('user', FormType::class)
-                ->add('email', 'email', ['required' => false])
+                ->add('email', EmailType::class, ['required' => false])
                 ->getForm();
 
             $userEmail = $request->request->get('user')['email'];
