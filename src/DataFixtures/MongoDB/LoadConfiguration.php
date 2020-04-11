@@ -137,14 +137,6 @@ class LoadConfiguration implements FixtureInterface
         }
 
         switch ($contribConfig) {
-         case 'open':
-            $configuration->setAddFeature(new InteractionConfiguration(true, true, true, true, true, true));
-            $configuration->setEditFeature(new InteractionConfiguration(true, true, true, true, true, true));
-            $configuration->setDeleteFeature(new InteractionConfiguration(true, true, true, true, true, true));
-            $configuration->setCollaborativeModerationFeature(new InteractionConfiguration(false, false, false, false, false, false));
-            $configuration->setDirectModerationFeature(new InteractionConfiguration(true, true, true, true, true, true));
-            $configuration->setReportFeature(new FeatureConfiguration(false, false, false, false, false));
-            break;
          case 'intermediate':
             $configuration->setAddFeature(new InteractionConfiguration(true, true, false, true, true, true));
             $configuration->setEditFeature(new InteractionConfiguration(true, true, false, true, true, true));
@@ -159,6 +151,15 @@ class LoadConfiguration implements FixtureInterface
             $configuration->setDeleteFeature(new InteractionConfiguration(true, true, false, false, false, true));
             $configuration->setCollaborativeModerationFeature(new InteractionConfiguration(false, false, false, false, false, false));
             $configuration->setDirectModerationFeature(new InteractionConfiguration(true, false, false, false, false, true));
+            $configuration->setReportFeature(new FeatureConfiguration(false, false, false, false, false));
+            break;
+          default:
+            // open by default
+            $configuration->setAddFeature(new InteractionConfiguration(true, true, true, true, true, true));
+            $configuration->setEditFeature(new InteractionConfiguration(true, true, true, true, true, true));
+            $configuration->setDeleteFeature(new InteractionConfiguration(true, true, true, true, true, true));
+            $configuration->setCollaborativeModerationFeature(new InteractionConfiguration(false, false, false, false, false, false));
+            $configuration->setDirectModerationFeature(new InteractionConfiguration(true, true, true, true, true, true));
             $configuration->setReportFeature(new FeatureConfiguration(false, false, false, false, false));
             break;
         }
