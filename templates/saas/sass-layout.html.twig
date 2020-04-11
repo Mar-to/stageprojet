@@ -27,8 +27,6 @@
 
 <body class="gogo-load-css saas-layout"> {# load the css vendors encapsulated inside gogocarto.css #}
 
-  {% include 'custom-head.html.twig' %}
-
   <div id="page-container" {% if pageName is defined %}class="{{ pageName }}"{% endif %}>
     <div id="page-content" {% if pageName is defined %}class="{{ pageName }}"{% endif %}>
       {% block body %}
