@@ -36,8 +36,6 @@ class ProjectController extends Controller
         return 'http://'.$project->getDomainName().'.'.$this->getParameter('base_url').$this->generateUrl($route);
     }
 
-    public const TOTO = 'yes';
-
     public function createAction(Request $request, DocumentManager $dm)
     {
         if (!$this->isAuthorized()) {
@@ -85,9 +83,10 @@ class ProjectController extends Controller
             // Clone the root configuration into the new project
             // Due to conflicts between ODM, we get the Configuration from a Json API, and convert it to an object
             $baseUrl = $this->getParameter('base_url');
+            // Fixs for docker in localhost: cannot make API call working, so using gogocarto.fr conf !!
             if ('saas.localhost' == $baseUrl) {
                 $baseUrl = 'gogocarto.fr';
-            } // Fixs for docker in localhost
+            }
             $configUrl = 'http://'.$baseUrl.$this->generateUrl('gogo_api_configuration');
             $configUrl = str_replace('index.php/', '', $configUrl); // Fix for localhost
             $rootConfigToCopy = json_decode(file_get_contents($configUrl));
