@@ -1,10 +1,10 @@
-#page-container #page-content.home {  
+#page-container #page-content.home {
 
   margin-top: 0px;
   max-width: none;
   width: 100%;
 
-  section.title { 
+  section.title {
     background-color: white;
     margin-bottom: 0;
     padding-bottom: 50px;
@@ -21,7 +21,7 @@
   }
 
   section.projects {
-    background-color: transparent; 
+    background-color: transparent;
     @media screen and (min-width: 900px) {
       margin-top: 30px;
       max-width: 900px;
@@ -32,16 +32,77 @@
 
   h2 { font-size: 1.5rem; margin-top: 0; font-weight: bold; }
 
+  iframe.video-demo {
+    width: 100%;
+    max-width: 500px;
+    height: 250px;
+  }
+  .list {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .search-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    input.search {
+      flex: 1 auto;
+      border: none !important;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .btn.sort {
+      margin-left: 10px;
+      font-size: .9rem;
+      height: 30px;
+      line-height: 28px;
+
+      @media (max-width: 720px) {
+        margin-top: 10px;
+      }
+
+      &.desc:after {
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 4px solid white;
+        content: "";
+        position: relative;
+        top: 13px;
+        right: -6px;
+      }
+      &.asc:after {
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-bottom: 4px solid white;
+        content: "";
+        position: relative;
+        top: -10px;
+        right: -6px;
+      }
+    }
+  }
+  .pagination {
+    margin-top: 3rem;
+  }
   .project-container {
+    width: 33%;
     line-height: 1.5rem;
     padding: 20px;
     padding-bottom: 0;
 
+    @media (max-width: 720px) {
+      width: 100%;
+    }
+
     .project-item {
       border-radius: 4px;
 
-      &:hover { 
-        box-shadow: 0 8px 17px 0 rgba(0,0,0,.2), 0 6px 20px 0 rgba(0,0,0,.19); 
+      &:hover {
+        box-shadow: 0 8px 17px 0 rgba(0,0,0,.2), 0 6px 20px 0 rgba(0,0,0,.19);
       }
 
       .project-logo {
@@ -59,7 +120,7 @@
         position: relative;
 
         .name { font-size: 1.1rem; }
-        .data-size { 
+        .data-size {
           position: absolute;
           top: -18px;
           right: 15px;
@@ -76,9 +137,8 @@
           }
         }
       }
-    }      
+    }
   }
 }
 
-  
-  
+

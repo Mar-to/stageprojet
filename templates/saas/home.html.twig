@@ -7,7 +7,7 @@
   <section class="title">
     <h1>GoGoCarto, créez des cartes à GoGo !</h1>
 
-    <iframe width="560" height="315" sandbox="allow-same-origin allow-scripts" src="https://video.colibris-outilslibres.org/videos/embed/62279fe4-06d9-4fdc-8e0d-3d5de3c05072" frameborder="0" allowfullscreen></iframe>
+    <iframe class="video-demo" sandbox="allow-same-origin allow-scripts" src="https://video.colibris-outilslibres.org/videos/embed/62279fe4-06d9-4fdc-8e0d-3d5de3c05072" frameborder="0" allowfullscreen></iframe>
 
     <p><a href="{{ path('gogo_saas_new_project') }}"><button class="btn new-project">Créer un projet</button></a></p>
 
@@ -15,27 +15,50 @@
 
   <section class="projects">
     <h2>Liste des projets déjà créés ({{ projects|length }})</h2>
-    <div class="project-list">
-      {% for row in projects|batch(3) %}
-        <div class="row">
-          {% for project in row %}
-          <div class="project-container col s12 m4">
-            <div class="project-item waves-effect waves-block waves-light z-depth-1" onclick="window.open('{{ project.homeUrl }}', '_blank');">
-              {% if project.imageUrl %}
-                <img class="project-logo" src="{{ project.imageUrl }}">
-              {% else %}
-                <img class="project-logo default" src="{{ asset('img/default-icon.png') }}">
-              {% endif %}
+    <div class="project-list" id="project-list">
+      <div class="search-container">
+        <input class="search" placeholder="Chercher par nom" />
+        <button class="sort desc btn btn-sm btn-neutral" data-sort="size">Trier par nombre de points</button>
+        <button class="sort btn btn-sm btn-neutral" data-sort="name">Trier par nom</button>
 
-              <div class="project-content">
-                <div class="name">{{ project.name|capitalize }}</div>
-                <div class="data-size gogo-bg-primary">{{ project.dataSize }}<span class="icon gogo-icon-marker-symbol"></span></div>
+      </div>
+      <div class="list">
+      {% for project in projects %}
+        <div class="project-container">
+          <div class="project-item waves-effect waves-block waves-light z-depth-1" onclick="window.open('{{ project.homeUrl }}', '_blank');">
+            {% if project.imageUrl %}
+              <img class="project-logo" src="{{ project.imageUrl }}">
+            {% else %}
+              <img class="project-logo default" src="{{ asset('img/default-icon.png') }}">
+            {% endif %}
+
+            <div class="project-content">
+              <div class="name">{{ project.name|capitalize }}</div>
+              <div class="data-size gogo-bg-primary">
+                <span class="size">{{ project.dataSize }}</span>
+                <span class="icon gogo-icon-marker-symbol"></span>
               </div>
             </div>
           </div>
-          {% endfor %}
         </div>
       {% endfor %}
-    </div>
+      </div>
+      <ul class="pagination"></ul>
   </section>
+{% endblock %}
+
+{% block javascripts %}
+  <script src="{{ asset('js/list.js?ver=' ~ version) }}"></script>
+  <script>
+  var userList = new List('project-list', {
+    valueNames: [ 'name', 'size' ],
+    page: 36,
+    pagination: [{
+      paginationClass: "pagination",
+      innerWindow: 1,
+      left: 1,
+      right: 1
+    }]
+  });
+  </script>
 {% endblock %}
