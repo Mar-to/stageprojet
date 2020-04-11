@@ -8,25 +8,25 @@ const gulp = require('gulp'),
     del = require('del'),
     workboxBuild = require('workbox-build');
 
-gulp.task('scriptsHome', ['clean'], () => {
+gulp.task('scriptsHome', ['cleanJs'], () => {
   return gulp.src(['assets/js/home.js'])
     .pipe(concat('home.js'))
     .pipe(gulp.dest('web/js'));
 });
 
-gulp.task('scriptsExternalPages', ['clean'], () => {
+gulp.task('scriptsExternalPages', ['cleanJs'], () => {
   return gulp.src(['assets/js/api/**/*.js', 'assets/js/duplicates/**/*.js'])
     .pipe(concat('external-pages.js'))
     .pipe(gulp.dest('web/js'));
 });
 
-gulp.task('scriptsElementForm', ['clean'], () => {
+gulp.task('scriptsElementForm', ['cleanJs'], () => {
   return gulp.src(['assets/js/element-form/**/*.js'])
     .pipe(concat('element-form.js'))
     .pipe(gulp.dest('web/js'));
 });
 
-gulp.task('scriptsLibs', ['clean'], () => {
+gulp.task('scriptsLibs', ['cleanJs'], () => {
   const gogocarto = gulp.src(['node_modules/gogocarto-js/dist/gogocarto.js'])
     .pipe(gulp.dest('web/js'));
   const sw = gulp.src(['assets/js/vendor/**/*', 'assets/js/init-sw.js'])
@@ -50,7 +50,7 @@ gulp.task('service-worker', ['sass', 'scriptsLibs', 'scriptsHome', 'scriptsExter
   console.log(`${count} files will be precached, totaling ${size} bytes.`);
 });
 
-gulp.task('sass', ['clean'], () => {
+gulp.task('sass', [], () => {
   const vendor = gulp.src(['assets/scss/vendor/*.css']).pipe(gulp.dest('web/css'));
   const scss = gulp.src(['assets/scss/**/*.scss'])
     .pipe(sass().on('error', sass.logError))
@@ -58,7 +58,7 @@ gulp.task('sass', ['clean'], () => {
   return merge(vendor, scss);
 });
 
-gulp.task('gogocarto_assets', ['clean'], () => {
+gulp.task('gogocarto_assets', ['cleanJs'], () => {
   const js = gulp.src(['node_modules/gogocarto-js/dist/*.css*',])
     .pipe(gulp.dest('web/css'));
   const fonts = gulp.src(['node_modules/gogocarto-js/dist/fonts/**/*',])
@@ -98,7 +98,7 @@ gulp.task('gzip_js', ['prod_js'], () => {
 
 gulp.task('watch', () => {
   // Watch .scss files
-  gulp.watch(['src/Biopen/**/Resources/scss/**/*.scss'],['sass']);
+  gulp.watch(['assets/scss/**/*.scss'],['sass', 'service-worker']);
 
   gulp.watch(['assets/js/element-form/**/*.js'],
               ['scriptsElementForm']);
@@ -114,8 +114,12 @@ gulp.task('watch', () => {
   gulp.watch(['assets/js/home.js'], ['scriptsHome']);
 });
 
-gulp.task('clean', () => {
-  return del(['web/css', 'web/js']);
+gulp.task('cleanCss', () => {
+  return del(['web/css']);
+});
+
+gulp.task('cleanJs', () => {
+  return del(['web/js']);
 });
 
 gulp.task('build', ['sass', 'scriptsLibs', 'scriptsHome', 'scriptsExternalPages', 'scriptsElementForm', 'gogocarto_assets', 'service-worker']);
