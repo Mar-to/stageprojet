@@ -1,3 +1,11 @@
+.top-form-message {
+  text-align: center;
+  font-style: italic;
+  margin-bottom: 30px;
+  opacity: .6;
+  font-weight: bold;
+}
+
 .project-create {
   h2 {
     font-size: 1.5rem;
@@ -14,4 +22,20 @@
   }
 
   .btn[type=submit] { margin-top: 1rem; }
+
+  .cgu-config-section {
+    margin-top: 1.5rem;
+    .cgu-content {
+      padding: 1.5rem;
+      border-radius: 5px;
+
+      p {
+        margin: 0;
+      }
+    }
+    .cgu-checkbox-container {
+      text-align: center;
+    }
+  }
+
 }

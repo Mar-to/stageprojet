@@ -8,6 +8,7 @@ use App\Document\Configuration\ConfigurationInfobar;
 use App\Document\Configuration\ConfigurationMarker;
 use App\Document\Configuration\ConfigurationMenu;
 use App\Document\Configuration\ConfigurationUser;
+use App\Document\Configuration\ConfigurationSaas;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Gedmo\Mapping\Annotation as Gedmo;
 use OzdemirBurak\Iris\Color\Hex;
@@ -415,6 +416,13 @@ class Configuration implements \JsonSerializable
 
     /** @MongoDB\EmbedOne(targetDocument="App\Document\Configuration\ConfigurationApi") */
     protected $api;
+
+    // ----------------------------
+    // ---------- SAAS ------------
+    // ----------------------------
+
+    /** @MongoDB\EmbedOne(targetDocument="App\Document\Configuration\ConfigurationSaas") */
+    protected $saas;
 
     public function __toString()
     {
@@ -2778,6 +2786,22 @@ class Configuration implements \JsonSerializable
         }
 
         return $this->api;
+    }
+
+    public function setSaas(\App\Document\Configuration\ConfigurationSaas $saas)
+    {
+        $this->saas = $saas;
+
+        return $this;
+    }
+
+    public function getSaas()
+    {
+        if (!$this->saas) {
+            $this->saas = new ConfigurationSaas();
+        }
+
+        return $this->saas;
     }
 
     /**

@@ -42,3 +42,6 @@ sonata_admin:
             sonata_user:
                 label: Utilisateurs
                 icon: <i class='fa fa-users'></i>
+            saas:
+                label: Ferme de Carto
+                icon: <i class='fa fa-cogs saas-menu'></i>

@@ -356,4 +356,10 @@ services:
         class: App\Admin\ProjectAdmin
         arguments: [~, App\Document\Project, 'App\Controller\Admin\ProjectAdminController']
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "hide", label: Projets }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: saas, label: Liste des Projets }
+
+    admin.saas_config:
+        class: App\Admin\ConfigurationSaasAdmin
+        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: saas, label: Configuration }

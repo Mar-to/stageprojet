@@ -4,9 +4,11 @@
 
 {% block body %}
   <h1>Créer un projet</h1>
-  <div style="text-align: center; font-style: italic; margin-bottom: 30px;opacity: .6;font-weight: bold;">
-    GoGoCarto est encore en version bêta, et cette plateforme de création de carte n'est pas encore officiellement lancée. Ce faisant, nous ne garantissons en aucun cas la fiabilité et la maintenance du service.
+
+  <div class="top-form-message">
+    {{ config.saas.newProjectInstructions|raw }}
   </div>
+
   <section class="project-create">
 
     {{ form_start(form, {'id': 'project-form'}) }}
@@ -49,6 +51,20 @@
           </p>
         {% endfor %}
       </div>
+
+      {% if config.saas.endUserLicenceAgreement %}
+        <div class="col s12 cgu-config-section">
+          {# CONTRIBUTION_CONFIG #}
+          <h2>Conditions d'utilisation</h2>
+          <div class="cgu-content">
+            {{ config.saas.endUserLicenceAgreement|raw}}
+          </div>
+          <p class="cgu-checkbox-container">
+            <input name="accept-cgu" type="checkbox" id="accept-cgu" class="required" />
+            <label for="accept-cgu">J'accepte les conditions générales d'utilisation</label>
+          </p>
+        </div>
+      {% endif %}
     </div>
 
     <button class="btn" type="submit" onclick="performSubmit(event);">Créer</button>
@@ -79,6 +95,8 @@
         if (!$(this).val()) $(this).addClass('error');
         else $(this).removeClass('error');
       });
+
+      $('label[for="accept-cgu"]').toggleClass('error-label', !$('#accept-cgu').is(':checked'));
 
       if ($('input[name=contrib]:checked').length == 0) {
         $('#please-choose-contribution').show();

@@ -146,6 +146,12 @@
         $(object).css('opacity', opacity);
     }
 
+    // DISABLE SAAS MENU UNLESS FOR ROOT PROJECT IN SAAS MODE
+    {% if not use_as_saas or not is_root_project() %}
+        $(document).ready(function() {
+            $('.saas-menu').closest('.treeview').hide();
+        })
+    {% endif %}
     // Helpers
     var formBuilder;
     var formBuilderInitialized = false;
@@ -203,15 +209,11 @@
         <li>
             <a href="{{ path('gogo_core_help') }}"><i class="fa fa-question"></i><span>Aide</span></a>
         </li>
-        {% if use_as_saas %}
+        {% if use_as_saas and is_granted("ROLE_SUPER_ADMIN") and not is_root_project() %}
             <li>
-                {% if is_root_project() %}
-                    <a href="{{ path('admin_app_project_list') }}"><i class="fa fa-folder-open"></i><span>Projets</span></a>
-                {% elseif is_granted("ROLE_SUPER_ADMIN") %}
-                    <a href="{{ path('gogo_project_delete_my_project') }}" onclick="return confirm('Cette action ne peux pas être annulée. Vous allez supprimer entièrement votre projet. Etes vous sur de vouloir continuer?')">
-                        <button class="btn btn-sm btn-danger"><i class="fa fa-trash"></i><span>Supprimer ce projet</span></button>
-                    </a>
-                {% endif %}
+                <a href="{{ path('gogo_project_delete_my_project') }}" onclick="return confirm('Cette action ne peux pas être annulée. Vous allez supprimer entièrement votre projet. Etes vous sur de vouloir continuer?')">
+                    <button class="btn btn-sm btn-danger"><i class="fa fa-trash"></i><span>Supprimer ce projet</span></button>
+                </a>
             </li>
         {% endif %}
     </ul>
