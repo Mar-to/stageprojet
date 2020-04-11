@@ -254,7 +254,7 @@ class APIController extends GoGoController
         return $this->render('api/api-ui.html.twig', ['options' => $options, 'config' => $config]);
     }
 
-    public function getManifestAction(DocumentManager $dm)
+    public function getManifestAction(Request $request, DocumentManager $dm)
     {
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
         $img = $config->getFavicon() ? $config->getFavicon() : $config->getLogo();
@@ -272,8 +272,8 @@ class APIController extends GoGoController
             }
         }
         if (!$imageData) {
-            $imgUrl = $this->getRequest()->getUriForPath('/assets/img/default-icon.png');
-            if ('dev' == $this->container->getParameter('kernel.environment')) {
+            $imgUrl = $request->getUriForPath('/assets/img/default-icon.png');
+            if ('dev' == $this->getParameter('kernel.environment')) {
                 $imgUrl = str_replace('index.php/', '', $imgUrl);
             }
             try {
