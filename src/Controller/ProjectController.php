@@ -31,25 +31,15 @@ class ProjectController extends Controller
         return $sassHelper->isRootProject();
     }
 
-    protected function generateUrlForProject($project, $route = 'gogo_homepage')
+    protected function generateUrlForProject($project, $route = 'gogo_homepage', $params = [])
     {
-        return 'http://'.$project->getDomainName().'.'.$this->getParameter('base_url').$this->generateUrl($route);
+        return 'http://'.$project->getDomainName().'.'.$this->getParameter('base_url').$this->generateUrl($route, $params);
     }
 
     public function createAction(Request $request, DocumentManager $dm)
     {
         if (!$this->isAuthorized()) {
             return $this->redirectToRoute('gogo_homepage');
-        }
-        $domain = $request->request->get('form')['domainName'];
-        if ($domain) { // if submiting the form
-            $existingProject = $dm->getRepository(Project::class)->findOneByDomainName($domain);
-            // fix a bug sometime the form says that the project already exist but actually we just created it
-            // but it has not been initialized
-            // so redirect to initialize project
-            if ($existingProject && 0 == $existingProject->getDataSize()) {
-                return $this->redirect($this->generateUrlForProject($existingProject, 'gogo_saas_initialize_project'));
-            }
         }
 
         $project = new Project();
@@ -76,56 +66,12 @@ class ProjectController extends Controller
             }
             $dm->flush();
 
-            // Switch to new project ODM
-            $dm->getConfiguration()->setDefaultDB($project->getDbName());
-            $projectOdm = $dm;
-
-            // Clone the root configuration into the new project
-            // Due to conflicts between ODM, we get the Configuration from a Json API, and convert it to an object
-            $baseUrl = $this->getParameter('base_url');
-            // Fixs for docker in localhost: cannot make API call working, so using gogocarto.fr conf !!
-            if ('saas.localhost' == $baseUrl) {
-                $baseUrl = 'gogocarto.fr';
-            }
-            $configUrl = 'http://'.$baseUrl.$this->generateUrl('gogo_api_configuration');
-            $configUrl = str_replace('index.php/', '', $configUrl); // Fix for localhost
-            $rootConfigToCopy = json_decode(file_get_contents($configUrl));
-            $rootConfigToCopy->appName = $project->getName();
-            $rootConfigToCopy->appBaseLine = '';
-            $rootConfigToCopy->dbName = $project->getDbName();
-            // Duplicate configuration
-            $confLoader = new LoadConfiguration();
-            $configuration = $confLoader->load($projectOdm, $this->container, $rootConfigToCopy, $request->request->get('contrib'));
-
-            // Generate basic categories
-            $mainCategory = new Category();
-            $mainCategory->setName('Catégories Principales');
-            $mainCategory->setPickingOptionText('Une catégorie principale');
-            $projectOdm->persist($mainCategory);
-
-            $mains = [
-                ['Catégorie 1', 'fa fa-recycle', '#98a100'],
-                ['Catégorie 2', 'fa fa-home', '#7e3200'],
+            $params = [
+                'appName' => $project->getName(),
+                'dbName' => $project->getDbName(),
+                'contrib' => $request->request->get('contrib')
             ];
-
-            foreach ($mains as $key => $main) {
-                $new_main = new Option();
-                $new_main->setName($main[0]);
-                $new_main->setIcon($main[1]);
-                $new_main->setColor($main[2]);
-                $new_main->setIsFixture(true);
-                $mainCategory->addOption($new_main);
-            }
-
-            $projectOdm->flush(); // flush before taxonomy creating otherwise strange bug creating option with only DBRef
-
-            $taxonomy = new Taxonomy();
-            $projectOdm->persist($taxonomy);
-            $projectOdm->flush();
-
-            $projectOdm->getSchemaManager()->updateIndexes();
-
-            $url = $this->generateUrlForProject($project, 'gogo_saas_initialize_project');
+            $url = $this->generateUrlForProject($project, 'gogo_saas_initialize_project', $params);
 
             return $this->redirect($url);
         }
@@ -165,6 +111,59 @@ class ProjectController extends Controller
             return $this->redirectToRoute('gogo_homepage');
         }
 
+        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+
+        if (!$config) {
+            // INITALIZE CONFIGURATION
+
+            // Clone the root configuration into the new project
+            // Due to conflicts between ODM, we get the Configuration from a Json API, and convert it to an object
+            $baseUrl = $this->getParameter('base_url');
+            // Fixs for docker in localhost: cannot make API call working, so using gogocarto.fr conf !!
+            if ('saas.localhost' == $baseUrl) {
+                $baseUrl = 'gogocarto.fr';
+            }
+
+            $configUrl = 'http://'.$baseUrl.$this->generateUrl('gogo_api_configuration');
+            $configUrl = str_replace('index.php/', '', $configUrl); // Fix for localhost
+            $rootConfigToCopy = json_decode(file_get_contents($configUrl));
+            $rootConfigToCopy->appName = $request->query->get('appName');
+            $rootConfigToCopy->appBaseLine = '';
+            $rootConfigToCopy->dbName = $request->query->get('dbName');
+            // Duplicate configuration
+            $confLoader = new LoadConfiguration();
+            $config = $confLoader->load($dm, $this->container, $rootConfigToCopy, $request->query->get('contrib'));
+
+            // Generate basic categories
+            $mainCategory = new Category();
+            $mainCategory->setName('Catégories Principales');
+            $mainCategory->setPickingOptionText('Une catégorie principale');
+            $dm->persist($mainCategory);
+
+            $mains = [
+                ['Catégorie 1', 'fa fa-recycle', '#98a100'],
+                ['Catégorie 2', 'fa fa-home', '#7e3200'],
+            ];
+
+            foreach ($mains as $key => $main) {
+                $new_main = new Option();
+                $new_main->setName($main[0]);
+                $new_main->setIcon($main[1]);
+                $new_main->setColor($main[2]);
+                $new_main->setIsFixture(true);
+                $mainCategory->addOption($new_main);
+            }
+
+            $dm->flush(); // flush before taxonomy creating otherwise strange bug creating option with only DBRef
+
+            $taxonomy = new Taxonomy();
+            $dm->persist($taxonomy);
+            $dm->flush();
+
+            $dm->getSchemaManager()->updateIndexes();
+        }
+
+        // CRATE ADMIN USER
         $user = $userManager->createUser();
 
         $form = $this->get('form.factory')->create(RegistrationFormType::class, $user);
@@ -184,8 +183,6 @@ class ProjectController extends Controller
 
             return $response;
         }
-
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
 
         return $this->render('saas/projects/initialize.html.twig', ['form' => $form->createView(), 'config' => $config]);
     }

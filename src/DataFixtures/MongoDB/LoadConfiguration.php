@@ -18,7 +18,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class LoadConfiguration implements FixtureInterface
 {
-    public function load(ObjectManager $dm, $container = null, $configToCopy = null, $contribConfig = null)
+    public function load(ObjectManager $dm, $container = null, $configToCopy = null, $contribConfig = 'open')
     {
         $configuration = new Configuration();
         $tileLayersToCopy = null;
@@ -161,12 +161,11 @@ class LoadConfiguration implements FixtureInterface
             $configuration->setDirectModerationFeature(new InteractionConfiguration(true, false, false, false, false, true));
             $configuration->setReportFeature(new FeatureConfiguration(false, false, false, false, false));
             break;
-      }
+        }
 
         $defaultTileLayerName = $configToCopy ? $configToCopy->defaultTileLayer : null;
         $defaultLayer = $this->loadTileLayers($dm, $tileLayersToCopy, $defaultTileLayerName);
         $configuration->setDefaultTileLayer($defaultLayer);
-
         $dm->persist($configuration);
         $dm->flush();
 
