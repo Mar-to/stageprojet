@@ -84,6 +84,10 @@ load-fixtures: ## Create the DB schema, generate DB classes and load fixtures
 	$(SYMFONY) doctrine:mongodb:generate:proxies
 	$(SYMFONY) doctrine:mongodb:fixtures:load -n
 
+update-hydrator-proxies:
+	$(SYMFONY) doctrine:mongodb:generate:hydrators
+	$(SYMFONY) doctrine:mongodb:generate:proxies
+
 ## —— Tests ———————————————
 test: phpunit.xml ## Launch unit tests
 	./bin/phpunit --stop-on-failure
