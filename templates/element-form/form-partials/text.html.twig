@@ -40,6 +40,9 @@
   {% if field.type == "date" %}
     {% set inputClass = inputClass ~ " datepicker" %}
   {% endif %}
+  {% if field.type == "textarea" and field.subtype == "wysiwyg" %}
+    {% set inputClass = inputClass ~ " ace-editor" %}
+  {% endif %}
 
   {# NAME #}
   {% set baseName = field.type == "title" ? "element" : "data" %}
@@ -79,7 +82,7 @@
   {% endif %}
 
   {# LABEL #}
-  <label for="input-{{ field.name }}" data-error="{{ errorMsg|default('') }}" class="gogo-form-label"><span class="to-html">{{ field.label|raw }}</span>{% if field.required|default(false) %}<span class="mandatory-asterisk"></span>{% endif %}</label>
+  <label for="input-{{ field.name }}" data-error="{{ errorMsg|default('') }}" class="gogo-form-label label-{{ field.type }} {% if field.subtype is defined %}label-{{ field.subtype }}{% endif %}"><span class="to-html">{{ field.label|raw }}</span>{% if field.required|default(false) %}<span class="mandatory-asterisk"></span>{% endif %}</label>
 
   {% if field.type == "date" %}
   <script>
@@ -95,6 +98,20 @@
       });
     });
   </script>
+  {% endif %}
+
+  {% if field.type == "textarea" and field.subtype == "wysiwyg" %}
+    <script src="//cdn.ckeditor.com/4.14.0/basic/ckeditor.js"></script>
+    <script>
+        // Replace the <textarea id="editor1"> with a CKEditor
+        // instance, using default configuration.
+        CKEDITOR.replace('input-{{ field.name }}');
+        CKEDITOR.on( 'instanceReady', function( evt ) {
+            var editorBody = $('.cke_wysiwyg_frame').contents().find('body');
+            editorBody.css('background-color', 'transparent');
+            editorBody.css('color', '{{ config.defaultTextContentColor }}');
+        } );
+    </script>
   {% endif %}
 </div>
 

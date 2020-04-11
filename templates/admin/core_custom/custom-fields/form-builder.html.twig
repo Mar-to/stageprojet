@@ -55,6 +55,11 @@
         },
         textarea: {
           icon: iconAttr,
+          subtype: { label: 'Type', options: {
+              'textarea': 'Editeur simple',
+              'wysiwyg': 'Editeur enrichi',
+            },
+          },
           errorMsg: errorMsgAttrs,
           separator: { label: '' }, // separate important attrs from others
         },
@@ -187,7 +192,7 @@
   .address-field .name-wrap, .address-field .access-wrap, .address-field .required-wrap,
   .taxonomy-field .name-wrap, .taxonomy-field .access-wrap, .taxonomy-field .required-wrap, .taxonomy-field .placeholder-wrap, .taxonomy-field .value-wrap,
   .title-field .name-wrap, .title-field .access-wrap, .title-field .required-wrap,
-  .textarea-field .subtype-wrap, .checkbox-field .field-options, .checkbox-field .required-wrap,
+  .checkbox-field .field-options, .checkbox-field .required-wrap,
   .paragraph-field .subtype-wrap, .header-field .subtype-wrap,
   .email-field .name-wrap, .image-field .name-wrap, .images-field .name-wrap, .images-field .placeholder-wrap, .images-field .value-wrap, .images-field .required-wrap, .files-field .name-wrap, .files-field .placeholder-wrap, .files-field .value-wrap, .files-field .required-wrap
   { display: none !important; }

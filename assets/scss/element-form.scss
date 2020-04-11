@@ -458,24 +458,48 @@
   .error, .form-error {
     color: $error-color;
   }
+
+  .field-wysiwyg {
+    margin-top: 2rem;
+    .input-field .prefix~.cke {
+      margin-left: 3rem;
+      width: calc(100% - 3rem);
+      border: none;
+      border-bottom: 1px solid #ced4de !important;
+    }
+    .label-wysiwyg, .material-icons {
+      top: -5px !important;
+    }
+    .cke_button__about {
+      display: none;
+    }
+    .cke_top {
+      border-radius: 5px 5px 0 0;
+      border: none;
+      padding-left: 5px;
+      padding-bottom: 5px;
+    }
+    .cke_contents {
+      margin-left: -20px;
+    }
+    a.cke_button_on {
+      background-color: #e8e8e8;
+      border: none;
+      border-radius: 2px;
+      padding: 4px 6px;
+    }
+    .cke_toolgroup {
+      margin: 0;
+    }
+    .cke_toolbar_separator {
+      width: 0;
+    }
+    .cke_toolgroup a.cke_button:last-child:after, .cke_toolgroup a.cke_button.cke_button_disabled:hover:last-child:after {
+      content: none;
+    }
+  }
+  .cke_dialog_body {
+    max-width: 800px;
+    margin: 0 auto;
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
