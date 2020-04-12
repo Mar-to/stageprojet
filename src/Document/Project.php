@@ -44,6 +44,18 @@ class Project
     /** @MongoDB\Field(type="int") */
     private $dataSize = 0;
 
+    /** @MongoDB\Field(type="string") */
+    private $adminEmails;
+
+    /** @MongoDB\Field(type="string") */
+    private $tags;
+
+    /**
+    * Pin some project to make them more visible on home page
+    * @MongoDB\Field(type="bool")
+    */
+    private $pinned = false;
+
     /**
      * @var date
      *
@@ -51,6 +63,18 @@ class Project
      * @Gedmo\Timestampable(on="create")
      */
     private $createdAt;
+
+    /**
+    * Each project can choose to be published or not on the home project list
+    *
+    * @MongoDB\Field(type="bool")
+    */
+    private $published;
+
+    /**
+    * @MongoDB\Field(type="date")
+    */
+    private $publishedAt;
 
     /** @MongoDB\ReferenceMany(targetDocument="App\Document\ScheduledCommand", inversedBy="project", cascade={"all"}) */
     private $commands;
@@ -276,5 +300,43 @@ class Project
     public function getCommands()
     {
         return $this->commands;
+    }
+
+    public function getAdminEmails() {
+        return $this->adminEmails;
+    }
+    public function setAdminEmails($emails) {
+        $this->adminEmails = $emails || "";
+        return $this;
+    }
+    public function getPublished() {
+        return $this->published;
+    }
+    public function setPublished($bool) {
+        $this->published = $bool;
+        if ($bool && !$this->publishedAt) {
+            $this->setPublishedAt(time());
+        }
+    }
+    public function getPublishedAt() {
+        return $this->publishedAt;
+    }
+    public function setPublishedAt($date) {
+        $this->publishedAt = $date;
+        return $this;
+    }
+    public function getPinned() {
+        return $this->pinned;
+    }
+    public function setPinned($bool) {
+        $this->pinned = $bool;
+        return $this;
+    }
+    public function getTags() {
+        return $this->tags;
+    }
+    public function setTags($tags) {
+        $this->tags = $tags;
+        return $this;
     }
 }

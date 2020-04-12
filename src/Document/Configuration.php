@@ -50,6 +50,12 @@ class Configuration implements \JsonSerializable
     // For meta keywords header
     protected $appTags;
 
+    /**
+    * Only for SAAS mode. Make this project visible on the SAAS home page (=project list)
+    * @MongoDB\Field(type="bool")
+    */
+    protected $publishOnSaasPage = true;
+
     /** @MongoDB\Field(type="string") */
     protected $dataLicenseUrl = 'https://opendatacommons.org/licenses/odbl/summary/';
 
@@ -3344,5 +3350,13 @@ class Configuration implements \JsonSerializable
     public function getAppNameShort()
     {
         return $this->appNameShort;
+    }
+
+    public function getPublishOnSaasPage() {
+        return $this->publishOnSaasPage;
+    }
+    public function setPublishOnSaasPage($bool) {
+        $this->publishOnSaasPage = $bool;
+        return $this;
     }
 }

@@ -31,9 +31,15 @@ class ConfigurationAdmin extends ConfigurationAbstractAdmin
 
         $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
         $apiProperties = $dm->getRepository('App\Document\Element')->findAllCustomProperties();
+        $container = $this->getConfigurationPool()->getContainer();
 
         $formMapper
-            ->with('Le site', ['class' => 'col-md-6', 'description' => '<div class="iframe-container"><iframe height="110" sandbox="allow-same-origin allow-scripts" src="https://video.colibris-outilslibres.org/videos/embed/fc7d3784-7bd1-4f3a-b915-ab6daefdd52d" frameborder="0" allowfullscreen></iframe></div>'])
+            ->with('Le site', ['class' => 'col-md-6', 'description' => '<div class="iframe-container"><iframe height="110" sandbox="allow-same-origin allow-scripts" src="https://video.colibris-outilslibres.org/videos/embed/fc7d3784-7bd1-4f3a-b915-ab6daefdd52d" frameborder="0" allowfullscreen></iframe></div>']);
+        if ($container->getParameter('use_as_saas')) {
+            $formMapper
+                ->add('publishOnSaasPage', null, ['label' => 'Rendre ce projet visible sur ' . $container->getParameter('base_url'), 'required' => false]);
+        }
+        $formMapper
                 ->add('appName', null, ['label' => 'Nom du site'])
                 ->add('appNameShort', null, ['label' => 'Nom Court (utilisé par les téléphones, 12 caractères max.)', 'required' => false])
                 ->add('appBaseline', null, ['label' => 'Description du site (baseline)', 'required' => false])

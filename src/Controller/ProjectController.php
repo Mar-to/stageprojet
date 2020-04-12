@@ -94,13 +94,17 @@ class ProjectController extends Controller
 
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
 
-        $projects = $repository->findBy([], ['dataSize' => 'DESC']);
+        $projects = $repository->findBy(['published' => true], ['publishedAt' => 'DESC']);
+        $pinnedProjects = $repository->findBy(['pinned' => true]);
 
         foreach ($projects as $project) {
             $project->setHomeUrl($this->generateUrlForProject($project));
         }
 
-        return $this->render('saas/home.html.twig', ['projects' => $projects, 'config' => $config]);
+        return $this->render('saas/home.html.twig', [
+            'projects' => $projects,
+            'pinnedProjects' => $pinnedProjects,
+            'config' => $config]);
     }
 
     public function initializeAction(Request $request, DocumentManager $dm, UserManagerInterface $userManager,

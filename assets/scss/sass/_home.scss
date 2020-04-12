@@ -37,9 +37,12 @@
     max-width: 500px;
     height: 250px;
   }
-  .list {
+  .projects-container {
     display: flex;
     flex-wrap: wrap;
+  }
+  .pinned-projects {
+    margin-bottom: 4rem;
   }
   .search-container {
     display: flex;
@@ -135,6 +138,9 @@
             float: right;
             padding-left: 2px;
           }
+        }
+        .published-at-int, .published-at, .tags {
+          display: none;
         }
       }
     }

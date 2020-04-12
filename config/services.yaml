@@ -73,6 +73,11 @@ services:
         $instanceName: '%instance_name%'
         $fromEmail: '%from_email%'
 
+    # Commands
+    App\Command\UpdateProjectsInfoCommand:
+      arguments:
+        $baseUrl: '%base_url%'
+
     # Overide FOS Registration Controller
     App\Controller\RegistrationController:
       tags: ['controller.service_arguments']

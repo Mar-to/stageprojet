@@ -289,15 +289,15 @@ class APIController extends GoGoController
         }
         $shortName = $config->getAppNameShort() && strlen($config->getAppNameShort()) > 0 ? $config->getAppNameShort() : $config->getAppName();
         $responseArray = [
-      'name' => $config->getAppName(),
-      'short_name' => str_split($shortName, 12)[0],
-      'lang' => 'fr',
-      'start_url' => '/annuaire#/carte/autour-de-moi',
-      'display' => 'standalone',
-      'theme_color' => $config->getPrimaryColor(),
-      'background_color' => $config->getBackgroundColor(),
-      'icons' => [$icon],
-    ];
+          'name' => $config->getAppName(),
+          'short_name' => str_split($shortName, 12)[0],
+          'lang' => 'fr',
+          'start_url' => '/annuaire#/carte/autour-de-moi',
+          'display' => 'standalone',
+          'theme_color' => $config->getPrimaryColor(),
+          'background_color' => $config->getBackgroundColor(),
+          'icons' => [$icon],
+        ];
         $response = new Response(json_encode($responseArray));
         $response->headers->set('Content-Type', 'application/json');
 
@@ -311,12 +311,20 @@ class APIController extends GoGoController
         $imageUrl = $img ? $img->getImageUrl() : null;
         $dataSize = $dm->getRepository('App\Document\Element')->findVisibles(true);
 
+        $users = $dm->getRepository('App\Document\User')->findAll();
+        $adminEmails = [];
+        foreach ($users as $key => $user) {
+            if ($user->isAdmin()) $adminEmails[] = $user->getEmail();
+        }
         $responseArray = [
-      'name' => $config->getAppName(),
-      'imageUrl' => $imageUrl,
-      'description' => $config->getAppBaseline(),
-      'dataSize' => $dataSize,
-    ];
+          'name' => $config->getAppName(),
+          'imageUrl' => $imageUrl,
+          'description' => $config->getAppBaseline(),
+          'tags' => $config->getAppTags(),
+          'dataSize' => $dataSize,
+          'adminEmails' => implode(',', $adminEmails),
+          'publish' => $config->getPublishOnSaasPage()
+        ];
         $response = new Response(json_encode($responseArray));
         $response->headers->set('Content-Type', 'application/json');
 
