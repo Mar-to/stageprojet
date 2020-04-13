@@ -217,6 +217,11 @@ class Category
         return $this->id;
     }
 
+    public function setId($value = null)
+    {
+        return $this;
+    }
+
     /**
      * Set name.
      *

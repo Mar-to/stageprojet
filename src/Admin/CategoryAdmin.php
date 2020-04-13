@@ -14,6 +14,9 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\CollectionType;
 use Sonata\AdminBundle\Form\Type\ModelType;
 use Sonata\AdminBundle\Route\RouteCollection;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use App\Form\OptionLiteType;
 
 class CategoryAdmin extends AbstractAdmin
 {
@@ -52,7 +55,7 @@ class CategoryAdmin extends AbstractAdmin
             ->add('parent', ModelType::class, [
                 'class' => 'App\Document\Option',
                 'required' => false,
-          'query' => $parentQuery,
+                'query' => $parentQuery,
                 'label' => 'Catégorie parente', ], ['admin_code' => 'admin.option_hidden'])
         ->add('isMandatory', null, ['required' => false, 'label' => 'Choix obligatoire', 'label_attr' => ['title' => 'Une catégorie de ce groupe doit être obligatoirement selectionnée']])
         ->add('singleOption', null, ['required' => false, 'label' => 'Choix unique', 'label_attr' => ['title' => 'Une seule catégorie est selectionnable à la fois']])
@@ -70,16 +73,14 @@ class CategoryAdmin extends AbstractAdmin
          ->add('displayInInfoBar', null, ['required' => false, 'label' => 'Dans la fiche détail', 'label_attr' => ['title' => 'Le nom du groupe ne sera pas affiché, mais les catégories le seront']])
          ->add('displayInForm', null, ['required' => false, 'label' => 'Dans le formulaire', 'label_attr' => ['title' => 'Ni le groupe ni les catégories ne seront affichés dans le formulaire']])
       ->end()
-        // ->with('Catégories contenues dans ce groupe', array('class' => 'col-xs-12 sub-options-container'))
-        // 	->add('isFixture', 'text', ['attr' => ['class' => 'gogo-sort-options'], 'label_attr' => ['style' => 'display:none']])
-  //     ->add('options', CollectionType::class, array('by_reference' => false, 'allow_add' => true, 'label_attr'=> ['style'=> 'display:none']), array(
-  //               'edit' => 'inline',
-  //               'inline' => 'table',
-  //               'label' => '',
-  //               'admin_code' => 'admin.option.lite_hidden',
-  //               //'sortable' => 'index',
-  //           ))
-        // ->end()
+        ->with('Catégories contenues dans ce groupe', array('class' => 'col-xs-12 sub-options-container'))
+        	->add('isFixture', HiddenType::class, ['attr' => ['class' => 'gogo-sort-options'], 'label_attr' => ['style' => 'display:none']])
+      ->add('options', CollectionType::class, array(
+          'by_reference' => false,
+          'entry_type' => OptionLiteType::class,
+          'allow_add' => true,
+          'label_attr'=> ['style'=> 'display:none']))
+        ->end()
     ;
     }
 

@@ -1,9 +1,11 @@
 <div class="input-container">
-    {% set object = form.vars.sonata_admin.admin.subject %}
-    {% if object.getDefaultColor is defined %}
-        {% set defaultColor = object.getDefaultColor(form.vars.name) %}
-        {% if defaultColor and not form.vars.value %}
-            <div class="default-color" style="background-color: {{ defaultColor }}"></div>
+    {% if form.vars.sonata_admin.admin.subject is defined %}
+        {% set object = form.vars.sonata_admin.admin.subject %}
+        {% if object.getDefaultColor is defined %}
+            {% set defaultColor = object.getDefaultColor(form.vars.name) %}
+            {% if defaultColor and not form.vars.value %}
+                <div class="default-color" style="background-color: {{ defaultColor }}"></div>
+            {% endif %}
         {% endif %}
     {% endif %}
     <input type='text' id="{{ form.vars.id }}" name="{{ form.vars.full_name }}" placeholder="Cliquez pour choisir une couleur" value="{{ form.vars.value }}" class="form-control gogo-color-picker" />

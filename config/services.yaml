@@ -343,18 +343,6 @@ services:
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }
 
-    admin.option.lite_hidden:
-        class: App\Admin\OptionLiteAdmin
-        arguments: [~, App\Document\Option, '']
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }
-
-    admin.categories.lite_hidden:
-        class: App\Admin\CategoryLiteAdmin
-        arguments: [~, App\Document\Category, '']
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }
-
     # ------- SAAS ---------
 
     admin.project:

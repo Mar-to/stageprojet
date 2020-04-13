@@ -13,6 +13,8 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\ModelType;
 use Sonata\AdminBundle\Route\RouteCollection;
+use Sonata\AdminBundle\Form\Type\CollectionType;
+use App\Form\CategoryLiteType;
 
 class OptionAdmin extends AbstractAdmin
 {
@@ -55,7 +57,7 @@ class OptionAdmin extends AbstractAdmin
               'required' => true,
               'query' => $parentQuery,
               'label' => 'Groupe de Catégorie parent',
-              'mapped' => true, ], ['admin_code' => 'admin.categories.lite_hidden'])
+              'mapped' => true, ], [])
          ->end()
          ->with('Paramètres secondaires', ['class' => 'col-xs-12 col-md-6', 'box_class' => 'box'])
             ->add('useIconForMarker', null, ['required' => false, 'label' => "Utiliser l'icone de cette catégorie pour le marqueur", 'label_attr' => ['title' => 'Le marqueur affichera toutes icones de chaque catégorie ayant cette option activée. Les icones seront classées par ordre de selection des catégories dans le formulaire']])
@@ -66,14 +68,13 @@ class OptionAdmin extends AbstractAdmin
             ->add('displayInInfoBar', null, ['required' => false, 'label' => 'Dans la fiche détail'])
             ->add('displayInForm', null, ['required' => false, 'label' => 'Dans le formulaire'])
          ->end()
-         // ->with('Sous groupes', array('class' => 'col-xs-12 sub-categories-container'))
-         //    ->add('subcategories', 'sonata_type_collection', array('by_reference' => false, 'label_attr'=> ['style'=> 'display:none']),
-         //       array(
-         //       'edit' => 'inline',
-         //       'inline' => 'table',
-         //       'admin_code' => 'admin.categories.lite_hidden'
-         //       ))
-         // ->end()
+         ->with('Sous groupes', array('class' => 'col-xs-12 sub-categories-container'))
+            ->add('subcategories', CollectionType::class, array(
+              'by_reference' => false,
+              'entry_type' => CategoryLiteType::class,
+              'allow_add' => true,
+              'label_attr'=> ['style'=> 'display:none']))
+         ->end()
         ->end()
       ->tab('Configuration avancée')
          ->with('Paramètres secondaires', ['class' => 'col-xs-12 col-md-6', 'box_class' => 'box'])

@@ -1,6 +1,7 @@
 {% extends '@SonataDoctrineMongoDBAdmin/Form/form_admin_fields.html.twig' %}
 
 {% block sonata_admin_mongo_collection %}
+    {{ dump('coucou')}}
     {% include 'admin/core_custom/custom-fields/edit_mongo_collection.html.twig' %}
 {% endblock %}
 
@@ -41,6 +42,8 @@
       {% include 'admin/core_custom/custom-fields/mapping-taxonomy.html.twig' %}
     {% elseif attr_class == "gogo-mapping-ontology" %}
       {% include 'admin/core_custom/custom-fields/mapping-ontology.html.twig' %}
+    {% elseif attr_class == "gogo-route-id" %}
+      {% include 'admin/core_custom/custom-fields/route-id.html.twig' %}
     {% else %}
       {% set attr = attr|merge({'class': attr_class ~ ' form-control'}) %}
       {{ parent() }}

@@ -314,7 +314,7 @@ class Option
         return $this->customId ?: strval($this->id);
     }
 
-    public function setId()
+    public function setId($param = null)
     {
         return $this;
     }

@@ -1,6 +1,7 @@
 <script>
   function sortOptions() {
-    var inputs = $('#sort-options-btn').closest('.sonata-ba-collapsed-fields').find('.form-group:last-child').find('tr td:first-child input');
+    var inputs = $('#sort-options-btn').closest('.sonata-ba-collapsed-fields')
+                .find('.sonata-collection-row .sonata-ba-field .form-group:first-child input');
     var values = [];
     inputs.each(function() {
       values.push({id: this.id, name: $(this).val()});
@@ -8,7 +9,7 @@
     values.sort(dynamicSort("name"));
     for (var i = 0; i < values.length; i++) {
       value = values[i];
-      $('#' + value.id).closest('tr').find('td:nth-child(2) input').val(i);
+      $('#' + value.id).closest('.sonata-collection-row-without-label').find('.form-group:nth-child(2) input').val(i);
     }
     console.log(values);
   }
@@ -26,7 +27,7 @@
             return b[property].localeCompare(a[property]);
         }else{
             return a[property].localeCompare(b[property]);
-        }        
+        }
     }
   }
 </script>
