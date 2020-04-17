@@ -43,8 +43,11 @@ class OptionAdmin extends AbstractAdmin
         // prevent circular reference, i.e setting a child as parent
         $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
         $repo = $dm->getRepository('App\Document\Category');
-        $parentQuery = $repo->createQueryBuilder()
+        $parentQuery = null;
+        if ($this->subject) {
+          $parentQuery = $repo->createQueryBuilder()
                           ->field('id')->notIn($this->subject->getAllSubcategoriesIds());
+        }
 
         $formMapper
        ->tab('Principal')

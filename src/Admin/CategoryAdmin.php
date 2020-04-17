@@ -33,11 +33,11 @@ class CategoryAdmin extends AbstractAdmin
     public function getTemplate($name)
     {
         switch ($name) {
-         case 'edit': return 'admin/edit/edit_option_category.html.twig';
+          case 'edit': return 'admin/edit/edit_option_category.html.twig';
             break;
-         default: return parent::getTemplate($name);
+          default: return parent::getTemplate($name);
             break;
-     }
+        }
     }
 
     protected function configureFormFields(FormMapper $formMapper)
@@ -45,8 +45,10 @@ class CategoryAdmin extends AbstractAdmin
         // prevent circular reference, i.e setting a child as parent
         $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
         $repo = $dm->getRepository('App\Document\Option');
-        $parentQuery = $repo->createQueryBuilder()
-                        ->field('id')->notIn($this->subject->getAllOptionsIds());
+        $parentQuery = null;
+        if ($this->subject) {
+          $parentQuery = $repo->createQueryBuilder()->field('id')->notIn($this->subject->getAllOptionsIds());
+        }
 
         $formMapper
       ->with('Paramètres principaux', ['class' => 'col-xs-12 col-md-6'])
