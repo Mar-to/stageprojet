@@ -1,14 +1,14 @@
 <div class="bs-callout {{ needHumanMerge ? 'bs-callout-warning' : 'bs-callout-success' }} bulk-duplicate">
 
-    <h4>{{ automaticMerge ? "Fusion automatique" : "Doublons potentiels détectés" }}</h4>   
+    <h4>{{ automaticMerge ? "Fusion automatique" : "Doublons potentiels détectés" }}</h4>
 
     {% for duplicate in duplicates %}
-        <li>           
-            <a class="duplicate-name" href="{{ duplicate.showUrlFromController(controller)}}" target="_blank"><b>
+        <li>
+            <a class="duplicate-name" href="{{ duplicate.showUrlFromController(router)}}" target="_blank"><b>
               {{ duplicate.name }}
               {% if duplicate.sourceKey %}<i> ({{ duplicate.sourceKey }})</i>{% endif %}
             </b></a>
-           
+
             {% if automaticMerge %}
               {% if duplicate.status == '-6' %}
                 <span class="label label-default">Doublon Supprimé</span>

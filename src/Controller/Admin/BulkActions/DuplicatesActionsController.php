@@ -70,7 +70,7 @@ class DuplicatesActionsController extends BulkActionsAbstractController
                'automaticMerge' => count($perfectMatches) > 0,
                'needHumanMerge' => count($otherDuplicates) > 0,
                'mergedId' => $element->getId(),
-               'controller' => $this, ]);
+               'router' => $this->get('router'), ]);
         }
     }
 
