@@ -219,8 +219,25 @@ class ElementAdminBulkController extends Controller
         }
 
         // Perform remove
-        $selectedModelQuery->remove()->getQuery()->execute();
+        $modelManager = $this->admin->getModelManager();
+
+        try {
+            $modelManager->batchDelete($this->admin->getClass(), $selectedModelQuery);
+            $this->addFlash(
+                'sonata_flash_success',
+                $this->trans('flash_batch_delete_success', [], 'SonataAdminBundle')
+            );
+        } catch (ModelManagerException $e) {
+            $this->handleModelManagerException($e);
+            $this->addFlash(
+                'sonata_flash_error',
+                $this->trans('flash_batch_delete_error', [], 'SonataAdminBundle')
+            );
+        }
+        // $selectedModelQuery->findAndRemove()->getQuery()->execute();
+
         $this->dm->createQueryBuilder(UserInteractionContribution::class)->field('element.id')->in($elementIds)->remove()->getQuery()->execute();
+
         $this->dm->flush();
 
         return new RedirectResponse($this->admin->generateUrl('list', ['filter' => $this->admin->getFilterParameters()]));

@@ -48,8 +48,8 @@ class DatabaseIntegrityWatcher
         } elseif ($document instanceof Webhook) {
             $webhook = $document;
             $contributions = $dm->createQueryBuilder('App\Document\UserInteractionContribution')
-      ->field('webhookPosts.webhook.$id')->equals($webhook->getId())
-      ->getQuery()->execute();
+                                ->field('webhookPosts.webhook.$id')->equals($webhook->getId())
+                                ->getQuery()->execute();
 
             foreach ($contributions as $contrib) {
                 $contrib->getElement()->setPreventJsonUpdate(true);
@@ -58,6 +58,16 @@ class DatabaseIntegrityWatcher
                         $contrib->removeWebhookPost($post);
                     }
                 }
+            }
+        } elseif ($document instanceof Element) {
+            // remove dependance from nonDuplicates and potentialDuplicates
+            $qb = $dm->createQueryBuilder('App\Document\Element');
+            $qb->addOr($qb->expr()->field('nonDuplicates.$id')->equals($document->getId()));
+            $qb->addOr($qb->expr()->field('potentialDuplicates.$id')->equals($document->getId()));
+            $dependantElements = $qb->getQuery()->execute();
+            foreach ($dependantElements as $element) {
+                $element->removeNonDuplicate($document);
+                $element->removePotentialDuplicate($document);
             }
         }
     }

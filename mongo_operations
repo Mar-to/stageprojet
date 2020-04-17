@@ -124,3 +124,6 @@ db.Element.find({'data.image': {$exists: true}}).forEach(function(e) {
     delete e.data.image;
     db.Element.save(e);
 });
+
+
+db.Element.updateMany({'nonDuplicates.$id': "KBL"}, { $unset: { 'nonDuplicates': ''} })
