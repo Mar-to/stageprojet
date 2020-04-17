@@ -9,6 +9,7 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\ModelType;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 
 class ImportAdmin extends AbstractAdmin
@@ -48,7 +49,7 @@ class ImportAdmin extends AbstractAdmin
         if ($isDynamic) {
             $formMapper
                     ->add('refreshFrequencyInDays', null, ['required' => false, 'label' => 'Fréquence de mise à jours des données en jours (laisser vide pour ne jamais mettre à jour automatiquement'])
-                    ->add('idsToIgnore', null, ['required' => false, 'attr' => ['class' => 'gogo-display-array'], 'label' => "Liste des IDs qui seront ignorées lors de l'import", 'label_attr' => ['title' => "Pour ignorer un élément, supprimer le (définitivement) et il ne sera plus jamais importé. Si vous supprimez un élément dynamiquement importé juste en changeant son status (soft delete), l'élément sera quand meme importé mais conservera son status supprimé. Vous pourrez donc à tout moment restaurer cet élement pour le voir apparaitre de nouveau"]]);
+                    ->add('idsToIgnore', TextType::class, ['mapped' => false, 'required' => false,'attr' => ['class' => 'gogo-display-array', 'value' => $this->getSubject()->getIdsToIgnore()], 'label' => "Liste des IDs qui seront ignorées lors de l'import", 'label_attr' => ['title' => "Pour ignorer un élément, supprimer le (définitivement) et il ne sera plus jamais importé. Si vous supprimez un élément dynamiquement importé juste en changeant son status (soft delete), l'élément sera quand meme importé mais conservera son status supprimé. Vous pourrez donc à tout moment restaurer cet élement pour le voir apparaitre de nouveau"]]);
         }
         $formMapper
                 ->end()
@@ -70,7 +71,7 @@ class ImportAdmin extends AbstractAdmin
         $formMapper->end();
         if ($this->getSubject()->getId()) {
             $formMapper->with('Historique', ['class' => 'col-sm-12'])
-                        ->add('currState', null, ['attr' => ['class' => 'gogo-display-logs'], 'mapped' => false])
+                        ->add('currState', null, ['attr' => ['class' => 'gogo-display-logs'], 'label_attr' => ['style' => 'display: none'], 'mapped' => false])
                     ->end();
         }
         $formMapper->end();

@@ -204,7 +204,7 @@ class ElementAdminBulkController extends Controller
         // Add element id to ignore to sources
         $selectedModels = clone $selectedModelQuery;
         $elementsIdsGroupedBySource = $selectedModels
-            ->map('function() { if (this.source) emit(this.source.$id, this._id); }')
+            ->map('function() { if (this.source) emit(this.source.$id, this.oldId); }')
             ->reduce('function(k, vals) {
                 return vals.join(",");
             }')->getQuery()->execute()->toArray();
