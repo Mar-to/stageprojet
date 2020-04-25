@@ -1,7 +1,11 @@
 v3.0.0
 ======
 * MAJOR: Upgrade to php7 (mandatory) and symfony 4.4.
-* Feature: Ability to includes news in the automated newsletter
+* FEATURE: Ability to include news in the automated newsletter
+* FEATURE: Improve SAAS homepage. ability to filter and sort projects, and paginate
+* FEATURE: Improve SAAS management. Get more info about each map, warn abandonned projects
+* BUG: Fix element export
+* BUG: Fix hard deleting elements
 
 v2.5.8
 ======

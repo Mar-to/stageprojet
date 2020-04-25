@@ -54,7 +54,8 @@ class MigrationCommand extends GoGoAbstractCommand
         // v2.5
         "Il est maintenant possible de <b>téléverser des images et des fichiers</b> depuis le formulaire d'ajout d'un élément ! Paramétrez ces nouveaux champs dans Modèle de Données -> Formulaire",
         // v3.0
-        "Vous pouvez maintenant écrire des actualités qui seront incluses dans la newsletter automatique! Allez dans Mails/Newsletter -> Actualités"
+        "Vous pouvez maintenant écrire des actualités qui seront incluses dans la newsletter automatique! Allez dans Mails/Newsletter -> Actualités",
+        "L'export des éléments depuis la page Données -> Elements fonctionne de nouveau et inclus cette fois correctement tous les champs personnalisés (y compris fichiers et images)"
     ];
 
     public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger,
