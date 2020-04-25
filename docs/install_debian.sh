@@ -302,3 +302,4 @@ nginx -t && service nginx restart
 # for SAAS instance
 # * * * * * php $WEB_DIR/GoGoCarto/bin/console --env=prod app:main-command
 # @daily php $WEB_DIR/GoGoCarto/bin/console --env=prod app:saas:update-projects-info
+# @daily php $WEB_DIR/GoGoCarto/bin/console --env=prod app:projects:check-for-deleting

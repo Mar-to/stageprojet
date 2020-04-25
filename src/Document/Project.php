@@ -47,6 +47,13 @@ class Project
     /** @MongoDB\Field(type="string") */
     private $adminEmails;
 
+    /** @MongoDB\Field(type="date") */
+    private $lastLogin;
+
+    /** @MongoDB\Field(type="date") */
+    private $warningToDeleteProjectSentAt;
+
+
     /** @MongoDB\Field(type="string") */
     private $tags;
 
@@ -305,8 +312,12 @@ class Project
     public function getAdminEmails() {
         return $this->adminEmails;
     }
+    public function getAdminEmailsArray() {
+        return explode(',', $this->adminEmails);
+    }
     public function setAdminEmails($emails) {
-        $this->adminEmails = $emails || "";
+        if (!$this->adminEmails) $emails = "";
+        $this->adminEmails = $emails;
         return $this;
     }
     public function getPublished() {
@@ -337,6 +348,24 @@ class Project
     }
     public function setTags($tags) {
         $this->tags = $tags;
+        return $this;
+    }
+    public function getLastLogin() {
+        return $this->lastLogin;
+    }
+    public function setLastLogin($date) {
+        // That's mean that a user logs in again, so we cancel the deletion
+        if ($this->lastLogin != $date) {
+            $this->warningToDeleteProjectSentAt = null;
+        }
+        $this->lastLogin = $date;
+        return $this;
+    }
+    public function getWarningToDeleteProjectSentAt() {
+        return $this->warningToDeleteProjectSentAt;
+    }
+    public function setWarningToDeleteProjectSentAt($date) {
+        $this->warningToDeleteProjectSentAt = $date;
         return $this;
     }
 }

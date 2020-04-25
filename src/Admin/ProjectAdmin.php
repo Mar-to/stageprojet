@@ -36,6 +36,7 @@ class ProjectAdmin extends AbstractAdmin
             ->add('published', null)
             ->add('pinned', null, ['editable' => true])
             ->add('createdAt')
+            ->add('lastLogin')
             ->add('_action', 'actions', [
                 'actions' => [
                     // 'show' => array(),

@@ -48,6 +48,7 @@ class UpdateProjectsInfoCommand extends Command
                 $project->setDataSize($data['dataSize']);
                 $project->setAdminEmails($data['adminEmails']);
                 $project->setPublished($data['publish']);
+                $project->setLastLogin($data['lastLogin']);
                 $this->dm->persist($project);
             } catch (\Exception $e) {
                 $this->logger->error($e->getMessage());

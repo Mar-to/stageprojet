@@ -65,9 +65,9 @@ class GoGoMainCommand extends Command
             $command = $this->getApplication()->find($commandToExecute->getCommandNAme());
 
             $arguments = [
-           'command' => $commandToExecute->getCommandName(),
-           'dbname' => $commandToExecute->getProject()->getDbName(),
-         ];
+               'command' => $commandToExecute->getCommandName(),
+               'dbname' => $commandToExecute->getProject()->getDbName(),
+            ];
 
             $input = new ArrayInput($arguments);
             try {

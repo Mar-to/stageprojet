@@ -313,8 +313,10 @@ class APIController extends GoGoController
 
         $users = $dm->getRepository('App\Document\User')->findAll();
         $adminEmails = [];
+        $lastLogin = null;
         foreach ($users as $key => $user) {
             if ($user->isAdmin()) $adminEmails[] = $user->getEmail();
+            if (!$lastLogin || $user->getLastLogin() > $lastLogin) $lastLogin = $user->getLastLogin();
         }
         $responseArray = [
           'name' => $config->getAppName(),
@@ -323,7 +325,8 @@ class APIController extends GoGoController
           'tags' => $config->getAppTags(),
           'dataSize' => $dataSize,
           'adminEmails' => implode(',', $adminEmails),
-          'publish' => $config->getPublishOnSaasPage()
+          'publish' => $config->getPublishOnSaasPage(),
+          'lastLogin' => $lastLogin->getTimestamp()
         ];
         $response = new Response(json_encode($responseArray));
         $response->headers->set('Content-Type', 'application/json');
