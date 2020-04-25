@@ -94,7 +94,11 @@ class ProjectController extends Controller
 
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
 
-        $projects = $repository->findBy(['published' => true], ['publishedAt' => 'DESC']);
+        $projects = $dm->createQueryBuilder('App\Document\Project')
+                        ->field('published')->equals(true)
+                        ->field('dataSize')->gte(10)
+                        ->sort('publishedAt', 'desc')
+                        ->getQuery()->execute();
         $pinnedProjects = $repository->findBy(['pinned' => true]);
 
         foreach ($projects as $project) {
