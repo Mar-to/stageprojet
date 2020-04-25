@@ -40,7 +40,7 @@ The GoGoCarto project is divided into two separate projects.
 Stack
 -----
 
-Symfony2, Typescript, MaterializeCSS
+Symfony4, MongoDB, Typescript
 
 Documentation
 -------------
