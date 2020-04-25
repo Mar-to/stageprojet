@@ -29,7 +29,7 @@ class BulkActionsAbstractController extends Controller
             $batchFromStep = 0;
         }
 
-        $count = $elementRepo->findAllElements(null, $batchFromStep, true);
+        $count = $elementRepo->findVisibles(true, false, null, $batchFromStep);
         $elementsToProcceedCount = 0;
         if ($count > $this->batchSize) {
             $batchLastStep = $batchFromStep + $this->batchSize;
@@ -39,7 +39,7 @@ class BulkActionsAbstractController extends Controller
             $batchLastStep = $batchFromStep + $count;
         }
 
-        $elements = $elementRepo->findAllElements($this->batchSize, $batchFromStep);
+        $elements = $elementRepo->findVisibles(false, false, $this->batchSize, $batchFromStep);
 
         $i = 0;
         $renderedViews = [];

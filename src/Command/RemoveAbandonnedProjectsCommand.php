@@ -72,7 +72,7 @@ final class RemoveAbandonnerProjectsCommand extends GoGoAbstractCommand
         $message = "Les projets suivants sont probablement à supprimer : ";
         foreach ($projectsToDelete as $project) {
             $url = $this->generateUrlForProject($project);
-            $message .= '<li><a href="' . $url .'">' . $project->getName() .' / Nombre de points : ' . $project->getDataSize() .'</li>';
+            $message .= '<li><a href="' . $url .'">' . $project->getName() .' / Nombre de points : ' . $project->getDataSize() .'</a></li>';
             $project->setWarningToDeleteProjectSentAt(time());
         }
 

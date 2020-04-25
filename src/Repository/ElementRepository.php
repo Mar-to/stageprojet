@@ -147,13 +147,19 @@ class ElementRepository extends DocumentRepository
         return $qb->getQuery()->execute();
     }
 
-    public function findVisibles($getCount = false, $excludeImported = false)
+    public function findVisibles($getCount = false, $excludeImported = false, $limit = null, $skip = null)
     {
         $qb = $this->createQueryBuilder('App\Document\Element');
 
         $qb = $this->filterVisibles($qb);
         if ($excludeImported) {
             $qb->field('status')->notEqual(ElementStatus::DynamicImport);
+        }
+        if ($limit) {
+            $qb->limit($limit);
+        }
+        if ($skip) {
+            $qb->skip($skip);
         }
         if ($getCount) {
             $qb->count();
