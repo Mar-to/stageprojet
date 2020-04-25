@@ -44,9 +44,13 @@ class BulkActionsAbstractController extends Controller
         $i = 0;
         $renderedViews = [];
         foreach ($elements as $key => $element) {
-            $view = $this->$functionToExecute($element, $dm);
-            if ($view) {
-                $renderedViews[] = $view;
+            try {
+                $view = $this->$functionToExecute($element, $dm);
+                if ($view) {
+                    $renderedViews[] = $view;
+                }
+            } catch (\Exception $e) {
+                $renderedViews[] = "Erreur en traitant l'élement $element->getId() : $e->getMessage()";
             }
 
             if (0 == (++$i % 100)) {
