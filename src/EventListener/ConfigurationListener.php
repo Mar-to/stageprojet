@@ -3,8 +3,10 @@
 namespace App\EventListener;
 
 use App\Document\Configuration\ConfigurationApi;
+use App\Document\Configuration;
 use App\Document\Configuration\ConfigurationMarker;
 use App\Services\AsyncService;
+use Symfony\Component\Process\Process;
 
 class ConfigurationListener
 {
@@ -34,6 +36,7 @@ class ConfigurationListener
                 $removedProps = array_diff($oldPrivateProperties, $newPrivateProperties);
                 $addedProps = array_diff($newPrivateProperties, $oldPrivateProperties);
 
+                // Update field path (move them between data and privateData object)
                 $qb = $dm->createQueryBuilder('App\Document\Element');
                 $qb = $qb->updateMany();
                 foreach ($removedProps as $key => $prop) {
@@ -42,10 +45,16 @@ class ConfigurationListener
                 foreach ($addedProps as $key => $prop) {
                     $qb = $qb->field('data.'.$prop)->rename('privateData.'.$prop);
                 }
-
                 $qb->getQuery()->execute();
-
                 $this->asyncService->callCommand('app:elements:updateJson', ['ids' => 'all']);
+
+                // Update search index
+                $fullConfig = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+                $this->updateSearchIndex($fullConfig->getDbName(),
+                                         $oldPrivateProperties,
+                                         $newPrivateProperties,
+                                         $fullConfig->getElementFormFieldsJson(),
+                                         $fullConfig->getElementFormFieldsJson());
             }
         }
         if ($document instanceof ConfigurationMarker) {
@@ -56,5 +65,57 @@ class ConfigurationListener
                 $this->asyncService->callCommand('app:elements:updateJson', ['ids' => 'all']);
             }
         }
+
+        if ($document instanceof Configuration) {
+            $uow = $dm->getUnitOfWork();
+            $uow->computeChangeSets();
+            $changeset = $uow->getDocumentChangeSet($document);
+            if (array_key_exists('elementFormFieldsJson', $changeset)) {
+                $formFieldsChanged = $changeset['elementFormFieldsJson'];
+                $oldFormFields = $formFieldsChanged[0];
+                $newFormFields = $formFieldsChanged[1];
+                $this->updateSearchIndex($document->getDbName(),
+                                         $document->getApi()->getPublicApiPrivateProperties(),
+                                         $document->getApi()->getPublicApiPrivateProperties(),
+                                         $oldFormFields,
+                                         $newFormFields);
+            }
+        }
+    }
+
+    private function updateSearchIndex($db, $oldPrivateProperties, $newPrivateProperties,
+                                       $oldFormFields, $newFormFields) {
+        $oldSearchIndex = $this->calculateSearchIndexConfig($oldPrivateProperties, $oldFormFields);
+        $newSearchIndex = $this->calculateSearchIndexConfig($newPrivateProperties, $newFormFields);
+
+        if ($oldSearchIndex != $newSearchIndex) {
+            $command = 'db.Element.dropIndex("name_text");'; // Default index created by doctrine
+            $command .= 'db.Element.dropIndex("search_index");';
+            $command .= "db.Element.createIndex( {$newSearchIndex["fields"]}, { name: \"search_index\", default_language: \"french\", weights: {$newSearchIndex["weights"]} });";
+
+            $process = new Process("mongo {$db} --eval '{$command}'");
+            $process->run();
+        }
+    }
+
+    private function calculateSearchIndexConfig($privateProps, $formFieldsJson) {
+        $indexConf = [];
+        $indexWeight = [];
+        $formFields = json_decode($formFieldsJson);
+        foreach ($formFields as $key => $field) {
+            if (property_exists($field, 'search') && $field->search) {
+                $path = in_array($field->name, $privateProps) ? 'privateData' : 'data';
+                $path .= '.' . $field->name;
+                if ($field->name == 'name') $path = 'name';
+                $indexConf[$path] = "text";
+                $indexWeight[$path] = (int) $field->searchWeight;
+            }
+        }
+        // default index on name
+        if (count($indexConf) == 0) {
+            $indexConf = ['name' => 'text'];
+            $indexWeight = ['name' => 1];
+        }
+        return ['fields' => json_encode($indexConf), 'weights' => json_encode($indexWeight)];
     }
 }

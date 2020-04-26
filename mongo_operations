@@ -127,3 +127,8 @@ db.Element.find({'data.image': {$exists: true}}).forEach(function(e) {
 
 
 db.Element.updateMany({'nonDuplicates.$id': "KBL"}, { $unset: { 'nonDuplicates': ''} })
+
+
+db.Element.dropIndex('name_text')
+db.Element.dropIndex('search_index')
+db.Element.createIndex( { name: "text", "data.description": "text" }, { name: "search_index", default_language: "french", weights: { name: 10, "data.description": 5 }, })

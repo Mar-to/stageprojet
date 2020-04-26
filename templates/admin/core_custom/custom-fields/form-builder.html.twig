@@ -40,6 +40,8 @@
 
       var iconAttr = { label: 'Icone', placeholder: 'Choisissez une icone'  }
       var errorMsgAttrs = { label: "Msg. Erreur", placeholder: "Oups ce texte est un peu long ! // Veuillez renseigner une adresse email valide // ..." }
+      var searchAttrs = { label: 'Recherche dans ce champ', type: 'checkbox' };
+      var searchWeightAttrs = { label: 'Poids de la recherche', type: 'number', value: "1" };
       var typeUserAttrs = {
         text: {
           icon: iconAttr,
@@ -51,6 +53,8 @@
               'url': 'Url'
             },
           },
+          search: searchAttrs,
+          searchWeight: searchWeightAttrs,
           errorMsg: errorMsgAttrs
         },
         textarea: {
@@ -60,6 +64,8 @@
               'wysiwyg': 'Editeur enrichi',
             },
           },
+          search: searchAttrs,
+          searchWeight: searchWeightAttrs,
           errorMsg: errorMsgAttrs,
           separator: { label: '' }, // separate important attrs from others
         },
@@ -68,6 +74,8 @@
         title: {
           maxlength: { label: "Longueur Max."},
           icon: iconAttr,
+          search: searchAttrs,
+          searchWeight: searchWeightAttrs,
           errorMsg: errorMsgAttrs,
           separator: { label: '' }, // separate important attrs from others
         },
@@ -123,7 +131,13 @@
       });
 
       $(document).ready(function() {
-        setTimeout(function() { $('.form-field:not(.paragraph-field) .fld-label').each(function() { $(this).text($(this).html()) }); }, 0);
+        setTimeout(function() {
+          $('.form-field:not(.paragraph-field) .fld-label').each(function() {
+            $(this).text($(this).html())
+          });
+          $('input[type="checkbox"][value="true"]').prop('checked', true);
+        }, 0);
+
       });
 
       setInterval(function() {
@@ -231,4 +245,10 @@
   }
 
   .iconpicker-popover.popover.right { right: -200px; left: initial !important;}
+
+  .fld-search[type="checkbox"]:after {
+    content: attr(title);
+    position: absolute;
+    padding-left: 2rem;
+  }
 </style>

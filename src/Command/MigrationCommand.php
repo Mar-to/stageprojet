@@ -55,7 +55,8 @@ class MigrationCommand extends GoGoAbstractCommand
         "Il est maintenant possible de <b>téléverser des images et des fichiers</b> depuis le formulaire d'ajout d'un élément ! Paramétrez ces nouveaux champs dans Modèle de Données -> Formulaire",
         // v3.0
         "Vous pouvez maintenant écrire des actualités qui seront incluses dans la newsletter automatique! Allez dans Mails/Newsletter -> Actualités",
-        "L'export des éléments depuis la page Données -> Elements fonctionne de nouveau et inclus cette fois correctement tous les champs personnalisés (y compris fichiers et images)"
+        "L'export des éléments depuis la page Données -> Elements fonctionne de nouveau et inclus cette fois correctement tous les champs personnalisés (y compris fichiers et images)",
+        "Depuis le site, la recherche par élément peut maintenant fonctionenr sur plusieurs champs. Dans Modèle de Données -> Formulaire, editez un champ pour voir apparaitre la configuration liée à la recherche. Vous pouvez aussi donner des poids différents à chaque champs, par exemple la recherche sur le titre avec un poids de 3 et la recherche dans la description avec un poids de 1"
     ];
 
     public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger,

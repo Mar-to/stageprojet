@@ -6,6 +6,7 @@ v3.0.0
 * FEATURE: Improve SAAS management. Get more info about each map, warn abandonned projects
 * BUG: Fix element export
 * BUG: Fix hard deleting elements
+* FEATURE: Search on multi fields. Can be configured from the Form Builder
 
 v2.5.8
 ======

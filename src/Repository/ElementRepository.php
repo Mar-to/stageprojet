@@ -38,8 +38,8 @@ class ElementRepository extends DocumentRepository
         }
 
         $qb->limit($maxResults)
-       ->field('status')->gt($status)
-       ->field('geo')->withinCenter((float) $element->getGeo()->getLatitude(), (float) $element->getGeo()->getLongitude(), $radius);
+           ->field('status')->gt($status)
+           ->field('geo')->withinCenter((float) $element->getGeo()->getLatitude(), (float) $element->getGeo()->getLongitude(), $radius);
 
         if ($element->getId()) {
             $qb->field('id')->notIn($element->getNonDuplicatesIds());
@@ -240,13 +240,7 @@ class ElementRepository extends DocumentRepository
         if ($config->getSearchExcludingWords()) {
             $text = $text.' --'.str_replace(',', ' --', $config->getSearchExcludingWords());
         }
-        // remove words smaller than two letters
-        $filtered_words = array_filter(explode(' ', $text), function ($el) {
-            return strlen($el) > 2;
-        });
-        $text = implode($filtered_words, ' ');
-        // return $qb->field('name')->equals(new \MongoRegex("/$text/i"));
-    return $qb->text($text); //->language('fr');
+        return $qb->text($text);
     }
 
     private function filterVisibles($qb, $status = ElementStatus::PendingModification)
