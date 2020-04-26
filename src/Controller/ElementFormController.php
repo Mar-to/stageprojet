@@ -17,7 +17,6 @@ use App\Document\User;
 use App\Form\ElementType;
 use App\Services\ConfigurationService;
 use App\Services\ElementActionService;
-use App\Services\ElementDuplicatesService;
 use App\Services\ElementFormService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use FOS\UserBundle\Model\UserManagerInterface;
@@ -31,17 +30,17 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class ElementFormController extends GoGoController
 {
     public function addAction(Request $request, SessionInterface $session, DocumentManager $dm,
-                                                        ConfigurationService $configService, ElementDuplicatesService $duplicateService,
-                                                        ElementFormService $elementFormService, UserManagerInterface $userManager,
-                                                        ElementActionService $elementActionService, LoginManagerInterface $loginManager)
+                              ConfigurationService $configService,
+                              ElementFormService $elementFormService, UserManagerInterface $userManager,
+                              ElementActionService $elementActionService, LoginManagerInterface $loginManager)
     {
-        return $this->renderForm(new Element(), false, $request, $session, $dm, $configService, $duplicateService, $elementFormService, $userManager, $elementActionService, $loginManager);
+        return $this->renderForm(new Element(), false, $request, $session, $dm, $configService, $elementFormService, $userManager, $elementActionService, $loginManager);
     }
 
     public function editAction($id, Request $request, SessionInterface $session, DocumentManager $dm,
-                                                         ConfigurationService $configService, ElementDuplicatesService $duplicateService,
-                                                         ElementFormService $elementFormService, UserManagerInterface $userManager,
-                                                         ElementActionService $elementActionService, LoginManagerInterface $loginManager)
+                               ConfigurationService $configService,
+                               ElementFormService $elementFormService, UserManagerInterface $userManager,
+                               ElementActionService $elementActionService, LoginManagerInterface $loginManager)
     {
         $element = $dm->getRepository('App\Document\Element')->find($id);
 
@@ -52,7 +51,7 @@ class ElementFormController extends GoGoController
         } elseif ($element->getStatus() > ElementStatus::PendingAdd && ElementStatus::DynamicImport != $element->getStatus()
             || $configService->isUserAllowed('directModeration')
             || ($element->isPending() && $element->getRandomHash() == $request->get('hash'))) {
-            return $this->renderForm($element, true, $request, $session, $dm, $configService, $duplicateService, $elementFormService, $userManager, $elementActionService, $loginManager);
+            return $this->renderForm($element, true, $request, $session, $dm, $configService, $elementFormService, $userManager, $elementActionService, $loginManager);
         } else {
             $session->getFlashBag()->add('error', "Désolé, vous n'êtes pas autorisé à modifier cet élement !");
 
@@ -61,8 +60,8 @@ class ElementFormController extends GoGoController
     }
 
     // render for both Add and Edit actions
-    private function renderForm($element, $editMode, $request, $session, $dm, $configService, $duplicateService,
-                                                            $elementFormService, $userManager, $elementActionService)
+    private function renderForm($element, $editMode, $request, $session, $dm, $configService,
+                                $elementFormService, $userManager, $elementActionService)
     {
         if (null === $element) {
             throw new NotFoundHttpException("Cet élément n'existe pas.");
@@ -173,7 +172,7 @@ class ElementFormController extends GoGoController
             else {
                 // check for duplicates in Add action
                 if (!$editMode && !$editingOwnPendingContrib) {
-                    $duplicates = $duplicateService->checkForDuplicates($element, true);
+                    $duplicates = $dm->getRepository('App\Document\Element')->findDuplicatesFor($element);
                     $needToCheckDuplicates = count($duplicates) > 0;
                 } else {
                     $needToCheckDuplicates = false;

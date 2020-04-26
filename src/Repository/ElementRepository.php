@@ -24,32 +24,47 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
  */
 class ElementRepository extends DocumentRepository
 {
-    public function findDuplicatesFor($element, $distance, $maxResults, $includeDeleted = true, $hydrate = false)
+    public function findDuplicatesFor($element)
     {
+        // Duplicates search is used in two places :
+        // 1- When we create a new element, we check that it's not always existing
+        // 2- From the bulk action detect duplicates. It goes through all the database to find duplicates
+        // For newly created element the search is wider, because we look also on deleted element, and
+        // it's okay for the user to just say "no this is new element"
+        // For the bulk detection, we cannot make a wider query otherwise it could result in thousands of
+        // duplicates to proceed
+        $forNewlyCreatedElement = $element->getId() == null;
+        $forBulkDuplicateDetection = !$forNewlyCreatedElement;
+
         $qb = $this->createQueryBuilder('App\Document\Element');
 
-        // convert kilometre in degrees
-        $radius = $distance / 110;
-        $status = $includeDeleted ? ElementStatus::Duplicate : ElementStatus::PendingModification;
-
-        $qb->addOr($this->queryText($qb->expr(), $element->getName()));
-        if ($element->getEmail()) {
-            $qb->addOr($qb->expr()->field('email')->equals($element->getEmail()));
+        // GEO SPATIAL QUERY
+        if ($forNewlyCreatedElement) {
+            $distance = 1;
+        } else {
+            $distance = 0.4;
+            $city = strtolower($element->getAddress()->getAddressLocality());
+            if (in_array($element->getAddress()->getDepartmentCode(), ['75', '92', '93', '94'])
+                || in_array($city, ['marseille', 'lyon', 'bordeaux', 'lille', 'montpellier', 'strasbourg', 'nantes', 'nice'])) {
+                $distance = 0.1;
+            }
         }
+        $radius = $distance / 110; // convert kilometre in degrees
+        $qb->field('geo')->withinCenter((float) $element->getGeo()->getLatitude(), (float) $element->getGeo()->getLongitude(), $radius);
 
-        $qb->limit($maxResults)
-           ->field('status')->gt($status)
-           ->field('geo')->withinCenter((float) $element->getGeo()->getLatitude(), (float) $element->getGeo()->getLongitude(), $radius);
-
-        if ($element->getId()) {
+        // REDUCE SCOPE FOR BULK DETECTION
+        if ($forBulkDuplicateDetection) {
+            $qb->field('status')->gt(ElementStatus::PendingModification);
+            $qb->field('moderationState')->notEqual(ModerationState::PotentialDuplicate);
             $qb->field('id')->notIn($element->getNonDuplicatesIds());
         }
-        if (!$includeDeleted) {
-            $qb->field('moderationState')->notEqual(ModerationState::PotentialDuplicate);
-        }
 
-        return $qb->sortMeta('score', 'textScore')
-              ->hydrate($hydrate)->getQuery()->execute()->toArray();
+        // FILTER BY TEXT SEARCH
+        $this->queryText($qb, $element->getName());
+
+        $qb->limit(6);
+
+        return $this->queryToArray($qb);
     }
 
     public function findWhithinBoxes($bounds, $request, $getFullRepresentation, $isAdmin = false)
@@ -77,6 +92,8 @@ class ElementRepository extends DocumentRepository
         return $results;
     }
 
+    // When user want to proceed already detected duplicates by the bulk action
+    // We use the field "duplicate node" to find them
     public function findDuplicatesNodes($limit = null, $getCount = null)
     {
         $qb = $this->createQueryBuilder('App\Document\Element');
@@ -93,11 +110,12 @@ class ElementRepository extends DocumentRepository
         return $qb->getQuery()->execute();
     }
 
+
     public function findElementsWithText($text, $fullRepresentation = true, $isAdmin = false)
     {
         $qb = $this->createQueryBuilder('App\Document\Element');
 
-        $this->queryText($qb, $text)->sortMeta('score', 'textScore');
+        $this->queryText($qb, $text);
         $this->filterVisibles($qb);
 
         $this->selectJson($qb, $fullRepresentation, $isAdmin);
@@ -240,7 +258,7 @@ class ElementRepository extends DocumentRepository
         if ($config->getSearchExcludingWords()) {
             $text = $text.' --'.str_replace(',', ' --', $config->getSearchExcludingWords());
         }
-        return $qb->text($text);
+        return $qb->text($text)->sortMeta('score', 'textScore');
     }
 
     private function filterVisibles($qb, $status = ElementStatus::PendingModification)
@@ -277,6 +295,7 @@ class ElementRepository extends DocumentRepository
         return $qb->getQuery()->execute();
     }
 
+    // Used by newsletter
     public function findWithinCenterFromDate($lat, $lng, $distance, $date, $limit = null)
     {
         $qb = $this->createQueryBuilder('App\Document\Element');
@@ -371,14 +390,14 @@ class ElementRepository extends DocumentRepository
     {
         $builder = $this->createAggregationBuilder('App\Document\Element');
         $builder
-      ->match()
-        ->field('status')->lte(ElementStatus::AdminRefused)
-      ->group()
-          ->field('_id')
-          ->expression('$source')
-          ->field('count')
-          ->sum(1)
-      ;
+          ->match()
+            ->field('status')->lte(ElementStatus::AdminRefused)
+          ->group()
+              ->field('_id')
+              ->expression('$source')
+              ->field('count')
+              ->sum(1)
+        ;
         $queryResult = $builder->execute();
         $result = [];
         foreach ($queryResult as $key => $value) {

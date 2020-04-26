@@ -48,7 +48,7 @@ class DuplicatesController extends GoGoController
         }
         $dm->flush();
 
-        return $this->render('duplicates/duplicates-index.html.twig', ['duplicatesNode' => $duplicatesNode, 'controller' => $this, 'optionsNames' => $optionsNames, 'leftDuplicatesToProceedCount' => $leftDuplicatesToProceedCount]);
+        return $this->render('duplicates/duplicates-index.html.twig', ['duplicatesNode' => $duplicatesNode, 'router' => $this->get('router'), 'optionsNames' => $optionsNames, 'leftDuplicatesToProceedCount' => $leftDuplicatesToProceedCount]);
     }
 
     // Will mark all the

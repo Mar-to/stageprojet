@@ -1400,7 +1400,12 @@ class Element
      */
     public function removePotentialDuplicate(\App\Document\Element $potentialDuplicate)
     {
-        $this->potentialDuplicates->removeElement($potentialDuplicate);
+        if (is_array($this->potentialDuplicates)) {
+            $key = array_search($potentialDuplicate, $this->$this->potentialDuplicates);
+            unset($this->potentialDuplicates[$key]);
+        } else {
+            $this->potentialDuplicates->removeElement($potentialDuplicate);
+        }
     }
 
     /**

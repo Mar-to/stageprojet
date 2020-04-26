@@ -12,7 +12,7 @@
             <span class="updated-at"> - Maj {{ duplicate.updatedAt|date("d/m/Y") }}</span>
           </span>
           <div class="actions">
-            <a href="{{ duplicate.showUrlFromController(controller)}}" target="_blank" class="btn-edit icon gogo-icon-eye"></a>
+            <a href="{{ duplicate.showUrlFromController(router)}}" target="_blank" class="btn-edit icon gogo-icon-eye"></a>
             <a href={{ path('gogo_element_edit', { id: duplicate.id}) }} target="_blank" class="btn-edit icon gogo-icon-edit"></a>
             <button class="btn-resolve btn btn-success waves-effect waves-light" data-id="{{ duplicate.id }}">Conserver</button>
             <button class="btn-delete btn btn-danger waves-effect waves-light" data-id="{{ duplicate.id }}">Supprimer</button>

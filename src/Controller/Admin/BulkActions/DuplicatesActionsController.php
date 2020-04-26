@@ -5,7 +5,6 @@ namespace App\Controller\Admin\BulkActions;
 use App\Document\ElementStatus;
 use App\Document\ModerationState;
 use App\Services\ElementActionService;
-use App\Services\ElementDuplicatesService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -15,13 +14,11 @@ class DuplicatesActionsController extends BulkActionsAbstractController
     protected $duplicatesFound = [];
 
     public function detectDuplicatesAction(Request $request, SessionInterface $session, DocumentManager $dm,
-                                          ElementActionService $elementActionService,
-                                          ElementDuplicatesService $duplicateService)
+                                          ElementActionService $elementActionService)
     {
         $this->title = 'Détection des doublons';
         $this->automaticRedirection = false;
         $this->batchSize = 2000;
-        $this->duplicateService = $duplicateService;
         $this->elementActionService = $elementActionService;
 
         return $this->elementsBulkAction('detectDuplicates', $dm, $request, $session);
@@ -32,18 +29,21 @@ class DuplicatesActionsController extends BulkActionsAbstractController
         if ($element->getStatus() >= ElementStatus::PendingModification
           && !array_key_exists($element->getId(), $this->duplicatesFound)
           && !$element->isPotentialDuplicate()) {
-            $distance = 0.4;
-            $city = strtolower($element->getAddress()->getAddressLocality());
-            if (in_array($element->getAddress()->getDepartmentCode(), ['75', '92', '93', '94'])
-            || in_array($city, ['marseille', 'lyon', 'bordeaux', 'lille', 'montpellier', 'strasbourg', 'nantes', 'nice'])) {
-                $distance = 0.1;
+
+            $duplicates = $dm->getRepository('App\Document\Element')->findDuplicatesFor($element);
+            $duplicateIds = [];
+            foreach ($duplicates as $duplicate) {
+                if ($duplicate['score'] > 1.4) $duplicateIds[] = $duplicate['_id'];
             }
 
-            $duplicates = $this->duplicateService->checkForDuplicates($element, false, true, $distance);
-            if (0 == count($duplicates)) {
+            if (count($duplicateIds) == 0) {
                 return null;
             }
-
+            // first result was not hydrated, so we can access the search score. Now we can load
+            // properly the elements
+            $duplicates = $dm->createQueryBuilder('App\Document\Element')
+                             ->field('id')->in($duplicateIds)
+                             ->getQuery()->execute()->toArray();
             $perfectMatches = array_filter($duplicates, function ($duplicate) use ($element) { return $this->slugify($duplicate->getName()) == $this->slugify($element->getName()); });
             $otherDuplicates = array_diff($duplicates, $perfectMatches);
             $duplicates[] = $element;
