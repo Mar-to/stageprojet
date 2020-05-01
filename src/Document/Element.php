@@ -354,6 +354,8 @@ class Element
         }
         $this->potentialDuplicates = new \Doctrine\Common\Collections\ArrayCollection();
         $this->nonDuplicates = new \Doctrine\Common\Collections\ArrayCollection();
+
+        if (!$this->isPendingModification()) $this->setModifiedElement(null);
     }
 
     // automatically resolve moderation error

@@ -132,7 +132,7 @@ class ElementJsonGenerator
         $baseJson = rtrim($baseJson, ',');
 
         // MODIFIED ELEMENT (for pending modification)
-        if ($element->getModifiedElement()) {
+        if ($element->isPendingModification() && $element->getModifiedElement()) {
             $baseJson .= ', "modifiedElement": '.$element->getModifiedElement()->getJson(true, false);
         }
         $baseJson .= '}';
