@@ -10,6 +10,8 @@ mais faut appuyer direct sur entrée car un deuxième code est donné, celui pou
 le truc a faire a la main c'est donc d'aller sur https://admin.gandi.net, choisir le domaine gogocarto.fr puis Enregistrement dns
 if faut éditer l'entrée txt acme-challenge pour gogocarto.fr et mettre al valeur donnée par la ligne de commande
 
+Bug chelou, il faut toujours faire l'operation 2fois, c'est que à al deuxième que ça marche
+
 puis restart nginx
 systemctl restart nginx
 
