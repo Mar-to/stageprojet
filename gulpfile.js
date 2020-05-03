@@ -8,25 +8,25 @@ const gulp = require('gulp'),
     del = require('del'),
     workboxBuild = require('workbox-build');
 
-gulp.task('scriptsHome', ['cleanJs'], () => {
+gulp.task('scriptsHome', [], () => {
   return gulp.src(['assets/js/home.js'])
     .pipe(concat('home.js'))
     .pipe(gulp.dest('web/js'));
 });
 
-gulp.task('scriptsExternalPages', ['cleanJs'], () => {
+gulp.task('scriptsExternalPages', [], () => {
   return gulp.src(['assets/js/api/**/*.js', 'assets/js/duplicates/**/*.js'])
     .pipe(concat('external-pages.js'))
     .pipe(gulp.dest('web/js'));
 });
 
-gulp.task('scriptsElementForm', ['cleanJs'], () => {
+gulp.task('scriptsElementForm', [], () => {
   return gulp.src(['assets/js/element-form/**/*.js'])
     .pipe(concat('element-form.js'))
     .pipe(gulp.dest('web/js'));
 });
 
-gulp.task('scriptsLibs', ['cleanJs'], () => {
+gulp.task('scriptsLibs', [], () => {
   const gogocarto = gulp.src(['node_modules/gogocarto-js/dist/gogocarto.js'])
     .pipe(gulp.dest('web/js'));
   const sw = gulp.src(['assets/js/vendor/**/*', 'assets/js/init-sw.js'])
@@ -58,7 +58,7 @@ gulp.task('sass', [], () => {
   return merge(vendor, scss);
 });
 
-gulp.task('gogocarto_assets', ['cleanJs'], () => {
+gulp.task('gogocarto_assets', [], () => {
   const js = gulp.src(['node_modules/gogocarto-js/dist/*.css*',])
     .pipe(gulp.dest('web/css'));
   const fonts = gulp.src(['node_modules/gogocarto-js/dist/fonts/**/*',])
@@ -122,6 +122,6 @@ gulp.task('cleanJs', () => {
   return del(['web/js']);
 });
 
-gulp.task('build', ['sass', 'scriptsLibs', 'scriptsHome', 'scriptsExternalPages', 'scriptsElementForm', 'gogocarto_assets', 'service-worker']);
+gulp.task('build', ['cleanJs', 'sass', 'scriptsLibs', 'scriptsHome', 'scriptsExternalPages', 'scriptsElementForm', 'gogocarto_assets', 'service-worker']);
 
 gulp.task('production', ['gzip_styles', 'gzip_js']);
