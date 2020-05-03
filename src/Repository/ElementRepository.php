@@ -123,6 +123,18 @@ class ElementRepository extends DocumentRepository
         return $this->queryToArray($qb);
     }
 
+    public function findElementNamesWithText($text)
+    {
+        $qb = $this->createQueryBuilder('App\Document\Element');
+
+        $this->queryText($qb, $text);
+        $this->filterVisibles($qb);
+
+        $qb->select('name')->limit(20);
+
+        return $this->queryToArray($qb);
+    }
+
     public function findPendings($getCount = false)
     {
         $qb = $this->createQueryBuilder('App\Document\Element');

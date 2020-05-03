@@ -9,6 +9,12 @@ gogo_api_elements_from_text:
     requirements:
         methods: GET
 
+gogo_api_element_names_from_text:
+    path:     /api/element_names/search
+    defaults: { _controller: App\Controller\APIController::getElementNamessFromTextAction }
+    requirements:
+        methods: GET
+
 gogo_api_element_get:
     path:     /api/elements/{id}.{_format}
     defaults: { _controller: App\Controller\APIController::getElementsAction, id: null, _format: json }

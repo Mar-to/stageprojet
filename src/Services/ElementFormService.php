@@ -90,9 +90,13 @@ class ElementFormService
     private function updateCustomData($element, $request, $dm)
     {
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $data = $request->get('data') || [];
+        // For some fields, like elements type, we store the data stringified in a data-json input
+        foreach ($request->get('data-json') as $key => $value) {
+            $data[$key] = json_decode($value);
+        }
         $privateProp = $config->getApi()->getPublicApiPrivateProperties();
-
-        $element->setCustomData($request->get('data'), $privateProp);
+        $element->setCustomData($data, $privateProp);
     }
 
     private function updateWebsiteUrl($element)

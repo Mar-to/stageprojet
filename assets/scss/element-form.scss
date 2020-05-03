@@ -6,6 +6,7 @@
 .gogo-load-css
 {
   @import "components/element-form/category-field";
+  @import 'vendor/select2-materialize';
 
   label { color: inherit; }
 
@@ -57,6 +58,19 @@
     margin-left: 3rem;
     width: calc(100% - 3rem);
   }
+
+  .field-elements {
+    margin: 2rem 0;
+    i.prefix {
+      top: -3px;
+      left: 0 !important;
+    }
+  }
+
+  .input-field.error > label {
+    color: inherit !important;
+  }
+
 
   .field-checkbox-group, .field-checkbox-group { margin-top: 10px; }
   .checkbox-radio-group {

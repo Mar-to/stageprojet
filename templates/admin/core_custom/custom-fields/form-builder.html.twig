@@ -24,6 +24,7 @@
         { label: 'Email principal', name: "email", attrs: { type: 'email' }, icon: '@' },
         { label: 'Images (upload)', name: "images", attrs: { type: 'images' }, icon: '⇫' },
         { label: 'Fichiers (upload)', name: "files", attrs: { type: 'files' }, icon: '⇫' },
+        { label: 'Lien vers un autre élément', name: "elements", attrs: { type: 'elements' }, icon: '*' },
       ];
       var templates = {
         title: function(fieldData) { return { field: '<input id="' + fieldData.name + '"><span class="mandatory"> Ce champ est indispensable</span>' }; },
@@ -36,6 +37,7 @@
         images: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + ' type="file" accept="images/*"/>' }; },
         files: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + ' type="file" accept="'+fieldData.accept+'"/>' }; },
         image: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + ' type="text"/>' }; },
+        elements: function(fieldData) { return { field: '<select id="' + fieldData.name + '"><option>'+ fieldData.label+'</option></select>' }; },
       };
 
       var iconAttr = { label: 'Icone', placeholder: 'Choisissez une icone'  }
@@ -110,6 +112,11 @@
           icon: iconAttr,
           accept: { label: "Fichier acceptés", placeholder: ".pdf audio/* .mp3 (séparés par des espaces)"},
           separator: { label: '' }, // separate important attrs from others
+        },
+        elements: {
+          icon: iconAttr,
+          multiple: { label: 'Plusieurs choix', type: 'checkbox' },
+          separator: { label: '' }, // separate important attrs from others
         }
       };
 
@@ -123,7 +130,7 @@
         //   location: '{{ asset("assets/js/") }}'
         // },
         disableFields: ['hidden', 'file', 'button', 'autocomplete', 'title', 'taxonomy', 'address', 'image'],
-        controlOrder: ['text', 'email', 'images', 'textarea', 'checkbox', 'checkbox-group', 'radio-group', 'select', 'date', 'number', 'files'],
+        controlOrder: ['text', 'email', 'images', 'textarea', 'checkbox', 'checkbox-group', 'radio-group', 'select', 'date', 'number', 'files', 'elements'],
         disabledAttrs: ['className', 'inline', 'toggle', 'description', 'other', 'multiple'],
         formData: {{ formData|json_encode|raw }},
         roles: { 1: "Administrateur" },
@@ -208,7 +215,7 @@
   .title-field .name-wrap, .title-field .access-wrap, .title-field .required-wrap,
   .checkbox-field .field-options, .checkbox-field .required-wrap,
   .paragraph-field .subtype-wrap, .header-field .subtype-wrap,
-  .email-field .name-wrap, .image-field .name-wrap, .images-field .name-wrap, .images-field .placeholder-wrap, .images-field .value-wrap, .images-field .required-wrap, .files-field .name-wrap, .files-field .placeholder-wrap, .files-field .value-wrap, .files-field .required-wrap
+  .email-field .name-wrap, .image-field .name-wrap, .images-field .name-wrap, .images-field .placeholder-wrap, .images-field .value-wrap, .images-field .required-wrap, .files-field .name-wrap, .files-field .placeholder-wrap, .files-field .value-wrap, .files-field .required-wrap, .elements-field .value-wrap
   { display: none !important; }
 
   /* specific fields styling */

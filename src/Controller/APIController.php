@@ -179,6 +179,20 @@ class APIController extends GoGoController
         return $this->createResponse($responseJson, $config);
     }
 
+    public function getElementNamessFromTextAction(Request $request, DocumentManager $dm)
+    {
+        $isAdmin = $this->isUserAdmin();
+
+        $elements = $dm->getRepository('App\Document\Element')->findElementNamesWithText($request->get('text'));
+        dump($elements);
+
+        $responseJson = json_encode($elements);
+
+        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+
+        return $this->createResponse($responseJson, $config);
+    }
+
     private function isUserAdmin()
     {
         if ($this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {

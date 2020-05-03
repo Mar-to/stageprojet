@@ -36,6 +36,9 @@
     {# ADDRESS #}
     {% elseif field.type == "address" %}
       {% include 'element-form/form-partials/address.html.twig' %}
+    {# ELEMENTS #}
+    {% elseif field.type == "elements" %}
+      {% include 'element-form/form-partials/elements.html.twig' %}
     {% endif %}
   </div>
 

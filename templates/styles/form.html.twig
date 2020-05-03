@@ -76,6 +76,20 @@
   .gogo-load-css .input-field i.prefix.valid { color: {{ textSoft }}; }
   .gogo-load-css .input-field i.prefix.invalid { color: {{ error }}; }
 
+  {# Select 2 #}
+  .gogo-load-css .select2-container--default .select2-selection {
+    border-bottom: 1px solid {{ disable }} !important;
+  }
+  .gogo-load-css .select2-container--default.select2-container--focus .select2-selection {
+    border-bottom: 2px solid {{ textSoft }} !important;
+  }
+  .gogo-load-css .input-field.error .select2-container--default .select2-selection {
+     border-bottom: 2px solid {{ error }} !important;
+  }
+  .gogo-load-css .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: {{ textSoft }} !important;
+  }
+
   {# Checkbox #}
   .gogo-load-css [type=checkbox]+label:before { border-color: {{ disable }}; }
   .gogo-load-css [type=checkbox]:checked+label:before {

@@ -9,7 +9,23 @@
  */
 jQuery(document).ready(function()
 {
-  $('select').material_select();
+  $('select:not(.select2)').material_select();
+
+  $('select.select2').change(function() {
+    // add relevant classes to prefix icon, to it's colored the same way than other fields
+    $(this).closest('.input-field').find('.material-icons').toggleClass('valid', !!$(this).val());
+    // Because it was not possible to use a name like data[myfield][] with select, we store
+    // the select2 value serialized in a hidden input. This hidden input will be deserilized in ElementFormService
+    var result = {};
+    $(this).siblings('.select2-container').find('.select2-selection__choice').each(function() {
+      result[$(this).data('select2-id')] = $(this).attr('title');
+    })
+    $(this).siblings('.select-encoded-result').val(JSON.stringify(result));
+  })
+  $('select.select2').trigger('change');
+  // add relevant classes to prefix icon, to it's colored the same way than other fields
+  $('.select2-search__field').focus(function() { $(this).closest('.input-field').find('.material-icons').addClass('active') })
+  $('.select2-search__field').blur(function() { $(this).closest('.input-field').find('.material-icons').removeClass('active') })
 
   $('.to-html').each(function() { $(this).html($(this).text()); });
 

@@ -4,7 +4,6 @@ function checkAndSend(submitOption)
 	if (!$('#section_admin').is(':visible')) checkAgreeConditions();
 	checkOpenHours();
 	checkRequiredFields();
-	checkCaptcha();
 
 	// Dealing with error class
 	$('.invalid, .invalid-required').each(function ()
@@ -48,28 +47,6 @@ function checkAndSend(submitOption)
 	else  $('html,body').animate({scrollTop: $('.error:visible, .invalid:visible').first().offset().top - 80}, 'slow');
 
 }
-
-function checkCaptcha()
-{
-	var exists = null;
-	try {
-    if (grecaptcha)
-        exists = true;
-	} catch(e) { exists = false; }
-
-	// console.log("checkCaptcha", exists);
-
-	if (exists && grecaptcha.getResponse().length === 0)
-	{
-		$('#captcha-error-message').addClass('error').show();
-		grecaptcha.reset();
-	}
-	else
-	{
-		$('#captcha-error-message').removeClass('error').hide();
-	}
-}
-
 
 function checkCategories()
 {
@@ -137,7 +114,7 @@ function checkRequiredFields()
 
 		var valuePresent = false;
 		if ($(this).hasClass('checkbox-radio-group')) valuePresent = ($(this).find('input:checked').length > 0);
-		else if ($(this).hasClass('select-input')) valuePresent = ($(this).find('option:selected:not(:disabled)').length > 0);
+		else if ($(this).hasClass('select-input') || $(this).hasClass('select-elements-input')) valuePresent = ($(this).find('option:selected:not(:disabled)').length > 0);
 		else valuePresent = $(this).val();
 
 		if(!valuePresent)
@@ -147,7 +124,7 @@ function checkRequiredFields()
 		else
 		{
 			$(this).removeClass('invalid-required');
-			if ($(this).hasClass('select-input') || $(this).hasClass('checkbox-radio-group')) $(this).removeClass('invalid').removeClass('error');
+			if ($(this).hasClass('select-input') || $(this).hasClass('select-elements-input') || $(this).hasClass('checkbox-radio-group')) $(this).removeClass('invalid').removeClass('error');
 		}
 	});
 }
