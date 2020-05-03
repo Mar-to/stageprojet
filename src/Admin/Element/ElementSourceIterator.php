@@ -26,7 +26,7 @@ use Symfony\Component\PropertyAccess\PropertyPath;
 
 class ElementSourceIterator implements SourceIteratorInterface
 {
-    /**
+        /**
      * @var Query
      */
     protected $query;
@@ -64,7 +64,7 @@ class ElementSourceIterator implements SourceIteratorInterface
 
         $this->propertyPaths = [];
         foreach ($fields as $name => $field) {
-            if (is_string($name) && is_string($field)) {
+            if (\is_string($name) && \is_string($field)) {
                 $this->propertyPaths[$name] = new PropertyPath($field);
             } else {
                 $this->propertyPaths[$field] = new PropertyPath($field);
@@ -82,14 +82,41 @@ class ElementSourceIterator implements SourceIteratorInterface
         $current = $this->iterator->current();
 
         $data = [];
-
         foreach ($this->propertyPaths as $name => $propertyPath) {
-            $data[$name] =   $this->getValue($this->propertyAccessor->getValue($current, $propertyPath), $name);
+            if ($propertyPath == 'custom') {
+                $rawValue = $current->getProperty($name);
+            } else {
+                $rawValue = $this->propertyAccessor->getValue($current, $propertyPath);
+            }
+
+            $data[$name] = $this->getValue($rawValue);
+            if ($propertyPath == 'custom') dump($data[$name]);
         }
 
         $this->query->getDocumentManager()->getUnitOfWork()->detach($current);
 
         return $data;
+    }
+
+    /**
+     * @param $value
+     *
+     * @return string|null
+     */
+    protected function getValue($value)
+    {
+        if (is_object($value)) {
+            $value = json_encode($object);
+        } elseif (is_array($value)) {
+            $value = implode(',', $value);
+        } elseif ($value instanceof \Traversable) {
+            $value = implode(',', $value->toArray());
+        } elseif ($value instanceof \DateTimeInterface) {
+            $value = $value->format($this->dateTimeFormat);
+        }
+
+
+        return $value;
     }
 
     /**
@@ -143,25 +170,5 @@ class ElementSourceIterator implements SourceIteratorInterface
     public function getDateTimeFormat()
     {
         return $this->dateTimeFormat;
-    }
-
-    /**
-     * @param $value
-     *
-     * @return string|null
-     */
-    protected function getValue($value, $name)
-    {
-        if (is_array($value)) {
-            $value = array_key_exists($name, $value) ? $value[$name] : implode(',', $value);
-        } elseif ($value instanceof \Traversable) {
-            $value = implode(',', $value->toArray());
-        } elseif ($value instanceof \DateTimeInterface) {
-            $value = $value->format($this->dateTimeFormat);
-        } elseif (is_object($value)) {
-            $value = (string) $object;
-        }
-
-        return $value;
     }
 }

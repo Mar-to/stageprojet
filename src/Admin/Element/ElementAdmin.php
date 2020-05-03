@@ -32,18 +32,18 @@ class ElementAdmin extends ElementAdminShowEdit
           'status' => 'status',
           'moderationState' => 'moderationState',
           'source' => 'sourceKey',
-          'images' => 'images',
-          'files' => 'files'
+          'images' => 'custom',
+          'files' => 'custom'
         ];
         $props = $dm->getRepository('App\Document\Element')->findPublicCustomProperties();
         $customFields = [];
         foreach ($props as $key => $prop) {
-          if (!isset($basicFields[$prop])) $customFields[$prop] = 'data';
+          if (!isset($basicFields[$prop])) $customFields[$prop] = 'custom';
         }
 
         $props = $dm->getRepository('App\Document\Element')->findPrivateCustomProperties();
         foreach ($props as $key => $prop) {
-          if (!isset($basicFields[$prop])) $customFields[$prop] = 'privateData';
+          if (!isset($basicFields[$prop])) $customFields[$prop] = 'custom';
         }
 
         return array_merge($basicFields, $customFields);
@@ -71,7 +71,6 @@ class ElementAdmin extends ElementAdminShowEdit
 
       $datagrid->buildPager();
       $query = $datagrid->getQuery();
-
       return new ElementSourceIterator($query instanceof ProxyQuery ? $query->getQuery() : $query, $fields);
     }
 }
