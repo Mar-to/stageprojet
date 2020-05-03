@@ -17,9 +17,11 @@ jQuery(document).ready(function()
     // Because it was not possible to use a name like data[myfield][] with select, we store
     // the select2 value serialized in a hidden input. This hidden input will be deserilized in ElementFormService
     var result = {};
-    $(this).siblings('.select2-container').find('.select2-selection__choice').each(function() {
-      result[$(this).data('select2-id')] = $(this).attr('title');
-    })
+    var data = $(this).select2('data');
+    for(var i in data) {
+      var option = data[i];
+      result[option.id] = option.text;
+    }
     $(this).siblings('.select-encoded-result').val(JSON.stringify(result));
   })
   $('select.select2').trigger('change');

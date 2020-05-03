@@ -20,10 +20,19 @@ use App\Services\AsyncService;
 class DatabaseIntegrityWatcher
 {
     protected $asyncService;
+    protected $config;
 
     public function __construct(AsyncService $asyncService)
     {
         $this->asyncService = $asyncService;
+    }
+
+    public function getConfig($dm)
+    {
+        if (!$this->config) {
+            $this->config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        }
+        return $this->config;
     }
 
     // use post remove instead?
@@ -97,12 +106,51 @@ class DatabaseIntegrityWatcher
     public function preFlush(\Doctrine\ODM\MongoDB\Event\PreFlushEventArgs $eventArgs)
     {
         $dm = $eventArgs->getDocumentManager();
-        $optionsDeleted = array_filter($dm->getUnitOfWork()->getScheduledDocumentDeletions(), function ($doc) { return $doc instanceof Option; });
-        if (0 == count($optionsDeleted)) {
-            return;
+
+        $documentManaged = $dm->getUnitOfWork()->getIdentityMap();
+
+        if (array_key_exists("App\Document\Element", $documentManaged)) {
+            foreach ($documentManaged["App\Document\Element"] as $key => $element) {
+                // If name have changed, fixs elements referencing this element
+                $elementsFields = [];
+                $config = $this->getConfig($dm);
+                foreach ($config->getElementFormFields() as $field) {
+                    if ($field->type == 'elements') $elementsFields[] = $field->name;
+                }
+                if (count($elementsFields)) {
+                    $uow = $dm->getUnitOfWork();
+                    $uow->computeChangeSets();
+                    $changeset = $uow->getDocumentChangeSet($element);
+                    if (array_key_exists('name', $changeset)) {
+                        $newName = $changeset['name'][1];
+                        $privateProps = $config->getApi()->getPublicApiPrivateProperties();
+                        foreach ($elementsFields as $fieldName) {
+                            $fieldPath = in_array($fieldName, $privateProps) ? 'privateData' : 'data';
+                            $fieldPath .= '.' . $fieldName . '.' . $element->getId();
+                            $dm->getRepository('App\Document\Element')->createQueryBuilder()
+                                     ->updateMany()
+                                     ->field($fieldPath)->set($newName)
+                                     ->field($fieldPath)->exists(true)
+                                     ->getQuery()->execute();
+                            $elementIds = array_keys($dm->getRepository('App\Document\Element')->createQueryBuilder()
+                                     ->field($fieldPath)->exists(true)
+                                     ->select('id')->hydrate(false)->getQuery()->execute()->toArray());
+                            if (count($elementIds)) {
+                                $elementIdsString = '"'.implode(',', $elementIds).'"';
+                                $this->asyncService->callCommand('app:elements:updateJson', ['ids' => $elementIdsString]);
+                            }
+                        }
+
+                    }
+                }
+            }
         }
 
-        $optionsIdDeleted = array_map(function ($option) { return $option->getId(); }, $optionsDeleted);
-        $this->asyncService->callCommand('app:elements:removeOptions', ['ids' => implode($optionsIdDeleted, ',')]);
+        // On option delete
+        $optionsDeleted = array_filter($dm->getUnitOfWork()->getScheduledDocumentDeletions(), function ($doc) { return $doc instanceof Option; });
+        if (count($optionsDeleted) > 0) {
+            $optionsIdDeleted = array_map(function ($option) { return $option->getId(); }, $optionsDeleted);
+            $this->asyncService->callCommand('app:elements:removeOptions', ['ids' => implode($optionsIdDeleted, ',')]);
+        }
     }
 }

@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 class ElementJsonGenerator
 {
-    protected $currElementChangeset;
     protected $config = null;
     protected $options = null;
 
@@ -44,17 +43,12 @@ class ElementJsonGenerator
         $documentManaged = $this->dm->getUnitOfWork()->getIdentityMap();
 
         if (array_key_exists("App\Document\Element", $documentManaged)) {
-            // dump("on pre flush, number of doc managed" . count($documentManaged["App\Document\Element"]));
-            // $uow = $this->dm->getUnitOfWork();
-            // $uow->computeChangeSets();
-
             foreach ($documentManaged["App\Document\Element"] as $key => $element) {
                 if (!$element->getPreventJsonUpdate()) {
-                    $element->setPreventJsonUpdate(true); // ensure perofming serialization only once
+                    $element->setPreventJsonUpdate(true); // ensure performing serialization only once
                     $element->checkForModerationStillNeeded();
 
-                    // if we want to update only some specific part of the Json object, user currElementChangeset and below method attrChanged
-                    // $this->currElementChangeset = array_keys($uow->getDocumentChangeSet($element));
+                    // Update Json
                     $this->updateJsonRepresentation($element);
                 }
             }
@@ -206,15 +200,6 @@ class ElementJsonGenerator
         $compactJson .= ']';
         $element->setCompactJson($compactJson);
     }
-
-    // private function attrChanged($attrs)
-    // {
-    //   if (!$this->currElementChangeset) return true;
-    //   foreach ($attrs as $attr) {
-    //       if (in_array($attr, $this->currElementChangeset)) return true;
-    //   }
-    //   return false;
-    // }
 
     private function encodeArrayObjectToJson($propertyName, $array)
     {
