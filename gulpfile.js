@@ -34,7 +34,7 @@ gulp.task('scriptsLibs', [], () => {
   return merge(gogocarto, sw);
 });
 
-gulp.task('service-worker', ['sass', 'scriptsLibs', 'scriptsHome', 'scriptsExternalPages', 'scriptsElementForm', 'gogocarto_assets'], async () => {
+gulp.task('service-worker', [], async () => {
   const { count, size, warnings } = await workboxBuild.injectManifest({
     swSrc: 'assets/js/sw.js',
     swDest: 'web/sw.js',
@@ -101,17 +101,17 @@ gulp.task('watch', () => {
   gulp.watch(['assets/scss/**/*.scss'],['sass', 'service-worker']);
 
   gulp.watch(['assets/js/element-form/**/*.js'],
-              ['scriptsElementForm']);
+              ['scriptsElementForm', 'service-worker']);
 
   gulp.watch(['assets/js/**/*.js', '!assets/js/element-form/**/*.js'],
-              ['scriptsExternalPages']);
+              ['scriptsExternalPages', 'service-worker']);
 
   gulp.watch(['node_modules/gogocarto-js/dist/**/*'],
-              ['gogocarto_assets']);
+              ['gogocarto_assets', 'service-worker']);
 
-  gulp.watch(['assets/js/vendor/**/*.js','node_modules/gogocarto-js/dist/gogocarto.js'], ['scriptsLibs']);
+  gulp.watch(['assets/js/vendor/**/*.js','node_modules/gogocarto-js/dist/gogocarto.js'], ['scriptsLibs', 'service-worker']);
 
-  gulp.watch(['assets/js/home.js'], ['scriptsHome']);
+  gulp.watch(['assets/js/home.js'], ['scriptsHome', 'service-worker']);
 });
 
 gulp.task('cleanCss', () => {
