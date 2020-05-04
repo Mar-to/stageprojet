@@ -79,21 +79,25 @@ class ElementSourceIterator implements SourceIteratorInterface
      */
     public function current()
     {
-        $current = $this->iterator->current();
+        $element = $this->iterator->current();
 
         $data = [];
+        dump($this->propertyPaths);
         foreach ($this->propertyPaths as $name => $propertyPath) {
-            if ($propertyPath == 'custom') {
-                $rawValue = $current->getProperty($name);
+            if (strpos($propertyPath, 'gogo-custom') !== false) {
+                $rawValue = $element->getProperty($name);
             } else {
-                $rawValue = $this->propertyAccessor->getValue($current, $propertyPath);
+                $rawValue = $this->propertyAccessor->getValue($element, $propertyPath);
             }
-
             $data[$name] = $this->getValue($rawValue);
-            if ($propertyPath == 'custom') dump($data[$name]);
+            // for elements type fields, we export two fields : one with the ids, on with the names.
+            if ($propertyPath == 'gogo-custom-elements') {
+                $data[$name . '_ids'] = implode(',', array_keys($rawValue));
+            }
         }
+        dump($data);
 
-        $this->query->getDocumentManager()->getUnitOfWork()->detach($current);
+        $this->query->getDocumentManager()->getUnitOfWork()->detach($element);
 
         return $data;
     }

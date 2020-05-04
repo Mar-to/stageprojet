@@ -23,6 +23,7 @@ class ElementAdmin extends ElementAdminShowEdit
           'id' => 'id',
           'name' => 'name',
           'categories' => 'optionsString',
+          'categories_ids' => 'optionIds',
           'latitude' => 'geo.latitude',
           'longitude' => 'geo.longitude',
           'streetAddress' => 'address.streetAddress',
@@ -32,18 +33,20 @@ class ElementAdmin extends ElementAdminShowEdit
           'status' => 'status',
           'moderationState' => 'moderationState',
           'source' => 'sourceKey',
-          'images' => 'custom',
-          'files' => 'custom'
+          'images' => 'gogo-custom-images',
+          'files' => 'gogo-custom-files'
         ];
-        $props = $dm->getRepository('App\Document\Element')->findPublicCustomProperties();
+        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $formFieldsMapping = $config->getElementFormFieldsMapping();
+        $props = $dm->getRepository('App\Document\Element')->findDataCustomProperties();
         $customFields = [];
-        foreach ($props as $key => $prop) {
-          if (!isset($basicFields[$prop])) $customFields[$prop] = 'custom';
-        }
 
-        $props = $dm->getRepository('App\Document\Element')->findPrivateCustomProperties();
+        // Currently only names are exported
         foreach ($props as $key => $prop) {
-          if (!isset($basicFields[$prop])) $customFields[$prop] = 'custom';
+          if (!isset($basicFields[$prop])) {
+            $type = isset($formFieldsMapping[$prop]) ? '-'.$formFieldsMapping[$prop]->type : '';
+            $customFields[$prop] = 'gogo-custom' . $type;
+          }
         }
 
         return array_merge($basicFields, $customFields);

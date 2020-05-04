@@ -523,6 +523,16 @@ class Configuration implements \JsonSerializable
         return json_decode($this->getElementFormFieldsJson());
     }
 
+    // Ex: [ 'name' => [ 'type' => 'text', 'label' => 'A title'] ]
+    public function getElementFormFieldsMapping()
+    {
+        $result = [];
+        foreach ($this->getElementFormFields() as $field) {
+            if (isset($field->name)) $result[$field->name] = $field;
+        }
+        return $result;
+    }
+
     /* --------------------------------------- */
     /*              DEFAULT COLORS
     /* ---------------------------------------- */
