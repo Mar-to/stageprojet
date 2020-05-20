@@ -237,7 +237,7 @@ server {
     }
 
     # Media: images, icons, video, audio, HTC
-    location ~* \.(?:jpg|jpeg|gif|png|ico|cur|gz|svg|mp4|ogg|ogv|webm|htc)$ {
+    location ~* \.(?:jpg|jpeg|gif|png|ico|cur|gz|svg|mp4|ogg|ogv|webm|htc|lang)$ {
     access_log off;
     add_header Cache-Control \"max-age=2592000\";
     }
