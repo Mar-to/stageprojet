@@ -1,43 +1,39 @@
 {# app/Resources/views/layout.html.twig #}
 
 <!DOCTYPE html>
-<!--[if lt IE 7]> <html class="no-js ie6 ie" lang="fr"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js ie7 ie" lang="fr"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js ie8 ie" lang="fr"> <![endif]-->
-<!--[if gt IE 8]> <html class="no-js ie9 ie" lang="fr"> <![endif]-->
-<!--[if !(IE)]><!--> <html class="no-js" lang="fr"> <!--<![endif]-->
-<head>
-  <title>{% block title %}GoGoCarto{% endblock %}</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-  {# gogocarto contains materializeCss lib, so we load it for all files #}
-  <link rel="stylesheet" href="{{ asset('css/gogocarto.min.css?ver=' ~ version) }}">
+<html class="no-js gogo-load-css" lang="fr">
+  <head>
+    <title>{% block title %}GoGoCarto{% endblock %}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-  {% block stylesheets %}
-  {% endblock %}
+    {# gogocarto contains materializeCss lib, so we load it for all files #}
+    <link rel="stylesheet" href="{{ asset('css/gogocarto.min.css?ver=' ~ version) }}">
 
-  <meta name="robots" content="index, follow, all" />
-</head>
+    {% block stylesheets %}
+    {% endblock %}
 
-<body class="gogo-load-css {% if pageName is defined %}{{ pageName }}{% endif %} base-layout"> {# use this class to load the css vendors encapsulated inside gogocarto.css #}
+    <meta name="robots" content="index, follow, all" />
+  </head>
 
-  {# Header #}
-  {{ render(controller('App\\Controller\\CoreController::headerAction', {'title': navTitle|default(''), 'iframe': app.request.get('iframe'), 'noheader': app.request.get('noheader') } ))}}
+  <body class="{% if config is defined %}gogo-theme-{{ config.theme }}{% endif %} {% if pageName is defined %}{{ pageName }}{% endif %} base-layout"> {# use this class to load the css vendors encapsulated inside gogocarto.css #}
 
-  {% block body %}
-  {% endblock %}
+    {# Header #}
+    {{ render(controller('App\\Controller\\CoreController::headerAction', {'title': navTitle|default(''), 'iframe': app.request.get('iframe'), 'noheader': app.request.get('noheader') } ))}}
 
-  {# Mains javascripts libs #}
-  <script src="{{ asset('js/gogocarto.js?ver=' ~ version) }}"></script>
-  <script src="{{ asset('js/init-sw.js?ver=' ~ version) }}"></script>
+    {% block body %}
+    {% endblock %}
 
-  {# Block to add custom javascript to each page #}
-  {% block javascripts %}
-  {% endblock %}
+    {# Mains javascripts libs #}
+    <script src="{{ asset('js/gogocarto.js?ver=' ~ version) }}"></script>
+    <script src="{{ asset('js/init-sw.js?ver=' ~ version) }}"></script>
 
-</body>
+    {# Block to add custom javascript to each page #}
+    {% block javascripts %}
+    {% endblock %}
+
+    {% block modals %}
+    {% endblock %}
+  </body>
 </html>
 
-{% block modals %}
-
-{% endblock %}

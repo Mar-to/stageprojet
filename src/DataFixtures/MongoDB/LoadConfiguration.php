@@ -127,12 +127,12 @@ class LoadConfiguration implements FixtureInterface
             $configuration->setIconImport('');
 
             // STYLE
-            $configuration->setMainFont('Ubuntu, sans-serif');
-            $configuration->setTitleFont('Ubuntu, sans-serif');
+            $configuration->setMainFont('Nunito, sans-serif');
+            $configuration->setTitleFont('Nunito, sans-serif');
             $configuration->setTextColor('#495057');
             $configuration->setPrimaryColor('#64d29b');
             $configuration->setBackgroundColor('#f4f4f4');
-            $configuration->setTheme('default');
+            $configuration->setTheme('flat');
             $configuration->setCustomCSS('');
         }
 

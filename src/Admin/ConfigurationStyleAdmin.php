@@ -27,7 +27,7 @@ class ConfigurationStyleAdmin extends ConfigurationAbstractAdmin
         $formMapper
             ->tab('Style')
                 ->with('Thème et polices', ['class' => 'col-md-6'])
-                    ->add('theme', ChoiceType::class, ['label' => 'Thème', 'choices' => ['Défaut' => 'default', 'Près de chez Nous' => 'presdecheznous', 'Transiscope' => 'transiscope']])
+                    ->add('theme', ChoiceType::class, ['label' => 'Thème', 'choices' => ['Défaut' => 'default', 'Flat' => 'flat', 'Près de chez Nous' => 'presdecheznous', 'Transiscope' => 'transiscope']])
                     ->add('mainFont', null, ['label' => 'Police principale', 'attr' => ['class' => 'gogo-font-picker']])
                     ->add('titleFont', null, ['label' => 'Police de titre', 'attr' => ['class' => 'gogo-font-picker']])
 

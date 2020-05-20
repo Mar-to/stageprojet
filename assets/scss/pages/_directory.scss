@@ -5,9 +5,11 @@
 * @Last Modified time: 2017-11-08 15:59:54
 */
 
-body
+body.directory
 {
 	height: 100% !important;
+	 display: flex;
+  flex-direction: column;
 }
 
 #page-container.directory

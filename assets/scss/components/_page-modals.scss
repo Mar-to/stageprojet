@@ -23,8 +23,8 @@
 		}
 	}
 
-  .modal-content {    
-    padding: 24px;    
+  .modal-content {
+    padding: 24px;
     @media #{$medium-and-up} { padding: 40px 15px; }
     @media #{$large-only} { padding: 40px; }
   }
@@ -40,7 +40,7 @@
     color: white !important;
 
     @media only screen and (min-width: 601px) { display:none; }
-	}   
+	}
 
 
 	@media only screen and (min-width: 601px)
@@ -54,15 +54,15 @@
 	   min-width: 800px;
 	   width: 60%;
 	   max-height: 80%;
-	}	
+	}
 
 	.modal-content.page-modal-content
-	{		
-    @media #{$small-only} { height: 100%; }
+	{
+    @media #{$small-only} { height: 100%; border-radius: none !important; }
 		.page-modal-footer
 		{
 			text-align: right;
 			margin-top: 2rem;
 		}
-	}	
+	}
 }
