@@ -161,11 +161,11 @@ class ElementImportService
                 $import->setCurrMessage('Importation des données '.$i.'/'.$size.' traitées');
                 $result = $this->importOneService->createElementFromArray($row, $import);
                 switch ($result) {
-          case 'nothing_to_do': $this->countElementNothingToDo++; break;
-          case 'created': $this->countElementCreated++; break;
-          case 'updated': $this->countElementUpdated++; break;
-          case 'no_category': $this->countNoCategoryPreventImport++; break;
-        }
+                  case 'nothing_to_do': $this->countElementNothingToDo++; break;
+                  case 'created': $this->countElementCreated++; break;
+                  case 'updated': $this->countElementUpdated++; break;
+                  case 'no_category': $this->countNoCategoryPreventImport++; break;
+                }
                 ++$i;
             } catch (\Exception $e) {
                 ++$this->countElementErrors;
@@ -199,6 +199,41 @@ class ElementImportService
         $import = $this->dm->getRepository('App\Document\Import')->find($import->getId());
         $this->dm->persist($import);
 
+        // Link elements between each others
+        $config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $elementsLinkedFields = [];
+        foreach($config->getElementFormFields() as $field) {
+            if ($field->type === 'elements') $elementsLinkedFields[] = $field->name;
+        }
+        if (count($elementsLinkedFields) > 0) {
+            // Go through each individual imported elements, and link elements from each other
+            $importedElements = $this->dm->createQueryBuilder('App\Document\Element')
+                ->field('source')->references($import)
+                ->getQuery()->execute();
+            $privateProp = $config->getApi()->getPublicApiPrivateProperties();
+
+            foreach ($importedElements as $element) {
+                foreach ($elementsLinkedFields as $linkField) {
+                    $values = $element->getCustomProperty($linkField);
+                    if ($values !== null) {
+                        if (!is_array($values)) $values = preg_split("/[,;]/", $values);
+                        $values = array_map('trim', $values);
+                        $values = array_filter($values); // filter empty values
+                        if (count($values) > 0) {
+                            $qb = $this->dm->createQueryBuilder('App\Document\Element');
+                            $qb->addOr($qb->expr()->field('name')->in($values));
+                            $qb->addOr($qb->expr()->field('oldId')->in($values));
+                            $result = $qb->select('name')->hydrate(false)->getQuery()->execute()->toArray();
+                            $result = array_map(function($el) {
+                                return $el['name'];
+                            }, $result);
+                            $element->setCustomProperty($linkField, $result);
+                        }
+                    }
+                }
+            }
+        }
+
         $countElemenDeleted = 0;
         if ($import->isDynamicImport()) {
             if ($this->countElementErrors > 0) {
@@ -206,17 +241,17 @@ class ElementImportService
                 // we set back the status to DynamicImport otherwise it will be deleted just after
                 $qb = $this->dm->createQueryBuilder('App\Document\Element');
                 $result = $qb->updateMany()
-             ->field('source')->references($import)->field('oldId')->in($this->elementIdsErrors)
-             ->field('status')->set(ElementStatus::DynamicImport)
-             ->getQuery()->execute();
+                    ->field('source')->references($import)->field('oldId')->in($this->elementIdsErrors)
+                    ->field('status')->set(ElementStatus::DynamicImport)
+                    ->getQuery()->execute();
             }
 
             // after updating the source, the element still in DynamicImportTemp are the one who are missing
             // from the new data received, so we need to delete them
             $qb = $this->dm->createQueryBuilder('App\Document\Element');
             $deleteQuery = $qb
-         ->field('source')->references($import)
-         ->field('status')->equals(ElementStatus::DynamicImportTemp);
+                ->field('source')->references($import)
+                ->field('status')->equals(ElementStatus::DynamicImportTemp);
             // really needed?
             $deletedElementIds = array_keys($deleteQuery->select('id')->hydrate(false)->getQuery()->execute()->toArray());
             $qb = $this->dm->createQueryBuilder(UserInteraction::class);
@@ -240,7 +275,7 @@ class ElementImportService
             'elementsNothingToDoCount' => $this->countElementNothingToDo,
             'elementsMissingGeoCount' => $elementsMissingGeoCount,
             'elementsMissingTaxoCount' => $elementsMissingTaxoCount,
-      'elementsPreventImportedNoTaxo' => $this->countNoCategoryPreventImport,
+            'elementsPreventImportedNoTaxo' => $this->countNoCategoryPreventImport,
             'elementsDeletedCount' => $countElemenDeleted,
             'elementsErrorsCount' => $this->countElementErrors,
             'errorMessages' => $this->errorsMessages,

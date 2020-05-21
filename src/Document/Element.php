@@ -682,6 +682,13 @@ class Element
         $this->setPrivateData($privateData);
     }
 
+    public function setCustomProperty($key, $value) {
+        if (isset($this->privateData[$key]))
+            $this->privateData[$key] = $value;
+        else
+            $this->data[$key] = $value;
+    }
+
     public function getProperty($key)
     {
         if (property_exists($this, $key)) {
