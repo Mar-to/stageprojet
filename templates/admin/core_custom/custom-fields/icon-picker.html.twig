@@ -49,9 +49,9 @@
     };
     $('.icp-auto').iconpicker(options);
 
-    // In the form buidler, icon field are added dyanmically, so we need to initialize them every 500ms
+    // Quick dirty fix : In the form buidler and in OptionAdmin, icon field are added dyanmically, so we need to initialize them every 500ms
     setInterval(function() {
-      $('.fld-icon').iconpicker(options);
+      $('.gogo-icon-picker').iconpicker(options);
     }, 500);
   }
   });
