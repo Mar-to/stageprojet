@@ -78,7 +78,7 @@ services:
       arguments:
         $baseUrl: '%base_url%'
 
-    App\Command\RemoveAbandonnerProjectsCommand:
+    App\Command\RemoveAbandonnedProjectsCommand:
       arguments:
         $baseUrl: '%base_url%'
 

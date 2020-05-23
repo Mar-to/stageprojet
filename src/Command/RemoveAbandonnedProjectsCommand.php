@@ -12,7 +12,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use App\Document\GoGoLogUpdate;
 use Symfony\Component\Routing\RouterInterface;
 
-final class RemoveAbandonnerProjectsCommand extends GoGoAbstractCommand
+final class RemoveAbandonnedProjectsCommand extends GoGoAbstractCommand
 {
 
     public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger,
