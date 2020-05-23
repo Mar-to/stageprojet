@@ -25,14 +25,11 @@ sonata_admin:
             Contenus:
                 icon: <i class='fa fa-file-text'></i>
             data:
-                label: "Données"
+                label: "Données / Import"
                 icon: <i class='fa fa-database'></i>
             custom:
                 label: Personnalisation
                 icon: <i class='fa fa-paint-brush'></i>
-            data_model:
-                label: Modèle de donnée
-                icon: <i class='fa fa-database'></i>
             emailing:
                 label: Mails / Newsletter
                 icon: <i class='fa fa-envelope'></i>

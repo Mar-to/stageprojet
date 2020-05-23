@@ -210,7 +210,7 @@ services:
         class: App\Admin\ConfigurationInfoBarAdmin
         arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: data_model, label: Fiche Détail }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Fiche Détail }
 
     admin.marker_config:
         class: App\Admin\ConfigurationMarkerAdmin
@@ -222,13 +222,13 @@ services:
         class: App\Admin\ConfigurationContributionsAdmin
         arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: data_model, label: Qui peut Contribuer? }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: sonata_user, label: Qui peut Contribuer? }
 
     admin.form_config:
         class: App\Admin\ConfigurationFormAdmin
         arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: data_model, label: Formulaire }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Formulaire }
 
     admin.email_config:
         class: App\Admin\ConfigurationMailAdmin
@@ -321,7 +321,7 @@ services:
         class: App\Admin\CategoryAdmin
         arguments: [~, App\Document\Category, 'App\Controller\Admin\CategoryAdminController']
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: data_model, label: Catégories }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Catégories }
 
     admin.imports:
         class: App\Admin\ImportAdmin
