@@ -28,3 +28,7 @@
   <div id="address-preview-map"></div>
   {% include 'directory/components/spinner-loader.html.twig' with {'id': 'geocode-spinner-loader' }%}
 </div>
+
+<script>
+  var defaultBounds = {{ config.getDefaultBounds|json_encode|raw }};
+</script>

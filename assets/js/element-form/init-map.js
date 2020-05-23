@@ -2,8 +2,8 @@ var map;
 var marker;
 
 // Google map initialisation
-function initMap() 
-{	
+function initMap()
+{
 	var mapCenter;
 
 	if ($('#input-latitude').val() && $('#input-longitude').val())
@@ -27,7 +27,10 @@ function initMap()
 	    scrollWheelZoom : false
 	});
 
-	L.tileLayer(defaultTileLayer).addTo(map);	
+	// defaultBounds is set in address.html.twig
+	if (!firstGeocodeDone && defaultBounds) map.fitBounds(defaultBounds);
+
+	L.tileLayer(defaultTileLayer).addTo(map);
 
 	if (markerPosition) createMarker(markerPosition);
 }
@@ -37,10 +40,10 @@ function createMarker(position)
 	if (marker) marker.remove();
 
 	marker = new L.Marker(position, { draggable: true } ).addTo(map);
-	marker.on('dragend', function() 
+	marker.on('dragend', function()
 	{
 	  $('#input-latitude').attr('value',marker.getLatLng().lat);
-		$('#input-longitude').attr('value',marker.getLatLng().lng);	
+		$('#input-longitude').attr('value',marker.getLatLng().lng);
   });
 
   marker.bindPopup("Déplacez moi pour préciser la position").openPopup();
@@ -53,7 +56,7 @@ function fitBounds(rawbounds)
 	var corner1 = L.latLng(rawbounds[0], rawbounds[1]);
 	var corner2 = L.latLng(rawbounds[2], rawbounds[3]);
 	var bounds = L.latLngBounds(corner1, corner2);
-	
+
 	map.fitBounds(bounds);
 }
 
