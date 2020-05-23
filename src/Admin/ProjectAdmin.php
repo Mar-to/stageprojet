@@ -23,7 +23,10 @@ class ProjectAdmin extends AbstractAdmin
 
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
-        $datagridMapper->add('name');
+        $datagridMapper->add('name')
+                       ->add('domainName')
+                       ->add('adminEmails')
+                       ->add('pinned');
     }
 
     protected function configureListFields(ListMapper $listMapper)
