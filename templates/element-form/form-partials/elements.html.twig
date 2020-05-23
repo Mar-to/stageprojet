@@ -1,8 +1,7 @@
 <div class="input-field select-elements-input {{ field.required|default(false) ? 'required' : '' }}">
+  {% set icon = field.icon|default('fas fa-database') %}
+  <i class="material-icons {{ icon }} prefix"></i>
 
-  {% if field.icon is defined %}
-    <i class="material-icons {{ field.icon }} prefix"></i>
-  {% endif %}
   <div class="select-wrapper">
     <select class="select2" id="select-{{field.name}}" {% if field.multiple is defined %}multiple="multiple"{% endif %}>
       {% for value, name in elementValue %}

@@ -73,6 +73,7 @@
   {% endif %}
      name="{{ baseName }}[{{fieldName}}]" id="input-{{ field.name }}" class="{{ inputClass }}"
       {% if inputValue %} value="{{ inputValue }}"{% endif %}
+      {% if field.rows is defined %} rows="{{ field.rows }}"{% endif %}
       {% if field.placeholder is defined %} placeholder="{{ field.placeholder }}"{% endif %}
       {% if field.maxlength is defined %} length="{{ field.maxlength }}"{% endif %}
   {% if field.type == "textarea" %}
@@ -82,7 +83,7 @@
   {% endif %}
 
   {# LABEL #}
-  <label for="input-{{ field.name }}" data-error="{{ errorMsg|default('') }}" class="gogo-form-label label-{{ field.type }} {% if field.subtype is defined %}label-{{ field.subtype }}{% endif %}"><span class="to-html">{{ field.label|raw }}</span>{% if field.required|default(false) %}<span class="mandatory-asterisk"></span>{% endif %}</label>
+  <label for="input-{{ field.name }}" data-error="{{ errorMsg|default('') }}" class="gogo-form-label label-{{ field.type }} {% if field.subtype is defined %}label-{{ field.subtype }} {% if field.subtype == 'wysiwyg' %}active{% endif %}{% endif %}"><span class="to-html">{{ field.label|raw }}</span>{% if field.required|default(false) %}<span class="mandatory-asterisk"></span>{% endif %}</label>
 
   {% if field.type == "date" %}
   <script>
@@ -105,7 +106,10 @@
     <script>
         // Replace the <textarea id="editor1"> with a CKEditor
         // instance, using default configuration.
-        CKEDITOR.replace('input-{{ field.name }}');
+        {% set height = field.rows is defined ? field.rows * 40 : 150 %}
+        CKEDITOR.replace('input-{{ field.name }}', {
+          height: "{{ height }}"
+        });
         CKEDITOR.on( 'instanceReady', function( evt ) {
             var editorBody = $('.cke_wysiwyg_frame').contents().find('body');
             editorBody.css('background-color', 'transparent');
