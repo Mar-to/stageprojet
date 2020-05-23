@@ -70,13 +70,46 @@
   {% if field not in formFields %}{% set otherFields = otherFields|merge([field]) %}{% endif %}
 {% endfor %}
 
-<h3>Champs fourni par le système</h3>
+<h3>Champs / Variables fournies par le système</h3>
 
 <table style="margin-bottom: 20px;">
   <tr>
     <th>Nom du champ</th>
     <th>Description</th>
     <th>Utilisation</th>
+  </tr>
+
+  <tr>
+    <td>categories</td>
+    <td>Liste des noms des catégories de l'élément</td>
+    <td>{% verbatim %}{% if "ma catégorie" in categories %} ... {% endif %}{% endverbatim %}</td>
+  </tr>
+
+  <tr>
+    <td>categoriesFull</td>
+    <td>Liste des catégories complète, inclus l'id, le nom, la description et la position</td>
+    <td>{% verbatim %}
+      {% for category in categoriesFull %}
+        <div>  Id: {{ category.id }}</div>
+        <div>  Nom: {{ category.name }}</div>
+        <div>  Description: {{ category.description }}</div>
+        <div>  Position: {{ category.index }}</div>
+      {% endfor %}
+    {% endverbatim %}</td>
+  </tr>
+
+  <tr>
+    <td>originalAddress</td>
+    <td>L'adresse détaillée avec le code postal, la ville etc...</td>
+    <td>{% verbatim %}
+      {{ originalAddress.streetAddress ~ ' - ' ~ originalAddress.addressLocality ~ ' - ' ~ originalAddress.postalCode ~ ' - ' ~ originalAddress.addressCountry }}
+    {% endverbatim %}</td>
+  </tr>
+
+  <tr>
+    <td>distance</td>
+    <td>Si une adresse a été rentrée, distance entre le point et cette adresse</td>
+    <td>{% verbatim %}{% if distance is defined %} <span>{{ distance }}</span> {% endif %}{% endverbatim %}</td>
   </tr>
 
   <tr>
@@ -101,6 +134,34 @@
   </tr>
 
   <tr>
+    <td>isPending</td>
+    <td>Raccourci pour status == En attente (modifs ou ajout)</td>
+    <td>{{ '{% if isPending %} ... {% endif %} '}}</td>
+  </tr>
+
+  <tr>
+    <td>isDeleted</td>
+    <td>Raccourci pour status = Refusé ou Supprimé </td>
+    <td>{{ '{% if isDeleted %} ... {% endif %} '}}</td>
+  </tr>
+
+  <tr>
+    <td>colorOptionId</td>
+    <td>L'id de la category qui donne la couleur principale de cet élément</td>
+    <td>
+      <div>{{ '<div class="gogo-color-as" option-id="{{colorOptionId}}">Texte de la couleur de la catégorie principale</div>'|e }}</div>
+      <div>{{ '<div class="gogo-bg-color-as" option-id="{{colorOptionId}}">Arrière plan de la couleur de la catégorie principale</div>'|e }}</div>
+      <div>Vous pouvez aussi utiliser les classes "gogo-soft-color-as" et "gogo-soft-bg-bolor-as"</div>
+    </td>
+  </tr>
+
+  <tr>
+    <td>images</td>
+    <td>Tableau des urls des différentes images</td>
+    <td>Les images sont affichées par default dans la fiche détail et vous n'avez pas besoin d'inclure ce champ. Mais vous pouvez toujours utiliser cette variable selon vos besoins</td>
+  </tr>
+
+  <tr>
     <td>createdAt</td>
     <td>Date de la création dans la base de donnée</td>
     <td>{{ 'Créé le : {{ createdAt }}'}}</td>
@@ -122,7 +183,7 @@
 </table>
 
 {% if otherFields|length %}
-  <h3>Autres champs disponibles dans les données</h3>
+  <h3>Tous les autres champs dans vos données sont aussi disponibles</h3>
 
   <table style="margin-bottom: 20px;">
     <tr>

@@ -52,6 +52,30 @@ class ConfigurationInfoBarAdmin extends ConfigurationAbstractAdmin
                     ->add('elementFormFieldsJson', HiddenType::class, ['attr' => ['class' => 'gogo-form-fields', 'dataproperties' => $propertiesText]])
                 ->end()
             ->end()
+            ->tab('Liste des fitlres disponibles (aide)')
+                ->with('Informations concernant les mails automatiques', ['box_class' => 'box box-default', 'description' => "
+                        <p><b>Les filtres permettent d'appliquer des transformations sur un variable / un champ</b></p>
+                        <h3>Les filtres du language nunjucks</h3>
+                        <a href='https://mozilla.github.io/nunjucks/fr/templating.html#filtres-int-gr-s'>Voir la documentation en ligne</a>
+                        <h3>Les filtres spéciaux de GoGoCarto</h3>
+
+                        <h4>gogo_text</h4>
+                        Afficher du texte (avec retour à la ligne avant et après le texte)
+
+                        <h4>gogo_textarea</h4>
+                        Afficher des texte longs, il y a plusieurs options
+                        <ul><li><b>truncate</b>: tronquer le texte au bout de XX caractères (par défault 1000), et mettre un petit bouton \"afficher plus\"</li>
+                        <li><b>tolerance</b>: le troncage essaie de se faire à la fin d'une phrase ou moins d'un mot. La tolerance est le nombre de caractère que l'on donne comme marge à l'agorithme. i.e tronque à 1000 caractères +/- 50</li>
+                        <li><b>glossary</b>: un glossaire pour expliquer certains mots. Le mot sera légèrement surligné et au survol s'affichera l'explication</li></ul>
+                        <pre>{{ 'Mon beautiful texte supposement très très long'|gogo_textarea(truncate = 15, tolerance = 5, glossary = { 'beautiful': 'Mot anglais qui veut dire joli'}) }}</pre>
+                        <h5>gogo_tags</h5>
+                        Affiche un tableau sous forme de tags {{ ['Service', 'Blanc'] | gogo_tags }}
+
+                        <h3>Débugger des données</h3>
+                        Si vous utilisez des données un peu spécifiques de type object, vous pouvez utiliser le filtre 'dump' pour afficher leur contenu {{ my_specific_field|dump }}
+                     "])->end()
+
+            ->end()
             ->tab('Autres paramètres')
                 ->with('Paramètres')
                     ->add('infobar.width', IntegerType::class, ['label' => 'Largeur de la fiche détail (en pixels, par défaut : 540)', 'required' => false])
