@@ -78,6 +78,33 @@ class DatabaseIntegrityWatcher
                 $element->removeNonDuplicate($document);
                 $element->removePotentialDuplicate($document);
             }
+
+            // remove depency for elements fields
+            $elementsFields = [];
+            $config = $this->getConfig($dm);
+            foreach ($config->getElementFormFields() as $field) {
+                if ($field->type == 'elements') $elementsFields[] = $field->name;
+            }
+            if (count($elementsFields)) {
+                $privateProps = $config->getApi()->getPublicApiPrivateProperties();
+                foreach ($elementsFields as $fieldName) {
+                    $fieldPath = in_array($fieldName, $privateProps) ? 'privateData' : 'data';
+                    $fieldPath .= '.' . $fieldName . '.' . $document->getId();
+                    $dependantElementsIds = array_keys(
+                        $dm->getRepository('App\Document\Element')->createQueryBuilder()
+                             ->field($fieldPath)->exists(true)
+                             ->select('id')->hydrate(false)->getQuery()->execute()->toArray());
+
+                    if (count($dependantElementsIds)) {
+                        $dm->getRepository('App\Document\Element')->createQueryBuilder()
+                                 ->updateMany()
+                                 ->field($fieldPath)->unsetField()->exists(true)
+                                 ->getQuery()->execute();
+                        $elementIdsString = '"'.implode(',', $dependantElementsIds).'"';
+                        $this->asyncService->callCommand('app:elements:updateJson', ['ids' => $elementIdsString]);
+                    }
+                }
+            }
         }
     }
 
