@@ -13,19 +13,19 @@ $(document).ready(function()
 	$('select').material_select();
 
 	$('#btn-directory').click(function()
-	{ 
+	{
 		redirectTodirectory();
 	});
 
 	$('#search-bar-icon').click(function()
-	{ 
+	{
 		redirectTodirectory();
 	});
 
 	$('#search-bar').on("keyup", function(e)
 	{
 		if(e.keyCode == 13) // touche entrée
-		{ 
+		{
 			redirectTodirectory();
 		}
 	});
@@ -54,23 +54,23 @@ function redirectTodirectory()
 	else
 	// in large screen radio button are displayed
 	{
-		mainOption = $('.main-option-radio-btn:checked').attr('data-name');			
-	}		
+		mainOption = $('.main-option-radio-btn:checked').attr('data-name');
+	}
 
-	var route = 'annuaire#/carte/' + address;
+	var route = '/annuaire#/carte/' + address;
 	if (mainOption) route += '?cat=' + mainOption;
-
-	window.location.href = window.location.origin + window.location.pathname + route;
+	var path = window.location.pathname + route;
+	window.location.href = window.location.origin + path.replace('//', '/');
 }
 
-function createCookie(name,value) 
+function createCookie(name,value)
 {
 	var days = 100;
 
 	var date = new Date();
 	date.setTime(date.getTime()+(days*24*60*60*1000));
 	var expires = "; expires="+date.toUTCString();
-	
+
 	document.cookie = name+"="+value+expires+"; path=/";
 }
 
