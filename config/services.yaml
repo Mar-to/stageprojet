@@ -194,6 +194,12 @@ services:
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Page d'Accueil }
 
+    admin.categories:
+        class: App\Admin\CategoryAdmin
+        arguments: [~, App\Document\Category, 'App\Controller\Admin\CategoryAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Catégories }
+
     admin.map_config:
         class: App\Admin\ConfigurationMapAdmin
         arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
@@ -218,17 +224,17 @@ services:
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Marqueur / Popup }
 
-    admin.contributions_config:
-        class: App\Admin\ConfigurationContributionsAdmin
-        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: sonata_user, label: Qui peut Contribuer? }
-
     admin.form_config:
         class: App\Admin\ConfigurationFormAdmin
         arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Formulaire }
+
+    admin.contributions_config:
+        class: App\Admin\ConfigurationContributionsAdmin
+        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Qui peut Contribuer? }
 
     admin.email_config:
         class: App\Admin\ConfigurationMailAdmin
@@ -316,12 +322,6 @@ services:
         arguments: [~, App\Document\Element, 'App\Controller\Admin\ElementAdminController']
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: "data", label: Éléments }
-
-    admin.categories:
-        class: App\Admin\CategoryAdmin
-        arguments: [~, App\Document\Category, 'App\Controller\Admin\CategoryAdminController']
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Catégories }
 
     admin.imports:
         class: App\Admin\ImportAdmin
