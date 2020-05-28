@@ -1,7 +1,7 @@
-<style>  
+<style>
   {# --------------------#}
   {#     GENERAL         #}
-  {# ------------------- #}  
+  {# ------------------- #}
 
   .gogo-load-css .btn
   {
@@ -10,16 +10,16 @@
     box-shadow: none;
     padding: 0 3rem;
   }
-  .gogo-load-css .btn:hover { box-shadow: 0 2px 6px 0px rgba(0, 0, 0, 0), 0 3px 11px 0 rgba(0, 0, 0, 0.15); } 
+  .gogo-load-css .btn:hover { box-shadow: 0 2px 6px 0px rgba(0, 0, 0, 0), 0 3px 11px 0 rgba(0, 0, 0, 0.15); }
 
-  .gogo-load-css h2 { line-height: 2rem;}  
+  .gogo-load-css h2 { line-height: 2rem;}
 
   .gogo-load-css #page-content { box-shadow: none !important; border-radius: 5px; }
 
   .gogo-load-css h1, .gogo-load-css h2 { color: {{ textSoft }}; }
 
   .gogo-load-css .modal.page-modal h1 { color: white !important; }
-  .gogo-load-css .modal.page-modal .btn {  color: {{ text }}; }   
+  .gogo-load-css .modal.page-modal .btn {  color: {{ text }}; }
 
   .gogo-load-css #menu #btn-login, #submit-login, .btn.btn-primary, .modal .btn { background-color: {{ primary }}; }
   .gogo-load-css #menu #btn-login:hover, #submit-login:hover, .btn.btn-primary:hover, .modal .btn:hover { background-color: {{ primary }}; }
@@ -29,40 +29,40 @@
 
   {# --------------------#}
   {#     DIRECTORY       #}
-  {# ------------------- #}  
+  {# ------------------- #}
   .gogo-load-css #page-content.directory .flash-messages-container .flash-message { background: none; background-color: {{ secondary }} !important; }
   .gogo-load-css #menu-home .small-logo .header-icon {  background-color: {{ textSoft }} };
-  
+
 
   {# --------------------#}
   {#     ELEMENT FORM    #}
   {# ------------------- #}
 
   .gogo-load-css #element-form-submit-btn { width: 100%; }
-  
+
   .gogo-load-css #page-content.element-form section { border-radius: 5px; }
   .gogo-load-css #page-content.element-form .categories-info { font-weight: bold; }
-  .gogo-load-css #page-content.element-form input[type=checkbox] + label:before 
-  { 
+  .gogo-load-css #page-content.element-form input[type=checkbox] + label:before
+  {
     width: 16px;
     height: 16px;
     border-radius: 3px;
     margin-top: 4px;
-  }  
-  .gogo-load-css #page-content.element-form input[type=checkbox]:checked + label:before 
-  { 
+  }
+  .gogo-load-css #page-content.element-form input[type=checkbox]:checked + label:before
+  {
     width: 11px;
     height: 16px;
     margin-top: 6px;
     border-radius: 0;
-  }  
+  }
   .gogo-load-css #page-content.element-form #element-form-title
   {
     background-color: transparent;
     margin-bottom: 2rem !important;
     padding-top: 1.5rem;
   }
-  .gogo-load-css #page-content.element-form h2 .optional {     
+  .gogo-load-css #page-content.element-form h2 .optional {
     position: absolute;
     right: 3rem;
     font-size: 1rem;
@@ -116,7 +116,7 @@
 
   .gogo-load-css .flash-message
   {
-    background-color: transparent !important;    
+    background-color: transparent !important;
     font-weight: bold;
     padding-bottom: 1.5rem;
     background-image: linear-gradient(to right, {{ textSoft }} 33%, rgba(255,255,255,0) 0%);
@@ -135,7 +135,7 @@
     padding: .8rem;
     color: white;
   }
-  
+
   .gogo-load-css .flash-message.success a:not(.validation-process)
   {
     color: {{ text }};
@@ -144,7 +144,7 @@
   }
 
   .gogo-load-css .flash-message.success a.validation-process
-  {    
+  {
     text-decoration: none;
     cursor: help;
     color: {{ secondary }};
@@ -154,7 +154,7 @@
   /*.gogo-load-css .flash-message a:hover, #label-agree a:hover { color: #a02973 !important; }*/
 
   .gogo-load-css #page-container .flash-messages-container:last-child { margin-bottom: 1rem; }
-  
+
   @media screen and (max-width: 600px)
   {
     .gogo-load-css #element-form-content .divider { border: none; }
@@ -168,7 +168,7 @@
 
 
 
-  
+
 
   {# --------------------#}
   {#        HOME         #}
@@ -176,12 +176,12 @@
 
   /*.gogo-load-css #home-main-wrapper { background-color: {{ primary }} !important; }*/
 
-  .gogo-load-css section#home-main-container #search-geolocalize { right: 13.2rem; }
+  .gogo-load-css section#home-main-container #search-geolocalize { right: 14rem; }
 
-  .gogo-load-css section#home-main-container h1 { 
+  .gogo-load-css section#home-main-container h1 {
     text-shadow: none;
     position: relative;
-    top: 0 !important; 
+    top: 0 !important;
 
   }
 
@@ -198,14 +198,14 @@
     .gogo-load-css #map-gogo-controls .show-as-list-button { left: 15px !important; }
   }
   .gogo-load-css #bottom-more-info .text { font-family: {{ config.titleFont }}; text-transform: none; font-weight: normal; }
-  @media screen and (min-width: 600px) { 
-    .gogo-load-css #bottom-more-info .text { font-size: 1.3rem; }    
+  @media screen and (min-width: 600px) {
+    .gogo-load-css #bottom-more-info .text { font-size: 1.3rem; }
   }
   @media screen and (min-width: 1200px) { .gogo-load-css #bottom-more-info .text { font-size: 1.4rem; } }
   @media screen and (max-height: 450px) { body { background-image: none !important; } }
-  .gogo-load-css #home-main-wrapper #bottom-more-info 
-  { 
-    background-color: transparent; 
+  .gogo-load-css #home-main-wrapper #bottom-more-info
+  {
+    background-color: transparent;
     color: white;
     text-transform: uppercase;
     font-weight: bold;
@@ -222,7 +222,7 @@
     left: 0;
     right: 0;
 
-  } 
+  }
   .gogo-load-css #home-main-wrapper #bottom-more-info:before {
     content: "";
     position: absolute;
@@ -244,7 +244,7 @@
     background-image: linear-gradient(to right, {{ textSoft }} 33%, rgba(255,255,255,0) 0%);
     background-position: bottom;
     background-size: 6px 2px;
-    background-repeat: repeat-x;    
+    background-repeat: repeat-x;
     height: 2px;
     background-color: transparent;
     border: none !important;
@@ -253,7 +253,7 @@
   .gogo-load-css section#home-main-container .category-field-select .select-wrapper {  background-color: {{ textSoft }}; max-width: 500px; border-radius: 5px;}
   @media screen and (min-width: 700px) { .gogo-load-css #home-main-wrapper .divider { margin: 0 3rem; } }
   .gogo-load-css #home-main-wrapper #search-bar { text-transform: uppercase; font-weight: bold;}
-  
+
 
   .gogo-load-css #home-main-wrapper #search-bar-icon {
     right: 0;
@@ -296,20 +296,20 @@
   }
   .gogo-load-css #home-main-wrapper .divider { margin: 0; }
   .gogo-load-css #home-main-wrapper #search-bar-container { width: 100% !important; }
-  
+
   .gogo-load-css section.bottom-section .content
-  {    
+  {
     background-image: linear-gradient(to right, {{ textSoft }} 33%, rgba(255,255,255,0) 0%);
     background-position: bottom;
     background-size: 6px 2px;
-    background-repeat: repeat-x;    
+    background-repeat: repeat-x;
     color: {{ textSoft }};
   }
   @media screen and (min-width: 900px) { .gogo-load-css section.bottom-section .content { padding: 3rem 5rem 4rem 5rem; } }
-  
+
   .gogo-load-css section.bottom-section h2 { font-family: '{{ config.titleFont }}';letter-spacing: -.5px;font-size: 2.5rem !important; line-height:2.5rem; }
   @media screen and (min-width: 900px) { .gogo-load-css section.bottom-section h2 { font-size: 3.5rem !important;  line-height: 3rem;} }
-  
+
   .gogo-load-css section.bottom-section:last-child .content { background: none; }
   .gogo-load-css section.bottom-section:first-child .content {padding-top: 5rem; }
   .gogo-load-css #section-credits { text-transform: uppercase; color: {{ textSoft }}; font-size: 1.4rem; letter-spacing: 1.5px; }
@@ -322,9 +322,9 @@
 
   .gogo-load-css #menu .menu-item
   {
-    font-weight: bold;    
+    font-weight: bold;
     text-transform: uppercase;
-    font-size: .85rem !important; 
+    font-size: .85rem !important;
   }
 
 
