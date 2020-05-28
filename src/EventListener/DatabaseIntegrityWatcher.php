@@ -138,19 +138,26 @@ class DatabaseIntegrityWatcher
 
         if (array_key_exists("App\Document\Element", $documentManaged)) {
             foreach ($documentManaged["App\Document\Element"] as $key => $element) {
-                // If name have changed, fixs elements referencing this element
+                // Fixs elements referencing this element
                 $elementsFields = [];
+                $bidirdectionalElementsFields = [];
                 $config = $this->getConfig($dm);
                 foreach ($config->getElementFormFields() as $field) {
-                    if ($field->type == 'elements') $elementsFields[] = $field->name;
+                    if ($field->type == 'elements') {
+                        $elementsFields[] = $field->name;
+                        if (isset($field->reversedBy)) $bidirdectionalElementsFields[] = $field;
+                    }
                 }
                 if (count($elementsFields)) {
                     $uow = $dm->getUnitOfWork();
                     $uow->computeChangeSets();
                     $changeset = $uow->getDocumentChangeSet($element);
+                    $elementToUpdates = [];
+                    $privateProps = $config->getApi()->getPublicApiPrivateProperties();
+
+                    // If name have changed, update element which reference this element
                     if (array_key_exists('name', $changeset)) {
                         $newName = $changeset['name'][1];
-                        $privateProps = $config->getApi()->getPublicApiPrivateProperties();
                         foreach ($elementsFields as $fieldName) {
                             $fieldPath = in_array($fieldName, $privateProps) ? 'privateData' : 'data';
                             $fieldPath .= '.' . $fieldName . '.' . $element->getId();
@@ -159,15 +166,51 @@ class DatabaseIntegrityWatcher
                                      ->field($fieldPath)->set($newName)
                                      ->field($fieldPath)->exists(true)
                                      ->getQuery()->execute();
-                            $elementIds = array_keys($dm->getRepository('App\Document\Element')->createQueryBuilder()
+                            $elementToUpdates = $elementToUpdates + $dm->getRepository('App\Document\Element')->createQueryBuilder()
                                      ->field($fieldPath)->exists(true)
-                                     ->select('id')->hydrate(false)->getQuery()->execute()->toArray());
-                            if (count($elementIds)) {
-                                $elementIdsString = '"'.implode(',', $elementIds).'"';
-                                $this->asyncService->callCommand('app:elements:updateJson', ['ids' => $elementIdsString]);
-                            }
-                        }
+                                     ->select('id')->hydrate(false)->getQuery()->execute()->toArray();
 
+                        }
+                    }
+                    // If bidirectional element field have changed, update reverse relation
+                    // exple A { parent: B }, we should auto update B { children: A }
+                    foreach ($bidirdectionalElementsFields as $field) {
+                        $path = in_array($field->name, $privateProps) ? 'privateData' : 'data';
+                        if (array_key_exists($path, $changeset)) {
+                            $changes = $changeset[$path];
+                            $oldValue = $changes[0] && $changes[0][$field->name] ? array_keys((array) $changes[0][$field->name]) : [];
+                            $newValue = $changes[1] && $changes[1][$field->name]? array_keys((array) $changes[1][$field->name]) : [];
+                            $removedElements = array_diff($oldValue, $newValue);
+                            $addedElements = array_diff($newValue, $oldValue);
+
+                            $reverseName = $field->reversedBy;
+                            $fieldPath = in_array($reverseName, $privateProps) ? 'privateData' : 'data';
+                            $fieldPath .= '.' . $reverseName . '.' . $element->getId();
+
+                            // Updates elements throught reverse relation
+                            $dm->getRepository('App\Document\Element')->createQueryBuilder()
+                                 ->updateMany()
+                                 ->field('id')->in($addedElements)
+                                 ->field($fieldPath)->set($element->getName())
+                                 ->getQuery()->execute();
+                            $elementToUpdates = $elementToUpdates + $dm->getRepository('App\Document\Element')->createQueryBuilder()
+                                 ->field('id')->in($addedElements)
+                                 ->select('id')->hydrate(false)->getQuery()->execute()->toArray();
+
+                            $dm->getRepository('App\Document\Element')->createQueryBuilder()
+                                 ->updateMany()
+                                 ->field('id')->in($removedElements)
+                                 ->field($fieldPath)->unsetField()->exists(true)
+                                 ->getQuery()->execute();
+                            $elementToUpdates = $elementToUpdates + $dm->getRepository('App\Document\Element')->createQueryBuilder()
+                                 ->field('id')->in($removedElements)
+                                 ->select('id')->hydrate(false)->getQuery()->execute()->toArray();
+                        }
+                    }
+                    if (count($elementToUpdates)) {
+                        $ids = array_unique(array_keys($elementToUpdates));
+                        $elementIdsString = '"'.implode(',', $ids).'"';
+                        $this->asyncService->callCommand('app:elements:updateJson', ['ids' => $elementIdsString]);
                     }
                 }
             }
