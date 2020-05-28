@@ -66,7 +66,7 @@ class UpdateProjectsInfoCommand extends Command
                 $project->setDataSize($dataSize);
                 $project->setAdminEmails(implode(',', $adminEmails));
                 $project->setPublished($config->getPublishOnSaasPage());
-                if ($lastLogin) $project->setLastLogin($lastLogin->getTimestamp());
+                if ($lastLogin) $project->setLastLogin($lastLogin);
 
                 $this->rootDm->persist($project);
             } catch (\Exception $e) {
