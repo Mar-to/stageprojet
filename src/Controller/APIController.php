@@ -325,22 +325,12 @@ class APIController extends GoGoController
         $imageUrl = $img ? $img->getImageUrl() : null;
         $dataSize = $dm->getRepository('App\Document\Element')->findVisibles(true);
 
-        $users = $dm->getRepository('App\Document\User')->findAll();
-        $adminEmails = [];
-        $lastLogin = null;
-        foreach ($users as $key => $user) {
-            if ($user->isAdmin()) $adminEmails[] = $user->getEmail();
-            if (!$lastLogin || $user->getLastLogin() > $lastLogin) $lastLogin = $user->getLastLogin();
-        }
         $responseArray = [
           'name' => $config->getAppName(),
           'imageUrl' => $imageUrl,
           'description' => $config->getAppBaseline(),
           'tags' => $config->getAppTags(),
-          'dataSize' => $dataSize,
-          'adminEmails' => implode(',', $adminEmails),
-          'publish' => $config->getPublishOnSaasPage(),
-          'lastLogin' => $lastLogin->getTimestamp()
+          'dataSize' => $dataSize
         ];
         $response = new Response(json_encode($responseArray));
         $response->headers->set('Content-Type', 'application/json');

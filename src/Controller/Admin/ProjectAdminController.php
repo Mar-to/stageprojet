@@ -68,10 +68,8 @@ class ProjectAdminController extends Controller
     private function dropDatabase($project)
     {
         // Drop the database of this project
-        $commandline = 'mongo '.$project->getDbName().' --eval "db.dropDatabase()"';
-        $process = new Process($commandline);
-
-        return $process->start();
+        $mongo = $this->dm->getConnection()->getMongo();
+        $mongo->selectDB($project->getDbName())->command(['dropDatabase' => 1]);
     }
 
     /**

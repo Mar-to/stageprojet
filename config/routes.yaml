@@ -115,10 +115,6 @@ gogo_project_delete_my_project:
     path: admin/delete-my-project
     defaults: { _controller: App\Controller\ProjectController::deleteCurrProjectAction }
 
-gogo_project_delete_saas_record:
-    path: project/delete/{dbName}
-    defaults: { _controller: App\Controller\ProjectController::deleteSaasRecordAction }
-
 # HANDLE BAD URLS
 other:
     path: /{arg1}/{arg2}/{arg3}/{arg4}/{arg5}/{arg6}

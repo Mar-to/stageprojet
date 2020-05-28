@@ -8,16 +8,18 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Routing\RouterInterface;
+use App\Services\DocumentManagerFactory;
 
 /*
 * Update infos of each instance for the Saas Index page
 */
 class UpdateProjectsInfoCommand extends Command
 {
-    public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger, RouterInterface $router,
-                                $baseUrl)
+    public function __construct(DocumentManagerFactory $dmFactory, LoggerInterface $commandsLogger,
+                                RouterInterface $router, $baseUrl)
     {
-        $this->dm = $dm;
+        $this->dmFactory = $dmFactory;
+        $this->rootDm = $dmFactory->createForDB('gogocarto_default');
         $this->router = $router;
         $this->logger = $commandsLogger;
         $this->baseUrl = $baseUrl;
@@ -31,7 +33,7 @@ class UpdateProjectsInfoCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $projects = $this->dm->getRepository('App\Document\Project')->findAll();
+        $projects = $this->rootDm->getRepository('App\Document\Project')->findAll();
 
         $this->logger->info('Updating projects informations. '. count($projects) .' projects to update');
         $apiUrl = $this->baseUrl . $this->router->generate('gogo_api_project_info');
@@ -39,21 +41,38 @@ class UpdateProjectsInfoCommand extends Command
         foreach ($projects as $key => $project) {
             try {
                 $this->logger->info('  -> Update project '.$project->getName());
-                $url = 'https://'.$project->getDomainName().'.'.$apiUrl;
-                $json = file_get_contents($url);
-                $data = json_decode($json, true);
-                $project->setName($data['name']);
-                $project->setImageUrl($data['imageUrl']);
-                $project->setDescription($data['description']);
-                $project->setDataSize($data['dataSize']);
-                $project->setAdminEmails($data['adminEmails']);
-                $project->setPublished($data['publish']);
-                $project->setLastLogin($data['lastLogin']);
-                $this->dm->persist($project);
+                $dm = $this->dmFactory->createForDB($project->getDomainName());
+
+                $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+                if (!$config) {
+                    $this->logger->error("Project $project->getDomainName() does not have config");
+                    break;
+                }
+                $img = $config->getSocialShareImage() ? $config->getSocialShareImage() : $config->getLogo();
+                $imageUrl = $img ? $img->getImageUrl() : null;
+                $dataSize = $dm->getRepository('App\Document\Element')->findVisibles(true);
+
+                $users = $dm->getRepository('App\Document\User')->findAll();
+                $adminEmails = [];
+                $lastLogin = null;
+                foreach ($users as $key => $user) {
+                    if ($user->isAdmin()) $adminEmails[] = $user->getEmail();
+                    if (!$lastLogin || $user->getLastLogin() > $lastLogin) $lastLogin = $user->getLastLogin();
+                }
+
+                $project->setName($config->getAppName());
+                $project->setImageUrl($imageUrl);
+                $project->setDescription($config->getAppBaseline());
+                $project->setDataSize($dataSize);
+                $project->setAdminEmails(implode(',', $adminEmails));
+                $project->setPublished($config->getPublishOnSaasPage());
+                if ($lastLogin) $project->setLastLogin($lastLogin->getTimestamp());
+
+                $this->rootDm->persist($project);
             } catch (\Exception $e) {
                 $this->logger->error($e->getMessage());
             }
         }
-        $this->dm->flush();
+        $this->rootDm->flush();
     }
 }
