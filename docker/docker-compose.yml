@@ -12,7 +12,7 @@ services:
       - /var/www/var/sessions
       - /var/www/web/uploads
     ports:
-      - "80:80"
+      - "3008:80"
     links:
       - mongo:mongo
     tty: true

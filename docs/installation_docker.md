@@ -11,4 +11,4 @@ With the Docker installation, you have all the required softwares installed in t
 
 * Run `make init` from within the `gogocarto` container. This will launch all the required commands to finish the installation.
 
-* Go to `http://localhost/index.php/project/initialize` to initialize the project.
+* Go to `http://localhost:3008/index.php/project/initialize` to initialize the project.
