@@ -8,33 +8,30 @@ const gulp = require('gulp'),
     del = require('del'),
     workboxBuild = require('workbox-build');
 
-gulp.task('scriptsHome', [], () => {
-  return gulp.src(['assets/js/home.js'])
+const scriptsHome = () =>
+  gulp.src(['assets/js/home.js'])
     .pipe(concat('home.js'))
     .pipe(gulp.dest('web/js'));
-});
 
-gulp.task('scriptsExternalPages', [], () => {
-  return gulp.src(['assets/js/api/**/*.js', 'assets/js/duplicates/**/*.js'])
+const scriptsExternalPages = () =>
+  gulp.src(['assets/js/api/**/*.js', 'assets/js/duplicates/**/*.js'])
     .pipe(concat('external-pages.js'))
     .pipe(gulp.dest('web/js'));
-});
 
-gulp.task('scriptsElementForm', [], () => {
-  return gulp.src(['assets/js/element-form/**/*.js'])
+const scriptsElementForm = () =>
+  gulp.src(['assets/js/element-form/**/*.js'])
     .pipe(concat('element-form.js'))
     .pipe(gulp.dest('web/js'));
-});
 
-gulp.task('scriptsLibs', [], () => {
+const scriptsLibs = () => {
   const gogocarto = gulp.src(['node_modules/gogocarto-js/dist/gogocarto.js'])
     .pipe(gulp.dest('web/js'));
   const sw = gulp.src(['assets/js/vendor/**/*', 'assets/js/init-sw.js'])
     .pipe(gulp.dest('web/js'));
   return merge(gogocarto, sw);
-});
+};
 
-gulp.task('service-worker', [], async () => {
+const serviceWorker = async () => {
   const { count, size, warnings } = await workboxBuild.injectManifest({
     swSrc: 'assets/js/sw.js',
     swDest: 'web/sw.js',
@@ -48,17 +45,17 @@ gulp.task('service-worker', [], async () => {
   // Optionally, log any warnings and details.
   warnings.forEach(console.warn);
   console.log(`${count} files will be precached, totaling ${size} bytes.`);
-});
+};
 
-gulp.task('sass', [], () => {
+const stylesBuild = () => {
   const vendor = gulp.src(['assets/scss/vendor/*.css']).pipe(gulp.dest('web/css'));
   const scss = gulp.src(['assets/scss/**/*.scss'])
     .pipe(sass().on('error', sass.logError))
     .pipe(gulp.dest('web/css'));
   return merge(vendor, scss);
-});
+};
 
-gulp.task('gogocarto_assets', [], () => {
+const gogocarto_assets = () => {
   const js = gulp.src(['node_modules/gogocarto-js/dist/*.css*',])
     .pipe(gulp.dest('web/css'));
   const fonts = gulp.src(['node_modules/gogocarto-js/dist/fonts/**/*',])
@@ -66,62 +63,57 @@ gulp.task('gogocarto_assets', [], () => {
   const images = gulp.src(['node_modules/gogocarto-js/dist/images/**/*'])
     .pipe(gulp.dest('web/css/images'));
   return merge(js, fonts, images);
-});
+};
 
-gulp.task('prod_styles', () => {
-  return gulp.src('web/css/*.css')
+const prod_styles = () =>
+  gulp.src('web/css/*.css')
     .pipe(minifycss())
     .pipe(gulp.dest('web/css'));
-});
 
-gulp.task('gzip_styles', ['prod_styles'], () => {
-  return gulp.src('web/css/**/*.css!(.gz)')
+const gzip_styles = () =>
+  gulp.src('web/css/**/*.css!(.gz)')
     .pipe(gzip())
     .pipe(gulp.dest('web/css'));
-});
 
-gulp.task('prod_js', () => {
-  return gulp.src(['web/js/!(*.min)*.js', '!web/js/external-pages.js']) // external page use a lib that fail to be minified
+const prod_js = () =>
+  gulp.src(['web/js/!(*.min)*.js', '!web/js/external-pages.js']) // external page use a lib that fail to be minified
     .pipe(uglify())
     .pipe(uglify().on('error', (uglify) => {
       console.error(uglify.message);
       this.emit('end');
     }))
     .pipe(gulp.dest('web/js'));
-});
 
-gulp.task('gzip_js', ['prod_js'], () => {
-  return gulp.src(['web/js/**/*.js!(.gz)'])
+const gzip_js = () =>
+  gulp.src(['web/js/**/*.js!(.gz)'])
     .pipe(gzip())
     .pipe(gulp.dest('web/js'));
-});
 
-gulp.task('watch', () => {
+exports.watch = () => {
   // Watch .scss files
-  gulp.watch(['assets/scss/**/*.scss'],['sass', 'service-worker']);
+  gulp.watch(['assets/scss/**/*.scss'], gulp.series(stylesBuild, serviceWorker));
 
   gulp.watch(['assets/js/element-form/**/*.js'],
-              ['scriptsElementForm', 'service-worker']);
+              gulp.series(scriptsElementForm, serviceWorker));
 
   gulp.watch(['assets/js/**/*.js', '!assets/js/element-form/**/*.js'],
-              ['scriptsExternalPages', 'service-worker']);
+              gulp.series(scriptsExternalPages, serviceWorker));
 
   gulp.watch(['node_modules/gogocarto-js/dist/**/*'],
-              ['gogocarto_assets', 'service-worker']);
+              gulp.series(gogocarto_assets, serviceWorker));
 
-  gulp.watch(['assets/js/vendor/**/*.js','node_modules/gogocarto-js/dist/gogocarto.js'], ['scriptsLibs', 'service-worker']);
+  gulp.watch(['assets/js/vendor/**/*.js','node_modules/gogocarto-js/dist/gogocarto.js'],
+              gulp.series(scriptsLibs, serviceWorker));
 
-  gulp.watch(['assets/js/home.js'], ['scriptsHome', 'service-worker']);
-});
+  gulp.watch(['assets/js/home.js'], gulp.series(scriptsHome, serviceWorker));
+};
 
-gulp.task('cleanCss', () => {
-  return del(['web/css']);
-});
+const cleanCss = () =>
+  del(['web/css']);
 
-gulp.task('cleanJs', () => {
-  return del(['web/js']);
-});
+const cleanJs = () =>
+  del(['web/js']);
 
-gulp.task('build', ['cleanJs', 'sass', 'scriptsLibs', 'scriptsHome', 'scriptsExternalPages', 'scriptsElementForm', 'gogocarto_assets', 'service-worker']);
+exports.build = gulp.series(cleanJs, cleanCss, gulp.parallel(stylesBuild, scriptsLibs, scriptsHome, scriptsExternalPages, scriptsElementForm, gogocarto_assets), serviceWorker);
 
-gulp.task('production', ['gzip_styles', 'gzip_js']);
+exports.production = gulp.parallel(gulp.series(prod_styles, gzip_styles), gulp.series(prod_js, gzip_js));
