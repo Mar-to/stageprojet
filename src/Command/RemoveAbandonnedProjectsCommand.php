@@ -31,7 +31,7 @@ final class RemoveAbandonnedProjectsCommand extends GoGoAbstractCommand
     {
         $this
           ->setName('app:projects:check-for-deleting')
-          ->setDescription('Send the newsletter to each user')
+          ->setDescription('Check project that are abandonned (no login, no elements...) and ask owner to remove them')
        ;
     }
 
