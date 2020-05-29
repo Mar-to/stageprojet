@@ -8,8 +8,9 @@
 
     <div class="project-content">
       <div class="name">{{ project.name|capitalize }}</div>
-      <div class="published-at">{{ project.publishedAt|date("m/d/Y") }}</div>
-      <div class="published-at-int">{{ project.publishedAt.getTimestamp }}</div>
+      {% set date = project.publishedAt ? project.publishedAt : project.createdAt %}
+      <div class="published-at">{{ date|date("m/d/Y") }}</div>
+      <div class="published-at-int">{{ date.getTimestamp }}</div>
       <div class="tags">{{ project.tags }}</div>
       <div class="data-size gogo-bg-primary">
         <span class="size">{{ project.dataSize }}</span>
