@@ -25,7 +25,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
 
-<body class="gogo-load-css saas-layout"> {# load the css vendors encapsulated inside gogocarto.css #}
+<body class="gogo-load-css saas-layout {% if config is defined %}gogo-theme-{{ config.theme }}{% endif %}">
 
   <div id="page-container" {% if pageName is defined %}class="{{ pageName }}"{% endif %}>
     <div id="page-content" {% if pageName is defined %}class="{{ pageName }}"{% endif %}>
