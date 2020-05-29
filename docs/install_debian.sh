@@ -276,7 +276,7 @@ server {
   }
 
   location @rewriteapp {
-    rewrite ^(.*)$ /app.php/\$1 last;
+    rewrite ^(.*)$ /index.php/\$1 last;
   }
 
   # pass the PHP scripts to FastCGI server from upstream phpfcgi
