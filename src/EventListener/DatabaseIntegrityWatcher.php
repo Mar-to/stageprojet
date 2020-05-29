@@ -178,8 +178,8 @@ class DatabaseIntegrityWatcher
                         $path = in_array($field->name, $privateProps) ? 'privateData' : 'data';
                         if (array_key_exists($path, $changeset)) {
                             $changes = $changeset[$path];
-                            $oldValue = $changes[0] && $changes[0][$field->name] ? array_keys((array) $changes[0][$field->name]) : [];
-                            $newValue = $changes[1] && $changes[1][$field->name]? array_keys((array) $changes[1][$field->name]) : [];
+                            $oldValue = $changes[0] && isset($changes[0][$field->name]) ? array_keys((array) $changes[0][$field->name]) : [];
+                            $newValue = $changes[1] && isset($changes[1][$field->name]) ? array_keys((array) $changes[1][$field->name]) : [];
                             $removedElements = array_diff($oldValue, $newValue);
                             $addedElements = array_diff($newValue, $oldValue);
 
