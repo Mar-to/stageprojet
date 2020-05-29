@@ -101,9 +101,9 @@ gogo-update: ## Update a PROD server to the lastest version of gogocarto
 	$(GIT) reset --hard master
 	$(GIT) pull origin master
 	$(NPM) install
-	$(COMPOSER) install
 	$(GULP) build
 	$(GULP) production
+	$(COMPOSER) install
 	$(SYMFONY) cache:clear --env=prod
 	$(SYMFONY) db:migrate
 
