@@ -115,6 +115,10 @@
             editorBody.css('background-color', 'transparent');
             editorBody.css('color', '{{ config.defaultTextContentColor }}');
         } );
+        // force label to be active because they are not linked anymore to the materialize textarea
+        document.addEventListener("DOMContentLoaded", function(event) {
+          setTimeout(function() { $('.label-wysiwyg').addClass('active') }, 0);
+        })
     </script>
   {% endif %}
 </div>
