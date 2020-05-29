@@ -179,12 +179,12 @@ class APIController extends GoGoController
         return $this->createResponse($responseJson, $config);
     }
 
+    /* Use is elements field (linking elements betwwen each others) */
     public function getElementNamessFromTextAction(Request $request, DocumentManager $dm)
     {
         $isAdmin = $this->isUserAdmin();
 
-        $elements = $dm->getRepository('App\Document\Element')->findElementNamesWithText($request->get('text'));
-        dump($elements);
+        $elements = $dm->getRepository('App\Document\Element')->findElementNamesWithText($request->get('text'), $request->get('excludeId'));
 
         $responseJson = json_encode($elements);
 

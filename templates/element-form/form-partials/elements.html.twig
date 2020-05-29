@@ -30,7 +30,7 @@
       placeholder: '{{ field.placeholder is defined ? field.placeholder|raw|striptags : ""}}',
       ajax: {
         url: '{{ path("gogo_api_element_names_from_text") }}',
-        data: function (params) { return { text: params.term }; },
+        data: function (params) { return { text: params.term, excludeId: "{{ element.id|raw }}"  }; },
         processResults: function (data, params) {
           result = [];
           for(var id in data) {

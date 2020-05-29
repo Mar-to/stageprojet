@@ -123,13 +123,13 @@ class ElementRepository extends DocumentRepository
         return $this->queryToArray($qb);
     }
 
-    public function findElementNamesWithText($text)
+    public function findElementNamesWithText($text, $excludeId)
     {
         $qb = $this->createQueryBuilder('App\Document\Element');
 
         $this->queryText($qb, $text);
         $this->filterVisibles($qb);
-
+        $qb->field('id')->notEqual($excludeId);
         $qb->select('name')->limit(20);
 
         return $this->queryToArray($qb);
