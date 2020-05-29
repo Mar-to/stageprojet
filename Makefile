@@ -105,6 +105,7 @@ gogo-update: ## Update a PROD server to the lastest version of gogocarto
 	$(GULP) build
 	$(GULP) production
 	$(SYMFONY) cache:clear --env=prod
+	$(SYMFONY) db:migrate
 
 	sleep 10 && chmod 777 -R var/ &
 	sleep 60 && chmod 777 -R var/ &
