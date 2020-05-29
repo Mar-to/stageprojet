@@ -26,7 +26,7 @@
     <div class="project-list" id="project-list">
       <div class="search-container">
         <input class="search" placeholder="Chercher par nom, par tag" />
-        <button class="sort desc btn btn-sm btn-neutral" data-sort="published-at-int">Trier par date de publication</button>
+        <button class="sort btn btn-sm btn-neutral" data-sort="published-at-int">Trier par date de publication</button>
         <button class="sort btn btn-sm btn-neutral" data-sort="size">Trier par nombre de points</button>
 
       </div>
@@ -52,5 +52,6 @@
       right: 1
     }]
   });
+  userList.sort('published-at-int', { order: 'desc'});
   </script>
 {% endblock %}
