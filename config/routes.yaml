@@ -39,19 +39,19 @@ gogo_element_check_duplicate:
 # ELEMENT INTERACTIONS
 gogo_vote_for_element:
     path:     /interact/vote
-    defaults: { _controller: App\Controller\ElementInteractionController::vote }
+    defaults: { _controller: App\Controller\ElementInteractionController::voteAction }
     requirements:
         methods: POST
 
 gogo_report_error_for_element:
     path:     /interact/report
-    defaults: { _controller: App\Controller\ElementInteractionController::reportError }
+    defaults: { _controller: App\Controller\ElementInteractionController::reportErrorAction }
     requirements:
         methods: POST
 
 gogo_delete_element:
     path:     /interact/delete
-    defaults: { _controller: App\Controller\ElementInteractionController::delete }
+    defaults: { _controller: App\Controller\ElementInteractionController::deleteAction }
     requirements:
         methods: POST
 
