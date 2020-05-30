@@ -82,7 +82,6 @@ class ElementSourceIterator implements SourceIteratorInterface
         $element = $this->iterator->current();
 
         $data = [];
-        dump($this->propertyPaths);
         foreach ($this->propertyPaths as $name => $propertyPath) {
             if (strpos($propertyPath, 'gogo-custom') !== false) {
                 $rawValue = $element->getProperty($name);
@@ -91,11 +90,10 @@ class ElementSourceIterator implements SourceIteratorInterface
             }
             $data[$name] = $this->getValue($rawValue);
             // for elements type fields, we export two fields : one with the ids, on with the names.
-            if ($propertyPath == 'gogo-custom-elements') {
+            if ($propertyPath == 'gogo-custom-elements' && is_array($rawValue)) {
                 $data[$name . '_ids'] = implode(',', array_keys($rawValue));
             }
         }
-        dump($data);
 
         $this->query->getDocumentManager()->getUnitOfWork()->detach($element);
 

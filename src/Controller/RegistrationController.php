@@ -69,7 +69,6 @@ class RegistrationController extends FosController
 
         $confirmationEnabled = $config->getUser()->getSendConfirmationEmail();
         if ($form->isSubmitted()) {
-            dump("form submitted");
 
             $user = $form->getData();
 
@@ -83,7 +82,6 @@ class RegistrationController extends FosController
                                 ->first()->getCoordinates();
                     $user->setGeo(new Coordinates($geocoded->getLatitude(), $geocoded->getLongitude()));
                 } catch (\Exception $error) {
-                    dump($error);
                     $geocodeError = true;
                 }
             }
@@ -122,119 +120,8 @@ class RegistrationController extends FosController
             }
         }
 
-        // if ($formHandler->process($form, $confirmationEnabled);) {
-        //     $user = $form->getData();
-
-        //     if ($confirmationEnabled) {
-        //         $this->get('session')->set('fos_user_send_confirmation_email/email', $user->getEmail());
-        //         $url = $this->generateUrl('fos_user_registration_check_email');
-        //     } else {
-        //         $route = $this->get('session')->get('sonata_basket_delivery_redirect');
-
-        //         if (null !== $route) {
-        //             $this->get('session')->remove('sonata_basket_delivery_redirect');
-        //             $url = $this->generateUrl($route);
-        //         } else {
-        //             $url = $this->get('session')->get('sonata_user_redirect_url');
-        //         }
-        //     }
-
-        //     if (!$url) {
-        //         $url = $this->generateUrl('sonata_user_profile_show');
-        //     }
-
-        //     $this->setFlash('fos_user_success', 'registration.flash.user_created');
-
-        //     $response = $this->redirect($url);
-
-        //     if (!$confirmationEnabled) {
-        //         $this->authenticateUser($user, $response);
-        //     }
-
-        //     return $response;
-        // }
-
-        // if ($form->isSubmitted()) {
-        //     if ($form->isValid()) {
-
-        //     }
-
-        //     $event = new FormEvent($form, $request);
-        //     $this->eventDispatcher->dispatch(FOSUserEvents::REGISTRATION_FAILURE, $event);
-
-        //     if (null !== $response = $event->getResponse()) {
-        //         return $response;
-        //     }
-        // }
-
         return $this->render('@FOSUser/Registration/register.html.twig', array(
             'form' => $form->createView(),
         ));
     }
-
-    // /**
-    //  * @return RedirectResponse|Response
-    //  */
-    // public function registerAction(Request $request = null, SessionInterface $session, DocumentManager $dm,
-    //                                RegistrationFormHandler $formHandler)
-    // {
-
-
-    //     $user = $this->getUser();
-
-    //     if ($user instanceof UserInterface) {
-    //         $session->getFlashBag()->set('sonata_user_error', 'sonata_user_already_authenticated');
-
-    //         return $this->redirect($this->generateUrl('sonata_user_profile_show'));
-    //     }
-
-    //     $form = $this->get('form.factory')->create(RegistrationFormType::class, new User());
-
-
-    //     dump($confirmationEnabled, $config->getUser());
-    //     $process = $formHandler->process($form, $confirmationEnabled);
-    //     if ($process) {
-    //         $user = $form->getData();
-
-    //         if ($confirmationEnabled) {
-    //             $this->get('session')->set('fos_user_send_confirmation_email/email', $user->getEmail());
-    //             $url = $this->generateUrl('fos_user_registration_check_email');
-    //         } else {
-    //             $route = $this->get('session')->get('sonata_basket_delivery_redirect');
-
-    //             if (null !== $route) {
-    //                 $this->get('session')->remove('sonata_basket_delivery_redirect');
-    //                 $url = $this->generateUrl($route);
-    //             } else {
-    //                 $url = $this->get('session')->get('sonata_user_redirect_url');
-    //             }
-    //         }
-
-    //         if (!$url) {
-    //             $url = $this->generateUrl('sonata_user_profile_show');
-    //         }
-
-    //         $this->setFlash('fos_user_success', 'registration.flash.user_created');
-
-    //         $response = $this->redirect($url);
-
-    //         if (!$confirmationEnabled) {
-    //             $this->authenticateUser($user, $response);
-    //         }
-
-    //         return $response;
-    //     }
-
-    //     $request = $this->get('request_stack')->getCurrentRequest();
-
-    //     $this->get('session')->set('sonata_user_redirect_url', $request->headers->get('referer'));
-
-    //     return $this->render('FOSUserBundle:Registration:register.html.'.$this->getEngine(), [
-    //         'form' => $form->createView(),
-    //     ]);
-    // }
-
-
-
-
 }
