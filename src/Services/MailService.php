@@ -84,7 +84,9 @@ class MailService
             $customMessage = 'Pas de message particulier';
         }
         $mailConfig = $this->getAutomatedMailConfigFromType($mailType);
-
+        if (!$mailConfig) {
+            return ['success' => false, 'message' => $mailType.' configuration does not exist'];
+        }
         if (!$mailConfig->getActive()) {
             return ['success' => false, 'message' => $mailType.' automated mail disabled'];
         }
