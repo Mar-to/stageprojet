@@ -61,7 +61,7 @@ class ElementFormController extends GoGoController
 
     // render for both Add and Edit actions
     private function renderForm($element, $editMode, $request, $session, $dm, $configService,
-                                $elementFormService, $userManager, $elementActionService)
+                                $elementFormService, $userManager, $elementActionService, $loginManager)
     {
         if (null === $element) {
             throw new NotFoundHttpException("Cet élément n'existe pas.");
