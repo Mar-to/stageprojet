@@ -30,9 +30,9 @@ class MigrationCommand extends GoGoAbstractCommand
       'db.TileLayer.updateMany({name:"osmfr"}, {$set: {attribution:"&copy; Openstreetmap France | &copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a>"}})',
       'db.TileLayer.updateMany({name:"stamenWaterColor"}, {$set: {attribution:"Map tiles by <a href=\"http://stamen.com\">Stamen Design</a>, <a href=\"http://creativecommons.org/licenses/by/3.0\">CC BY 3.0</a> &mdash; Map data &copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a>"}})',
       // v3.1.0
-      "db.Element.dropIndex('name_text');",
-      "db.Element.dropIndex('search_index');",
-      "db.Element.createIndex( {name: 'text'}, { name: 'search_index', default_language: 'french', weights: {name: 1} })"
+      "db.Element.dropIndex(\"name_text\");",
+      "db.Element.dropIndex(\"search_index\");",
+      "db.Element.createIndex( {name: \"text\"}, { name: \"search_index\", default_language: \"french\", weights: {name: 1} })"
     ];
 
     public static $commands = [
@@ -151,8 +151,7 @@ class MigrationCommand extends GoGoAbstractCommand
 
     private function runMongoCommand($db, $command)
     {
-        $process = new Process("mongo {$db} --eval '{$command}'");
-
+        $process = Process::fromShellCommandline("mongo {$db} --eval '{$command}'");
         return $process->run();
     }
 }
