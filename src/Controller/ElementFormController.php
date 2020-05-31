@@ -332,10 +332,11 @@ class ElementFormController extends GoGoController
         // check that duplicateselement are in session and are not empty
         elseif ($session->has('duplicatesElements') && count($session->get('duplicatesElements')) > 0) {
             $duplicates = $session->get('duplicatesElements');
-
+            $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
             return $this->render('element-form/check-for-duplicates.html.twig', [
                 'duplicateForm' => $checkDuplicatesForm->createView(),
-                'duplicatesElements' => $duplicates, ]);
+                'duplicatesElements' => $duplicates,
+                'config' => $config ]);
         }
         // otherwise just redirect ot add action
         else {
