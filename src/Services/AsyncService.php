@@ -51,7 +51,7 @@ class AsyncService
 
     protected function runProcess($commandline)
     {
-        $process = new Process($commandline);
+        $process = Process::fromShellCommandline($commandline);
         $process->start();
         if ($this->runSynchronously) {
             $process->wait();

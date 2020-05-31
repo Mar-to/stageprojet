@@ -93,7 +93,7 @@ class ConfigurationListener
             $command .= 'db.Element.dropIndex("search_index");';
             $command .= "db.Element.createIndex( {$newSearchIndex["fields"]}, { name: \"search_index\", default_language: \"french\", weights: {$newSearchIndex["weights"]} });";
 
-            $process = new Process("mongo {$db} --eval '{$command}'");
+            $process = Process::fromShellCommandline("mongo {$db} --eval '{$command}'");
             $process->run();
         }
     }
