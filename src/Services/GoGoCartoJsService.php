@@ -137,6 +137,7 @@ class GoGoCartoJsService
       'features' => [
           'listMode' => $this->getConfigFrom($config->getListModeFeature()),
           'searchPlace' => $this->getConfigFrom($config->getSearchPlaceFeature()),
+          'searchCategories' => $this->getConfigFrom($config->getSearchCategoriesFeature()),
           'searchElements' => $this->getConfigFrom($config->getSearchElementsFeature(), 'gogo_api_elements_from_text'),
           'searchGeolocate' => $this->getConfigFrom($config->getSearchGeolocateFeature()),
           'share' => $this->getConfigFrom($config->getShareFeature()),

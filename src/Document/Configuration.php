@@ -172,6 +172,9 @@ class Configuration implements \JsonSerializable
     protected $searchElementsFeature;
 
     /** @MongoDB\EmbedOne(targetDocument="App\Document\FeatureConfiguration") */
+    protected $searchCategoriesFeature;
+
+    /** @MongoDB\EmbedOne(targetDocument="App\Document\FeatureConfiguration") */
     protected $layersFeature;
 
     /** @MongoDB\EmbedOne(targetDocument="App\Document\FeatureConfiguration") */
@@ -455,6 +458,7 @@ class Configuration implements \JsonSerializable
         $this->listModeFeature = new FeatureConfiguration();
         $this->searchPlaceFeature = new FeatureConfiguration();
         $this->searchElementsFeature = new FeatureConfiguration();
+        $this->searchCategoriesFeature = new FeatureConfiguration();
         $this->searchGeolocateFeature = new FeatureConfiguration();
         $this->layersFeature = new FeatureConfiguration();
         $this->mapDefaultViewFeature = new FeatureConfiguration();
@@ -2774,6 +2778,33 @@ class Configuration implements \JsonSerializable
         }
 
         return $this->searchElementsFeature;
+    }
+    /**
+     * Set searchCategoriesFeature.
+     *
+     * @param App\Document\FeatureConfiguration $searchCategoriesFeature
+     *
+     * @return $this
+     */
+    public function setSearchCategoriesFeature(\App\Document\FeatureConfiguration $searchCategoriesFeature)
+    {
+        $this->searchCategoriesFeature = $searchCategoriesFeature;
+
+        return $this;
+    }
+
+    /**
+     * Get searchCategoriesFeature.
+     *
+     * @return App\Document\FeatureConfiguration $searchCategoriesFeature
+     */
+    public function getSearchCategoriesFeature()
+    {
+        if (!$this->searchCategoriesFeature) {
+            $this->searchCategoriesFeature = new FeatureConfiguration();
+        }
+
+        return $this->searchCategoriesFeature;
     }
 
     /**
