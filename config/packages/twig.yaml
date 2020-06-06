@@ -13,6 +13,7 @@ twig:
         oauth_communs: '%oauth_communs_id%'
         oauth_google: '%oauth_google_id%'
         oauth_facebook: '%oauth_facebook_id%'
+        helper: '@App\Services\TwigHelperService'
     paths:
         "%kernel.root_dir%/../web": RootDir
     form_themes:

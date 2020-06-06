@@ -1,5 +1,3 @@
-{# app/Resources/views/layout.html.twig #}
-
 <!DOCTYPE html>
 
 <html class="no-js gogo-load-css" lang="fr">
@@ -7,8 +5,10 @@
     <title>{% block title %}GoGoCarto{% endblock %}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    {# gogocarto contains materializeCss lib, so we load it for all files #}
+    {# gogocarto contains materializeCss lib, so we load it for all pages #}
     <link rel="stylesheet" href="{{ asset('css/gogocarto.min.css?ver=' ~ version) }}">
+
+    {% include 'custom-head.html.twig' %}
 
     {% block stylesheets %}
     {% endblock %}
@@ -18,8 +18,8 @@
 
   <body class="{% if config is defined %}gogo-theme-{{ config.theme }}{% endif %} {% if pageName is defined %}{{ pageName }}{% endif %} base-layout"> {# use this class to load the css vendors encapsulated inside gogocarto.css #}
 
-    {# Header #}
-    {{ render(controller('App\\Controller\\CoreController::headerAction', {'title': navTitle|default(''), 'iframe': app.request.get('iframe'), 'noheader': app.request.get('noheader') } ))}}
+    {# Header with navigation links, login button... #}
+    {% include 'header.html.twig' %}
 
     {% block body %}
     {% endblock %}

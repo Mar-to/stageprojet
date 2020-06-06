@@ -39,23 +39,6 @@ class CoreController extends GoGoController
             'config' => $config, ]);
     }
 
-    public function headerAction($title = 'GoGoCarto', DocumentManager $dm)
-    {
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
-        $listAbouts = $dm->getRepository('App\Document\About')->findAllOrderedByPosition();
-        $countPartners = count($dm->getRepository('App\Document\Partner')->findAll());
-        $parameters['config'] = $config;
-        $parameters['listAbouts'] = $listAbouts;
-        $parameters['countPartners'] = $countPartners;
-
-        return $this->render('header.html.twig', [
-            'title' => $title,
-            'config' => $config,
-            'listAbouts' => $listAbouts,
-            'countPartners' => $countPartners,
-            'renderedFromController' => true, ]);
-    }
-
     public function partnersAction(DocumentManager $dm)
     {
         $repository = $dm->getRepository('App\Document\Partner');
