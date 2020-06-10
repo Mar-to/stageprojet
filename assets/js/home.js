@@ -18,7 +18,8 @@ $(document).ready(function()
 	});
 
 	// Create an autocomplete search-bar with gogocartoJs lib
-	carto = goGoCarto('#gogocarto', {...gogoJsConf, ...{ mode: { autocompleteOnly: true } } });
+	gogoJsConf['mode'] = { autocompleteOnly: true };
+	carto = goGoCarto('#gogocarto', gogoJsConf);
 
 	// on search submit, redirect to the route provided by gogocartoJs
   $('.search-bar').on('searchRoute', function(evt, route) {
