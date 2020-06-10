@@ -60,7 +60,8 @@ class ConfigurationInfoBarAdmin extends ConfigurationAbstractAdmin
                         <h3>Les filtres spéciaux de GoGoCarto</h3>
 
                         <h4>gogo_text</h4>
-                        Afficher du texte (avec retour à la ligne avant et après le texte)
+                        Afficher du texte (avec retour à la ligne avant et après le texte)</br>
+                        Vous pouvez utiliser <b>l'option label</b> : {{ tel|gogo_text(label = 'Téléphone') }}
 
                         <h4>gogo_textarea</h4>
                         Afficher des texte longs, il y a plusieurs options

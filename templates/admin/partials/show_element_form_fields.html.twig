@@ -7,12 +7,12 @@
 {% set filterFromType = {
   'taxonomy': 'taxonomy',
   'email': 'email',
-  'checkbox': '',
+  'checkbox': 'text',
   'checkbox-group': 'tags',
-  'radio-group': '',
-  'select': '',
-  'date': '',
-  'number': '',
+  'radio-group': 'text',
+  'select': 'text',
+  'date': 'text',
+  'number': 'text',
   'title': 'text',
   'text': 'text',
   'textarea': 'textarea',
@@ -28,9 +28,9 @@
 {% set formFields = [] %}
 <table style="width:100%;margin-bottom: 20px;">
   <tr>
+    <th>Label dans le formulaire</th>
     <th>Nom du champ</th>
     <th>Type</th>
-    <th>Label dans le formulaire</th>
     <th>Exemple de filtre à utiliser</th>
   </tr>
 
@@ -38,6 +38,9 @@
     {% if field.type != 'images' %}
       {% set gogoFilter = filterFromType[field.type] %}
       {% if field.type == 'text' %}{% set gogoFilter = field.subtype %}{% endif %}
+      {% if gogoFilter in ['text', 'email', 'textarea'] %}
+        {% set gogoFilter = gogoFilter ~ '(label = "' ~ field.label|striptags ~ '")' %}
+      {% endif %}
       {% set gogoFilter = gogoFilter ? ('|gogo_' ~ gogoFilter) : '' %}
 
       {% set fieldName = field.name is defined ? field.name : '' %}
@@ -54,9 +57,9 @@
       {% endif %}
 
       <tr {% if field.type in ["separator", "header"] %}style="display:none"{% endif %}>
+        <td>{{ field.label|raw }}</td>
         <td>{{ fieldName }}</td>
         <td>{{ field.type|capitalize }}</td>
-        <td>{{ field.label }}</td>
         <td class="value">{{ fieldTag }}</td>
       </tr>
     {% endif %}
