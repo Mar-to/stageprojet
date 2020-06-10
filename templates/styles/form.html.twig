@@ -36,15 +36,15 @@
   }
 
   {# Input #}
-  .gogo-load-css input:focus:not(.invalid):not([readonly]):not([type=submit]), .gogo-load-css textarea:focus:not(.invalid):not([readonly]) {
+  .gogo-load-css #page-content.element-form input:focus:not(.invalid):not([readonly]):not([type=submit]), .gogo-load-css textarea:focus:not(.invalid):not([readonly]) {
     border-color: {{ textSoft }} !important;
     box-shadow: 0 1px 0 0 {{ textSoft }} !important;
   }
-  .gogo-load-css input.invalid:not([readonly]):not([type=submit]), .gogo-load-css textarea.invalid:not([readonly]) {
+  .gogo-load-css #page-content.element-form input.invalid:not([readonly]):not([type=submit]), .gogo-load-css textarea.invalid:not([readonly]) {
     border-color: {{ error }} !important;
     box-shadow: 0 1px 0 0 {{ error }} !important;
   }
-  .gogo-load-css input:not(:focus):not(.invalid):not([type=submit]), .gogo-load-css textarea:not(:focus):not(.invalid) {
+  .gogo-load-css #page-content.element-form input:not(:focus):not(.invalid):not([type=submit]), .gogo-load-css textarea:not(:focus):not(.invalid) {
     border-bottom: 1px solid {{ disable }} !important;
     box-shadow: none !important;
   }
