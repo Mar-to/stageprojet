@@ -204,7 +204,7 @@ services:
         class: App\Admin\ConfigurationMapAdmin
         arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: La Carte }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Carte / Menu / Fonctionalités }
 
     admin.tile_layers:
         class: App\Admin\TileLayerAdmin
