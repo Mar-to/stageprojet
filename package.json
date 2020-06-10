@@ -29,7 +29,7 @@
     "workbox-build": "^4.3.1"
   },
   "dependencies": {
-    "gogocarto-js": "^1.6.4",
+    "gogocarto-js": "^1.6.5",
     "natives": "^1.1.6"
   }
 }
