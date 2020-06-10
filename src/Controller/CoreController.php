@@ -5,10 +5,12 @@ namespace App\Controller;
 use App\Helper\SaasHelper;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use App\Services\GoGoCartoJsService;
 
 class CoreController extends GoGoController
 {
-    public function homeAction($force = false, DocumentManager $dm, SessionInterface $session)
+    public function homeAction($force = false, DocumentManager $dm, SessionInterface $session,
+                               GoGoCartoJsService $gogoJsService)
     {
         $sassHelper = new SaasHelper();
         if (!$force && $this->getParameter('use_as_saas') && $sassHelper->isRootProject()) {
@@ -36,7 +38,8 @@ class CoreController extends GoGoController
         return $this->render('home.html.twig', [
             'listWrappers' => $listWrappers,
             'mainOptions' => $mainOptions,
-            'config' => $config, ]);
+            'config' => $config,
+            'gogoConfig' => $gogoJsService->getConfig() ]);
     }
 
     public function partnersAction(DocumentManager $dm)

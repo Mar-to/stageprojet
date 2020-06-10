@@ -63,6 +63,11 @@ body
       .icon { font-size: 1.3rem;position: absolute;top: 3px; @media #{$medium-and-up} { font-size: 1.6rem; }}
 
   	}
+
+    .search-bar-autocomplete-results-container {
+      width: 100% !important;
+      margin-top: -.5rem !important;
+    }
   }
 
   @media (max-height : 450px)
@@ -242,7 +247,14 @@ body
       cursor: default;
       position: absolute;
       line-height: 3.4rem;
+      height: 3rem;
+      min-width: 2rem;
       font-size: 1.4rem;
+
+      #search-spinner-loader {
+        top: .9rem;
+        left: 4px;
+      }
   	}
 
     #search-geolocalize

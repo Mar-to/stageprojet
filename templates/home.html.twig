@@ -13,7 +13,7 @@
 {# BODY CONTENT #}
 {% block body %}
 
-<div id="home-main-wrapper" class="valign-wrapper">
+<div id="home-main-wrapper" class="valign-wrapper gogocarto-container">
 	<section id="home-main-container" class="valign">
 
 		{% if config.logo %}
@@ -24,12 +24,25 @@
 
 		{% if config.appBaseLine %}<h2>{{ config.appBaseline }}</h2>{% endif %}
 
-		<div class="input-field" id="search-bar-container" >
-			<a class="gogo-icon-search waves-effect waves-light" id="search-bar-icon"></a>
+		<div class="input-field autocomplete-container" id="search-bar-container">
+			<a class="gogo-icon-search waves-effect waves-light search-bar-icon" id="search-bar-icon">
+				{# Spinner loader #}
+				<div id="search-spinner-loader" class="preloader-wrapper active">
+				  <div class="spinner-layer">
+				    <div class="circle-clipper left">
+				      <div class="circle"></div>
+				    </div><div class="gap-patch">
+				      <div class="circle"></div>
+				    </div><div class="circle-clipper right">
+				      <div class="circle"></div>
+				    </div>
+				  </div>
+				</div>
+			</a>
 			<a href="annuaire#/carte/autour-de-moi"
 				 class="gogo-icon-locate gogo-h-primary search-icon tooltipped" id="search-geolocalize"
          data-position="left" data-delay="0" data-tooltip="Geolocaliser votre position"></a>
-			<input class="validate" placeholder="Entrez une adresse, une ville..." type="text" id="search-bar" name="adresse"/>
+			<input class="validate search-bar" placeholder="Entrez une adresse, une ville..." type="text" id="search-bar" name="adresse"/>
 		</div>
 
 		{% if config.home.displayCategoriesToPick %}
@@ -54,7 +67,7 @@
 	  	</span>
   	{% endif %}
 
-		<button id="btn-directory"   class="primary-button btn waves-effect waves-light">Rechercher</button>
+		<button id="btn-directory" class="primary-button btn waves-effect waves-light search-bar-btn">Rechercher</button>
 		<a href="annuaire#/carte/autour-de-moi">
 			<button id="btn-geolocation" class="primary-button gogo-bg-neutral btn btn-neutral waves-effect waves-light">Géolocaliser ma position</button>
 		</a>
@@ -98,6 +111,9 @@
 {% endblock %}
 
 {% block javascripts %}
+	<script>
+		var gogoJsConf = {{ gogoConfig | json_encode | raw }};
+	</script>
 	<script src="{{ asset('js/home.js') }}"></script>
 {% endblock %}
 

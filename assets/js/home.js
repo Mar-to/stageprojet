@@ -12,56 +12,38 @@ $(document).ready(function()
 {
 	$('select').material_select();
 
-	$('#btn-directory').click(function()
-	{
-		redirectTodirectory();
-	});
-
-	$('#search-bar-icon').click(function()
-	{
-		redirectTodirectory();
-	});
-
-	$('#search-bar').on("keyup", function(e)
-	{
-		if(e.keyCode == 13) // touche entrée
-		{
-			redirectTodirectory();
-		}
-	});
-
 	$('#bottom-more-info').click( function()
 	{
 		$('html, body').animate({scrollTop: $('.bottom-section:first').offset().top}, 700);
 	});
 
+	// Create an autocomplete search-bar with gogocartoJs lib
+	carto = goGoCarto('#gogocarto', {...gogoJsConf, ...{ mode: { autocompleteOnly: true } } });
+
+	// on search submit, redirect to the route provided by gogocartoJs
+  $('.search-bar').on('searchRoute', function(evt, route) {
+		var mainOption;
+		// in small screen a select is displayed
+		if ($('.category-field-select').is(':visible'))
+		{
+			var select = document.getElementById('category-select');
+			mainOption = select.value;
+		}
+		else
+		// in large screen radio button are displayed
+		{
+			mainOption = $('.main-option-radio-btn:checked').attr('data-name');
+		}
+
+		if (mainOption) route += '?cat=' + mainOption;
+		var path = window.location.pathname + '/annuaire' + route;
+		window.location.href = window.location.origin + path.replace('//', '/');
+  })
+
 	// clear viewport and address cookies
 	eraseCookie('viewport');
 	eraseCookie('address');
 });
-
-function redirectTodirectory()
-{
-	var address = $('#search-bar').val();
-
-	var mainOption;
-	// in small screen a select is displayed
-	if ($('.category-field-select').is(':visible'))
-	{
-		var select = document.getElementById('category-select');
-		mainOption = select.value;
-	}
-	else
-	// in large screen radio button are displayed
-	{
-		mainOption = $('.main-option-radio-btn:checked').attr('data-name');
-	}
-
-	var route = '/annuaire#/carte/' + address;
-	if (mainOption) route += '?cat=' + mainOption;
-	var path = window.location.pathname + route;
-	window.location.href = window.location.origin + path.replace('//', '/');
-}
 
 function createCookie(name,value)
 {
