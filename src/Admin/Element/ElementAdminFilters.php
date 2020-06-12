@@ -24,14 +24,13 @@ class ElementAdminFilters extends ElementAdminAbstract
 
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
-        $datagridMapper
+      $datagridMapper
       ->add('name')
-      ->add('status', 'doctrine_mongo_choice', [],
-        ChoiceType::class,
-        [
-            'choices' => $this->statusChoices,
-           'expanded' => false,
-           'multiple' => false,
+      ->add('status', 'doctrine_mongo_choice', [], ChoiceType::class,
+          [
+            'choices' => array_flip($this->statusChoices),
+            'expanded' => false,
+            'multiple' => false,
           ]
         )
       ->add('valide', 'doctrine_mongo_callback', [
@@ -75,7 +74,7 @@ class ElementAdminFilters extends ElementAdminAbstract
       ->add('moderationState', 'doctrine_mongo_choice', ['label' => 'Type de Modération'],
           ChoiceType::class,
           [
-             'choices' => $this->moderationChoices,
+             'choices' => array_flip($this->moderationChoices),
              'expanded' => false,
              'multiple' => false,
             ]
@@ -92,7 +91,7 @@ class ElementAdminFilters extends ElementAdminAbstract
                },
                 'field_type' => ChoiceType::class,
                 'field_options' => [
-                     'choices' => $this->optionsChoices,
+                     'choices' => array_flip($this->optionsChoices),
                      'expanded' => false,
                      'multiple' => true,
                     ],
@@ -110,7 +109,7 @@ class ElementAdminFilters extends ElementAdminAbstract
                },
                 'field_type' => ChoiceType::class,
                 'field_options' => [
-                     'choices' => $this->optionsChoices,
+                     'choices' => array_flip($this->optionsChoices),
                      'expanded' => false,
                      'multiple' => true,
                     ],
@@ -128,7 +127,7 @@ class ElementAdminFilters extends ElementAdminAbstract
                },
                 'field_type' => ChoiceType::class,
                 'field_options' => [
-                     'choices' => $this->optionsChoices,
+                     'choices' => array_flip($this->optionsChoices),
                      'expanded' => false,
                      'multiple' => true,
                     ],

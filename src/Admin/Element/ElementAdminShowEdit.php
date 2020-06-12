@@ -29,12 +29,14 @@ class ElementAdminShowEdit extends ElementAdminList
         $needModeration = 0 != $this->subject->getModerationState();
         $statusClass = $needModeration ? 'col-md-6' : 'col-md-12';
         if ($this->subject->isPending()) {
-            $show
-       ->with('En attente', ['class' => $statusClass])
-         ->add('currContribution', null, ['template' => 'admin/partials/show_one_contribution.html.twig'])->end();
+          $show->with('En attente', ['class' => $statusClass])
+            ->add('currContribution', null, ['template' => 'admin/partials/show_one_contribution.html.twig'])->end();
         } else {
-            $show->with('Status', ['class' => $statusClass])
-         ->add('status', ChoiceType::class, ['choices' => $this->statusChoices])->end();
+          $show->with('Status', ['class' => $statusClass])
+            ->add('status', ChoiceType::class, [
+              'choices' => $this->statusChoices,
+              'template' => 'admin/partials/show_choice_status.html.twig',
+            ])->end();
         }
 
         if ($needModeration) {
