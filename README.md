@@ -3,9 +3,10 @@
 GoGoCarto
 =========
 
+**Documentation and Tutorials availables at https://doc.gogocarto.fr/**
+
 Contact
 --------
-Documentation available at https://doc.gogocarto.fr/
 You can contact us on the channel GoGoCarto at https://chat.lescommuns.org/channel/gogocarto
 
 Overview
@@ -26,13 +27,6 @@ Multi Instance Mode
 You can configure your server to work as a multi instance creator. See example at https://gogocarto.fr
 Every new project will live in a dedicate subdomain like my-map.gogocarto.fr
 
-
-Tutorials
------------------
-
-![https://video.colibris-outilslibres.org/videos/watch/62279fe4-06d9-4fdc-8e0d-3d5de3c05072](web/assets/img/gogocarto_video_thumbnail.png "Thumbnail")
-
-[Check all videos here (in french)](https://video.colibris-outilslibres.org/video-channels/gogocarto_channel/videos)
 
 GoGoCarto & GoGoCartoJs
 ------------------
