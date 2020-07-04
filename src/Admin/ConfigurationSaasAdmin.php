@@ -10,6 +10,7 @@ namespace App\Admin;
 
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\FormatterBundle\Form\Type\SimpleFormatterType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 
 class ConfigurationSaasAdmin extends ConfigurationAbstractAdmin
 {
@@ -21,6 +22,10 @@ class ConfigurationSaasAdmin extends ConfigurationAbstractAdmin
     {
         $formMapper
             ->with('Configuration')
+                ->add('saas.donationUrl', UrlType::class, [
+                    'label' => "Url pour faire un don (un boutton sera ajouté sur la page d'accueil)",
+                    'required' => false
+                ])
                 ->add('saas.endUserLicenceAgreement', SimpleFormatterType::class, [
                     'format' => 'richhtml', 'ckeditor_context' => 'full',
                     'label' => "Conditions Générales d'Utilisation",

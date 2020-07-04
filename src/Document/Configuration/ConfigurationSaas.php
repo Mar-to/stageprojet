@@ -21,6 +21,13 @@ class ConfigurationSaas
     */
     public $endUserLicenceAgreement = null;
 
+    /**
+    * If present, we display a donate button on the home page
+    *
+    * @MongoDB\Field(type="string")
+    */
+    public $donationUrl = null;
+
     function getNewProjectInstructions() {
         return $this->newProjectInstructions;
     }
@@ -36,6 +43,15 @@ class ConfigurationSaas
 
     function setEndUserLicenceAgreement($value) {
         $this->endUserLicenceAgreement = $value;
+        return $this;
+    }
+
+    function getDonationUrl() {
+        return $this->donationUrl;
+    }
+
+    function setDonationUrl($donationUrl) {
+        $this->donationUrl = $donationUrl;
         return $this;
     }
 

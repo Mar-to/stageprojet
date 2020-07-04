@@ -20,9 +20,11 @@
       <a href="https://gitlab.adullact.net/pixelhumain/GoGoCarto" target="_blank">
         <button class="btn btn-neutral btn-repo"><i class="fa fa-code"></i>Code Source</button>
       </a>
-      <a href="https://www.jedonneenligne.org/colibris/OUTILSLIBRES/" target="_blank">
+      {% if config.saas.donationUrl %}
+      <a href="{{ config.saas.donationUrl }}" target="_blank">
         <button class="btn btn-neutral btn-donate"><i class="fa fa-heart"></i>Faire un Don</button>
       </a>
+      {% endif %}
     </p>
 
   </section>
