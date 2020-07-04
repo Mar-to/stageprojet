@@ -218,12 +218,12 @@ body
   	#search-bar
   	{
   		text-align: center;
-  		padding: 0 .5rem 0 .5rem;
+  		padding: 0 1rem;
   		box-shadow: none !important;
-  		@include border-radius(10px);
-  		width: 100%;
+  		@include border-radius(4px);
+  		width: calc(100% - 1rem);
       border: none !important;
-      color:black;
+      font-size: 1rem;
       height: 2.5rem;
       @media #{$medium-and-up}
   		{

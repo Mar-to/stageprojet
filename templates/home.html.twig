@@ -39,10 +39,26 @@
 				  </div>
 				</div>
 			</a>
+
+			{# Set the search placeholder depending on different search authorizations #}
+			{% set placeholder = "Entrez " %}
+			{% set delimiter = '' %}
+			{% set inIframe = app.request.get('iframe') %}
+			{% if config.searchPlaceFeature.isAllowed(app.user, inIframe, app.request.get('userEmail')) %}
+				{% set placeholder = placeholder ~ delimiter ~ 'une adresse' %}
+				{% set delimiter = ', ' %}
+			{% endif %}
+			{% if config.searchElementsFeature.isAllowed(app.user, inIframe, app.request.get('userEmail')) %}
+				{% set placeholder = placeholder ~ delimiter ~ config.elementDisplayNameIndefinite %}
+				{% set delimiter = ', ' %}
+			{% endif %}
+			{% if config.searchCategoriesFeature.isAllowed(app.user, inIframe, app.request.get('userEmail')) %}
+				{% set placeholder = placeholder ~ delimiter ~ 'une catégorie' %}
+			{% endif %}
 			<a href="annuaire#/carte/autour-de-moi"
 				 class="gogo-icon-locate gogo-h-primary search-icon tooltipped" id="search-geolocalize"
          data-position="left" data-delay="0" data-tooltip="Geolocaliser votre position"></a>
-			<input class="validate search-bar" placeholder="Entrez une adresse, une ville..." type="text" id="search-bar" name="adresse"/>
+			<input class="validate search-bar" placeholder="{{ placeholder }}" type="text" id="search-bar" name="adresse"/>
 		</div>
 
 		{% if config.home.displayCategoriesToPick %}
