@@ -699,7 +699,9 @@ class Element
             if ('files' == $key) {
                 $method = 'getFilesUrls';
             }
-
+            if ('address' == $key) {
+                return $this->getAddress()->toJson();
+            }
             return $this->$method();
         } else {
             return $this->getCustomProperty($key);

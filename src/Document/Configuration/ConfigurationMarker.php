@@ -25,7 +25,7 @@ class ConfigurationMarker
     /** @MongoDB\Field(type="bool") */
     public $useClusters = true;
 
-    // Those fields we be used in element compact Json
+    // Those fields will be used in element compact Json
     public function updateFieldsUsedByTemplate()
     {
         $matches = [];
