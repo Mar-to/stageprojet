@@ -136,8 +136,21 @@ class LoadConfiguration implements FixtureInterface
             $configuration->setCustomCSS('');
         }
 
+        $this->initContributionConfig($configuration, $contribConfig);
+
+        $defaultTileLayerName = $configToCopy ? $configToCopy->defaultTileLayer : null;
+        $defaultLayer = $this->loadTileLayers($dm, $tileLayersToCopy, $defaultTileLayerName);
+        $configuration->setDefaultTileLayer($defaultLayer);
+        $dm->persist($configuration);
+        $dm->flush();
+
+        return $configuration;
+    }
+
+    public function initContributionConfig($configuration, $contribConfig = 'open')
+    {
         switch ($contribConfig) {
-         case 'intermediate':
+        case 'intermediate':
             $configuration->setAddFeature(new InteractionConfiguration(true, true, false, true, true, true));
             $configuration->setEditFeature(new InteractionConfiguration(true, true, false, true, true, true));
             $configuration->setDeleteFeature(new InteractionConfiguration(true, false, false, false, false, true));
@@ -145,7 +158,7 @@ class LoadConfiguration implements FixtureInterface
             $configuration->setDirectModerationFeature(new InteractionConfiguration(true, false, false, false, false, true));
             $configuration->setReportFeature(new FeatureConfiguration(true, false, true, true, false));
             break;
-         case 'closed':
+        case 'closed':
             $configuration->setAddFeature(new InteractionConfiguration(true, true, false, false, false, true));
             $configuration->setEditFeature(new InteractionConfiguration(true, true, false, false, false, true));
             $configuration->setDeleteFeature(new InteractionConfiguration(true, true, false, false, false, true));
@@ -153,7 +166,7 @@ class LoadConfiguration implements FixtureInterface
             $configuration->setDirectModerationFeature(new InteractionConfiguration(true, false, false, false, false, true));
             $configuration->setReportFeature(new FeatureConfiguration(false, false, false, false, false));
             break;
-          default:
+        default:
             // open by default
             $configuration->setAddFeature(new InteractionConfiguration(true, true, true, true, true, true));
             $configuration->setEditFeature(new InteractionConfiguration(true, true, true, true, true, true));
@@ -163,14 +176,6 @@ class LoadConfiguration implements FixtureInterface
             $configuration->setReportFeature(new FeatureConfiguration(false, false, false, false, false));
             break;
         }
-
-        $defaultTileLayerName = $configToCopy ? $configToCopy->defaultTileLayer : null;
-        $defaultLayer = $this->loadTileLayers($dm, $tileLayersToCopy, $defaultTileLayerName);
-        $configuration->setDefaultTileLayer($defaultLayer);
-        $dm->persist($configuration);
-        $dm->flush();
-
-        return $configuration;
     }
 
     public function loadTileLayers($dm, $tileLayersToCopy = null, $defaultTileLayerName = null)

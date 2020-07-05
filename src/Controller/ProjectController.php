@@ -90,6 +90,9 @@ class ProjectController extends Controller
                 }
             }
 
+            $confLoader = new LoadConfiguration();
+            $confLoader->initContributionConfig($projectConf, $request->request->get('contrib'));
+
             $projectDm->persist($projectConf);
 
             // Generate basic categories
