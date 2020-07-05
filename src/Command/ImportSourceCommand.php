@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Document\ImportState;
 use App\Services\ElementImportService;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use App\Services\DocumentManagerFactory;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,7 +14,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class ImportSourceCommand extends GoGoAbstractCommand
 {
-    public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger,
+    public function __construct(DocumentManagerFactory $dm, LoggerInterface $commandsLogger,
                                TokenStorageInterface $security,
                                ElementImportService $importService)
     {

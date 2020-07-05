@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Document\User;
 use App\Services\MailService;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use App\Services\DocumentManagerFactory;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,7 +16,7 @@ use Symfony\Component\Routing\RouterInterface;
 final class RemoveAbandonnedProjectsCommand extends GoGoAbstractCommand
 {
 
-    public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger,
+    public function __construct(DocumentManagerFactory $dm, LoggerInterface $commandsLogger,
                                TokenStorageInterface $security, RouterInterface $router,
                                MailService $mailService,
                                $baseUrl

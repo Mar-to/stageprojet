@@ -12,18 +12,20 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use App\Services\DocumentManagerFactory;
 
 class GoGoAbstractCommand extends Command
 {
     protected $dm;
+    protected $dmFactory;
     protected $logger;
     protected $security;
     protected $output;
 
-    public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger,
+    public function __construct(DocumentManagerFactory $dmFactory, LoggerInterface $commandsLogger,
                                TokenStorageInterface $tokenStorage)
     {
-        $this->dm = $dm;
+        $this->dmFactory = $dmFactory;
         $this->logger = $commandsLogger;
         $this->security = $tokenStorage;
         parent::__construct();
@@ -42,7 +44,9 @@ class GoGoAbstractCommand extends Command
             $this->output = $output;
 
             if ($input->getArgument('dbname')) {
-                $this->dm->getConfiguration()->setDefaultDB($input->getArgument('dbname'));
+                $this->dm = $this->dmFactory->createForDB($input->getArgument('dbname'));
+            } else {
+                $this->dm = $this->dmFactory->createForDB('gogocarto_default');
             }
 
             // create dummy user, as some code called from command will maybe need the current user informations

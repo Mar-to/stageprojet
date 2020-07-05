@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Document\User;
 use App\Services\NewsletterService;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use App\Services\DocumentManagerFactory;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,7 +15,7 @@ final class NewsletterCommand extends GoGoAbstractCommand
 {
     private $newsletterService;
 
-    public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger,
+    public function __construct(DocumentManagerFactory $dm, LoggerInterface $commandsLogger,
                                TokenStorageInterface $security,
                                NewsletterService $newsletterService)
     {

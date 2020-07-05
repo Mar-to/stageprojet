@@ -6,6 +6,7 @@ use App\Document\GoGoLogUpdate;
 use App\Document\MigrationState;
 use App\Services\AsyncService;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use App\Services\DocumentManagerFactory;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -64,7 +65,7 @@ class MigrationCommand extends GoGoAbstractCommand
         "Nouveau moteur de recherche ! Sur la carte, lorsqu'on tape une recherche des suggestions apparaissent pour les éléments et les catégories (bientôt aussi pour les recherchent géographiques)"
     ];
 
-    public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger,
+    public function __construct(DocumentManagerFactory $dm, LoggerInterface $commandsLogger,
                                TokenStorageInterface $security,
                                AsyncService $asyncService)
     {

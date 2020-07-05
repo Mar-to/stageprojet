@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\EventListener\ElementJsonGenerator;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use App\Services\DocumentManagerFactory;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,11 +13,11 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class UpdateElementsJsonCommand extends GoGoAbstractCommand
 {
-    public function __construct(DocumentManager $dm, LoggerInterface $commandsLogger,
+    public function __construct(DocumentManagerFactory $dm, LoggerInterface $commandsLogger,
                                TokenStorageInterface $security,
-                               ElementJsonGenerator $elemntJsonService)
+                               ElementJsonGenerator $elementJsonService)
     {
-        $this->elemntJsonService = $elemntJsonService;
+        $this->elementJsonService = $elementJsonService;
         parent::__construct($dm, $commandsLogger, $security);
     }
 
@@ -41,11 +42,12 @@ class UpdateElementsJsonCommand extends GoGoAbstractCommand
 
             $count = $elements->count();
 
-            $this->log('Generating json representation for '.$count.' elements...');
+            $this->log('DB Generating json representation for '.$count.' elements...');
 
             $i = 0;
+            $this->elementJsonService->setDm($dm);
             foreach ($elements as $key => $element) {
-                $this->elemntJsonService->updateJsonRepresentation($element);
+                $this->elementJsonService->updateJsonRepresentation($element);
 
                 if (0 == (++$i % 100)) {
                     $dm->flush();
