@@ -93,9 +93,12 @@ class ElementFormService
         $data = $request->get('data');
         if (!$data) $data = [];
         // For some fields, like elements type, we store the data stringified in a data-json input
-        foreach ($request->get('data-json') as $key => $value) {
-            $data[$key] = json_decode($value);
+        if ($request->get('data-json')) {
+            foreach ($request->get('data-json') as $key => $value) {
+                $data[$key] = json_decode($value);
+            }
         }
+
         $privateProp = $config->getApi()->getPublicApiPrivateProperties();
         $element->setCustomData($data, $privateProp);
     }
