@@ -1,0 +1,106 @@
+<input type="hidden" id="{{ form.vars.id }}" name="{{ form.vars.full_name }}"/>
+{# container where the filter bulder will be rendered #}
+<div id="filters-builder-container"></div>
+
+<script src="{{ asset('js/form-builder.min.js') }}" type="text/javascript"></script>
+<link rel="stylesheet" href="{{ asset('fonts/fontawesome-5/css/all.css') }}" />
+
+{% set filtersData = form.vars.sonata_admin.admin.subject.menu.filtersJson|default('[]') %}
+
+<script>
+  var formBuilder;
+  if (!formBuilderInitialized) {
+    formBuilderInitialized = true;
+    jQuery(function($) {
+      var fbEditor = document.getElementById('filters-builder-container');
+
+      var fields = [
+        { label: 'Filtre Catégories', name: "taxonomy", attrs: { type: 'taxonomy' }, icon: '*' },
+        { label: 'Filtre Date', name: "gogo_date", attrs: { type: 'date' } },
+        { label: 'Filtre Nombre', name: "gogo_number", attrs: { type: 'number' } },
+      ];
+      var templates = {
+        taxonomy: function(fieldData) { return { field: '<select id="' + fieldData.name + '"><option>Catégories</option></select>' }; },
+      };
+      var fieldAttr = { label: "Nom du champ à utiliser", type: 'autocomplete'}
+      var contractedAttr = { label: "Filtre replié par defaut", type: 'checkbox'}
+      var dateViews = { "day": "Jour", "week": "Semaine", "month": "Mois", "range": "Plage" }
+
+      var fieldsAttrs = {
+        taxonomy: {},
+        date: {
+          field: fieldAttr,
+          contracted: contractedAttr,
+          multiday: { label: "Plusieurs jours selectionnable", type: 'checkbox' },
+          views: { label: "Vues", options: dateViews, multiple: "multiple", size: 4 }, // not working
+          defaultView: { label: "Vue par défaut", options: dateViews },
+        },
+        number: {
+          field: fieldAttr,
+          contracted: contractedAttr,
+          subtype: {label: "Type", options: { 'slider': 'Slider', 'value': 'Valeur' }}
+        }
+      };
+
+      formBuilder = $(fbEditor).formBuilder({
+        showActionButtons: false,
+        dataType: "json",
+        fields: fields,
+        templates: templates,
+        // i18n: {
+        //   locale: 'fr-FR',
+        //   location: '{{ asset("assets/js/") }}'
+        // },
+        disableFields: ['hidden', 'file', 'button', 'autocomplete', 'checkbox', 'header', 'paragraph', 'select', 'checkbox-group', 'radio-group', 'text', 'textarea', 'date', 'number'],
+        controlOrder: ['taxonomy'],
+        disabledAttrs: ['required', 'name', 'access', 'placeholder', 'value', 'className', 'inline', 'toggle', 'description', 'other', 'multiple'],
+        formData: {{ filtersData|json_encode|raw }},
+        roles: { 1: "Administrateur" },
+        typeUserAttrs: fieldsAttrs
+      });
+
+      $(document).ready(function() {
+        setTimeout(function() {
+          $('.form-field:not(.paragraph-field) .fld-label').each(function() {
+            $(this).text($(this).html())
+          });
+          $('input[type="checkbox"][value="true"]').prop('checked', true);
+        }, 0);
+
+      });
+
+      setInterval(function() {
+        // prevent adding two of those fields
+        $('.input-control[data-type=taxonomy]').toggle($('.taxonomy-field').length == 0);
+
+        var data = formBuilder.actions.getData()
+        for (var i = data.length - 1; i >= 0; i--) {
+          if (data[i].type == "date") data[i].views = Object.keys(dateViews) // TODO let the user choose which views are used
+        }
+        $('#{{ form.vars.id }}').val(JSON.stringify(data));
+
+        // Changes icons and icones helpers
+        $('a[type=remove].icon-cancel').removeClass('icon-cancel').addClass('fa fa-trash-alt');
+        $('a[type=copy].icon-copy').attr('title', 'Dupliquer');
+        $('a[type=edit].icon-pencil').attr('title', 'Editer/Masquer');
+      }, 300);
+    });
+  }
+
+
+</script>
+
+<style>
+  .fld-views.form-control { height: auto; }
+  .form-wrap.form-builder .frmb .form-elements .false-label:first-child,
+  .form-wrap.form-builder .frmb .form-elements label:first-child {
+    width: 35%;
+  }
+  .form-wrap.form-builder .frmb .form-elements .input-wrap {
+    width: 59%;
+  }
+
+  .taxonomy-field .field-actions .toggle-form.btn, .taxonomy-field .field-actions .copy-button {
+    display: none !important;
+  }
+</style>

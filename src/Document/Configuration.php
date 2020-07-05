@@ -487,6 +487,15 @@ class Configuration implements \JsonSerializable
         return get_object_vars($this);
     }
 
+    public function getCompactFields()
+    {
+        $compactFields = $this->getMarker()->getFieldsUsedByTemplate();
+        foreach ($this->getMenu()->getFilters() as $filter) {
+            if (isset($filter->field)) $compactFields[] = $filter->field;
+        }
+        return array_unique($compactFields);
+    }
+
     /**
      * Get id.
      *

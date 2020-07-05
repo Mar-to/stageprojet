@@ -72,6 +72,7 @@ class GoGoCartoJsService
           'showCheckboxForSubFilterPane' => $config->getMenu()->getShowCheckboxForSubFilterPane(),
           'displayNumberOfElementForEachCategory' => $config->getMenu()->getDisplayNumberOfElementForEachCategory(),
           'displayNumberOfElementRoundResults' => $config->getMenu()->getDisplayNumberOfElementRoundResults(),
+          'filters' => json_decode($config->getMenu()->getFiltersJson())
       ],
       'infobar' => [
           'width' => $config->getInfobar()->getWidth(),

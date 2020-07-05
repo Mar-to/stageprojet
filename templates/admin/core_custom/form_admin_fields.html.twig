@@ -17,6 +17,8 @@
     {# Form Builder #}
     {% elseif attr_class == "gogo-form-builder" %}
       {% include 'admin/core_custom/custom-fields/form-builder.html.twig' %}
+    {% elseif attr_class == "gogo-filters-builder" %}
+      {% include 'admin/core_custom/custom-fields/filters-builder.html.twig' %}
     {% elseif attr_class == "gogo-form-fields" %}
       {% include 'admin/partials/show_element_form_fields.html.twig' %}
     {% elseif attr_class == "gogo-viewport-picker" %}

@@ -178,7 +178,7 @@ class ElementJsonGenerator
 
         // -------------------- COMPACT JSON ----------------
         // [id, customData, latitude, longitude, status, moderationState]
-        $compactFields = $config->getMarker()->getFieldsUsedByTemplate();
+        $compactFields = $config->getCompactFields();
         $compactData = [];
         foreach ($compactFields as $field) {
             $compactData[] = $element->getProperty($field);

@@ -28,6 +28,9 @@ class ConfigurationMenu
     /** @MongoDB\Field(type="bool") */
     public $displayNumberOfElementRoundResults = false;
 
+    /** @MongoDB\Field(type="string") */
+    protected $filtersJson = "[{\"type\":\"taxonomy\",\"label\":\"Filtre Catégories\"}]";
+
     /**
      * Set width.
      *
@@ -194,5 +197,18 @@ class ConfigurationMenu
     public function getDisplayNumberOfElementRoundResults()
     {
         return $this->displayNumberOfElementRoundResults;
+    }
+
+    public function getFiltersJson() {
+        return $this->filtersJson;
+    }
+    public function setFiltersJson($json) {
+        $this->filtersJson = $json;
+        return $this;
+    }
+    public function getFilters() {
+        $result = json_decode($this->getFiltersJson());
+        if (!is_array($result)) return [];
+        return $result;
     }
 }

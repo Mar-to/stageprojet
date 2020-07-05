@@ -89,7 +89,7 @@ class APIController extends GoGoController
                 "data":' . $elementsJson;
 
             if (!$fullRepresentation) {
-                $mapping = ['id', $config->getMarker()->getFieldsUsedByTemplate(), 'latitude', 'longitude', 'status', 'moderationState'];
+                $mapping = ['id', $config->getCompactFields(), 'latitude', 'longitude', 'status', 'moderationState'];
                 $elementsJson .= ', "mapping":'.json_encode($mapping);
             }
 
