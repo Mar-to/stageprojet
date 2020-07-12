@@ -1,5 +1,5 @@
 <div class="project-container">
-  <div class="project-item waves-effect waves-block waves-light z-depth-1" onclick="window.open('{{ project.homeUrl }}', '_blank');">
+  <a class="project-item waves-effect waves-block waves-light z-depth-1" href="{{ project.homeUrl }}" target="_blank">
     {% if project.imageUrl %}
       <img class="project-logo" src="{{ project.imageUrl }}">
     {% else %}
@@ -7,7 +7,7 @@
     {% endif %}
 
     <div class="project-content">
-      <div class="name">{{ project.name|capitalize }}</div>
+      <div class="name gogo-neutral">{{ project.name|capitalize }}</div>
       {% set date = project.publishedAt ? project.publishedAt : project.createdAt %}
       <div class="published-at">{{ date|date("m/d/Y") }}</div>
       <div class="published-at-int">{{ date ? date.getTimestamp : '' }}</div>
@@ -17,5 +17,5 @@
         <span class="icon gogo-icon-marker-symbol"></span>
       </div>
     </div>
-  </div>
+  </a>
 </div>

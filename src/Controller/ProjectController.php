@@ -157,6 +157,9 @@ class ProjectController extends Controller
         foreach ($projects as $project) {
             $project->setHomeUrl($this->generateUrlForProject($project));
         }
+        foreach ($pinnedProjects as $project) {
+            $project->setHomeUrl($this->generateUrlForProject($project));
+        }
 
         return $this->render('saas/home.html.twig', [
             'projects' => $projects,
