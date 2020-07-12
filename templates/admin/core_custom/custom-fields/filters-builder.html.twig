@@ -16,26 +16,34 @@
 
       var fields = [
         { label: 'Filtre Catégories', name: "taxonomy", attrs: { type: 'taxonomy' }, icon: '*' },
-        { label: 'Filtre Date', name: "gogo_date", attrs: { type: 'date' } },
-        { label: 'Filtre Nombre', name: "gogo_number", attrs: { type: 'number' } },
+        { label: 'Filtre Date', name: "gogo_date", attrs: { type: 'gogo_date' } },
+        { label: 'Filtre Nombre', name: "gogo_number", attrs: { type: 'gogo_number' } },
       ];
+
+      var displayFilter = function(fieldData) {
+        result = fieldData.field ? "Champ utilisé : " + fieldData.field : "Veuillez choisir le champ à utiliser"
+        return { field: result };
+      }
       var templates = {
-        taxonomy: function(fieldData) { return { field: '<select id="' + fieldData.name + '"><option>Catégories</option></select>' }; },
+        taxonomy: function(fieldData) { return { field: '' }; },
+        gogo_date: displayFilter,
+        gogo_number: displayFilter,
       };
       var fieldAttr = { label: "Nom du champ à utiliser", type: 'autocomplete'}
       var contractedAttr = { label: "Filtre replié par defaut", type: 'checkbox'}
-      var dateViews = { "day": "Jour", "week": "Semaine", "month": "Mois", "range": "Plage" }
+      var dateViews = { "day": "Jour", "week": "Semaine", "month": "Mois", "year": "Année", "range": "Plage" }
 
       var fieldsAttrs = {
         taxonomy: {},
-        date: {
+        gogo_date: {
           field: fieldAttr,
           contracted: contractedAttr,
           multiday: { label: "Plusieurs jours selectionnable", type: 'checkbox' },
-          views: { label: "Vues", options: dateViews, multiple: "multiple", size: 4 }, // not working
+          views: { label: "Hidden Views" },
+          select_views: { label: "Vues Disponibles", options: dateViews, multiple: "multiple" }, // not working
           defaultView: { label: "Vue par défaut", options: dateViews },
         },
-        number: {
+        gogo_number: {
           field: fieldAttr,
           contracted: contractedAttr,
           subtype: {label: "Type", options: { 'slider': 'Slider', 'value': 'Valeur' }}
@@ -65,6 +73,10 @@
             $(this).text($(this).html())
           });
           $('input[type="checkbox"][value="true"]').prop('checked', true);
+
+          $('[name=views]').each(function() {
+            $(this).closest('.form-elements').find('[name=select_views]').val($(this).val().split(' '));
+          })
         }, 0);
 
       });
@@ -73,10 +85,13 @@
         // prevent adding two of those fields
         $('.input-control[data-type=taxonomy]').toggle($('.taxonomy-field').length == 0);
 
+        $('[name=select_views]:not(.gogo-initialized)').select2();
+        $('[name=select_views]:not(.gogo-initialized)').change(function() {
+          $(this).closest('.form-elements').find('[name=views]').val($(this).val().join(' '));
+        })
+        $('[name=select_views').addClass('gogo-initialized')
+
         var data = formBuilder.actions.getData()
-        for (var i = data.length - 1; i >= 0; i--) {
-          if (data[i].type == "date") data[i].views = Object.keys(dateViews) // TODO let the user choose which views are used
-        }
         $('#{{ form.vars.id }}').val(JSON.stringify(data));
 
         // Changes icons and icones helpers
@@ -102,5 +117,28 @@
 
   .taxonomy-field .field-actions .toggle-form.btn, .taxonomy-field .field-actions .copy-button {
     display: none !important;
+  }
+  .gogo_date-field .views-wrap { display: none; }
+
+  /* Fix conflict betwwen slect 2 and form-builder */
+  .select2-choice>span:first-child, .select2-chosen,
+  .select2-container .select2-choices .select2-search-field input {
+    border: none !important;
+  }
+  .form-wrap.form-builder .frmb li.select2-search-choice {
+    clear: unset;
+    padding: 3px 5px 3px 18px;
+    margin-left: 5px;
+  }
+  .select2-container-multi .select2-choices {
+    height: 32px !important;
+    display: flex;
+    align-items: center;
+  }
+  .select2-container.select2-container-multi.form-control {
+    padding: 0 !important;
+  }
+  .form-wrap.form-builder .frmb li {
+    clear: unset;
   }
 </style>
