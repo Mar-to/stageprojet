@@ -9,6 +9,12 @@
 
 <script>
   var formBuilder;
+  var allFields = "{{ form.vars.attr.dataproperties|raw }}".split(',');
+  var fieldsChoices = {}
+  for (var i = 0; i < allFields.length; i++) {
+    fieldsChoices[allFields[i]] = allFields[i];
+  }
+  console.log("fields", allFields)
   if (!formBuilderInitialized) {
     formBuilderInitialized = true;
     jQuery(function($) {
@@ -25,11 +31,11 @@
         return { field: result };
       }
       var templates = {
-        taxonomy: function(fieldData) { return { field: '' }; },
+        taxonomy: function(fieldData) { return { field: 'Personnaliser ce filtre dans le menu des catégories' }; },
         gogo_date: displayFilter,
         gogo_number: displayFilter,
       };
-      var fieldAttr = { label: "Nom du champ à utiliser", type: 'autocomplete'}
+      var fieldAttr = { label: "Nom du champ à utiliser", options: fieldsChoices}
       var contractedAttr = { label: "Filtre replié par defaut", type: 'checkbox'}
       var dateViews = { "day": "Jour", "week": "Semaine", "month": "Mois", "year": "Année", "range": "Plage" }
 
@@ -119,6 +125,11 @@
     display: none !important;
   }
   .gogo_date-field .views-wrap { display: none; }
+
+  .form-wrap.form-builder .frmb .field-label {
+    color: inherit;
+    font-weight: 600;
+  }
 
   /* Fix conflict betwwen slect 2 and form-builder */
   .select2-choice>span:first-child, .select2-chosen,

@@ -381,7 +381,7 @@ class ElementRepository extends DocumentRepository
 
         $formProperties = $this->findFormProperties();
 
-        return array_merge($allProperties, $formProperties);
+        return array_unique(array_merge($allProperties, $formProperties));
     }
 
     public function findFormProperties()

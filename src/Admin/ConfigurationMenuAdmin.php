@@ -18,6 +18,8 @@ class ConfigurationMenuAdmin extends ConfigurationAbstractAdmin
     {
         $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $apiProperties = $dm->getRepository('App\Document\Element')->findAllCustomProperties();
+        $propertiesText = implode($apiProperties, ',');
 
         $featureStyle = ['class' => 'col-md-6 col-lg-3 gogo-feature'];
         $featureFormOption = ['delete' => false, 'required' => false, 'label_attr' => ['style' => 'display:none']];
@@ -34,8 +36,8 @@ class ConfigurationMenuAdmin extends ConfigurationAbstractAdmin
                     ->add('menu.displayNumberOfElementForEachCategory', CheckboxType::class, ['label' => "Pour chaque catégorie, afficher le nombre d'élément ayant cette catégorie", 'required' => false])
                     ->add('menu.displayNumberOfElementRoundResults', CheckboxType::class, ['label' => 'Arrondir les résultat (afficher 300+ au lieu de 326)',  'label_attr' => ['title' => "Valable uniquement si \"afficher le nombre d'éléments par catégorie\" est coché"], 'required' => false])
                 ->end()
-                ->with('Les filtres', ['description' => "Un peu d'aide"])
-                    ->add('menu.filtersJson', HiddenType::class, ['attr' => ['class' => 'gogo-filters-builder']])
+                ->with('Personnalisez les filtres dans le menu', ['description' => ""])
+                    ->add('menu.filtersJson', HiddenType::class, ['attr' => ['class' => 'gogo-filters-builder', 'dataproperties' => $propertiesText]])
                 ->end()
             ->end()
             ->tab('Recherche')
