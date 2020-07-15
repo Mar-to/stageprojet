@@ -10,6 +10,7 @@ use App\Document\ModerationState;
 use App\Document\UserInteraction;
 use App\EventListener\TaxonomyJsonGenerator;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use App\Services\Utf8Encoder;
 
 class ElementImportService
 {
@@ -61,24 +62,10 @@ class ElementImportService
 
     public function importCsv($import, $onlyGetData = false)
     {
-        $fileName = $import->getFilePath();
-
-        // Getting php array of data from CSV
-        $header = null;
-        $delimiter = ',';
-        $data = [];
-
-        if (false !== ($handle = fopen($fileName, 'r'))) {
-            while (false !== ($row = fgetcsv($handle, 0, $delimiter))) {
-                if (!$header) {
-                    $header = $row;
-                } else {
-                    if (count($header) == count($row)) {
-                        $data[] = array_combine($header, $row);
-                    }
-                }
-            }
-            fclose($handle);
+        list($header,$data) = $this->readCSV($import->getFilePath(), ',');
+        if ($header && count($header) < 3) {
+            // try with ; separtor
+            list($header,$data) = $this->readCSV($import->getFilePath(), ';');
         }
 
         if (!$data) {
@@ -90,6 +77,26 @@ class ElementImportService
         }
 
         return $this->importData($data, $import);
+    }
+
+    private function readCSv($fileName, $delimiter)
+    {
+        $data = [];
+        $header = null;
+        if (false !== ($handle = fopen($fileName, 'r'))) {
+            while (false !== ($row = fgetcsv($handle, 0, $delimiter))) {
+                $row = Utf8Encoder::toUTF8($row);
+                if (!$header) {
+                    $header = $row;
+                } else {
+                    if (count($header) == count($row)) {
+                        $data[] = array_combine($header, $row);
+                    }
+                }
+            }
+            fclose($handle);
+        }
+        return [$header, $data];
     }
 
     public function importJson($import, $onlyGetData = false)
