@@ -188,23 +188,26 @@ class DatabaseIntegrityWatcher
                             $fieldPath .= '.' . $reverseName . '.' . $element->getId();
 
                             // Updates elements throught reverse relation
-                            $dm->getRepository('App\Document\Element')->createQueryBuilder()
-                                 ->updateMany()
-                                 ->field('id')->in($addedElements)
-                                 ->field($fieldPath)->set($element->getName())
-                                 ->getQuery()->execute();
-                            $elementToUpdates = $elementToUpdates + $dm->getRepository('App\Document\Element')->createQueryBuilder()
-                                 ->field('id')->in($addedElements)
-                                 ->select('id')->hydrate(false)->getQuery()->execute()->toArray();
-
-                            $dm->getRepository('App\Document\Element')->createQueryBuilder()
-                                 ->updateMany()
-                                 ->field('id')->in($removedElements)
-                                 ->field($fieldPath)->unsetField()->exists(true)
-                                 ->getQuery()->execute();
-                            $elementToUpdates = $elementToUpdates + $dm->getRepository('App\Document\Element')->createQueryBuilder()
-                                 ->field('id')->in($removedElements)
-                                 ->select('id')->hydrate(false)->getQuery()->execute()->toArray();
+                            if (count($addedElements) > 0) {
+                                $dm->getRepository('App\Document\Element')->createQueryBuilder()
+                                     ->updateMany()
+                                     ->field('id')->in($addedElements)
+                                     ->field($fieldPath)->set($element->getName())
+                                     ->getQuery()->execute();
+                                $elementToUpdates = $elementToUpdates + $dm->getRepository('App\Document\Element')->createQueryBuilder()
+                                     ->field('id')->in($addedElements)
+                                     ->select('id')->hydrate(false)->getQuery()->execute()->toArray();
+                            }
+                            if (count($removedElements) > 0) {
+                                $dm->getRepository('App\Document\Element')->createQueryBuilder()
+                                     ->updateMany()
+                                     ->field('id')->in($removedElements)
+                                     ->field($fieldPath)->unsetField()->exists(true)
+                                     ->getQuery()->execute();
+                                $elementToUpdates = $elementToUpdates + $dm->getRepository('App\Document\Element')->createQueryBuilder()
+                                     ->field('id')->in($removedElements)
+                                     ->select('id')->hydrate(false)->getQuery()->execute()->toArray();
+                            }
                         }
                     }
                     if (count($elementToUpdates)) {

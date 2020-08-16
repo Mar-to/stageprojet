@@ -41,14 +41,14 @@ class ImportAdminController extends Controller
         $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]);
 
         return $this->render('admin/pages/import/show-data.html.twig', [
-      'dataDisplay' => $dataDisplay,
-      'redirectUrl' => $url,
-      'import' => $object,
-    ]);
+          'dataDisplay' => $dataDisplay,
+          'redirectUrl' => $url,
+          'import' => $object,
+        ]);
     }
 
     public function refreshAction(Request $request, DocumentManager $dm, ElementImportService $importService,
-                                AsyncService $asyncService)
+                                  AsyncService $asyncService)
     {
         $object = $this->admin->getSubject();
 
@@ -74,11 +74,11 @@ class ImportAdminController extends Controller
         $stateUrl = $this->generateUrl('gogo_import_state', ['id' => $object->getId()]);
 
         return $this->render('admin/pages/import/import-progress.html.twig', [
-      'import' => $object,
-      'redirectUrl' => $redirectionUrl,
-      'redirectListUrl' => $redirectionUrl = $this->admin->generateUrl('list'),
-      'stateUrl' => $stateUrl,
-    ]);
+          'import' => $object,
+          'redirectUrl' => $redirectionUrl,
+          'redirectListUrl' => $redirectionUrl = $this->admin->generateUrl('list'),
+          'stateUrl' => $stateUrl,
+        ]);
     }
 
     /**
@@ -111,7 +111,23 @@ class ImportAdminController extends Controller
             if ($isFormValid) {
                 try {
                     // ----- CUSTOM -------
-                    $object->setOntologyMapping($request->get('ontology'));
+                    // Fix ontology mapping for elements fields with reverse value
+                    $ontology = $request->get('ontology');
+                    $dm = $this->container->get('doctrine_mongodb');
+                    $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+                    $elementsLinkedFields = [];
+                    foreach($config->getElementFormFields() as $field) {
+                        if ($field->type === 'elements'
+                           && in_array($field->name, array_values($ontology))
+                           && isset($field->reversedBy)
+                           && in_array($field->reversedBy, array_values($ontology))) {
+                            $this->addFlash('sonata_flash_info', "Les champs $field->name et $field->reversedBy étant liées entre eux, il n'est pas possible de les importer les deux en même temps. Seul le champ $field->name est conservé pour l'import, le champ $field->reversedBy sera automatiquement ajusté à la fin de l'import");
+                            $key = array_search($field->reversedBy, $ontology);
+                            $ontology[$key] = '/';
+                        }
+                    }
+
+                    $object->setOntologyMapping($ontology);
                     if ($request->get('taxonomy')) {
                         $taxonomy = array_map(function ($value) {
                             $array = explode(',', $value[0]);

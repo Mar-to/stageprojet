@@ -212,6 +212,7 @@ class ElementImportService
         foreach($config->getElementFormFields() as $field) {
             if ($field->type === 'elements') $elementsLinkedFields[] = $field->name;
         }
+
         if (count($elementsLinkedFields) > 0) {
             // Go through each individual imported elements, and link elements from each other
             $importedElements = $this->dm->createQueryBuilder('App\Document\Element')
@@ -219,13 +220,16 @@ class ElementImportService
                 ->getQuery()->execute();
             $privateProp = $config->getApi()->getPublicApiPrivateProperties();
 
-            foreach ($importedElements as $element) {
-                foreach ($elementsLinkedFields as $linkField) {
+            $i = 0;
+            $size = count($importedElements);
+            foreach ($elementsLinkedFields as $linkField) {
+                foreach ($importedElements as $element) {
+                    $import->setCurrMessage("Calcul des liens pour le champ $linkField. $i / $size éléments traitées");
                     $values = $element->getCustomProperty($linkField);
                     if ($values !== null) {
                         if (!is_array($values)) $values = preg_split("/[,;]/", $values);
                         $values = array_map('trim', $values);
-                        $values = array_filter($values); // filter empty values
+                        $values = array_filter($values, function($e) { return strlen($e) > 0; });
                         if (count($values) > 0) {
                             $qb = $this->dm->createQueryBuilder('App\Document\Element');
                             $qb->addOr($qb->expr()->field('name')->in($values));
@@ -234,11 +238,26 @@ class ElementImportService
                             $result = array_map(function($el) {
                                 return $el['name'];
                             }, $result);
+                            dump($linkField, $result);
                             $element->setCustomProperty($linkField, $result);
                         }
                     }
                 }
+                ++$i;
+                if (1 === ($i % $batchSize)) {
+                    $this->dm->flush();
+                    $this->dm->clear();
+                    // After flush, we need to get again the import from the DB to avoid doctrine raising errors
+                    $import = $this->dm->getRepository('App\Document\Import')->find($import->getId());
+                    $this->dm->persist($import);
+                }
             }
+            $this->dm->flush();
+            $this->dm->clear();
+
+            // After flush, we need to get again the import from the DB to avoid doctrine raising errors
+            $import = $this->dm->getRepository('App\Document\Import')->find($import->getId());
+            $this->dm->persist($import);
         }
 
         $countElemenDeleted = 0;
