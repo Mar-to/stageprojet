@@ -19,7 +19,7 @@ const scriptsExternalPages = () =>
     .pipe(gulp.dest('web/js'));
 
 const scriptsElementForm = () =>
-  gulp.src(['assets/js/element-form/**/*.js'])
+  gulp.src(['assets/js/element-form/**/*.js', 'node_modules/universal-geocoder/dist/universal-geocoder.js'])
     .pipe(concat('element-form.js'))
     .pipe(gulp.dest('web/js'));
 
