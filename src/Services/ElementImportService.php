@@ -165,7 +165,7 @@ class ElementImportService
         // processing each data
         foreach ($data as $row) {
             try {
-                $import->setCurrMessage('Importation des données '.$i.'/'.$size.' traitées');
+                $import->setCurrMessage("Importation des données $i/$size traitées");
                 $result = $this->importOneService->createElementFromArray($row, $import);
                 switch ($result) {
                   case 'nothing_to_do': $this->countElementNothingToDo++; break;
@@ -224,7 +224,7 @@ class ElementImportService
             $size = count($importedElements);
             foreach ($elementsLinkedFields as $linkField) {
                 foreach ($importedElements as $element) {
-                    $import->setCurrMessage("Calcul des liens pour le champ $linkField. $i / $size éléments traitées");
+                    $import->setCurrMessage("Calcul des liens pour le champ '$linkField' : $i/$size éléments traitées");
                     $values = $element->getCustomProperty($linkField);
                     if ($values !== null) {
                         if (!is_array($values)) $values = preg_split("/[,;]/", $values);
