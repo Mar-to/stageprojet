@@ -43,6 +43,7 @@ class ElementImportOneService
         $this->optionIdsToAddToEachElement = [];
         foreach ($import->getOptionsToAddToEachElement() as $option) {
             $this->optionIdsToAddToEachElement[] = $option->getId();
+            $this->dm->persist($option->getParent()); // Strange bug, need to manually persist parent
         }
 
         // Getting the private field of the custom data
@@ -183,6 +184,7 @@ class ElementImportOneService
 
         $element->setStatus($status);
         $element->updateTimestamp();
+        $element->setPreventLinksUpdate(true); // Check the links between elements at the end of the import
 
         $this->dm->persist($element);
 

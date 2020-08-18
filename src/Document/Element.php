@@ -344,6 +344,8 @@ class Element
 
     private $preventJsonUpdate = false;
 
+    private $preventLinksUpdate = false;
+
     /**
      * Constructor.
      */
@@ -713,6 +715,13 @@ class Element
         return array_key_exists($key, $this->data) ? $this->data[$key] : (array_key_exists($key, $this->privateData) ? $this->privateData[$key] : null);
     }
 
+    public function deleteCustomProperty($key)
+    {
+        if (isset($this->privateData[$key]))
+            unset($this->privateData[$key]);
+        else if (isset($this->data[$key]))
+            unset($this->data[$key]);
+    }
     /**
      * Set status.
      *
@@ -1630,6 +1639,18 @@ class Element
     public function getPreventJsonUpdate()
     {
         return $this->preventJsonUpdate || false;
+    }
+
+    public function setPreventLinksUpdate($preventLinksUpdate)
+    {
+        $this->preventLinksUpdate = $preventLinksUpdate;
+
+        return $this;
+    }
+
+    public function getPreventLinksUpdate()
+    {
+        return $this->preventLinksUpdate || false;
     }
 
     /**

@@ -1,34 +1,36 @@
 {
   "licence": "https://opendatacommons.org/licenses/odbl/summary/",
   "source": "Test",
-	"data":[{
-		"id": 0,
-		"name":"Entropie",
-		"geo":{"latitude":45.18679,"longitude":5.70548},
-		"address": "rue Georges Jacquet, Grenoble",
-		"sourceKey":"CapOuPasCap",
-		"updatedAt": "15/08/2019",
-		"website": "mysite.fr",
-		"description": "oh yeah",
-		"tarara": 452,
-		"categories": ["one", "two"],
-		"categories2": ["orange"],
-		"children": "1,2",
-		"website": "https:\/\/www.asso-entropie.fr\/",
-		"images": ["https:\/\/www.capoupascap.info\/wp-content\/uploads\/2018\/12\/entropie.png"],
-		"files": ["https:\/\/toto.fr\/wp-content\/file.pdf", "https:\/\/aabjka.fr\/wp-content\/file.pdf"],
-		"openHours": {
-			"Tu": "09:30-19:30",
-			"We": "09:30-19:30",
-			"Th": "09:30-13:00,15:00-19:30",
-			"Fr": "09:30-19:30",
-			"Sa": "09:30-19:30"
-		}
+	"data":[
+		{
+			"id": 0,
+			"name":"Entropie",
+			"geo":{"latitude":45.18679,"longitude":5.70548},
+			"address": "rue Georges Jacquet, Grenoble",
+			"sourceKey":"CapOuPasCap",
+			"updatedAt": "15/08/2019",
+			"website": "mysite.fr",
+			"description": "oh yeah",
+			"tarara": 452,
+			"categories": ["one", "two"],
+			"categories2": ["orange"],
+			"children": "1,2",
+			"website": "https:\/\/www.asso-entropie.fr\/",
+			"images": ["https:\/\/www.capoupascap.info\/wp-content\/uploads\/2018\/12\/entropie.png"],
+			"files": ["https:\/\/toto.fr\/wp-content\/file.pdf", "https:\/\/aabjka.fr\/wp-content\/file.pdf"],
+			"openHours": {
+				"Tu": "09:30-19:30",
+				"We": "09:30-19:30",
+				"Th": "09:30-13:00,15:00-19:30",
+				"Fr": "09:30-19:30",
+				"Sa": "09:30-19:30"
+			}
 		},
 		{
 			"id": 1,
 			"parent": "0",
 			"name":"Foot",
+			"children": null,
 			"geo":{"latitude":45.18679,"longitude":5.70548},
 			"address": "rue Bernard, Tours",
 			"sourceKey":"CapOuPasCap",
@@ -38,8 +40,9 @@
 		},
 		{
 			"id":2,
-			"parent": 0,
 			"name":"tata",
+			"parent": "7,8,0",
+			"children": "5",
 			"geo":{"latitude":46.18679,"longitude":5.70548},
 			"address": "rue Jacquet, Labrit",
 			"sourceKey":"CapOuPasCap",

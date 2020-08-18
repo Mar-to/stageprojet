@@ -113,17 +113,19 @@ class ImportAdminController extends Controller
                     // ----- CUSTOM -------
                     // Fix ontology mapping for elements fields with reverse value
                     $ontology = $request->get('ontology');
-                    $dm = $this->container->get('doctrine_mongodb');
-                    $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
-                    $elementsLinkedFields = [];
-                    foreach($config->getElementFormFields() as $field) {
-                        if ($field->type === 'elements'
-                           && in_array($field->name, array_values($ontology))
-                           && isset($field->reversedBy)
-                           && in_array($field->reversedBy, array_values($ontology))) {
-                            $this->addFlash('sonata_flash_info', "Les champs $field->name et $field->reversedBy étant liées entre eux, il n'est pas possible de les importer les deux en même temps. Seul le champ $field->name est conservé pour l'import, le champ $field->reversedBy sera automatiquement ajusté à la fin de l'import");
-                            $key = array_search($field->reversedBy, $ontology);
-                            $ontology[$key] = '/';
+                    if ($ontology) {
+                        $dm = $this->container->get('doctrine_mongodb');
+                        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+                        $elementsLinkedFields = [];
+                        foreach($config->getElementFormFields() as $field) {
+                            if ($field->type === 'elements'
+                               && in_array($field->name, array_values($ontology))
+                               && isset($field->reversedBy)
+                               && in_array($field->reversedBy, array_values($ontology))) {
+                                $this->addFlash('sonata_flash_info', "Les champs $field->name et $field->reversedBy étant liées entre eux, il n'est pas possible de les importer les deux en même temps. Seul le champ $field->name est conservé pour l'import, le champ $field->reversedBy sera automatiquement ajusté à la fin de l'import");
+                                $key = array_search($field->reversedBy, $ontology);
+                                $ontology[$key] = '/';
+                            }
                         }
                     }
 
@@ -147,13 +149,13 @@ class ImportAdminController extends Controller
                     $object = $this->admin->update($object);
 
                     $this->addFlash(
-            'sonata_flash_success',
-            $this->trans(
-              'flash_edit_success',
-              ['%name%' => $this->escapeHtml($this->admin->toString($object))],
-              'SonataAdminBundle'
-            )
-          );
+                        'sonata_flash_success',
+                        $this->trans(
+                          'flash_edit_success',
+                          ['%name%' => $this->escapeHtml($this->admin->toString($object))],
+                          'SonataAdminBundle'
+                        )
+                      );
 
                     if ($request->get('collect')) {
                         $url = $this->admin->generateUrl('collect', ['id' => $object->getId()]);
@@ -169,10 +171,10 @@ class ImportAdminController extends Controller
                     $isFormValid = false;
                 } catch (LockException $e) {
                     $this->addFlash('sonata_flash_error', $this->trans('flash_lock_error', [
-            '%name%' => $this->escapeHtml($this->admin->toString($object)),
-            '%link_start%' => '<a href="'.$this->admin->generateObjectUrl('edit', $object).'">',
-            '%link_end%' => '</a>',
-          ], 'SonataAdminBundle'));
+                        '%name%' => $this->escapeHtml($this->admin->toString($object)),
+                        '%link_start%' => '<a href="'.$this->admin->generateObjectUrl('edit', $object).'">',
+                        '%link_end%' => '</a>',
+                      ], 'SonataAdminBundle'));
                 }
             }
 
@@ -180,13 +182,13 @@ class ImportAdminController extends Controller
             if (!$isFormValid) {
                 if (!$this->isXmlHttpRequest()) {
                     $this->addFlash(
-            'sonata_flash_error',
-            $this->trans(
-              'flash_edit_error',
-              ['%name%' => $this->escapeHtml($this->admin->toString($object))],
-              'SonataAdminBundle'
-            )
-          );
+                        'sonata_flash_error',
+                        $this->trans(
+                          'flash_edit_error',
+                          ['%name%' => $this->escapeHtml($this->admin->toString($object))],
+                          'SonataAdminBundle'
+                        )
+                      );
                 }
             }
         }
@@ -197,10 +199,10 @@ class ImportAdminController extends Controller
              ->setTheme($view, $this->admin->getFormTheme());
 
         return $this->render($this->admin->getTemplate('edit'), [
-      'action' => 'edit',
-      'form' => $view,
-      'object' => $object,
-    ], null);
+          'action' => 'edit',
+          'form' => $view,
+          'object' => $object,
+        ], null);
     }
 
     /**

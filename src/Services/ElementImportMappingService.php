@@ -17,16 +17,16 @@ class ElementImportMappingService
     protected $existingProps;
     protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'files', 'owner', 'source', 'openHours', 'email'];
     protected $mappedCoreFields = [
-    'title' => 'name', 'nom' => 'name', 'titre' => 'name',
-    'mail' => 'email',
-    'taxonomy' => 'categories',
-    'address' => 'streetAddress',
-    'city' => 'addressLocality',
-    'postcode' => 'postalCode',
-    'country' => 'addressCountry',
-    'lat' => 'latitude',
-    'long' => 'longitude', 'lng' => 'longitude', 'lon' => 'longitude',
-  ];
+        'title' => 'name', 'nom' => 'name', 'titre' => 'name',
+        'mail' => 'email',
+        'taxonomy' => 'categories',
+        'address' => 'streetAddress',
+        'city' => 'addressLocality',
+        'postcode' => 'postalCode',
+        'country' => 'addressCountry',
+        'lat' => 'latitude',
+        'long' => 'longitude', 'lng' => 'longitude', 'lon' => 'longitude',
+    ];
 
     public function __construct(DocumentManager $dm)
     {
@@ -38,8 +38,8 @@ class ElementImportMappingService
     {
         $this->import = $import;
         $this->createMissingOptions = $import->getCreateMissingOptions();
-        $parent = $import->getParentCategoryToCreateOptions() ?: $this->dm->getRepository('App\Document\Category')->findOneByIsRootCategory(true);
-        $this->parentCategoryIdToCreateMissingOptions = $parent ? $parent->getId() : null;
+        // $parent = $import->getParentCategoryToCreateOptions() ?: $this->dm->getRepository('App\Document\Category')->findOneByIsRootCategory(true);
+        $this->parentCategoryIdToCreateMissingOptions = null; //$parent ? $parent->getId() : null;
 
         // Execute custom code (the <?php is used to have proper code highliting in text editor, we remove it before executing)
         eval(str_replace('<?php', '', $import->getCustomCode()));
@@ -260,8 +260,10 @@ class ElementImportMappingService
                     }
                     // create options for previously imported non mapped options
                     if (array_key_exists($category, $taxonomyMapping)
-              && (!$taxonomyMapping[$category] || '/' == $taxonomyMapping[$category] || '' == $taxonomyMapping[$category])
-              && $this->createMissingOptions) {
+                        && (!$taxonomyMapping[$category]
+                            || '/' == $taxonomyMapping[$category]
+                            || '' == $taxonomyMapping[$category])
+                        && $this->createMissingOptions) {
                         $taxonomyMapping[$category] = [$this->createOption($category)];
                     }
                 }
@@ -407,10 +409,10 @@ class ElementImportMappingService
 
         foreach ($options as $option) {
             $ids = [
-        'id' => $option->getId(),
-        'name' => $option->getName(),
-        'idAndParentsId' => $option->getIdAndParentOptionIds(),
-      ];
+                'id' => $option->getId(),
+                'name' => $option->getName(),
+                'idAndParentsId' => $option->getIdAndParentOptionIds(),
+            ];
             $this->mappingTableIds[$this->slugify($option->getNameWithParent())] = $ids;
             $this->mappingTableIds[$this->slugify($option->getName())] = $ids;
             $this->mappingTableIds[strval($option->getId())] = $ids;

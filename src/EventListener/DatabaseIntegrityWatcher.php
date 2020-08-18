@@ -138,6 +138,7 @@ class DatabaseIntegrityWatcher
 
         if (array_key_exists("App\Document\Element", $documentManaged)) {
             foreach ($documentManaged["App\Document\Element"] as $key => $element) {
+                if ($element->getPreventLinksUpdate()) return;
                 // Fixs elements referencing this element
                 $elementsFields = [];
                 $bidirdectionalElementsFields = [];

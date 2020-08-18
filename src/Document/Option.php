@@ -49,7 +49,7 @@ class Option
      * @Accessor(getter="getParentOptionId")
      * @Groups({"semantic"})
      * @Exclude(if="object.getParentOptionId() == null")
-     * @MongoDB\ReferenceOne(targetDocument="App\Document\Category", inversedBy="options")
+     * @MongoDB\ReferenceOne(targetDocument="App\Document\Category", inversedBy="options", cascade={"persist"})
      */
     public $parent;
 
