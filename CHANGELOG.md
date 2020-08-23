@@ -1,3 +1,7 @@
+v3.1.4
+======
+* FEATURE: Ability to configure a custom domain in SASS mode (if the server uses nginx)
+
 v3.0.0
 ======
 * MAJOR: Upgrade to php7 (mandatory) and symfony 4.4.

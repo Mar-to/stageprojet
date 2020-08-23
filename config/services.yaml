@@ -110,6 +110,11 @@ services:
           - { name: doctrine_mongodb.odm.event_listener, event: postPersist }
 
     App\EventListener\ConfigurationListener:
+      arguments:
+        $basePath: '%base_path%'
+        $baseUrl: '%base_url%'
+        $contactEmail: '%contact_email%'
+        $projectDir: '%kernel.project_dir%'
       tags:
           - { name: doctrine_mongodb.odm.event_listener, event: preUpdate }
 

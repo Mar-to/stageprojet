@@ -27,6 +27,9 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\Field(type="string") */
     protected $dbName = 'gogocarto_default';
 
+    /** @MongoDB\Field(type="string") */
+    protected $customDomain = null;
+
     // ----------------------------
     // --------- BASICS -----------
     // ----------------------------
@@ -3398,6 +3401,16 @@ class Configuration implements \JsonSerializable
     }
     public function setPublishOnSaasPage($bool) {
         $this->publishOnSaasPage = $bool;
+        return $this;
+    }
+
+    public function getCustomDomain()
+    {
+        return $this->customDomain;
+    }
+    public function setCustomDomain($domain)
+    {
+        $this->customDomain = $domain;
         return $this;
     }
 }

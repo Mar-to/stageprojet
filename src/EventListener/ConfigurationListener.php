@@ -12,9 +12,13 @@ class ConfigurationListener
 {
     protected $asyncService;
 
-    public function __construct(AsyncService $asyncService)
+    public function __construct(AsyncService $asyncService, $baseUrl, $basePath, $contactEmail, $projectDir)
     {
         $this->asyncService = $asyncService;
+        $this->baseUrl = $baseUrl;
+        $this->basePath = $basePath;
+        $this->contactEmail = $contactEmail;
+        $this->projectDir = $projectDir;
     }
 
     public function preUpdate(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $args)
@@ -79,6 +83,28 @@ class ConfigurationListener
                                          $document->getApi()->getPublicApiPrivateProperties(),
                                          $oldFormFields,
                                          $newFormFields);
+            }
+            if (array_key_exists('customDomain', $changeset)) {
+                $customDomainChanged = $changeset['customDomain'];
+                $oldCustomDomain = preg_replace('/https?:\/\//', '', $customDomainChanged[0]);
+                $newCustomDomain = preg_replace('/https?:\/\//', '', $customDomainChanged[1]);
+                if ($oldCustomDomain) {
+                    $process = new Process(['sh', "$this->projectDir/bin/remove_custom_domain_config.sh", $oldCustomDomain]);
+                    $process->run();
+                }
+                if  ($newCustomDomain) {
+                    $gogo_url = $document->getDbName() . '.' . $this->baseUrl . $this->basePath;
+                    $process = new Process(['sh', "$this->projectDir/bin/configure_custom_domain.sh", $newCustomDomain, $gogo_url, $this->contactEmail]);
+                    $process->start();
+                    // For debuging :
+                    // foreach ($process as $type => $data) {
+                    //     if ($process::OUT === $type) {
+                    //         echo "\nRead from stdout: ".$data;
+                    //     } else { // $process::ERR === $type
+                    //         echo "\nRead from stderr: ".$data;
+                    //     }
+                    // }
+                }
             }
         }
     }
