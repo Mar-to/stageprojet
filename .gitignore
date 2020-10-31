@@ -12,6 +12,8 @@ ssh_password
 *~
 .idea
 /web/matomo/
+/docker/docker-compose.local.yml
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php

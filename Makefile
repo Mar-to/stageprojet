@@ -8,6 +8,11 @@ NPM           = npm
 GIT           = git
 GULP          = gulp
 DOCKER        = docker-compose
+DOCKER_COMPOSE= $$( if [ -f docker/docker-compose.local.yml ]; then \
+		echo docker/docker-compose.local.yml; \
+	else \
+		echo docker/docker-compose.yml; \
+	fi )
 .DEFAULT_GOAL = help
 
 .PHONY: assets
@@ -53,20 +58,20 @@ build-assets: ## Build the assets
 	$(GULP) build
 
 ## —— Docker ——————————————
-build: docker/docker-compose.yml ## Build Docker images
-	$(DOCKER) -f docker/docker-compose.yml build --pull
+build: ## Build Docker images
+	$(DOCKER) -f $(DOCKER_COMPOSE) build --pull
 
-up: docker/docker-compose.yml ## Start the Docker hub
-	$(DOCKER) -f docker/docker-compose.yml up -d
+up: ## Start the Docker hub
+	$(DOCKER) -f $(DOCKER_COMPOSE) up -d
 
-stop: docker/docker-compose.yml ## Stop the Docker hub
-	$(DOCKER) -f docker/docker-compose.yml stop
+stop: ## Stop the Docker hub
+	$(DOCKER) -f $(DOCKER_COMPOSE) stop
 
-down: docker/docker-compose.yml ## Down the Docker hub
-	$(DOCKER) -f docker/docker-compose.yml down --remove-orphans
+down: ## Down the Docker hub
+	$(DOCKER) -f $(DOCKER_COMPOSE) down --remove-orphans
 
-shell: docker/docker-compose.yml ## Start shell inside Docker
-	$(DOCKER) -f docker/docker-compose.yml exec gogocarto $(SHELL)
+shell: ## Start shell inside Docker
+	$(DOCKER) -f $(DOCKER_COMPOSE) exec gogocarto $(SHELL)
 
 ## —— Project —————————————
 commands: ## Display all commands in the project namespace
