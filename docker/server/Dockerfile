@@ -85,7 +85,7 @@ RUN openssl req -subj '/CN=example.com/O=My Company Name LTD./C=US' -new -newkey
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Prestissimo
-RUN composer global require hirak/prestissimo --prefer-dist --no-progress --no-suggest --classmap-authoritative
+#RUN composer global require hirak/prestissimo --prefer-dist --no-progress --no-suggest --classmap-authoritative
 
 # Node & NPM
 RUN curl -sL https://deb.nodesource.com/setup_10.x  | bash -
