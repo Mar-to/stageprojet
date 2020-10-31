@@ -21,7 +21,7 @@ services:
     image: shikhir/alpine-mongodb
     container_name: mongo
     volumes:
-      - mongo:/data/db
+      - mongo:/data/mongodb
     ports:
       - "27017:27017"
     tty: true
