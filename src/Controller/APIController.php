@@ -134,7 +134,7 @@ class APIController extends GoGoController
     }
 
     public function getTaxonomyMappingAction(Request $request, $id = null, $_format = 'json', DocumentManager $dm,
-                                           SerializerInterface $serialize)
+                                           SerializerInterface $serializer)
     {
         $options = $dm->getRepository('App\Document\Option')->findAll();
         $result = [];
