@@ -75,31 +75,32 @@ class APIController extends GoGoController
 
         $status = 200;
         if (!$elementsJson) {
-            $responseJson = '{ "error": "Element does not exists" }';
+            $elementsJson = '{ "error": "Element does not exists" }';
             $status = 500;
         } elseif ($jsonLdRequest) {
-            $responseJson = '{
-        "@context" : "https://rawgit.com/jmvanel/rdf-convert/master/context-gogo.jsonld",
-        "@graph"   :  '.$elementsJson.'
-      }';
+            $elementsJson = '{
+                "@context" : "https://rawgit.com/jmvanel/rdf-convert/master/context-gogo.jsonld",
+                "@graph"   :  '.$elementsJson.'
+            }';
         } else {
-            $responseJson = '{
-        "licence": "'.$config->getDataLicenseUrl().'",
-        "ontology":"'.$ontology.'"';
+            $elementsJson = '{
+                "licence": "'.$config->getDataLicenseUrl().'",
+                "ontology":"'.$ontology.'",
+                "data":' . $elementsJson;
 
             if (!$fullRepresentation) {
                 $mapping = ['id', $config->getMarker()->getFieldsUsedByTemplate(), 'latitude', 'longitude', 'status', 'moderationState'];
-                $responseJson .= ', "mapping":'.json_encode($mapping);
+                $elementsJson .= ', "mapping":'.json_encode($mapping);
             }
 
-            $responseJson .= ', "data":'.$elementsJson.'}';
+            $elementsJson .= '}';
         }
 
         // TODO count how much a user is using the API
         // $responseSize = strlen($elementsJson);
         // $date = date('d/m/Y');
 
-        return $this->createResponse($responseJson, $config, $status);
+        return $this->createResponse($elementsJson, $config, $status);
     }
 
     public function getTaxonomyAction(Request $request, $id = null, $_format = 'json', DocumentManager $dm,
@@ -121,9 +122,9 @@ class APIController extends GoGoController
 
         if ($jsonLdRequest) {
             $responseJson = '{
-          "@context" : "https://rawgit.com/jmvanel/rdf-convert/master/pdcn-taxonomy/taxonomy.context.jsonld",
-          "@graph"   :  '.$dataJson.'
-        }';
+                "@context" : "https://rawgit.com/jmvanel/rdf-convert/master/pdcn-taxonomy/taxonomy.context.jsonld",
+                "@graph"   :  '.$dataJson.'
+            }';
         } else {
             $responseJson = $dataJson;
         }
@@ -208,7 +209,7 @@ class APIController extends GoGoController
     private function encodeElementArrayToJsonArray($array, $fullRepresentation, $isAdmin = false, $includePrivateFields = false)
     {
         $elementsJson = '[';
-        foreach ($array as $key => $value) {
+        foreach ($array as $value) {
             if ('true' == $fullRepresentation) {
                 $elementJson = $value['baseJson'];
                 if ($includePrivateFields && '{}' != $value['privateJson']) {
@@ -217,9 +218,8 @@ class APIController extends GoGoController
                 if ($isAdmin && '{}' != $value['adminJson']) {
                     $elementJson = substr($elementJson, 0, -1).','.substr($value['adminJson'], 1);
                 }
-                if (key_exists('score', $value)) {
-                    // remove first '{'
-                    $elementJson = substr($elementJson, 1);
+                if (isset($value['score'])) {                    
+                    $elementJson = substr($elementJson, 1); // remove first '{'
                     $elementJson = '{"searchScore" : '.$value['score'].','.$elementJson;
                 }
             } else {
@@ -228,7 +228,7 @@ class APIController extends GoGoController
             $elementsJson .= $elementJson.',';
         }
 
-        $elementsJson = rtrim($elementsJson, ',').']';
+        $elementsJson = substr($elementsJson, 0, -1) . ']'; // remove last comma
 
         return $elementsJson;
     }
