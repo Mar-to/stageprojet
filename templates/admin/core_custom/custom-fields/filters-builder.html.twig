@@ -14,12 +14,9 @@
   for (var i = 0; i < allFields.length; i++) {
     fieldsChoices[allFields[i]] = allFields[i];
   }
-  console.log("fields", allFields)
   if (!formBuilderInitialized) {
     formBuilderInitialized = true;
     jQuery(function($) {
-      var fbEditor = document.getElementById('filters-builder-container');
-
       var fields = [
         { label: 'Filtre Catégories', name: "taxonomy", attrs: { type: 'taxonomy' }, icon: '*' },
         { label: 'Filtre Date', name: "gogo_date", attrs: { type: 'gogo_date' } },
@@ -46,17 +43,20 @@
           contracted: contractedAttr,
           multiday: { label: "Plusieurs jours selectionnable", type: 'checkbox' },
           views: { label: "Hidden Views" },
-          select_views: { label: "Vues Disponibles", options: dateViews, multiple: "multiple" }, // not working
+          select_views: { label: "Vues (Ctrl + Click)", options: dateViews, multiple: "multiple" },
           defaultView: { label: "Vue par défaut", options: dateViews },
         },
         gogo_number: {
           field: fieldAttr,
           contracted: contractedAttr,
+          min: {label: "min", type: "number", required: "true", value: "0"},
+          max: {label: "max", type: "number", required: "true", value: "100"},
+          step: {label: "step", type: "number", required: "true", value: "1"},
           subtype: {label: "Type", options: { 'slider': 'Slider', 'value': 'Valeur' }}
         }
       };
 
-      formBuilder = $(fbEditor).formBuilder({
+      formBuilder = $("#filters-builder-container").formBuilder({
         showActionButtons: false,
         dataType: "json",
         fields: fields,
@@ -91,7 +91,6 @@
         // prevent adding two of those fields
         $('.input-control[data-type=taxonomy]').toggle($('.taxonomy-field').length == 0);
 
-        $('[name=select_views]:not(.gogo-initialized)').select2();
         $('[name=select_views]:not(.gogo-initialized)').change(function() {
           $(this).closest('.form-elements').find('[name=views]').val($(this).val().join(' '));
         })
@@ -131,25 +130,7 @@
     font-weight: 600;
   }
 
-  /* Fix conflict betwwen slect 2 and form-builder */
-  .select2-choice>span:first-child, .select2-chosen,
-  .select2-container .select2-choices .select2-search-field input {
-    border: none !important;
-  }
-  .form-wrap.form-builder .frmb li.select2-search-choice {
-    clear: unset;
-    padding: 3px 5px 3px 18px;
-    margin-left: 5px;
-  }
-  .select2-container-multi .select2-choices {
-    height: 32px !important;
-    display: flex;
-    align-items: center;
-  }
-  .select2-container.select2-container-multi.form-control {
-    padding: 0 !important;
-  }
-  .form-wrap.form-builder .frmb li {
-    clear: unset;
+  select[name=select_views] {
+    height: 110px !important;
   }
 </style>
