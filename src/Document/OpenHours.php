@@ -18,7 +18,7 @@ use JMS\Serializer\Annotation\Expose;
 /** @MongoDB\EmbeddedDocument */
 class OpenHours
 {
-    protected $days = ['Mo' => 'Monday', 'Tu' => 'Tuesday', 'We' => 'Wednesday', 'Th' => 'Thursday', 'Fr' => 'Friday', 'Sa' => 'Saturday', 'Sun' => 'Sunday'];
+    protected $days = ['Mo' => 'Monday', 'Tu' => 'Tuesday', 'We' => 'Wednesday', 'Th' => 'Thursday', 'Fr' => 'Friday', 'Sa' => 'Saturday', 'Su' => 'Sunday'];
 
     /**
      * @Expose
@@ -75,9 +75,11 @@ class OpenHours
     private function buildSlotsFrom($string)
     {
         $times = explode('-', $string);
+        if (count($times) != 2) return [null, null];
+        if ($times[0] == "" || $times[1] == "") return [null, null];
         $start = date_create_from_format('H:i', $times[0]);
         $end = date_create_from_format('H:i', $times[1]);
-
+        if (!$start || !$end) return [null, null];
         return [$start, $end];
     }
 

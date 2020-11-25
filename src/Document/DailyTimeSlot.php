@@ -37,10 +37,10 @@ class DailyTimeSlot
 
     public function __construct($slot1start = null, $slot1end = null, $slot2start = null, $slot2end = null)
     {
-        $this->slot1start = $slot1start;
-        $this->slot1end = $slot1end;
-        $this->slot2start = $slot2start;
-        $this->slot2end = $slot2end;
+        $this->slot1start = in_array($slot1start, ['', false]) ? null : $slot1start;
+        $this->slot1end = in_array($slot1end, ['', false]) ? null : $slot1end;
+        $this->slot2start = in_array($slot2start, ['', false]) ? null : $slot2start;
+        $this->slot2end = in_array($slot2end, ['', false]) ? null : $slot2end;
     }
 
     public function toJson()
