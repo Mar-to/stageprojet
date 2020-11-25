@@ -47,7 +47,6 @@ class RegistrationFormType extends AbstractType
         $repeatedType = 'Symfony\Component\Form\Extension\Core\Type\RepeatedType';
         $passwordType = 'Symfony\Component\Form\Extension\Core\Type\PasswordType';
         $choiceType = 'Symfony\Component\Form\Extension\Core\Type\ChoiceType';
-        $rangeType = 'Symfony\Component\Form\Extension\Core\Type\RangeType';
 
         $builder
             ->add('username', null, array_merge([
@@ -85,15 +84,6 @@ class RegistrationFormType extends AbstractType
                 'expanded' => true,  'multiple' => false,
                 'required' => false, 'placeholder' => false,
             ], $this->mergeOptions))
-            // ->add('newsletterRange', $rangeType, array_merge([
-            //     'label' => 'form.location',
-            //     'required' => false,
-            //     'mapped' => false,
-            //     'attr' => array(
-            //         'min' => 5,
-            //         'max' => 50
-            //     )
-            // ], $this->mergeOptions))
         ;
     }
 
