@@ -55,8 +55,7 @@ class FeatureConfiguration
         if (!$user) {
             return $this->getAllowRoleAnonymous();
         }
-
-        return  $user->hasRole('ROLE_USER') && $this->getAllowRoleUser() ||
+        return  ($user->hasRole('ROLE_USER') || !$user && $userEmail) && $this->getAllowRoleUser() ||
                 $user->isAdmin() && $this->getAllowRoleAdmin();
     }
 

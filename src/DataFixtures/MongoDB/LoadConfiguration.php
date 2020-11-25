@@ -11,7 +11,6 @@ use App\Document\Configuration\ConfigurationMarker;
 use App\Document\Configuration\ConfigurationMenu;
 use App\Document\Configuration\ConfigurationUser;
 use App\Document\FeatureConfiguration;
-use App\Document\InteractionConfiguration;
 use App\Document\TileLayer;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -29,7 +28,7 @@ class LoadConfiguration implements FixtureInterface
                     // dealing with subobjects
                     if (is_object($value)) {
                         if (false !== strpos($key, 'Feature')) {
-                            $object = property_exists($value, 'allow_role_anonymous_with_mail') ? new InteractionConfiguration() : new FeatureConfiguration();
+                            $object = new FeatureConfiguration();
                         } elseif (false !== strpos($key, 'Mail')) {
                             $object = new AutomatedMailConfiguration();
                         } elseif ('user' == $key) {
@@ -92,7 +91,7 @@ class LoadConfiguration implements FixtureInterface
             $configuration->setExportIframeFeature(new FeatureConfiguration(true, false, true, true, true));
             $configuration->setDirectionsFeature(new FeatureConfiguration(true, true, true, true, true));
             $configuration->setPendingFeature(new FeatureConfiguration(true, false, true, true, true));
-            $configuration->setSendMailFeature(new InteractionConfiguration(true, false, true, true, true, true));
+            $configuration->setSendMailFeature(new FeatureConfiguration(true, false, true, true, true));
             $configuration->setCustomPopupFeature(new FeatureConfiguration());
             $configuration->setStampFeature(new FeatureConfiguration(true, false, true, true, true));
             $configuration->setSearchPlaceFeature(new FeatureConfiguration(true, true, true, true, true));
@@ -151,28 +150,28 @@ class LoadConfiguration implements FixtureInterface
     {
         switch ($contribConfig) {
         case 'intermediate':
-            $configuration->setAddFeature(new InteractionConfiguration(true, true, false, true, true, true));
-            $configuration->setEditFeature(new InteractionConfiguration(true, true, false, true, true, true));
-            $configuration->setDeleteFeature(new InteractionConfiguration(true, false, false, false, false, true));
-            $configuration->setCollaborativeModerationFeature(new InteractionConfiguration(true, false, false, false, true, true));
-            $configuration->setDirectModerationFeature(new InteractionConfiguration(true, false, false, false, false, true));
+            $configuration->setAddFeature(new FeatureConfiguration(true, true, false, true, true));
+            $configuration->setEditFeature(new FeatureConfiguration(true, true, false, true, true));
+            $configuration->setDeleteFeature(new FeatureConfiguration(true, false, false, false, false));
+            $configuration->setCollaborativeModerationFeature(new FeatureConfiguration(true, false, false, false, true));
+            $configuration->setDirectModerationFeature(new FeatureConfiguration(true, false, false, false, false));
             $configuration->setReportFeature(new FeatureConfiguration(true, false, true, true, false));
             break;
         case 'closed':
-            $configuration->setAddFeature(new InteractionConfiguration(true, true, false, false, false, true));
-            $configuration->setEditFeature(new InteractionConfiguration(true, true, false, false, false, true));
-            $configuration->setDeleteFeature(new InteractionConfiguration(true, true, false, false, false, true));
-            $configuration->setCollaborativeModerationFeature(new InteractionConfiguration(false, false, false, false, false, false));
-            $configuration->setDirectModerationFeature(new InteractionConfiguration(true, false, false, false, false, true));
+            $configuration->setAddFeature(new FeatureConfiguration(true, true, false, false, false));
+            $configuration->setEditFeature(new FeatureConfiguration(true, true, false, false, false));
+            $configuration->setDeleteFeature(new FeatureConfiguration(true, true, false, false, false));
+            $configuration->setCollaborativeModerationFeature(new FeatureConfiguration(false, false, false, false, false));
+            $configuration->setDirectModerationFeature(new FeatureConfiguration(true, false, false, false, false, true));
             $configuration->setReportFeature(new FeatureConfiguration(false, false, false, false, false));
             break;
         default:
             // open by default
-            $configuration->setAddFeature(new InteractionConfiguration(true, true, true, true, true, true));
-            $configuration->setEditFeature(new InteractionConfiguration(true, true, true, true, true, true));
-            $configuration->setDeleteFeature(new InteractionConfiguration(true, true, true, true, true, true));
-            $configuration->setCollaborativeModerationFeature(new InteractionConfiguration(false, false, false, false, false, false));
-            $configuration->setDirectModerationFeature(new InteractionConfiguration(true, true, true, true, true, true));
+            $configuration->setAddFeature(new FeatureConfiguration(true, true, true, true, true));
+            $configuration->setEditFeature(new FeatureConfiguration(true, true, true, true, true));
+            $configuration->setDeleteFeature(new FeatureConfiguration(true, true, true, true, true));
+            $configuration->setCollaborativeModerationFeature(new FeatureConfiguration(false, false, false, false, false));
+            $configuration->setDirectModerationFeature(new FeatureConfiguration(true, true, true, true, true));
             $configuration->setReportFeature(new FeatureConfiguration(false, false, false, false, false));
             break;
         }

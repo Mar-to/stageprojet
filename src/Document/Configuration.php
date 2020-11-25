@@ -156,7 +156,7 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\EmbedOne(targetDocument="App\Document\FeatureConfiguration") */
     protected $pendingFeature;
 
-    /** @MongoDB\EmbedOne(targetDocument="App\Document\InteractionConfiguration") */
+    /** @MongoDB\EmbedOne(targetDocument="App\Document\FeatureConfiguration") */
     protected $sendMailFeature;
 
     /** @MongoDB\EmbedOne(targetDocument="App\Document\FeatureConfiguration") */
@@ -190,19 +190,19 @@ class Configuration implements \JsonSerializable
     // --------- CONTRIBUTIONS ---------
     // ---------------------------------
 
-    /** @MongoDB\EmbedOne(targetDocument="App\Document\InteractionConfiguration") */
+    /** @MongoDB\EmbedOne(targetDocument="App\Document\FeatureConfiguration") */
     protected $addFeature;
 
-    /** @MongoDB\EmbedOne(targetDocument="App\Document\InteractionConfiguration") */
+    /** @MongoDB\EmbedOne(targetDocument="App\Document\FeatureConfiguration") */
     protected $editFeature;
 
-    /** @MongoDB\EmbedOne(targetDocument="App\Document\InteractionConfiguration") */
+    /** @MongoDB\EmbedOne(targetDocument="App\Document\FeatureConfiguration") */
     protected $deleteFeature;
 
-    /** @MongoDB\EmbedOne(targetDocument="App\Document\InteractionConfiguration") */
+    /** @MongoDB\EmbedOne(targetDocument="App\Document\FeatureConfiguration") */
     protected $collaborativeModerationFeature;
 
-    /** @MongoDB\EmbedOne(targetDocument="App\Document\InteractionConfiguration") */
+    /** @MongoDB\EmbedOne(targetDocument="App\Document\FeatureConfiguration") */
     protected $directModerationFeature;
 
     /** @MongoDB\Field(type="int") */
@@ -466,13 +466,13 @@ class Configuration implements \JsonSerializable
         $this->layersFeature = new FeatureConfiguration();
         $this->mapDefaultViewFeature = new FeatureConfiguration();
 
-        $this->sendMailFeature = new InteractionConfiguration();
+        $this->sendMailFeature = new FeatureConfiguration();
 
-        $this->addFeature = new InteractionConfiguration();
-        $this->editFeature = new InteractionConfiguration();
-        $this->deleteFeature = new InteractionConfiguration();
-        $this->collaborativeModerationFeature = new InteractionConfiguration();
-        $this->directModerationFeature = new InteractionConfiguration();
+        $this->addFeature = new FeatureConfiguration();
+        $this->editFeature = new FeatureConfiguration();
+        $this->deleteFeature = new FeatureConfiguration();
+        $this->collaborativeModerationFeature = new FeatureConfiguration();
+        $this->directModerationFeature = new FeatureConfiguration();
 
         $this->user = new ConfigurationUser();
         $this->menu = new ConfigurationMenu();
@@ -855,7 +855,7 @@ class Configuration implements \JsonSerializable
      *
      * @return $this
      */
-    public function setAddFeature(\App\Document\InteractionConfiguration $addFeature)
+    public function setAddFeature(\App\Document\FeatureConfiguration $addFeature)
     {
         $this->addFeature = $addFeature;
 
@@ -879,7 +879,7 @@ class Configuration implements \JsonSerializable
      *
      * @return $this
      */
-    public function setEditFeature(\App\Document\InteractionConfiguration $editFeature)
+    public function setEditFeature(\App\Document\FeatureConfiguration $editFeature)
     {
         $this->editFeature = $editFeature;
 
@@ -903,7 +903,7 @@ class Configuration implements \JsonSerializable
      *
      * @return $this
      */
-    public function setDeleteFeature(\App\Document\InteractionConfiguration $deleteFeature)
+    public function setDeleteFeature(\App\Document\FeatureConfiguration $deleteFeature)
     {
         $this->deleteFeature = $deleteFeature;
 
@@ -927,7 +927,7 @@ class Configuration implements \JsonSerializable
      *
      * @return $this
      */
-    public function setCollaborativeModeration(\App\Document\InteractionConfiguration $collaborativeModeration)
+    public function setCollaborativeModeration(\App\Document\FeatureConfiguration $collaborativeModeration)
     {
         $this->collaborativeModeration = $collaborativeModeration;
 
@@ -951,7 +951,7 @@ class Configuration implements \JsonSerializable
      *
      * @return $this
      */
-    public function setDirectModeration(\App\Document\InteractionConfiguration $directModeration)
+    public function setDirectModeration(\App\Document\FeatureConfiguration $directModeration)
     {
         $this->directModeration = $directModeration;
 
@@ -1327,11 +1327,11 @@ class Configuration implements \JsonSerializable
     /**
      * Set sendMailFeature.
      *
-     * @param App\Document\InteractionConfiguration $sendMailFeature
+     * @param App\Document\FeatureConfiguration $sendMailFeature
      *
      * @return $this
      */
-    public function setSendMailFeature(\App\Document\InteractionConfiguration $sendMailFeature)
+    public function setSendMailFeature(\App\Document\FeatureConfiguration $sendMailFeature)
     {
         $this->sendMailFeature = $sendMailFeature;
 
@@ -1341,7 +1341,7 @@ class Configuration implements \JsonSerializable
     /**
      * Get sendMailFeature.
      *
-     * @return App\Document\InteractionConfiguration $sendMailFeature
+     * @return App\Document\FeatureConfiguration $sendMailFeature
      */
     public function getSendMailFeature()
     {

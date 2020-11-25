@@ -45,7 +45,7 @@ class ElementFormController extends GoGoController
         $element = $dm->getRepository('App\Document\Element')->find($id);
 
         if (!$element) {
-            $session->getFlashBag()->add('error', "L'élément demandé n'existe pas...");
+            $this->addFlash('error', "L'élément demandé n'existe pas...");
 
             return $this->redirectToRoute('gogo_directory');
         } elseif ($element->getStatus() > ElementStatus::PendingAdd && ElementStatus::DynamicImport != $element->getStatus()
@@ -53,7 +53,7 @@ class ElementFormController extends GoGoController
             || ($element->isPending() && $element->getRandomHash() == $request->get('hash'))) {
             return $this->renderForm($element, true, $request, $session, $dm, $configService, $elementFormService, $userManager, $elementActionService, $loginManager);
         } else {
-            $session->getFlashBag()->add('error', "Désolé, vous n'êtes pas autorisé à modifier cet élement !");
+            $this->addFlash('error', "Désolé, vous n'êtes pas autorisé à modifier cet élement !");
 
             return $this->redirectToRoute('gogo_directory');
         }
@@ -77,7 +77,25 @@ class ElementFormController extends GoGoController
 
         $userType = 'anonymous';
         $isEditingWithHash = $element->getRandomHash() && $element->getRandomHash() == $request->get('hash');
+        
+        if ($request->request->get('input-password')) {
+            // Create our user and set details
+            $user = $userManager->createUser();
+            $user->setUserName($session->get('userEmail'));
+            $user->setEmail($session->get('userEmail'));
+            $user->setPlainPassword($request->request->get('input-password'));
+            $user->setEnabled(true);
 
+            // Update the user
+            $userManager->updateUser($user, true);
+            $dm->persist($user);
+
+            $text = 'Votre compte a bien été créé ! Vous pouvez maintenant compléter <a href="'.$this->generateUrl('gogo_user_profile').'" >votre profil</a> !';
+            $session->getFlashBag()->add('success', $text);
+
+            $this->authenticateUser($user, $loginManager);
+        }
+        
         // is user not allowed, we show the contributor-login page
         if (!$configService->isUserAllowed($addEditName, $request, $session->get('userEmail')) && !$isEditingWithHash) {
             // creating simple form to let user enter a email address
@@ -187,7 +205,6 @@ class ElementFormController extends GoGoController
                     $session->set('duplicatesElements', $duplicates);
                     $session->set('recopyInfo', $request->request->get('recopyInfo'));
                     $session->set('sendMail', $request->request->get('send_mail'));
-                    $session->set('inputPassword', $request->request->get('input-password'));
                     $session->set('submitOption', $request->request->get('submit-option'));
                     // redirect to check duplicate
                     return $this->redirectToRoute('gogo_element_check_duplicate');
@@ -198,7 +215,6 @@ class ElementFormController extends GoGoController
 
             // getting the variables from POST or from session (in case of checkDuplicate process)
             $sendMail = $request->request->has('send_mail') ? $request->request->get('send_mail') : $session->get('sendMail');
-            $inputPassword = $request->request->has('input-password') ? $request->request->get('input-password') : $session->get('inputPassword');
             $recopyInfo = $request->request->has('recopyInfo') ? $request->request->get('recopyInfo') : $session->get('recopyInfo');
             $submitOption = $request->request->has('submit-option') ? $request->request->get('submit-option') : $session->get('submitOption');
             // clear session
@@ -206,26 +222,7 @@ class ElementFormController extends GoGoController
             $session->remove('duplicatesElements');
             $session->remove('recopyInfo');
             $session->remove('sendMail');
-            $session->remove('inputPassword');
             $session->remove('submitOption');
-
-            if ($inputPassword) {
-                // Create our user and set details
-                $user = $userManager->createUser();
-                $user->setUserName($userEmail);
-                $user->setEmail($userEmail);
-                $user->setPlainPassword($inputPassword);
-                $user->setEnabled(true);
-
-                // Update the user
-                $userManager->updateUser($user, true);
-                $dm->persist($user);
-
-                $text = 'Votre compte a bien été créé ! Vous pouvez maintenant compléter <a href="'.$this->generateUrl('gogo_user_profile').'" >votre profil</a> !';
-                $session->getFlashBag()->add('success', $text);
-
-                $this->authenticateUser($user, $loginManager);
-            }
 
             if ($this->isRealModification($element, $request)) {
                 $message = $request->get('admin-message');

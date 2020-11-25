@@ -19,7 +19,7 @@ parameters:
     instance_name: '%env(INSTANCE_NAME)%'
     contact_email: '%env(CONTACT_EMAIL)%'
     oauth_communs_id: '%env(OAUTH_COMMUNS_ID)%'
-    oauth_communs_secret: '%env(PAUTH_COMMUNS_SECRET)%'
+    oauth_communs_secret: '%env(OAUTH_COMMUNS_SECRET)%'
     oauth_google_id: '%env(OAUTH_GOOGLE_ID)%'
     oauth_google_secret: '%env(OAUTH_GOOGLE_SECRET)%'
     oauth_facebook_id: '%env(OAUTH_FACEBOOK_ID)%'
@@ -311,12 +311,6 @@ services:
     admin.feature_config_hidden:
         class: App\Admin\FeatureConfigurationAdmin
         arguments: [~, App\Document\FeatureConfiguration, '']
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }
-
-    admin.interaction_config_hidden:
-        class: App\Admin\InteractionConfigurationAdmin
-        arguments: [~, App\Document\InteractionConfiguration, '']
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }
 
