@@ -208,6 +208,7 @@ class APIController extends GoGoController
 
     private function encodeElementArrayToJsonArray($array, $fullRepresentation, $isAdmin = false, $includePrivateFields = false)
     {
+        if (count($array) == 0) return '[]';
         $elementsJson = '[';
         foreach ($array as $value) {
             if ('true' == $fullRepresentation) {
