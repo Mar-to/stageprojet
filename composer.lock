@@ -1497,7 +1497,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seballot/mongodb-odm.git",
-                "reference": "7fc26a182d0a733d49d21535de6a39e977bd0e54"
+                "reference": "dd0e2ded78f1f858bceb9da1af4e761d5414669e"
             },
             "require": {
                 "doctrine/annotations": "~1.2",
