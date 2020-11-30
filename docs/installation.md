@@ -13,7 +13,7 @@ Quick Install
 Manual Install: Requirements
 ------------
 
-1. PHP 7
+1. PHP 7.4
 2. [Composer](https://getcomposer.org/download/)
 3. [Nodejs](https://nodejs.org/en/download/)
 4. [Git](https://git-scm.com/)
