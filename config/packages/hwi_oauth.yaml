@@ -12,16 +12,16 @@ hwi_oauth:
     resource_owners:
         gplus:
             type:                google
-            client_id:           "%env(oauth_google_id)%"
-            client_secret:       "%env(oauth_google_secret)%"
+            client_id:           "%oauth_google_id%"
+            client_secret:       "%oauth_google_secret%"
             scope:               "email profile"
             options:
                 display: popup #dialog is optimized for popup window
                 csrf: true
         facebook:
             type:                facebook
-            client_id:           "%env(oauth_facebook_id)%"
-            client_secret:       "%env(oauth_facebook_secret)%"
+            client_id:           "%oauth_facebook_id%"
+            client_secret:       "%oauth_facebook_secret%"
             scope:               "public_profile,email"
             options:
                 display: popup #dialog is optimized for popup window
