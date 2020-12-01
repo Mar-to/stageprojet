@@ -10,6 +10,7 @@ namespace App\EventListener;
 
 use App\Application\Sonata\UserBundle\Document\Group;
 use App\Document\Element;
+use App\Document\TileLayer;
 use App\Document\Import;
 use App\Document\ImportDynamic;
 use App\Document\Option;
@@ -45,7 +46,6 @@ class DatabaseIntegrityWatcher
             $qb = $dm->getRepository('App\Document\User')->createQueryBuilder();
             $users = $qb->field('groups.id')->in([$group->getId()])->getQuery()->execute();
             if ($users->count() > 0) {
-                $i = 0;
                 foreach ($users as $user) {
                     $user->removeGroup($group);
                 }
@@ -53,7 +53,7 @@ class DatabaseIntegrityWatcher
         } elseif ($document instanceof Import || $document instanceof ImportDynamic) {
             $import = $document;
             $qb = $dm->getRepository('App\Document\Element')->createQueryBuilder();
-            $elements = $qb->remove()->field('source')->references($import)->getQuery()->execute();
+            $qb->remove()->field('source')->references($import)->getQuery()->execute();
         } elseif ($document instanceof Webhook) {
             $webhook = $document;
             $contributions = $dm->createQueryBuilder('App\Document\UserInteractionContribution')
@@ -104,6 +104,11 @@ class DatabaseIntegrityWatcher
                         $this->asyncService->callCommand('app:elements:updateJson', ['ids' => $elementIdsString]);
                     }
                 }
+            }
+        } elseif ($document instanceof TileLayer) {
+            $config = $this->getConfig($dm);
+            if ($config->getDefaultTileLayer()->getId() == $document->getId()) {
+                $config->setDefaultTileLayer(null);
             }
         }
     }

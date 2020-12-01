@@ -1047,7 +1047,7 @@ class Configuration implements \JsonSerializable
      *
      * @return $this
      */
-    public function setDefaultTileLayer(\App\Document\TileLayer $defaultTileLayer)
+    public function setDefaultTileLayer($defaultTileLayer)
     {
         $this->defaultTileLayer = $defaultTileLayer;
 
@@ -1061,6 +1061,13 @@ class Configuration implements \JsonSerializable
      */
     public function getDefaultTileLayer()
     {
+        if ($this->defaultTileLayer == null) {
+            $tileLayer = new TileLayer();
+            $tileLayer->setName('cartodb');
+            $tileLayer->setUrl('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png');
+            $tileLayer->setAttribution('&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>');
+            return $tileLayer;
+        }
         return $this->defaultTileLayer;
     }
 
