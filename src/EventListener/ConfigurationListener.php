@@ -7,6 +7,8 @@ use App\Document\Configuration;
 use App\Document\Configuration\ConfigurationMarker;
 use App\Services\AsyncService;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 class ConfigurationListener
 {
@@ -88,22 +90,16 @@ class ConfigurationListener
                 $customDomainChanged = $changeset['customDomain'];
                 $oldCustomDomain = preg_replace('/https?:\/\//', '', $customDomainChanged[0]);
                 $newCustomDomain = preg_replace('/https?:\/\//', '', $customDomainChanged[1]);
+                $filesystem = new Filesystem();
+                // Those files will be consumed by bin/execute_custom_domain.sh called by a cron tab
+                $removePath = "$this->projectDir/var/file_queues/custom_domain_to_remove";
+                $addPath = "$this->projectDir/var/file_queues/custom_domain_to_configure";
                 if ($oldCustomDomain) {
-                    $process = new Process(['sh', "$this->projectDir/bin/remove_custom_domain_config.sh", $oldCustomDomain]);
-                    $process->run();
+                    $filesystem->dumpFile("$removePath/{$document->getDbName()}", $oldCustomDomain);
                 }
                 if  ($newCustomDomain) {
                     $gogo_url = $document->getDbName() . '.' . $this->baseUrl . $this->basePath;
-                    $process = new Process(['sh', "$this->projectDir/bin/configure_custom_domain.sh", $newCustomDomain, $gogo_url, $this->contactEmail]);
-                    $process->start();
-                    // For debuging :
-                    // foreach ($process as $type => $data) {
-                    //     if ($process::OUT === $type) {
-                    //         echo "\nRead from stdout: ".$data;
-                    //     } else { // $process::ERR === $type
-                    //         echo "\nRead from stderr: ".$data;
-                    //     }
-                    // }
+                    $filesystem->dumpFile("$addPath/{$document->getDbName()}", "$newCustomDomain $gogo_url $this->contactEmail");
                 }
             }
         }

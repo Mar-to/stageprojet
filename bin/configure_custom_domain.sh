@@ -3,7 +3,6 @@
 CUSTOM_URL=$1 # no http(s):// inside
 GOGO_URL=$2 # no http(s):// inside
 CONTACT_EMAIL=$3
-
 echo "
 server {
     server_name www.$CUSTOM_URL;
