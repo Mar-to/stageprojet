@@ -38,9 +38,9 @@ const serviceWorker = async () => {
     globDirectory: 'web',
     globPatterns: [
       '+(fonts|img|js|css)\/**\/*.{js,css,html,png,woff,woff2}',
-      'offline.html'
+      'app-shell.html'
     ],
-    maximumFileSizeToCacheInBytes: 4 * 1024 * 1024
+    maximumFileSizeToCacheInBytes: 10 * 1024 * 1024
   });
   // Optionally, log any warnings and details.
   warnings.forEach(console.warn);

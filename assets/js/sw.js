@@ -1,31 +1,58 @@
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js');
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.4/workbox-sw.js');
 
-console.log("Service-worker installing...");
+const TILES_DOMAIN_NAMES = [
+    'global.ssl.fastly.net',
+    'tile.openstreetmap.se',
+    'maps.wikimedia.org',
+    'tiles.lyrk.org',
+    'tile.openstreetmap.fr',
+    'a.ssl.fastly.net'
+];
 
-workbox.core.skipWaiting();
-workbox.core.clientsClaim();
+// We want the SW to delete outdated cache on each activation
+workbox.precaching.cleanupOutdatedCaches();
 
-self.addEventListener('fetch', event => {
-    event.respondWith(
-        caches.open(workbox.core.cacheNames.precache).then(precache => (
-            // Check if file is available in the cache
-            precache.match(event.request, { ignoreSearch: true }).then(response => {
-                // Cache hit - return response
-                if (response) {
-                    return response;
-                } else {
-                    // A request is a flux and can only be consumed once
-                    // It is necessary to clone it to reuse it
-                    const fetchRequest = event.request.clone();
+// Elements
+workbox.routing.registerRoute(
+    new RegExp('/api/elements'),
+    new workbox.strategies.NetworkFirst({
+        networkTimeoutSeconds: 5,
+        cacheName: 'api',
+        plugins: [
+            new workbox.expiration.ExpirationPlugin({
+                maxEntries: 100,
+                maxAgeSeconds: 7 * 24 * 60 * 60,
+                purgeOnQuotaError: true
+            }),
+            new workbox.cacheableResponse.CacheableResponsePlugin({ statuses: [0, 200] })
+        ]
+    })
+);
 
-                    return fetch(fetchRequest).catch(error => (
-                        // If fetch fail, return
-                        precache.match(new Request('/offline.html'), { ignoreSearch: true })
-                    ));
-                }
-            })
-        ))
-    );
-});
+// Tiles cache
+workbox.routing.registerRoute(
+    ({ url }) => TILES_DOMAIN_NAMES.some(domainName => url.hostname.includes(domainName)),
+    new workbox.strategies.CacheFirst({
+        cacheName: 'tiles',
+        plugins: [
+            new workbox.expiration.ExpirationPlugin({
+                maxEntries: 200,
+                maxAgeSeconds: 31 * 24 * 60 * 60,
+                purgeOnQuotaError: true
+            }),
+            new workbox.cacheableResponse.CacheableResponsePlugin({ statuses: [0, 200] })
+        ]
+    })
+);
 
-workbox.precaching.precacheAndRoute([]);
+workbox.precaching.precacheAndRoute(['/api/manifest', '/api/gogocartojs-conf.json', '/favicon.ico']);
+
+workbox.precaching.precacheAndRoute(self.__WB_MANIFEST);
+
+workbox.routing.registerRoute(
+    new workbox.routing.NavigationRoute(workbox.precaching.createHandlerBoundToURL(`app-shell.html`), {
+        allowlist: [
+            new RegExp('/annuaire')
+        ]
+    })
+);
