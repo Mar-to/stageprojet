@@ -36,7 +36,6 @@ class UpdateProjectsInfoCommand extends Command
         $projects = $this->rootDm->getRepository('App\Document\Project')->findAll();
 
         $this->logger->info('Updating projects informations. '. count($projects) .' projects to update');
-        $apiUrl = $this->baseUrl . $this->router->generate('gogo_api_project_info');
 
         foreach ($projects as $key => $project) {
             try {
@@ -45,8 +44,8 @@ class UpdateProjectsInfoCommand extends Command
 
                 $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
                 if (!$config) {
-                    $this->logger->error("Project $project->getDomainName() does not have config");
-                    break;
+                    $this->logger->error("Project {$project->getDomainName()} does not have config");
+                    continue;
                 }
                 $img = $config->getSocialShareImage() ? $config->getSocialShareImage() : $config->getLogo();
                 $imageUrl = $img ? $img->getImageUrl() : null;
