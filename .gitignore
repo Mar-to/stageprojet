@@ -24,8 +24,6 @@ ssh_password
 /vendor/
 ###< symfony/framework-bundle ###
 
-web/\.htaccess
-
 ###> friendsofphp/php-cs-fixer ###
 /.php_cs
 /.php_cs.cache
