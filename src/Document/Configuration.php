@@ -37,9 +37,6 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\Field(type="string") */
     protected $appName;
 
-    /** @MongoDB\Field(type="string") */
-    protected $appNameShort;
-
     /**
      * @MongoDB\Field(type="string")
      * @Gedmo\Slug(fields={"appName"}, updatable=false)
@@ -95,9 +92,20 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\Field(type="string") */
     protected $elementDisplayNamePlural = 'éléments'; // elements
 
-    // ----------------------------
-    // --------- GENRAL -----------
-    // ----------------------------
+    // -----------------------------
+    // ----------- PWA -------------
+    // -----------------------------
+
+
+    /** @MongoDB\Field(type="string") */
+    protected $appNameShort;
+
+    /** @MongoDB\Field(type="bool") */
+    protected $hideMenuInPwa = true;
+
+    // -----------------------------
+    // --------- GENERAL -----------
+    // -----------------------------
 
     /** @MongoDB\Field(type="bool") */
     protected $activateHomePage;
@@ -3410,6 +3418,24 @@ class Configuration implements \JsonSerializable
     public function getAppNameShort()
     {
         return $this->appNameShort;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getHideMenuInPwa()
+    {
+        return $this->hideMenuInPwa;
+    }
+
+    /**
+     * @param bool $hideMenuInPwa
+     * @return $this
+     */
+    public function setHideMenuInPwa($hideMenuInPwa)
+    {
+        $this->hideMenuInPwa = $hideMenuInPwa;
+        return $this;
     }
 
     public function getPublishOnSaasPage() {

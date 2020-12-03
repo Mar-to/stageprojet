@@ -219,7 +219,7 @@ class APIController extends GoGoController
                 if ($isAdmin && '{}' != $value['adminJson']) {
                     $elementJson = substr($elementJson, 0, -1).','.substr($value['adminJson'], 1);
                 }
-                if (isset($value['score'])) {                    
+                if (isset($value['score'])) {
                     $elementJson = substr($elementJson, 1); // remove first '{'
                     $elementJson = '{"searchScore" : '.$value['score'].','.$elementJson;
                 }
@@ -303,11 +303,12 @@ class APIController extends GoGoController
             $icon['mime'] = $imageData->mime();
         }
         $shortName = $config->getAppNameShort() && strlen($config->getAppNameShort()) > 0 ? $config->getAppNameShort() : $config->getAppName();
+        $startUrl = ($config->getHideMenuInPwa() ? $this->generateUrl('gogo_app_shell') : $this->generateUrl('gogo_directory')) . '#/carte/autour-de-moi';
         $responseArray = [
           'name' => $config->getAppName(),
           'short_name' => str_split($shortName, 12)[0],
           'lang' => 'fr',
-          'start_url' => '/annuaire#/carte/autour-de-moi',
+          'start_url' => $startUrl,
           'display' => 'standalone',
           'theme_color' => $config->getPrimaryColor(),
           'background_color' => $config->getBackgroundColor(),

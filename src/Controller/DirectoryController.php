@@ -23,4 +23,11 @@ class DirectoryController extends GoGoController
 
         return $this->render('directory/directory.html.twig', ['gogoConfig' => $gogoConfig]);
     }
+
+    public function appShell(Request $request)
+    {
+        return $this->render('directory/app-shell.html.twig', [
+            'gogoConfigUrl' => $this->generateUrl('gogo_api_gogocartojs_configuration')
+        ]);
+    }
 }
