@@ -303,4 +303,4 @@ nginx -t && service nginx restart
 # * * * * * php $WEB_DIR/GoGoCarto/bin/console --env=prod app:main-command
 # @daily php $WEB_DIR/GoGoCarto/bin/console --env=prod app:saas:update-projects-info
 # @daily php $WEB_DIR/GoGoCarto/bin/console --env=prod app:projects:check-for-deleting
-# * * * * * sh $WEB_DIR/GoGoCarto/bin/execute_custom_domain.sh
+# * * * * * cd /var/www/gogocarto && sh bin/execute_custom_domain.sh

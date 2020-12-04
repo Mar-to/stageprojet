@@ -88,8 +88,8 @@ class ConfigurationListener
             }
             if (array_key_exists('customDomain', $changeset)) {
                 $customDomainChanged = $changeset['customDomain'];
-                $oldCustomDomain = preg_replace('/https?:\/\//', '', $customDomainChanged[0]);
-                $newCustomDomain = preg_replace('/https?:\/\//', '', $customDomainChanged[1]);
+                $oldCustomDomain = rtrim(preg_replace('/https?:\/\//', '', $customDomainChanged[0]), '/');
+                $newCustomDomain = rtrim(preg_replace('/https?:\/\//', '', $customDomainChanged[1]), '/');
                 $filesystem = new Filesystem();
                 // Those files will be consumed by bin/execute_custom_domain.sh called by a cron tab
                 $removePath = "$this->projectDir/var/file_queues/custom_domain_to_remove";

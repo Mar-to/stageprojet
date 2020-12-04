@@ -45,7 +45,7 @@ class ConfigurationAdmin extends ConfigurationAbstractAdmin
                 ->add('appNameShort', null, ['label' => 'Nom Court (utilisé par les téléphones, 12 caractères max.)', 'required' => false])
                 ->add('appBaseline', null, ['label' => 'Description du site (baseline)', 'required' => false])
                 ->add('appTags', null, ['label' => 'Mot clés pour le référencement (séparés par une virgule)', 'required' => false])
-                ->add('customDomain', UrlType::class, ['label' => "Utiliser un nom de domaine personnalisé (exple macarte.org au lieu de macarte.gogocarto.fr). Après avoir acheté le nom de domaine macarte.org, vous devez d'abords le faire pointer sur l'adresse IP du serveur GoGoCarto (" . $_SERVER['SERVER_ADDR'] ."). Ensuite renseignez ici le nom de votre domaine", 'required' => false])
+                ->add('customDomain', UrlType::class, ['label' => "Utiliser un nom de domaine personnalisé (exple macarte.org au lieu de macarte.gogocarto.fr). Après avoir acheté le nom de domaine macarte.org, vous devez d'abords le rediriger sur l'adresse IP du serveur GoGoCarto (" . $_SERVER['SERVER_ADDR'] ."). Ensuite renseignez ici le nom de votre domaine, et attendez quelques minutes le temps que cela soit configuré par GoGoCarto", 'required' => false])
                 ->add('dataLicenseUrl', null, ['label' => 'Url de la licence qui protège vos données', 'required' => false])
             ->end()
             ->with('Images générales', ['class' => 'col-md-6'])
