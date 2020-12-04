@@ -5,6 +5,9 @@ CUSTOM_URL=$1 # no http(s):// inside
 GOGO_URL=$2 # no http(s):// inside
 CONTACT_EMAIL=$3
 
+# Log into a file
+exec 3>&1 1>>var/log/subdomains.log 2>&1
+
 if [ $# -lt 3 ]; then
   echo 1>&2 "$0: not enough arguments"
   exit 2
