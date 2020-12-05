@@ -9,6 +9,7 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\ModelType;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 
@@ -33,7 +34,7 @@ class ImportAdmin extends AbstractAdmin
         $repo = $dm->getRepository('App\Document\Element');
         $formProperties = json_encode($repo->findFormProperties());
         $elementProperties = json_encode($repo->findDataCustomProperties());
-
+        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
         $taxonomy = $dm->getRepository('App\Document\Taxonomy')->findTaxonomy();
         $optionsList = $taxonomy->getTaxonomyJson();
 
@@ -42,18 +43,33 @@ class ImportAdmin extends AbstractAdmin
 
         $formMapper
             ->tab('Général')
-                ->with($title, ['class' => 'col-md-6'])
+                ->with($title, ['class' => 'col-md-12'])
                     ->add('sourceName', null, ['required' => true, 'label' => 'Nom de la source '])
-                    ->add('file', FileType::class, ['label' => 'Fichier CSV à importer (séparation par virgules, encodage en UTF8)', 'required' => false])
-                    ->add('url', UrlType::class, ['label' => 'Ou URL vers un API Json', 'required' => false]);
+                    ->add('file', FileType::class, ['label' => 'Fichier CSV à importer (séparation par virgules, encodage en UTF8)', 'required' => false]);
         if ($isDynamic) {
             $formMapper
+                    // Every attribute that will be update need to be mapped here. Following attributes are manually inserted in element-import.html.twig, but we still need them here as hidden input
+                    ->add('osmQueriesJson', HiddenType::class)
+                    ->add('url', HiddenType::class)
+                    ->add('sourceType', null, ['attr' => ['class' => 
+                            'gogo-element-import',
+                            'data-title-layer' => $config->getDefaultTileLayer()->getUrl(),
+                            'data-default-bounds' => json_encode($config->getDefaultBounds()),
+                        ], 'required' => true, 'label' => 'Type de la source'])
+                    
                     ->add('refreshFrequencyInDays', null, ['required' => false, 'label' => 'Fréquence de mise à jours des données en jours (laisser vide pour ne jamais mettre à jour automatiquement'])
-                    ->add('idsToIgnore', TextType::class, ['mapped' => false, 'required' => false,'attr' => ['class' => 'gogo-display-array', 'value' => $this->getSubject()->getIdsToIgnore()], 'label' => "Liste des IDs qui seront ignorées lors de l'import", 'label_attr' => ['title' => "Pour ignorer un élément, supprimer le (définitivement) et il ne sera plus jamais importé. Si vous supprimez un élément dynamiquement importé juste en changeant son status (soft delete), l'élément sera quand meme importé mais conservera son status supprimé. Vous pourrez donc à tout moment restaurer cet élement pour le voir apparaitre de nouveau"]]);
+                    ->add('idsToIgnore', TextType::class, ['mapped' => false, 'required' => false, 
+                        'attr' => ['class' => 'gogo-display-array', 
+                        'value' => $this->getSubject()->getIdsToIgnore()], 
+                        'label' => "Liste des IDs qui seront ignorées lors de l'import", 
+                        'label_attr' => ['title' => "Pour ignorer un élément, supprimer le (définitivement) et il ne sera plus jamais importé. Si vous supprimez un élément dynamiquement importé juste en changeant son status (soft delete), l'élément sera quand meme importé mais conservera son status supprimé. Vous pourrez donc à tout moment restaurer cet élement pour le voir apparaitre de nouveau"]]);
+        } else {
+            $formMapper                    
+                    ->add('url', UrlType::class, ['label' => 'Ou URL vers un API Json', 'required' => false]);
         }
         $formMapper
                 ->end()
-                ->with('Autres options', ['box_class' => 'box box-default', 'class' => 'col-md-6'])
+                ->with('Autres options', ['box_class' => 'box box-default', 'class' => 'col-md-12'])
                     ->add('geocodeIfNecessary', null, ['required' => false, 'label' => 'Géocoder les élements sans latitude ni longitude à partir de leur adresse'])
                     ->add('createMissingOptions', null, ['required' => false, 'label' => 'Créer les catégories manquantes', 'label_attr' => ['title' => "Si un élément importé a une catégorie qui n'existe pas encore sur votre carte, elle sera automatiquement crée"]])
                     ->add('optionsToAddToEachElement', ModelType::class, [

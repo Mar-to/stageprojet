@@ -46,11 +46,10 @@ class Import extends AbstractFile
     public $sourceName;
 
     /**
-     * @var string
-     *             Url of API to get the data
+     * @var string Url of API to get the data
      * @MongoDB\Field(type="string")
      */
-    private $url;
+    public $url;
 
     /**
      * @MongoDB\ReferenceOne(targetDocument="App\Document\Category", cascade={"persist"})

@@ -14,6 +14,18 @@ class ImportDynamic extends Import
 {
     /**
      * @var string
+     * @MongoDB\Field(type="string")
+     */
+    public $sourceType;
+
+    /**
+     * Get Data from OpenStreetMap using overpass query
+     * @MongoDB\Field(type="string")
+     */
+    public $osmQueriesJson;
+    
+    /**
+     * @var string
      * @MongoDB\Field(type="int")
      */
     private $refreshFrequencyInDays;
@@ -90,4 +102,26 @@ class ImportDynamic extends Import
     {
         return $this->nextRefresh;
     }
+
+    public function getOsmQueriesJson()
+    {
+        return $this->osmQueriesJson;
+    }
+
+    public function setOsmQueriesJson($json) 
+    {
+        $this->osmQueriesJson = $json;
+        return $this;
+    }
+
+    public function setSourceType($sourceType)
+    {
+        $this->sourceType = $sourceType;
+        return $this;
+    }
+    public function getSourceType()
+    {
+        return $this->sourceType;
+    }
+
 }

@@ -28,7 +28,9 @@ const scriptsLibs = () => {
     .pipe(gulp.dest('web/js'));
   const sw = gulp.src(['assets/js/vendor/**/*', 'assets/js/init-sw.js'])
     .pipe(gulp.dest('web/js'));
-  return merge(gogocarto, sw);
+  const admin = gulp.src(['assets/js/admin/**/*'])
+    .pipe(gulp.dest('web/js/admin'));
+  return merge(gogocarto, sw, admin);
 };
 
 const serviceWorker = async () => {
@@ -101,7 +103,7 @@ exports.watch = () => {
   gulp.watch(['node_modules/gogocarto-js/dist/**/*'],
               gulp.series(gogocarto_assets, serviceWorker));
 
-  gulp.watch(['assets/js/vendor/**/*.js','node_modules/gogocarto-js/dist/gogocarto.js'],
+  gulp.watch(['assets/js/vendor/**/*.js','assets/js/admin/**/*.js', 'node_modules/gogocarto-js/dist/gogocarto.js'],
               gulp.series(scriptsLibs, serviceWorker));
 
   gulp.watch(['assets/js/home.js'], gulp.series(scriptsHome, serviceWorker));
