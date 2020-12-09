@@ -5,7 +5,7 @@ doctrine_mongodb:
         default:
             server: '%env(resolve:MONGODB_URL)%'
             options: {}
-    default_database: "%env(resolve:USE_AS_SAAS)%/%env(resolve:DATABASE_NAME)%"
+    default_database: "use_as_saas=%env(resolve:USE_AS_SAAS)%/%env(resolve:DATABASE_NAME)%"
     document_managers:
         default:
             auto_mapping: true
