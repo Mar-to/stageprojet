@@ -37,8 +37,7 @@ const serviceWorker = async () => {
     swDest: 'web/sw.js',
     globDirectory: 'web',
     globPatterns: [
-      '+(fonts|img|js|css)\/**\/*.{js,css,html,png,woff,woff2}',
-      'app-shell.html'
+      '+(fonts|img|js|css)\/**\/*.{js,css,html,png,woff,woff2,ico}'
     ],
     maximumFileSizeToCacheInBytes: 10 * 1024 * 1024
   });

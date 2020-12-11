@@ -9,15 +9,45 @@ const TILES_DOMAIN_NAMES = [
     'a.ssl.fastly.net'
 ];
 
+const SYMFONY_ROUTES = [
+    '/appli',
+    '/annuaire',
+    '/api/manifest',
+    '/api/gogocartojs-conf.json'
+];
+
+const UsePrecachePlugin = precache => ({
+    cacheKeyWillBeUsed: async ({ request }) => {
+        const url = new URL(request.url);
+        return precache.getCacheKeyForURL(url.pathname);
+    }
+});
+
 // We want the SW to delete outdated cache on each activation
 workbox.precaching.cleanupOutdatedCaches();
 
-// Elements
+// Create custom precache for Symfony routes
+// The goal is to precache these routes so that they are available immediately on app install,
+// but to update them when new versions are available (via the StaleWhileRevalidate strategy)
+const symfonyRoutesCache = new workbox.precaching.PrecacheController('symfony-routes');
+self.addEventListener('install', event => event.waitUntil(symfonyRoutesCache.install()));
+self.addEventListener('activate', event => event.waitUntil(symfonyRoutesCache.activate()));
+symfonyRoutesCache.addToCacheList(SYMFONY_ROUTES.map(route => ({ url: route, revision: Date.now().toString() })));
+
+workbox.routing.registerRoute(
+    ({ url }) => SYMFONY_ROUTES.some(route => url.pathname.startsWith(route)),
+    new workbox.strategies.StaleWhileRevalidate({
+        cacheName: 'symfony-routes',
+        plugins: [ UsePrecachePlugin(symfonyRoutesCache) ]
+    })
+);
+
+// Elements cache
 workbox.routing.registerRoute(
     new RegExp('/api/elements'),
     new workbox.strategies.NetworkFirst({
         networkTimeoutSeconds: 5,
-        cacheName: 'api',
+        cacheName: 'elements',
         plugins: [
             new workbox.expiration.ExpirationPlugin({
                 maxEntries: 100,
@@ -45,14 +75,8 @@ workbox.routing.registerRoute(
     })
 );
 
-workbox.precaching.precacheAndRoute(['/api/manifest', '/api/gogocartojs-conf.json', '/favicon.ico']);
-
-workbox.precaching.precacheAndRoute(self.__WB_MANIFEST);
-
-workbox.routing.registerRoute(
-    new workbox.routing.NavigationRoute(workbox.precaching.createHandlerBoundToURL(`app-shell.html`), {
-        allowlist: [
-            new RegExp('/annuaire')
-        ]
-    })
+workbox.precaching.precacheAndRoute(
+    self.__WB_MANIFEST,
+    // Ignore the ?ver= query, as the resources cached by the SW are automatically updated
+    { ignoreURLParametersMatching: [/^(ver|utm_.+)$/] }
 );
