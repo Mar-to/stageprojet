@@ -1,3 +1,11 @@
+<template>
+    <a :href="url" v-if="condition.key" class="btn btn-default btn-icon" 
+            target="_blank" :title="title">
+            <i class="fa fa-external-link-square"></i>
+    </a>
+</template>
+
+<script>
 export default {
     props: ['condition'],
     computed: {
@@ -19,11 +27,6 @@ export default {
         title() {
             return `Lien vers la fiche Wiki de "${this.isTag ? this.tag : this.condition.key}"` 
         }
-    },
-    template: `
-        <a :href="url" v-if="condition.key" class="btn btn-default btn-icon" 
-            target="_blank" :title="title">
-            <i class="fa fa-external-link-square"></i>
-        </a>
-    `
+    }
 }
+</script>

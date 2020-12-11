@@ -28,9 +28,7 @@ const scriptsLibs = () => {
     .pipe(gulp.dest('web/js'));
   const sw = gulp.src(['assets/js/vendor/**/*', 'assets/js/init-sw.js'])
     .pipe(gulp.dest('web/js'));
-  const admin = gulp.src(['assets/js/admin/**/*'])
-    .pipe(gulp.dest('web/js/admin'));
-  return merge(gogocarto, sw, admin);
+  return merge(gogocarto, sw);
 };
 
 const serviceWorker = async () => {

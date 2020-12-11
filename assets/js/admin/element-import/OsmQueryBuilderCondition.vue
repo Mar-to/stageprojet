@@ -1,4 +1,27 @@
-import OsmWikiLink from "./osm-query-builder-wiki-link.js"
+<template>
+    <div class="condition">
+        <osm-wiki-link :condition="condition" ref="wikiLink"></osm-wiki-link>
+
+        <input type="text" class="form-control" ref="inputKey" v-model="condition.key"
+                    placeholder="Chercher une clé"/>
+        
+        <select data-sonata-select2="false" class="form-control" ref="selectOperator" 
+                v-model="condition.operator" placeholder="Condition...">
+            <option value="">Existe</option>
+            <option value="!">N'existe pas</option>
+            <option value="=">Est égal à</option>
+            <option value="!=">Différent de</option>
+            <option value="~">Est l'une des valeurs</option>
+            <option value="!~">N'est aucune des valeurs</option>
+        </select>
+
+        <input class="form-control" v-model="condition.value" ref="inputValue"
+            :disabled="['', '!'].includes(condition.operator)" />            
+    </div>
+</template>
+
+<script>
+import OsmWikiLink from "./OsmqueryBuilderWikiLink"
 
 export default {
     props: ['condition'],
@@ -80,25 +103,6 @@ export default {
                 this.condition.value = $(this.$refs.inputValue).val()
             })
         }
-    },
-    template: `
-        <div class="condition">
-            <osm-wiki-link :condition="condition" ref="wikiLink"></osm-wiki-link>
-
-            <input type="text" class="form-control" ref="inputKey" v-model="condition.key"
-                        placeholder="Chercher une clé"/>
-            
-            <select data-sonata-select2="false" class="form-control" ref="selectOperator" 
-                    v-model="condition.operator" placeholder="Condition...">
-                <option value="">Existe</option>
-                <option value="!">N'existe pas</option>
-                <option value="=">Est égal à</option>
-                <option value="!=">Différent de</option>
-                <option value="~">Est l'une des valeurs</option>
-                <option value="!~">N'est aucune des valeurs</option>
-            </select>
-
-            <input class="form-control" v-model="condition.value" ref="inputValue"
-                :disabled="['', '!'].includes(condition.operator)" />            
-        </div>`
+    }
 }
+</script>

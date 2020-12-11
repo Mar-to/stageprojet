@@ -1,3 +1,8 @@
+<template>
+    <div id="map-bounds-select"></div>
+</template>
+
+<script>
 export default {
     data() {
         return {
@@ -19,8 +24,6 @@ export default {
             console.log("new bounds", event.bounds)
             this.queryBounds = event.bounds
         });
-    },
-    template: `
-        <div id="map-bounds-select"></div>
-    `
+    }
 }
+</script>
