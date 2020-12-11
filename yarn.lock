@@ -4113,15 +4113,16 @@ glogg@^1.0.0:
   dependencies:
     sparkles "^1.0.0"
 
-gogocarto-js@^1.6.5:
-  version "1.6.6"
-  resolved "https://registry.yarnpkg.com/gogocarto-js/-/gogocarto-js-1.6.6.tgz#904cd444a76a8a8ed27aee01dd431a12b536f87d"
-  integrity sha512-OmtlLZa/xZDpD8Of+zDnYypCyu0kux06dbiir02hKU/Mlu2srGc1eiEcfGE/79EhgVziuFio2i/6Qx2KmkyABQ==
+gogocarto-js@^1.6.7:
+  version "1.6.7"
+  resolved "https://registry.yarnpkg.com/gogocarto-js/-/gogocarto-js-1.6.7.tgz#0b71a62faa161bb68e844db9aafd44dc7ac8d972"
+  integrity sha512-VmxbXBaJgxLe7g/qIb7IveI9sZ5MFA/Nb0MY6k5rL6cvG2Chs5XdG9yKDKieThE2v6+u2i5ErTMI8rbzg8MbPw==
   dependencies:
     commonmark "^0.29.0"
     diff "^4.0.1"
     jquery "2.2.1"
     jquery-ui-dist "^1.12.1"
+    nouislider "^14.0.3"
     nunjucks "^3.2.0"
     tinycolor2 "^1.4.1"
     universal-geocoder "^0.3.0"
@@ -6048,6 +6049,11 @@ normalize-url@^3.0.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-3.3.0.tgz#b2e1c4dc4f7c6d57743df733a4f5978d18650559"
   integrity sha512-U+JJi7duF1o+u2pynbp2zXDW2/PADgC30f0GsHZtRh+HOcXHnw137TrNlyxxRvWW5fjKd3bcLHPxofWuCjaeZg==
+
+nouislider@^14.0.3:
+  version "14.6.3"
+  resolved "https://registry.yarnpkg.com/nouislider/-/nouislider-14.6.3.tgz#4dad5b6651d6515f6e6829f8b8e3a1736a5c0ffb"
+  integrity sha512-/3tAqsWY2JYW9vd7bC14bFRA1P9A+pRHOtKmoMsyfnB0fQcd1UFx2pdY1Ey5wAUzTnXTesmYaEo/ecLVETijIQ==
 
 now-and-later@^2.0.0:
   version "2.0.1"
