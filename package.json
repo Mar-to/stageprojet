@@ -1,5 +1,5 @@
 {
-  "name": "GoGoCarto",
+  "name": "gogocarto",
   "homepage": "https://gitlab.adullact.net/pixelhumain/GoGoCarto",
   "description": "Collaborative mapping directory",
   "keywords": [
@@ -13,10 +13,8 @@
     "type": "git",
     "url": "https://gitlab.adullact.net/pixelhumain/GoGoCarto.git"
   },
-  "engines": {
-    "node": "6.5.0"
-  },
   "devDependencies": {
+    "@symfony/webpack-encore": "^0.33.0",
     "del": "^2.2.2",
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
@@ -25,12 +23,19 @@
     "gulp-sass": "^4.0.2",
     "gulp-uglify": "^2.0.0",
     "merge-stream": "^2.0.0",
+    "sass": "^1.30.0",
+    "sass-loader": "^10.0.0",
+    "vue-loader": "^15",
+    "vue-template-compiler": "^2.6.12",
     "watchify": "^3.8.0",
-    "workbox-build": "^5.1.4"
+    "webpack-notifier": "^1.6.0",
+    "workbox-build": "^4.3.1"
   },
   "dependencies": {
+    "core-js": "^3.8.1",
     "gogocarto-js": "^1.6.7",
     "natives": "^1.1.6",
-    "universal-geocoder": "^0.5.0"
+    "universal-geocoder": "^0.5.0",
+    "vue": "^2.6.12"
   }
 }

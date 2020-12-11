@@ -92,8 +92,9 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x  | bash -
 RUN apt-get install -y --no-install-recommends nodejs
 RUN curl -L https://npmjs.org/install.sh | sh
 
-# Gulp
+# Gulp & Yarn
 RUN npm install -g gulp
+RUN npm install -g yarn
 
 # Config files
 COPY custom-php-conf.ini /usr/local/etc/php/conf.d/

@@ -7,6 +7,7 @@ COMPOSER      = composer
 NPM           = npm
 GIT           = git
 GULP          = gulp
+YARN          = yarn
 DOCKER        = docker-compose
 DOCKER_COMPOSE= $$( if [ -f docker/docker-compose.local.yml ]; then \
 		echo docker/docker-compose.local.yml; \
@@ -54,11 +55,16 @@ purge: ## Purge cache and logs
 npm-install: package-lock.json ## Install npm vendors according to the current package-lock.json file
 	$(NPM) install
 
-build-assets: ## Build the assets
+build: ## Build the assets
 	$(GULP) build
+	$(YARN) encore dev
+
+watch:
+	$(GULP) watch
+	$(YARN) encore dev --watch
 
 ## —— Docker ——————————————
-build: ## Build Docker images
+docker-build: ## Build Docker images
 	$(DOCKER) -f $(DOCKER_COMPOSE) build --pull
 
 up: ## Start the Docker hub
@@ -81,7 +87,7 @@ init: install assets load-fixtures fix-perms ## Initialize the project
 
 install: composer-install npm-install ## Install vendors
 
-assets: install-assets build-assets ## Install and build the assets
+assets: install-assets build ## Install and build the assets
 
 load-fixtures: ## Create the DB schema, generate DB classes and load fixtures
 	$(SYMFONY) doctrine:mongodb:schema:create
@@ -108,6 +114,7 @@ gogo-update: ## Update a PROD server to the lastest version of gogocarto
 	$(NPM) install
 	$(GULP) build
 	$(GULP) production
+	$(YARN) encore production
 	$(COMPOSER) install
 	$(SYMFONY) cache:clear --env=prod
 	$(SYMFONY) db:migrate
