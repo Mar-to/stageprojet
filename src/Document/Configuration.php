@@ -101,7 +101,7 @@ class Configuration implements \JsonSerializable
     protected $appNameShort;
 
     /** @MongoDB\Field(type="bool") */
-    protected $hideMenuInPwa = true;
+    protected $hideHeaderInPwa = true;
 
     // -----------------------------
     // --------- GENERAL -----------
@@ -3425,16 +3425,16 @@ class Configuration implements \JsonSerializable
      */
     public function getHideMenuInPwa()
     {
-        return $this->hideMenuInPwa;
+        return $this->hideHeaderInPwa;
     }
 
     /**
-     * @param bool $hideMenuInPwa
+     * @param bool $hideHeaderInPwa
      * @return $this
      */
-    public function setHideMenuInPwa($hideMenuInPwa)
+    public function setHideMenuInPwa($hideHeaderInPwa)
     {
-        $this->hideMenuInPwa = $hideMenuInPwa;
+        $this->hideHeaderInPwa = $hideHeaderInPwa;
         return $this;
     }
 
