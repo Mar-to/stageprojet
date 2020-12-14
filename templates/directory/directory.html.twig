@@ -23,7 +23,14 @@
 
     $(document).ready(function()
     {
-      carto = goGoCarto('#directory-container', {{ gogoConfig | json_encode | raw }});
+      carto = goGoCarto(
+        '#directory-container',
+        {% if gogoConfig is defined %}
+          {{ gogoConfig | json_encode | raw }}
+        {% elseif gogoConfigUrl is defined %}
+          "{{ gogoConfigUrl }}"
+        {% endif %}
+      );
     });
 
   </script>

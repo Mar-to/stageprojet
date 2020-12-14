@@ -303,12 +303,11 @@ class APIController extends GoGoController
             $icon['mime'] = $imageData->mime();
         }
         $shortName = $config->getAppNameShort() && strlen($config->getAppNameShort()) > 0 ? $config->getAppNameShort() : $config->getAppName();
-        $startUrl = ($config->getHideMenuInPwa() ? $this->generateUrl('gogo_app_shell') : $this->generateUrl('gogo_directory')) . '#/carte/autour-de-moi';
         $responseArray = [
           'name' => $config->getAppName(),
           'short_name' => str_split($shortName, 12)[0],
           'lang' => 'fr',
-          'start_url' => $startUrl,
+          'start_url' => $this->generateUrl('gogo_app_shell') . '#/carte/autour-de-moi',
           'display' => 'standalone',
           'theme_color' => $config->getPrimaryColor(),
           'background_color' => $config->getBackgroundColor(),

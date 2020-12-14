@@ -3423,7 +3423,7 @@ class Configuration implements \JsonSerializable
     /**
      * @return bool
      */
-    public function getHideMenuInPwa()
+    public function getHideHeaderInPwa()
     {
         return $this->hideHeaderInPwa;
     }
@@ -3432,7 +3432,7 @@ class Configuration implements \JsonSerializable
      * @param bool $hideHeaderInPwa
      * @return $this
      */
-    public function setHideMenuInPwa($hideHeaderInPwa)
+    public function setHideHeaderInPwa($hideHeaderInPwa)
     {
         $this->hideHeaderInPwa = $hideHeaderInPwa;
         return $this;

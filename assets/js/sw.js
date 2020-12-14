@@ -9,9 +9,9 @@ const TILES_DOMAIN_NAMES = [
     'a.ssl.fastly.net'
 ];
 
+// Routes needed to run the app
 const SYMFONY_ROUTES = [
     '/appli',
-    '/annuaire',
     '/api/manifest',
     '/api/gogocartojs-conf.json'
 ];
