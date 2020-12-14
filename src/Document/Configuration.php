@@ -100,6 +100,12 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\Field(type="string") */
     protected $appNameShort;
 
+    /** @MongoDB\Field(type="string") */
+    protected $packageName;
+
+    /** @MongoDB\Field(type="string") */
+    protected $sha256CertFingerprints;
+
     /** @MongoDB\Field(type="bool") */
     protected $hideHeaderInPwa = true;
 
@@ -3418,6 +3424,42 @@ class Configuration implements \JsonSerializable
     public function getAppNameShort()
     {
         return $this->appNameShort;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPackageName()
+    {
+        return $this->packageName;
+    }
+
+    /**
+     * @param string $packageName
+     * @return $this
+     */
+    public function setPackageName($packageName)
+    {
+        $this->packageName = $packageName;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSha256CertFingerprints()
+    {
+        return $this->sha256CertFingerprints;
+    }
+
+    /**
+     * @param string $sha256CertFingerprints
+     * @return $this
+     */
+    public function setSha256CertFingerprints($sha256CertFingerprints)
+    {
+        $this->sha256CertFingerprints = $sha256CertFingerprints;
+        return $this;
     }
 
     /**
