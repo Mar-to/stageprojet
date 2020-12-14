@@ -3,9 +3,21 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/gogocarto.css">
-    <link rel="stylesheet" href="/fonts/fontawesome-5/css/all.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <script src="js/gogocarto.js"></script>
+
+    {# general gogocarto styles depending on configuration style (colors, font...) #}
+    {% include 'gogocarto-styles.html.twig' %}
+
+    {# custom CSS written from configuration admin #}
+    <style>{{ config.customCSS | raw }}</style>
+
+    {# the icons as SVG font #}
+    <link rel="stylesheet" href="{{ asset('fonts/fontawesome-5/css/all.css') }}" />
+    {{ config.iconImport|raw }}
+
+    {{ config.fontImport | raw }}
+
     <style>
         html, body, #gogocarto
         {
