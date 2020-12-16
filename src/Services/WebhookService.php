@@ -25,12 +25,12 @@ class WebhookService
 
     public function __construct(DocumentManager $dm, RouterInterface $router,
                                 TokenStorageInterface $securityContext,
-                                $baseUrl, $basePath)
+                                $baseUrl)
     {
         $this->dm = $dm;
         $this->router = $router;
         $this->securityContext = $securityContext;
-        $this->baseUrl = 'http://'.$baseUrl.$basePath;
+        $this->baseUrl = 'http://'.$baseUrl;
         $this->config = $this->dm->getRepository(Configuration::class)->findConfiguration();
     }
 

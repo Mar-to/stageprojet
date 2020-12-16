@@ -8,7 +8,6 @@ twig:
         version: '%app.version%'
         base_url: '%base_url%'
         use_as_saas: '%use_as_saas%'
-        base_path: '%base_path%'
         contact_email: '%contact_email%'
         oauth_communs: '%oauth_communs_id%'
         oauth_google: '%oauth_google_id%'

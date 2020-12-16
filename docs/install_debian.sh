@@ -15,8 +15,7 @@ GIT_REPO=https://gitlab.adullact.net/pixelhumain/GoGoCarto.git # git repository 
 GIT_BRANCH=master # git branch for GoGoCarto
 WEB_URL=gogocarto.local # main url for GoGoCarto
 CONTACT_EMAIL=contact@gogocarto.local # default email contact
-USE_AS_SAAS=true # true = allow to create a farm of map, false = single map
-BASE_PATH='' # base path on webserver
+USE_AS_SAAS=false # true = allow to create a farm of map, false = single map
 SECRET=`head -c 32 /dev/random | base64` # randomly generated string
 MAILER_TRANSPORT=smtp # email transport protocol
 MAILER_HOST=127.0.0.1 # email server host
@@ -125,7 +124,6 @@ APP_SECRET=${SECRET}
 CSRF_PROTECTION=${CSRF_PROTECTION}
 USE_AS_SAAS=${USE_AS_SAAS}
 BASE_URL=${WEB_URL}
-BASE_PATH=${BASE_PATH}
 
 CONTACT_EMAIL=${CONTACT_EMAIL}
 MAILER_URL=${MAILER_TRANSPORT}://${MAILER_USER}:${MAILER_PASSWORD}@${MAILER_HOST}

@@ -14,11 +14,10 @@ class ConfigurationListener
 {
     protected $asyncService;
 
-    public function __construct(AsyncService $asyncService, $baseUrl, $basePath, $contactEmail, $projectDir)
+    public function __construct(AsyncService $asyncService, $baseUrl, $contactEmail, $projectDir)
     {
         $this->asyncService = $asyncService;
         $this->baseUrl = $baseUrl;
-        $this->basePath = $basePath;
         $this->contactEmail = $contactEmail;
         $this->projectDir = $projectDir;
     }
@@ -98,7 +97,7 @@ class ConfigurationListener
                     $filesystem->dumpFile("$removePath/{$document->getDbName()}", $oldCustomDomain);
                 }
                 if  ($newCustomDomain) {
-                    $gogo_url = $document->getDbName() . '.' . $this->baseUrl . $this->basePath;
+                    $gogo_url = $document->getDbName() . '.' . $this->baseUrl;
                     $filesystem->dumpFile("$addPath/{$document->getDbName()}", "$newCustomDomain $gogo_url $this->contactEmail");
                 }
             }

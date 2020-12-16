@@ -2,7 +2,7 @@
 
 {% block field %}
 {% spaceless %}
-  {% set url = 'http://' ~ object.domainName ~ '.' ~ base_url ~ base_path %}
+  {% set url = 'http://' ~ object.domainName ~ '.' ~ base_url %}
 	<a href={{ url }} target="_blank">{{value|capitalize}}</a>
 {% endspaceless %}
 {% endblock %}

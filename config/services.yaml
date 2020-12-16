@@ -8,13 +8,11 @@ parameters:
     use_as_sass: "%env(USE_AS_SAAS)%"
     locale: fr
     router.request_context.host: '%env(string:BASE_URL)%'
-    router.request_context.base_url: '%env(BASE_PATH)%'
     from_email: "%env(FROM_EMAIL)%"
     use_as_saas: '%env(bool:USE_AS_SAAS)%'
     images_max_filesize: "%env(IMAGES_MAX_FILESIZE)%"
     files_max_filesize: "%env(FILES_MAX_FILESIZE)%"
     base_protocol: '%env(BASE_PROTOCOL)%'
-    base_path: '%env(BASE_PATH)%'
     base_url: '%env(BASE_URL)%'
     instance_name: '%env(INSTANCE_NAME)%'
     contact_email: '%env(CONTACT_EMAIL)%'
@@ -63,11 +61,9 @@ services:
     App\Services\WebhookService:
       arguments:
         $baseUrl: '%base_url%'
-        $basePath: '%base_path%'
 
     App\Services\MailService:
       arguments:
-        $basePath: '%base_path%'
         $baseUrl: '%base_url%'
         $saas: '%use_as_saas%'
         $instanceName: '%instance_name%'
@@ -111,7 +107,6 @@ services:
 
     App\EventListener\ConfigurationListener:
       arguments:
-        $basePath: '%base_path%'
         $baseUrl: '%base_url%'
         $contactEmail: '%contact_email%'
         $projectDir: '%kernel.project_dir%'

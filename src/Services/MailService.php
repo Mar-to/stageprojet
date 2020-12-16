@@ -23,7 +23,7 @@ class MailService
     protected $email;
     protected $instanceName;
 
-    public function __construct(DocumentManager $dm, \Swift_Mailer $mailer, RouterInterface $router, Environment $twig, $baseUrl, $basePath, $saas, $fromEmail, $instanceName)
+    public function __construct(DocumentManager $dm, \Swift_Mailer $mailer, RouterInterface $router, Environment $twig, $baseUrl, $saas, $fromEmail, $instanceName)
     {
         $this->dm = $dm;
         $this->config = $this->dm->getRepository(Configuration::class)->findConfiguration();
