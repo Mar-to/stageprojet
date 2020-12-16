@@ -1,6 +1,7 @@
 v3.1.4
 ======
 * FEATURE: Ability to configure a custom domain in SASS mode (if the server uses nginx)
+* CONFIG: you need to add new entry in your .env.local : DATABASE_NAME=gogocarto_default 
 
 v3.0.0
 ======

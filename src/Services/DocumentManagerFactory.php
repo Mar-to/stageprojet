@@ -39,4 +39,9 @@ class DocumentManagerFactory
         $newDm->getConfiguration()->setDefaultDB($databaseName);
         return $this->instances[$databaseName] = $newDm;
     }
+
+    public function getDefaultManager()
+    {
+        return $this->defaultDocumentManager;
+    }
 }

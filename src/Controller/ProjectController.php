@@ -43,7 +43,7 @@ class ProjectController extends Controller
             return $this->redirectToRoute('gogo_homepage');
         }
 
-        $dm = $dmFactory->createForDB('gogocarto_default');
+        $dm = $dmFactory->getDefaultManager();
         $project = new Project();
 
         $projectForm = $this->createFormBuilder($project)
@@ -228,7 +228,7 @@ class ProjectController extends Controller
         $db = $mongo->selectDB($dbName);
         $results = $db->command(['dropDatabase' => 1]);
 
-        $rootDm = $dmFactory->createForDB('gogocarto_default');
+        $rootDm = $dmFactory->getDefaultManager();
         $project = $rootDm->getRepository(Project::class)->findOneByDomainName($dbName);
         $rootDm->remove($project);
         $rootDm->flush();
