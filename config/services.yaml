@@ -247,6 +247,12 @@ services:
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Qui peut Contribuer? }
 
+    admin.mobile_config:
+        class: App\Admin\ConfigurationMobileAdmin
+        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: App Mobile }
+
     admin.email_config:
         class: App\Admin\ConfigurationMailAdmin
         arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
