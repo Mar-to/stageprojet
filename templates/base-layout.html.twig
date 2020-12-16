@@ -19,7 +19,9 @@
   <body class="{% if config is defined %}gogo-theme-{{ config.theme }}{% endif %} {% if pageName is defined %}{{ pageName }}{% endif %} base-layout"> {# use this class to load the css vendors encapsulated inside gogocarto.css #}
 
     {# Header with navigation links, login button... #}
-    {% include 'header.html.twig' %}
+    {% if not hideHeader is defined %}
+      {% include 'header.html.twig' %}
+    {% endif %}
 
     {% block body %}
     {% endblock %}

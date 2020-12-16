@@ -1,31 +1,82 @@
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js');
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.4/workbox-sw.js');
 
-console.log("Service-worker installing...");
+const TILES_DOMAIN_NAMES = [
+    'global.ssl.fastly.net',
+    'tile.openstreetmap.se',
+    'maps.wikimedia.org',
+    'tiles.lyrk.org',
+    'tile.openstreetmap.fr',
+    'a.ssl.fastly.net'
+];
 
-workbox.core.skipWaiting();
-workbox.core.clientsClaim();
+// Routes needed to run the app
+const SYMFONY_ROUTES = [
+    '/appli',
+    '/api/manifest',
+    '/api/gogocartojs-conf.json'
+];
 
-self.addEventListener('fetch', event => {
-    event.respondWith(
-        caches.open(workbox.core.cacheNames.precache).then(precache => (
-            // Check if file is available in the cache
-            precache.match(event.request, { ignoreSearch: true }).then(response => {
-                // Cache hit - return response
-                if (response) {
-                    return response;
-                } else {
-                    // A request is a flux and can only be consumed once
-                    // It is necessary to clone it to reuse it
-                    const fetchRequest = event.request.clone();
-
-                    return fetch(fetchRequest).catch(error => (
-                        // If fetch fail, return
-                        precache.match(new Request('/offline.html'), { ignoreSearch: true })
-                    ));
-                }
-            })
-        ))
-    );
+const UsePrecachePlugin = precache => ({
+    cacheKeyWillBeUsed: async ({ request }) => {
+        const url = new URL(request.url);
+        return precache.getCacheKeyForURL(url.pathname);
+    }
 });
 
-workbox.precaching.precacheAndRoute([]);
+// We want the SW to delete outdated cache on each activation
+workbox.precaching.cleanupOutdatedCaches();
+
+// Create custom precache for Symfony routes
+// The goal is to precache these routes so that they are available immediately on app install,
+// but to update them when new versions are available (via the StaleWhileRevalidate strategy)
+const symfonyRoutesCache = new workbox.precaching.PrecacheController('symfony-routes');
+self.addEventListener('install', event => event.waitUntil(symfonyRoutesCache.install()));
+self.addEventListener('activate', event => event.waitUntil(symfonyRoutesCache.activate()));
+symfonyRoutesCache.addToCacheList(SYMFONY_ROUTES.map(route => ({ url: route, revision: Date.now().toString() })));
+
+workbox.routing.registerRoute(
+    ({ url }) => SYMFONY_ROUTES.some(route => url.pathname.startsWith(route)),
+    new workbox.strategies.StaleWhileRevalidate({
+        cacheName: 'symfony-routes',
+        plugins: [ UsePrecachePlugin(symfonyRoutesCache) ]
+    })
+);
+
+// Elements cache
+workbox.routing.registerRoute(
+    new RegExp('/api/elements'),
+    new workbox.strategies.NetworkFirst({
+        networkTimeoutSeconds: 5,
+        cacheName: 'elements',
+        plugins: [
+            new workbox.expiration.ExpirationPlugin({
+                maxEntries: 100,
+                maxAgeSeconds: 7 * 24 * 60 * 60,
+                purgeOnQuotaError: true
+            }),
+            new workbox.cacheableResponse.CacheableResponsePlugin({ statuses: [0, 200] })
+        ]
+    })
+);
+
+// Tiles cache
+workbox.routing.registerRoute(
+    ({ url }) => TILES_DOMAIN_NAMES.some(domainName => url.hostname.includes(domainName)),
+    new workbox.strategies.CacheFirst({
+        cacheName: 'tiles',
+        plugins: [
+            new workbox.expiration.ExpirationPlugin({
+                maxEntries: 200,
+                maxAgeSeconds: 31 * 24 * 60 * 60,
+                purgeOnQuotaError: true
+            }),
+            new workbox.cacheableResponse.CacheableResponsePlugin({ statuses: [0, 200] })
+        ]
+    })
+);
+
+workbox.precaching.precacheAndRoute(
+    self.__WB_MANIFEST,
+    // Ignore the ?ver= query, as the resources cached by the SW are automatically updated
+    { ignoreURLParametersMatching: [/^(ver|utm_.+)$/] }
+);

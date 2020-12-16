@@ -19,6 +19,10 @@ gogo_directory_showElement:
     path:     /annuaire#/fiche/element/{id}
     defaults: { _controller: App\Controller\DirectoryController::renderAction }
 
+gogo_app_shell:
+    path:     /appli
+    defaults: { _controller: App\Controller\DirectoryController::appShell }
+
 gogo_partners:
     path: /qui-sommes-nous
     defaults: { _controller: App\Controller\CoreController::partnersAction }

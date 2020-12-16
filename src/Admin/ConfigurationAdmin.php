@@ -42,11 +42,16 @@ class ConfigurationAdmin extends ConfigurationAbstractAdmin
         }
         $formMapper
                 ->add('appName', null, ['label' => 'Nom du site'])
-                ->add('appNameShort', null, ['label' => 'Nom Court (utilisé par les téléphones, 12 caractères max.)', 'required' => false])
                 ->add('appBaseline', null, ['label' => 'Description du site (baseline)', 'required' => false])
                 ->add('appTags', null, ['label' => 'Mot clés pour le référencement (séparés par une virgule)', 'required' => false])
                 ->add('customDomain', UrlType::class, ['label' => "Utiliser un nom de domaine personnalisé (exple macarte.org au lieu de macarte.gogocarto.fr). Après avoir acheté le nom de domaine macarte.org, vous devez d'abords le rediriger sur l'adresse IP du serveur GoGoCarto (" . $_SERVER['SERVER_ADDR'] ."). Ensuite renseignez ici le nom de votre domaine, et attendez quelques minutes le temps que cela soit configuré par GoGoCarto", 'required' => false])
                 ->add('dataLicenseUrl', null, ['label' => 'Url de la licence qui protège vos données', 'required' => false])
+            ->end()
+            ->with('Application mobile (PWA)', ['class' => 'col-md-6', 'description' => 'Gogocarto est nativement une Progressive Web App: cela permet aux utilisateurs d\'ajouter la carto sur l\'écran d\'acceuil de leur téléphone mobile et de la lancer ensuite en plein écran, comme une vraie application mobile.'])
+                ->add('appNameShort', null, ['label' => 'Nom court de l\'application (12 caractères max.)', 'required' => false])
+                ->add('packageName', null, ['label' => 'Nom de domaine de l\'appli (si vous la publiez en tant que TWA). Format: fr.gogocarto.macarto', 'required' => false])
+                ->add('sha256CertFingerprints', null, ['label' => 'Empreintes du certificat SHA256 (si vous la publiez en tant que TWA). Format: 57:2B:36:...', 'required' => false])
+                ->add('hideHeaderInPwa', null, ['label' => "Masquer la barre du haut lorsque la carte est ouverte en mode PWA", 'required' => false])
             ->end()
             ->with('Images générales', ['class' => 'col-md-6'])
                 ->add('logo', ModelType::class, $imagesOptions)

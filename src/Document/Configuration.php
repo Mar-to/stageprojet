@@ -37,9 +37,6 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\Field(type="string") */
     protected $appName;
 
-    /** @MongoDB\Field(type="string") */
-    protected $appNameShort;
-
     /**
      * @MongoDB\Field(type="string")
      * @Gedmo\Slug(fields={"appName"}, updatable=false)
@@ -95,9 +92,26 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\Field(type="string") */
     protected $elementDisplayNamePlural = 'éléments'; // elements
 
-    // ----------------------------
-    // --------- GENRAL -----------
-    // ----------------------------
+    // -----------------------------
+    // ----------- PWA -------------
+    // -----------------------------
+
+
+    /** @MongoDB\Field(type="string") */
+    protected $appNameShort;
+
+    /** @MongoDB\Field(type="string") */
+    protected $packageName;
+
+    /** @MongoDB\Field(type="string") */
+    protected $sha256CertFingerprints;
+
+    /** @MongoDB\Field(type="bool") */
+    protected $hideHeaderInPwa = true;
+
+    // -----------------------------
+    // --------- GENERAL -----------
+    // -----------------------------
 
     /** @MongoDB\Field(type="bool") */
     protected $activateHomePage;
@@ -3410,6 +3424,60 @@ class Configuration implements \JsonSerializable
     public function getAppNameShort()
     {
         return $this->appNameShort;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPackageName()
+    {
+        return $this->packageName;
+    }
+
+    /**
+     * @param string $packageName
+     * @return $this
+     */
+    public function setPackageName($packageName)
+    {
+        $this->packageName = $packageName;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSha256CertFingerprints()
+    {
+        return $this->sha256CertFingerprints;
+    }
+
+    /**
+     * @param string $sha256CertFingerprints
+     * @return $this
+     */
+    public function setSha256CertFingerprints($sha256CertFingerprints)
+    {
+        $this->sha256CertFingerprints = $sha256CertFingerprints;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getHideHeaderInPwa()
+    {
+        return $this->hideHeaderInPwa;
+    }
+
+    /**
+     * @param bool $hideHeaderInPwa
+     * @return $this
+     */
+    public function setHideHeaderInPwa($hideHeaderInPwa)
+    {
+        $this->hideHeaderInPwa = $hideHeaderInPwa;
+        return $this;
     }
 
     public function getPublishOnSaasPage() {
