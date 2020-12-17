@@ -25,7 +25,7 @@ class Configuration implements \JsonSerializable
     private $id;
 
     /** @MongoDB\Field(type="string") */
-    protected $dbName = 'gogocarto_default';
+    protected $dbName;
 
     /** @MongoDB\Field(type="string") */
     protected $customDomain = null;

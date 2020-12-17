@@ -11,8 +11,10 @@ class DocumentManagerFactory
      *
      * @var DocumentManager
      */
-    private $defaultDocumentManager;
+    private $currentDocumentManager;
 
+    /* name of the root database */
+    private $rootDB;
     /**
      * All DocumentManagers created by Factory so far.
      *
@@ -20,9 +22,10 @@ class DocumentManagerFactory
      */
     private $instances = array();
 
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, $rootDB)
     {
-        $this->defaultDocumentManager = $dm;
+        $this->currentDocumentManager = $dm;
+        $this->rootDB = $rootDB;
     }
 
     public function createForDB(String $databaseName)
@@ -30,18 +33,34 @@ class DocumentManagerFactory
         if (isset($this->instances[$databaseName])) {
             return $this->instances[$databaseName];
         }
-        $configuration = clone $this->defaultDocumentManager->getConfiguration();
+        $configuration = clone $this->currentDocumentManager->getConfiguration();
         $newDm = DocumentManager::create(
-            $this->defaultDocumentManager->getConnection(),
+            $this->currentDocumentManager->getConnection(),
             $configuration,
-            $this->defaultDocumentManager->getEventManager()
+            $this->currentDocumentManager->getEventManager()
         );
         $newDm->getConfiguration()->setDefaultDB($databaseName);
         return $this->instances[$databaseName] = $newDm;
     }
 
-    public function getDefaultManager()
+    // In SAAS Mode, it get the document manager of the root project
+    public function getRootManager()
     {
-        return $this->defaultDocumentManager;
+        return $this->createForDB($this->rootDB);
+    }
+
+    public function getCurrentManager()
+    {
+        return $this->currentDocumentManager;
+    }
+
+    public function getCurrentDbName()
+    {
+        return $this->getCurrentManager()->getConfiguration()->getDefaultDB();
+    }
+
+    public function isRootProject()
+    {
+        return $this->getCurrentDbName() == $this->rootDB;
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-use App\Document\GoGoLogUpdate;
 use App\Document\MigrationState;
 use App\Services\AsyncService;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -10,7 +9,6 @@ use App\Services\DocumentManagerFactory;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
@@ -91,7 +89,7 @@ class MigrationCommand extends GoGoAbstractCommand
 
         try {
             // Collecting the Database to be updated
-            $dbs = ['gogocarto_default'];
+            $dbs = ['']; // default DB
             $dbNames = $dm->createQueryBuilder('App\Document\Project')->select('domainName')->hydrate(false)->getQuery()->execute()->toArray();
             foreach ($dbNames as $object) {
                 $dbs[] = $object['domainName'];

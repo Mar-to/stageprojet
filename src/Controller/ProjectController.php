@@ -6,12 +6,10 @@ use App\Application\Sonata\UserBundle\Form\Type\RegistrationFormType;
 use App\Command\GoGoMainCommand;
 use App\DataFixtures\MongoDB\LoadConfiguration;
 use App\Document\Category;
-use App\Document\Configuration;
 use App\Document\Option;
 use App\Document\Project;
 use App\Document\ScheduledCommand;
 use App\Document\Taxonomy;
-use App\Helper\SaasHelper;
 use App\Services\DocumentManagerFactory;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use FOS\UserBundle\Model\UserInterface;
@@ -20,30 +18,23 @@ use FOS\UserBundle\Security\LoginManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Process\Process;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ProjectController extends Controller
 {
-    protected function isAuthorized()
-    {
-        $sassHelper = new SaasHelper();
-
-        return $sassHelper->isRootProject();
-    }
-
     protected function generateUrlForProject($project, $route = 'gogo_homepage', $params = [])
     {
-        return 'http://'.$project->getDomainName().'.'.$this->getParameter('base_url').$this->generateUrl($route, $params);
+        $url = 'http://'.$project->getDomainName().'.'.$this->getParameter('base_url').$this->generateUrl($route, $params);
+        return str_replace('index.php/index.php', 'index.php', $url);
     }
 
     public function createAction(Request $request, DocumentManagerFactory $dmFactory)
     {
-        if (!$this->isAuthorized()) {
+        if (!$dmFactory->isRootProject()) {
             return $this->redirectToRoute('gogo_homepage');
         }
 
-        $dm = $dmFactory->getDefaultManager();
+        $dm = $dmFactory->getRootManager();
         $project = new Project();
 
         $projectForm = $this->createFormBuilder($project)
@@ -137,12 +128,12 @@ class ProjectController extends Controller
     /**
      * @Route("/projects", name="gogo_saas_home")
      */
-    public function homeAction(DocumentManager $dm)
+    public function homeAction(DocumentManagerFactory $dmFactory)
     {
-        if (!$this->isAuthorized()) {
+        if (!$dmFactory->isRootProject()) {
             return $this->redirectToRoute('gogo_homepage');
         }
-
+        $dm = $dmFactory->getCurrentManager();
         $repository = $dm->getRepository('App\Document\Project');
 
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
@@ -169,7 +160,6 @@ class ProjectController extends Controller
 
     // This route is to create an Admin User when the project is just created
     public function initializeAction(Request $request, DocumentManager $dm,
-                                     DocumentManagerFactory $dmFactory,
                                      UserManagerInterface $userManager,
                                      LoginManagerInterface $loginManager)
     {
@@ -218,24 +208,22 @@ class ProjectController extends Controller
         }
     }
 
-    // The project is being deleted by the owner
+    // In SAAS Mode, a project is being deleted by the owner
     public function deleteCurrProjectAction(DocumentManagerFactory $dmFactory)
     {
-        $saasHelper = new SaasHelper();
-        $dbName = $saasHelper->getCurrentProjectCode();
-        $dm = $dmFactory->createForDB($dbName);
-        $mongo = $dm->getConnection()->getMongo();
+        $dm = $dmFactory->getCurrentManager();
+        $dbName = $dmFactory->getCurrentDbName();
+        $mongo = $dm->getConnection()->getMongoClient();
         $db = $mongo->selectDB($dbName);
-        $results = $db->command(['dropDatabase' => 1]);
-
-        $rootDm = $dmFactory->getDefaultManager();
+        $db->command(['dropDatabase' => 1]);
+        
+        $rootDm = $dmFactory->getRootManager();
         $project = $rootDm->getRepository(Project::class)->findOneByDomainName($dbName);
         $rootDm->remove($project);
         $rootDm->flush();
 
-        $url = $this->generateUrl('gogo_homepage');
-        $url = str_replace($dbName.'.', '', $url);
-
+        // Return to SAAS Home Page
+        $url = $this->getParameter('base_protocol') . '://' . $this->getParameter('base_url');
         return $this->redirect($url);
     }
 }

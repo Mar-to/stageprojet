@@ -46,7 +46,7 @@ class GoGoAbstractCommand extends Command
             if ($input->getArgument('dbname')) {
                 $this->dm = $this->dmFactory->createForDB($input->getArgument('dbname'));
             } else {
-                $this->dm = $this->dmFactory->getDefaultManager();
+                $this->dm = $this->dmFactory->getRootManager();
             }
 
             // create dummy user, as some code called from command will maybe need the current user informations

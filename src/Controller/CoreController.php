@@ -2,21 +2,20 @@
 
 namespace App\Controller;
 
-use App\Helper\SaasHelper;
+use App\Services\DocumentManagerFactory;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Services\GoGoCartoJsService;
 
 class CoreController extends GoGoController
 {
-    public function homeAction($force = false, DocumentManager $dm, SessionInterface $session,
+    public function homeAction($force = false, DocumentManagerFactory $dmFactory, SessionInterface $session,
                                GoGoCartoJsService $gogoJsService)
     {
-        $sassHelper = new SaasHelper();
-        if (!$force && $this->getParameter('use_as_saas') && $sassHelper->isRootProject()) {
+        if (!$force && $this->getParameter('use_as_saas') && $dmFactory->isRootProject()) {
             return $this->redirectToRoute('gogo_saas_home');
         }
-
+        $dm = $dmFactory->getCurrentManager();
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
         if (!$config && $this->getParameter('use_as_saas')) {
             $url = 'http://'.$this->getParameter('base_url').$this->generateUrl('gogo_saas_home');

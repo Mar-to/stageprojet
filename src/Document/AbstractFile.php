@@ -2,7 +2,6 @@
 
 namespace App\Document;
 
-use App\Helper\SaasHelper;
 use App\Services\UploadDirectoryNamer;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -121,26 +120,40 @@ class AbstractFile implements \Serializable
 
     public function calculateFileUrl()
     {
-        $hostHelper = new SaasHelper();
-        $fileUrl = $hostHelper->getPublicFolderUrl();
-        $fileUrl .= '/'.$this->calculateFilePath();
-
-        return $fileUrl;
+        return $this->getPublicFolderUrl().'/'.$this->calculateFilePath();
     }
 
     public function calculateFilePath($suffix = '', $extension = '')
     {
-        $uploadDirHelper = new UploadDirectoryNamer();
+        // not a good practice, accessing a servcie from a Document...
+        global $kernel;
+        $container = $kernel->getContainer();
+        $uploadDirHelper = $container->get(UploadDirectoryNamer::class);
         $filePath = $uploadDirHelper->getDirectoryPathFromKey($this->vichUploadFileKey).'/'.$this->fileName;
         if ($suffix) {
             return preg_replace(
-        '/(\.jpe?g|\.png)$/',
-        '-'.$suffix.($extension ? '.'.$extension : '$1'),
-        $filePath
-      );
+                '/(\.jpe?g|\.png)$/',
+                '-'.$suffix.($extension ? '.'.$extension : '$1'),
+                $filePath
+            );
         } else {
             return $filePath;
         }
+    }
+
+    // return the Url to the actual public folder (the web/ folder)
+    public function getPublicFolderUrl()
+    {
+        if (isset($_SERVER['HTTP_ORIGIN'])) {
+            $url = $_SERVER['HTTP_ORIGIN'];
+        } else {
+            $url = (isset($_SERVER['REQUEST_SCHEME']) ? $_SERVER['REQUEST_SCHEME'] : 'http').'://'.$_SERVER['HTTP_HOST'];
+        }
+
+        // Fix if there is no url rewrite
+        $url = str_replace('/index.php', '', $url);
+
+        return $url;
     }
 
     public function getFile()

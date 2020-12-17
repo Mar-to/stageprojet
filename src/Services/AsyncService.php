@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Helper\SaasHelper;
+use App\Services\DocumentManagerFactory;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\PhpExecutableFinder;
@@ -12,8 +12,9 @@ class AsyncService
 {
     protected $runSynchronously = false;
 
-    public function __construct(Filesystem $filesystem, $rootDir, $env)
+    public function __construct(DocumentManagerFactory $dmFactory, Filesystem $filesystem, $rootDir, $env)
     {
+        $this->dmFactory = $dmFactory;
         $this->filesystem = $filesystem;
         $this->rootDir = $rootDir;
         $this->env = $env;
@@ -30,8 +31,7 @@ class AsyncService
     public function callCommand($commandName, $arguments = [], $dbname = null)
     {
         if (null === $dbname) {
-            $saasHelper = new SaasHelper();
-            $dbname = $saasHelper->getCurrentProjectCode();
+            $dbname = $this->dmFactory->getCurrentDbName();
         }
 
         $commandline = $this->phpPath.' '.$this->consolePath;

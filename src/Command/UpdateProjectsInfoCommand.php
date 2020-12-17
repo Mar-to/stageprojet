@@ -19,7 +19,7 @@ class UpdateProjectsInfoCommand extends Command
                                 RouterInterface $router, $baseUrl)
     {
         $this->dmFactory = $dmFactory;
-        $this->rootDm = $dmFactory->getDefaultManager();
+        $this->rootDm = $dmFactory->getRootManager();
         $this->router = $router;
         $this->logger = $commandsLogger;
         $this->baseUrl = $baseUrl;

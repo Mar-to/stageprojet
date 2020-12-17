@@ -14,6 +14,7 @@ parameters:
     files_max_filesize: "%env(FILES_MAX_FILESIZE)%"
     base_protocol: '%env(BASE_PROTOCOL)%'
     base_url: '%env(BASE_URL)%'
+    root_db: '%env(DATABASE_NAME)%'    
     instance_name: '%env(INSTANCE_NAME)%'
     contact_email: '%env(CONTACT_EMAIL)%'
     oauth_communs_id: '%env(OAUTH_COMMUNS_ID)%'
@@ -68,6 +69,10 @@ services:
         $saas: '%use_as_saas%'
         $instanceName: '%instance_name%'
         $fromEmail: '%from_email%'
+    
+    App\Services\DocumentManagerFactory:
+      arguments:
+        $rootDB: '%root_db%'
 
     # Commands
     App\Command\UpdateProjectsInfoCommand:

@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Helper\SaasHelper;
+use App\Services\DocumentManagerFactory;
 use Vich\UploaderBundle\Mapping\PropertyMapping;
 use Vich\UploaderBundle\Naming\DirectoryNamerInterface;
 
@@ -23,7 +23,12 @@ class UploadDirectoryNamer implements DirectoryNamerInterface
       'config_image' => '/images/config',
       'import_file' => '/imports',
       'default_file' => '/default',
-   ];
+    ];
+
+    public function __construct(DocumentManagerFactory $dmFactory)
+    {
+        $this->dmFactory = $dmFactory;
+    }
 
     public function directoryName($object, PropertyMapping $mapping): string
     {
@@ -34,8 +39,6 @@ class UploadDirectoryNamer implements DirectoryNamerInterface
 
     public function getDirectoryPathFromKey($key)
     {
-        $hostHelper = new SaasHelper();
-
-        return $this->BASE_PATH.$hostHelper->getCurrentProjectCode().$this->PATHS[$key];
+        return $this->BASE_PATH . $this->dmFactory->getCurrentDbName() . $this->PATHS[$key];
     }
 }

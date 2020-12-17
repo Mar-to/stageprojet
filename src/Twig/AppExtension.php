@@ -2,18 +2,18 @@
 
 namespace App\Twig;
 
-use App\Helper\SaasHelper;
 use App\Services\ConfigurationService;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use App\Services\DocumentManagerFactory;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 class AppExtension extends AbstractExtension
 {
-    public function __construct(DocumentManager $dm, ConfigurationService $configService)
+    public function __construct(DocumentManagerFactory $dmFactory, ConfigurationService $configService)
     {
-        $this->dm = $dm;
+        $this->dmFactory = $dmFactory;
+        $this->dm = $dmFactory->getCurrentManager();
         $this->configService = $configService;
     }
 
@@ -47,9 +47,7 @@ class AppExtension extends AbstractExtension
 
     public function isRootProject()
     {
-        $sassHelper = new SaasHelper();
-
-        return $sassHelper->isRootProject();
+        return $this->dmFactory->isRootProject();
     }
 
     public function getNewMessagesCount()
