@@ -6,8 +6,6 @@ use App\Document\Configuration\ConfigurationApi;
 use App\Document\Configuration;
 use App\Document\Configuration\ConfigurationMarker;
 use App\Services\AsyncService;
-use Symfony\Component\Process\Process;
-use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
 class ConfigurationListener
@@ -55,7 +53,7 @@ class ConfigurationListener
 
                 // Update search index
                 $fullConfig = $dm->getRepository('App\Document\Configuration')->findConfiguration();
-                $this->updateSearchIndex($fullConfig->getDbName(),
+                $this->updateSearchIndex($dm, $fullConfig->getDbName(),
                                          $oldPrivateProperties,
                                          $newPrivateProperties,
                                          $fullConfig->getElementFormFieldsJson(),
@@ -79,7 +77,7 @@ class ConfigurationListener
                 $formFieldsChanged = $changeset['elementFormFieldsJson'];
                 $oldFormFields = $formFieldsChanged[0];
                 $newFormFields = $formFieldsChanged[1];
-                $this->updateSearchIndex($document->getDbName(),
+                $this->updateSearchIndex($dm, $document->getDbName(),
                                          $document->getApi()->getPublicApiPrivateProperties(),
                                          $document->getApi()->getPublicApiPrivateProperties(),
                                          $oldFormFields,
@@ -104,7 +102,7 @@ class ConfigurationListener
         }
     }
 
-    private function updateSearchIndex($db, $oldPrivateProperties, $newPrivateProperties,
+    private function updateSearchIndex($dm, $dbName, $oldPrivateProperties, $newPrivateProperties,
                                        $oldFormFields, $newFormFields) {
         $oldSearchIndex = $this->calculateSearchIndexConfig($oldPrivateProperties, $oldFormFields);
         $newSearchIndex = $this->calculateSearchIndexConfig($newPrivateProperties, $newFormFields);
@@ -114,8 +112,9 @@ class ConfigurationListener
             $command .= 'db.Element.dropIndex("search_index");';
             $command .= "db.Element.createIndex( {$newSearchIndex["fields"]}, { name: \"search_index\", default_language: \"french\", weights: {$newSearchIndex["weights"]} });";
 
-            $process = Process::fromShellCommandline("mongo {$db} --eval '{$command}'");
-            $process->run();
+            $mongo = $dm->getConnection()->getMongoClient();
+            $db = $mongo->selectDB($dbName);
+            return $db->execute($command);
         }
     }
 

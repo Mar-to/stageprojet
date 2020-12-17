@@ -103,7 +103,7 @@ class MigrationCommand extends GoGoAbstractCommand
                 foreach ($dbs as $db) {
                     foreach ($migrationsToRun as $migration) {
                         $this->log('run migration '.$migration.' on project '.$db);
-                        $this->runMongoCommand($db, $migration);
+                        $this->runMongoCommand($dm, $db, $migration);
                     }
                 }
                 $this->log(count($migrationsToRun).' migrations performed');
@@ -152,9 +152,10 @@ class MigrationCommand extends GoGoAbstractCommand
         $dm->flush();
     }
 
-    private function runMongoCommand($db, $command)
+    private function runMongoCommand($dm, $dbName, $command)
     {
-        $process = Process::fromShellCommandline("mongo {$db} --eval '{$command}'");
-        return $process->run();
+        $mongo = $dm->getConnection()->getMongoClient();
+        $db = $mongo->selectDB($dbName);
+        return $db->execute($command);
     }
 }
