@@ -313,7 +313,11 @@ class APIController extends GoGoController
           'background_color' => $config->getBackgroundColor(),
           'icons' => [$icon],
         ];
-        $response = new Response(json_encode($responseArray));
+        $responseJson = json_encode($responseArray);
+        if (!is_string($responseJson)) {
+            throw new \Exception("Cannot convert responseArray to json : " . var_dump($responseArray));
+        }
+        $response = new Response($responseJson);
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
