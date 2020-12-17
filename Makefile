@@ -60,8 +60,8 @@ build: ## Build the assets
 	$(YARN) encore dev
 
 watch:
-	$(GULP) watch
-	$(YARN) encore dev --watch
+	$(GULP) watch &
+	$(YARN) encore dev --watch &
 
 ## —— Docker ——————————————
 docker-build: ## Build Docker images
