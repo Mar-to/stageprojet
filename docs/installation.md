@@ -3,27 +3,39 @@ Installation and Production Instructions
 
 Feel free to add some more information if you solve installation issues!
 
-Quick Install
--------------
-
-- **Debian script**: there is a script for Debian installation named `install_debian.sh` in this docs directory! After installation, go to `http://localhost/GoGoCarto/web/project/initialize` to initialize your project.
-
-- **Docker containers**: please follow the instructions [here](installation_docker.md).
-
-Manual Install: Requirements
+Installation with Docker
 ------------
+
+With the Docker installation, you have all the required softwares installed in two containers (`gogocarto` and `mongo`).
+
+* Run `make build` to build the container images.
+
+* Run `make up` to launch the containers.
+
+* Enter the `gogocarto` container with this command: `make shell` or `docker exec -it gogocarto bash` (you can execute this one anywhere)
+
+* Run `make init` from within the `gogocarto` container. This will launch all the required commands to finish the installation.
+
+* Go to `http://localhost:3008/index.php/project/initialize` to initialize the project.
+
+### Local docker-compose
+
+If you have a specific environment, need for custom env vars, want to avoid exposing ports, etc, you can create a copy of `docker/docker-compose.yml` named `docker/docker-compose.local.yml` (it will be gitignored).
+
+
+Manual Install
+------------
+
+Main requirements are :
 
 1. PHP 7.4
 2. [Composer](https://getcomposer.org/download/)
 3. [Nodejs](https://nodejs.org/en/download/)
 4. [Git](https://git-scm.com/)
-5. Web Server (Apache, Nginx, [Wamp server](http://www.wampserver.com/) ...)
-6. MongoDB (http://php.net/manual/fr/mongodb.installation.php) -> !!Version 3.4 or below!!!
+5. Web Server (Apache, Nginx)
+6. [MongoDB](http://php.net/manual/fr/mongodb.installation.php)
 
-Consider the [Docker installation](installation_docker.md) if you run into troubles installing these softwares.
-
-Installation
-------------
+Please refer to the dockerfile to know all dependencies : [DockerFile](../docker/server/Dockerfile)
 
 ### Cloning Repository
 
@@ -45,26 +57,48 @@ Execute the command:
 make init
 ```
 
-It will:
-- install the dependencies
-- install and build the assets
-- load the fixtures
-
 Now initialize your project with the following route:
 
-`http://localhost/GoGoCarto/web/project/initialize`
+`http://localhost/GoGoCarto/web/index.php/project/initialize`
 
-Start
------
+SAAS Mode (Software As A Service)
+--------------------------
+
+Instead of having a single GoGoCarto instance, you can transform your site in a "farm" by turning env variable USE_AS_SAAS to true
+
+For Development
+--------------
 
 Start watching for file changes (automatic recompilation):
 
 ```shell
-gulp watch
+make watch
 ```
 
-Updating your Production Install
----------------------
+For Production
+--------------
+
+### Cron Tabs
+
+Here are the following cron tab you need to configure 
+
+```shell
+# for a Normal instance
+@daily php GOGOCARTO_DIR/bin/console --env=prod app:elements:checkvote
+@hourly php GOGOCARTO_DIR/bin/console --env=prod app:users:sendNewsletter
+@hourly php GOGOCARTO_DIR/bin/console --env=prod app:webhooks:post
+@daily php GOGOCARTO_DIR/bin/console --env=prod app:elements:checkExternalSourceToUpdate
+```
+
+```shell
+# for a SAAS instance
+* * * * * php GOGOCARTO_DIR/bin/console --env=prod app:main-command
+@daily php GOGOCARTO_DIR/bin/console --env=prod app:saas:update-projects-info
+@daily php GOGOCARTO_DIR/bin/console --env=prod app:projects:check-for-deleting
+* * * * * cd GOGOCARTO_DIR && sh bin/execute_custom_domain.sh
+```
+
+### Updating GoGoCarto
 
 Each time you want to update GoGoCarto, run:
 
@@ -72,11 +106,11 @@ Each time you want to update GoGoCarto, run:
 make gogo-update
 ```
 
-You can have a look to [the CHANGELOG](../CHANGELOG.md) to know what are the new features.
+You can have a look to [the CHANGELOG](../CHANGELOG.md) to know what are the new features and breaking changes.
 
 
 Issues
-------
+--------------
 
 If memory limits while using Composer:
 

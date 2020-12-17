@@ -41,10 +41,7 @@ Stack
 
 Symfony4, MongoDB, Typescript
 
-Documentation
+Installation
 -------------
 
-- [Installation intructions](docs/installation.md)
-- [Project structure](docs/project-structure.md)
-- [Coding conventions](docs/coding-conventions.md)
-- [How to contribute](docs/contributing.md)
+[Installation intructions](docs/installation.md)
