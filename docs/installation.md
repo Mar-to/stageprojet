@@ -8,7 +8,7 @@ Installation with Docker
 
 With the Docker installation, you have all the required softwares installed in two containers (`gogocarto` and `mongo`).
 
-* Run `make build` to build the container images.
+* Run `make docker-build` to build the container images.
 
 * Run `make up` to launch the containers.
 
@@ -61,10 +61,11 @@ Now initialize your project with the following route:
 
 `http://localhost/GoGoCarto/web/project/initialize`
 
-SAAS Mode (Software As A Service)
+Multi Instance Mode (Software As A Service)
 --------------------------
 
-Instead of having a single GoGoCarto instance, you can transform your site in a "farm" by turning env variable USE_AS_SAAS to true
+Instead of having a single GoGoCarto instance, you can transform your site in a "farm" by turning env variable USE_AS_SAAS to true. Every instance will use a subdomain, i.e if your base url is carto-farm.org, a new instance will be located at mymap.carto-farm.org with it's own database "mymap"
+Note : If your base url is already a subdomain, i.e. carto.farm.org, your root database name should equals your root url subdomain name : `DATABASE_NAME=carto`. 
 
 For Development
 --------------
