@@ -5277,6 +5277,30 @@ lead@^1.0.0:
   dependencies:
     flush-write-stream "^1.0.2"
 
+leaflet-editable@^1.1.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/leaflet-editable/-/leaflet-editable-1.2.0.tgz#a3a01001764ba58ea923381ee6a1c814708a0b84"
+  integrity sha512-wG11JwpL8zqIbypTop6xCRGagMuWw68ihYu4uqrqc5Ep0wnEJeyob7NB2Rt5t74Oih4rwJ3OfwaGbzdowOGfYQ==
+
+leaflet-shades@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/leaflet-shades/-/leaflet-shades-0.1.4.tgz#944d8cc565e98b57d13e26e693977ae894fa05e7"
+  integrity sha512-XwB65YWV5dti4bWBcce0A3RVNHzWAP1NTaRCbZ890ePsdmmygg21FAjjfgZae3lgvk6xjvb2PnGwiD8UeWuWug==
+  dependencies:
+    cached-path-relative "^1.0.2"
+    leaflet-editable "^1.1.0"
+    leaflet.path.drag "0.0.6"
+
+leaflet.path.drag@0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/leaflet.path.drag/-/leaflet.path.drag-0.0.6.tgz#6d9c3af0b9d7b032544ae16bfde688f0160514a0"
+  integrity sha1-bZw68LnXsDJUSuFr/eaI8BYFFKA=
+
+leaflet@^1.7.1:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.7.1.tgz#10d684916edfe1bf41d688a3b97127c0322a2a19"
+  integrity sha512-/xwPEBidtg69Q3HlqPdU3DnrXQOvQU/CCHA1tcDQVzOwm91YMYaILjNp7L4Eaw5Z4sOYdbBz6koWyibppd8Zqw==
+
 liftoff@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/liftoff/-/liftoff-3.1.0.tgz#c9ba6081f908670607ee79062d700df062c52ed3"

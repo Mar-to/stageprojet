@@ -8,12 +8,23 @@
         <option value="osm">OpenStreetMap</option>
     </select>
 
-    <osm-query-builder v-show="sourceType == 'osm'"></osm-query-builder>
+    <osm-query-builder v-if="sourceType == 'osm'"
+                       :osm-query-object.sync="osmQueriesJson"
+                       :form-name="formName"
+                       tile-layer="{{ form.vars.attr['data-title-layer'] }}"
+                       :default-bounds="{{ form.vars.attr['data-default-bounds'] | raw }}"
+                       @osm-url-changed="url = $event">
+    </osm-query-builder>
+
+    <!--Input to save OSM query as Json  -->
+    <input type="hidden" :name="formName + '[osmQueriesJson]'" :value="JSON.stringify(osmQueriesJson)"/>
 
     <div v-show="sourceType == 'csv'" class="file-container">
+        {# content is moved by javascript from another field into this div #}
     </div>
     
     <div v-show="sourceType == 'json'">
+        <label>Url de l'API JSON</label>
         <input type="url" class="form-control" v-model="url" :name="`${formName}[url]`"/>
     </div>
 </div>
@@ -21,9 +32,6 @@
 <script>
     var importObject = {{ form.vars.sonata_admin.admin.subject|json_encode|raw }}
     var formName = {{ form.vars.full_name|split('[')|first|json_encode|raw }}
-    var tileLayer = "{{ form.vars.attr['data-title-layer'] }}"
-    var defaultBounds = {{ form.vars.attr['data-default-bounds'] | raw }}
-    var osmQueries = {{ form.vars.sonata_admin.admin.subject.osmQueriesJson|default('[]')|json_encode|raw }}
     // See element-import.js Vue Component
 </script>
 

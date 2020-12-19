@@ -1,7 +1,7 @@
 <template>
     <p>
         <input type="text" class="form-control tag-search" 
-               placeholder="Recherche rapide dans OpenSteetMap (en Anglais)"/>
+               placeholder="Recherche rapide dans OpenSteetMap en Anglais (restaurant, organic, second hand...)"/>
     </p>
 </template>
 
@@ -18,7 +18,6 @@ export default {
             id: (item) => item.subject, 
             formatResult: (item) => `<b>${item.prefLabel}</b> : ${item.scopeNote.en}`,
             formatSelection: (item) => {
-                console.log(item)
                 let query = []
                 if (item.isTag) query.push({key: item.prefLabel.split('=')[0], operator: '=', value: item.prefLabel.split('=')[1]})
                 else query.push({key: item.prefLabel, operator: '=', value: ''})
@@ -36,7 +35,7 @@ export default {
                     let value = combinesTags[key]
                     if (value == '*') query.push({key: key, operator: '', value: ''})
                     else query.push({key: key, operator: value.includes(',') ? '~' : '=', value: value})
-                }                
+                }
                 this.$parent.queries.push(query)
                 return null
             },         

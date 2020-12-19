@@ -30,3 +30,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+    .btn.btn-icon i {
+        margin: 0;
+    }
+</style>

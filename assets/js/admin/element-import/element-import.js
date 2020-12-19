@@ -8,11 +8,13 @@ $(document).on('ready', function() {
             data: {
                 sourceType: undefined,
                 url: undefined,
+                osmQueriesJson: undefined,
                 formName: "",
             },
             components: { OsmQueryBuilder },
             mounted() {
                 for(let key in importObject) this[key] = importObject[key]
+                this.osmQueriesJson = JSON.parse(this.osmQueriesJson)
                 this.formName = formName
                 $(`#sonata-ba-field-container-${formName}_file`).appendTo('.file-container')
             }

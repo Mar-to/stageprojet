@@ -105,7 +105,7 @@ class ImportDynamic extends Import
 
     public function getOsmQueriesJson()
     {
-        return $this->osmQueriesJson;
+        return $this->osmQueriesJson ?? '{"queries": [], "address": "", "bounds": null}';
     }
 
     public function setOsmQueriesJson($json) 
@@ -121,7 +121,10 @@ class ImportDynamic extends Import
     }
     public function getSourceType()
     {
-        return $this->sourceType;
+        if ($this->sourceType) return $this->sourceType;
+        if ($this->osmQueriesJson) return 'openstreetmap';
+        if ($this->url) return 'json';
+        if ($this->file) return 'csv';
     }
 
 }

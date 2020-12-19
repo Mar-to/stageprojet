@@ -1,9 +1,14 @@
 <template>
      <div class="osm-query-builder">
+        <label>Liste des requêtes dans la base OpenStreetMap</label>
+        
         <osm-tag-search></osm-tag-search>
-        <p class="text-center">
-            <button type="button" class="btn btn-default" @click="queries.push([{key: '', operator: '=', value: ''}])">Ou ajouter une requête manuellement</button>
-        </p>
+
+        <button type="button" class="btn btn-default" 
+                @click="queries.push([{key: '', operator: '=', value: ''}])">
+            Ou ajouter une requête manuellement
+        </button> 
+        
         <div class="bs-callout" v-for="(query, queryIndex) in queries" :key="queryIndex">
             <button type="button" @click="queries.splice(queryIndex,1)" class="btn btn-default remove-query btn-icon">
                 <i class="fa fa-trash"></i>
@@ -16,8 +21,11 @@
             </div>
             <button type="button" class="btn btn-default btn-add-condition btn-sm" 
                     @click="query.push({key: '', operator: '=', value: ''})">Ajouter une condition</button>        
-        </div>    
-        <input type="hidden" :name="formName + '[osmQueriesJson]'" :value="JSON.stringify(queries)"/>
+        </div>          
+
+        <bounds-picker ref="boundsPicker" :osm-query-object="osmQueryObject" :tileLayer="tileLayer" :default-bounds="defaultBounds"></bounds-picker>
+
+        <label v-show="overpassQuery">Generated Code for the OpenStreetMap query, using Overpass API</label>
         <pre v-show="overpassQuery">{{ overpassQuery }}</pre>
     </div>
 </template>
@@ -25,16 +33,18 @@
 <script>
 import OsmCondition from "./OsmQueryBuilderCondition"
 import OsmTagSearch from "./OsmQueryBuilderTagSearch"
+import BoundsPicker from "./BoundsPicker"
 
 export default {
-    components: { OsmCondition, OsmTagSearch },
+    props: [ 'osmQueryObject', 'tileLayer', 'defaultBounds' ],
+    components: { OsmCondition, OsmTagSearch, BoundsPicker },
     data() {
         return {
-            queries: [],
-            formName: "",
+            queries: []
         }
     },
     computed: {
+        // Transform queries array into an Overpass query
         overpassQuery() {
             let result = ''
             for(let query of this.queries) {
@@ -47,15 +57,28 @@ export default {
                         queryString += `["${condition.key}"${condition.operator}"${value}"]`
                     }
                 }
-                if (query != '') result += `node${queryString}\nway${queryString}\n`                  
+                queryString += this.$refs.boundsPicker.overpassQuery
+                if (query != '') result += `node${queryString};way${queryString};`                  
             }
             return result
+        },
+        overpassApiUrl() {
+            return `https://overpass-api.de/api/interpreter?data=[out:json];(${this.overpassQuery});out;`
         }
     },
-    mounted() {   
-        // Global variable defined in ism-query-builder.html.twig for initialization
-        this.queries = JSON.parse(osmQueries)
-        this.formName = formName             
+    watch: {
+        overpassApiUrl(url) {
+            this.$emit('osm-url-changed', url)
+            this.$emit('update:osmQueryObject', {
+                queries: this.queries, 
+                bounds: [this.$refs.boundsPicker.bounds.getSouthWest(), this.$refs.boundsPicker.bounds.getNorthEast()], 
+                address: this.$refs.boundsPicker.address
+            })
+        }
+    },
+    mounted() {
+        if (this.osmQueryObject && this.osmQueryObject.queries)
+            this.queries = this.osmQueryObject.queries
     }
 }
 </script>

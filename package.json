@@ -34,6 +34,8 @@
   "dependencies": {
     "core-js": "^3.8.1",
     "gogocarto-js": "^1.6.7",
+    "leaflet": "^1.7.1",
+    "leaflet-shades": "^0.1.4",
     "natives": "^1.1.6",
     "universal-geocoder": "^0.5.0",
     "vue": "^2.6.12"
