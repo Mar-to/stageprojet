@@ -6,33 +6,77 @@
 {% if mapping|length == 0 %}
   <div class="alert alert-info">Veuillez cliquer sur le boutton "Lire les données" afin de charger les attributs des données à importer</div>
 {% else %}
-  <table class="table">
+  <table class="table mapping-ontology-table">
     <thead>
       <tr>
-        <th>Attribut d'origine</th>
+        <th style="width:100px">Nom d'origine</th>
         <th style="width:20px"></th>
-        <th>à transformer en</th>
+        <th>À transformer en <span style="font-weight: normal">(les champs vides ne seront pas importés)</span></th>
         <th style="width:20px"></th>
       </tr>
     </thead>
     <tbody class="table-striped">
-      {% for originName, mappedName in mapping %}
-        <tr>
-          <td class="original">{{originName}}</td>
+      {% set percentThreshold = 20 %}
+      {% set displayMorePropsBtn = false %}
+      {% for originName, mappedObject in mapping %}
+        {% set moreInfos = '' %}
+        {% set rowClass = '' %}
+        {% if mappedObject.collectedPercent is defined %}
+          {% set moreInfos = moreInfos ~ "Présent dans " ~ mappedObject.collectedPercent|number_format(0) ~ "% des éléments importés. Valeurs : \n\r" %}
+          {% if mappedObject.collectedPercent < percentThreshold %}
+            {% set rowClass = 'low-used' %}
+            {% set displayMorePropsBtn = true %}
+          {% endif %}
+        {% endif %}
+        {% if mappedObject.collectedValues|length > 0 %}
+          {% set moreInfos = moreInfos ~ mappedObject.collectedValues|join(', ') %}
+        {% endif %}
+
+        <tr class="{{ rowClass }}">          
+          <td class="original" title="{{ moreInfos }}">{{originName}}</td>
           <td><i class="arrow-icon fa fa-arrow-circle-right" title="Utiliser le nom d'origine"></i></td>
-          <td class="mapped"><input type="text" name="ontology[{{originName}}]" class="form-control property-selector" value={{mappedName}} /></td>
+          <td class="mapped"><input type="text" name="ontology[{{originName}}]" class="form-control property-selector" value={{mappedObject.mappedProperty}} /></td>
           <td><i class="clear-icon fa fa-ban" title="Ne pas importer ce champ"></i></td>
         </tr>
       {% endfor %}
     </tbody>
-
   </table>
+
+  {% if displayMorePropsBtn %}
+      <center>
+        <button type="button" class="btn btn-default display-all-props"
+                onclick="$('.low-used').removeClass('low-used'); $(this).remove()">
+          Voir tous les champs (les champs présents dans moins de {{ percentThreshold }}% des éléments sont cachés par défault)
+        </button>
+      </center>
+  {% endif %}
 {% endif %}
 
 <style>
-  .arrow-icon { font-size: 18px; }
-  .arrow-icon:hover, .clear-icon:hover { cursor: pointer; }
+  td.original { cursor: help }
+  td.original:hover { font-weight: bold }
+  .arrow-icon { font-size: 17px; }
+  .arrow-icon:hover { cursor: pointer; color: #3c8dbc; }
+  .clear-icon:hover { cursor: pointer; color: #dd4b39; }
   td { vertical-align: middle !important; }
+  tr.low-used { display: none}
+  .select2-container .select2-choice, .select2-container .select2-choices { 
+    line-height: 1.8;
+  }
+  .select2-container:not(.select2-container-active) .select2-choice,
+  .select2-container:not(.select2-container-active) .select2-choices { 
+    border: none;
+  }
+  .table>tbody>tr>th, .table>tbody>tr>td {
+    border-top: none;
+    padding: 0 8px
+  }
+  .table>tbody>tr>td:first-child, .table>thead>tr>th:first-child {
+    text-align: right;
+  }
+  .table>tbody>tr:first-child>td {
+    padding-top: 5px;
+  }
 </style>
 
 <script>
@@ -92,14 +136,14 @@
       }
     }
 
-    {% for originName, mappedName in mapping %}
+    {% for originName, mappedObject in mapping %}
       var originName = '{{ originName }}';
       if (originName && allProperties.indexOf(originName) == -1 && coreFields.indexOf(originName) == -1 && originName != '/')
       {
         importedData.push({id: originName, text:  originName});
         allProperties.push(originName);
       }
-      var mappedName = '{{ mappedName }}';
+      var mappedName = '{{ mappedObject.mappedProperty }}';
       if (mappedName && allProperties.indexOf(mappedName) == -1 && coreFields.indexOf(mappedName) == -1 && mappedName != '/')
       {
         otherData.push({id: mappedName, text: mappedName});

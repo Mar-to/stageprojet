@@ -184,7 +184,7 @@ class Import extends AbstractFile
 
     public function isCategoriesFieldMapped()
     {
-        return $this->getOntologyMapping() ? in_array('categories', array_values($this->getOntologyMapping())) : false;
+        return $this->getOntologyMapping() ? in_array('categories', $this->getMappedProperties()) : false;
     }
 
     /**
@@ -515,7 +515,7 @@ class Import extends AbstractFile
     /**
      * Set ontologyMapping.
      *
-     * @param hash $ontologyMapping
+     * @param array $ontologyMapping
      *
      * @return $this
      */
@@ -528,12 +528,32 @@ class Import extends AbstractFile
 
     /**
      * Get ontologyMapping.
-     *
-     * @return hash $ontologyMapping
+     * @return array ontologyMapping
      */
     public function getOntologyMapping()
     {
+        // backward compatibility we used to save mappedObject as a string
+        foreach($this->ontologyMapping as &$mappedObject) {           
+            if (is_string($mappedObject)) {
+                $mappedObject = [ 
+                    'mappedProperty' => $mappedObject,
+                    'collectedCount' => 0,
+                    'collectedValues' => [],
+                    'collectedPercent' => null
+                ];
+            }
+        }
+        uasort($this->ontologyMapping, function($a,$b) {
+            return $a['collectedCount'] < $b['collectedCount'];
+        });
         return $this->ontologyMapping;
+    }
+
+    public function getMappedProperties()
+    {
+        return array_map(function($a) {
+            return $a['mappedProperty'];
+        }, $this->getOntologyMapping());
     }
 
     /**

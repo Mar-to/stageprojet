@@ -13,17 +13,17 @@ class ElementImportMappingService
     protected $parentCategoryIdToCreateMissingOptions;
     protected $dm;
     protected $ontologyMapping;
-    protected $allNewFields;
+    protected $collectedProps;
     protected $existingProps;
     protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'files', 'owner', 'source', 'openHours', 'email'];
     protected $mappedCoreFields = [
         'title' => 'name', 'nom' => 'name', 'titre' => 'name',
         'mail' => 'email',
         'taxonomy' => 'categories',
-        'address' => 'streetAddress',
-        'city' => 'addressLocality',
-        'postcode' => 'postalCode',
-        'country' => 'addressCountry',
+        'address' => 'streetAddress', 'addr:street' => 'streetAddress',
+        'city' => 'addressLocality', 'addr:city' => 'addressLocality',
+        'postcode' => 'postalCode', 'addr:postcode' => 'postalCode',
+        'country' => 'addressCountry', 'addr:country' => 'addressCountry',
         'lat' => 'latitude',
         'long' => 'longitude', 'lng' => 'longitude', 'lon' => 'longitude',
     ];
@@ -58,7 +58,7 @@ class ElementImportMappingService
             $data = $data['features'];
         }
 
-        // Fixs gogocarto ontology when importing, to simplify import/export from gogocarto to gogocarto
+        // Fixs known ontology when importing
         foreach ($data as $key => $row) {
             if (is_array($row)) {
                 // GOGOCARTO ONTOLGY
@@ -73,24 +73,7 @@ class ElementImportMappingService
                     if ('string' == gettype($address)) {
                         $data[$key]['streetAddress'] = $address;
                     } elseif ($address) {
-                        if (array_key_exists('streetNumber', $address)) {
-                            $data[$key]['streetNumber'] = $address['streetNumber'];
-                        }
-                        if (array_key_exists('streetAddress', $address)) {
-                            $data[$key]['streetAddress'] = $address['streetAddress'];
-                        }
-                        if (array_key_exists('customFormatedAddress', $address)) {
-                            $data[$key]['customFormatedAddress'] = $address['customFormatedAddress'];
-                        }
-                        if (array_key_exists('addressLocality', $address)) {
-                            $data[$key]['addressLocality'] = $address['addressLocality'];
-                        }
-                        if (array_key_exists('postalCode', $address)) {
-                            $data[$key]['postalCode'] = $address['postalCode'];
-                        }
-                        if (array_key_exists('addressCountry', $address)) {
-                            $data[$key]['addressCountry'] = $address['addressCountry'];
-                        }
+                        $data[$key] = array_merge($data[$key], $address);
                     }
                     unset($data[$key]['address']);
                 }
@@ -111,6 +94,14 @@ class ElementImportMappingService
                         }
                         unset($data[$key]['properties']);
                     }
+                }
+
+                // OPENSTREETMAP
+                if ($this->import->getsourceType() == 'osm') {
+                    unset($data[$key]['type']);
+                    unset($data[$key]['nodes']);
+                    $data[$key] = array_merge($data[$key], $data[$key]['tags']);
+                    unset($data[$key]['tags']);
                 }
             } else {
                 // the $row is not an array, probably a string so we ignore it
@@ -147,59 +138,89 @@ class ElementImportMappingService
     public function collectOntology($data, $import)
     {
         $this->ontologyMapping = $import->getOntologyMapping();
-        $this->allNewFields = [];
-        $props = $this->dm->getRepository('App\Document\Element')->findAllCustomProperties();
-        $props = array_merge($this->coreFields, $props);
-        $this->existingProps = [];
-        foreach ($props as $prop) {
-            $this->existingProps[preg_replace('~(^bf_|_)~', '', strtolower($prop))] = $prop;
+        // reset count & values
+        foreach($this->ontologyMapping as &$mappedObject) {
+            $mappedObject['collectedCount'] = 0;
+            $mappedObject['collectedValues'] = [];
         }
+        unset($mappedObject); // prevent edge case https://www.php.net/manual/fr/control-structures.foreach.php
+
+        $this->existingProps = $this->dm->getRepository('App\Document\Element')->findAllCustomProperties();
+        $this->existingProps = array_merge($this->coreFields, $this->existingProps);
+        $this->collectedProps = [];
 
         foreach ($data as $row) {
-            foreach ($row as $key => $value) {
-                $this->collectKey($key, null, $import);
-                if ($this->isAssociativeArray($value) && !in_array($key, ['openHours', 'modifiedElement'])) {
-                    foreach ($value as $subkey => $subvalue) {
-                        $this->collectKey($subkey, $key, $import);
+            foreach ($row as $prop => $value) {
+                $this->collectProperty($prop, null, $import, $value);
+                if ($this->isAssociativeArray($value) && !in_array($prop, ['openHours', 'modifiedElement'])) {
+                    foreach ($value as $subprop => $subvalue) {
+                        $this->collectProperty($subprop, $prop, $import, $subvalue);
                     }
                 }
             }
         }
         // delete no more used fields
-        foreach ($this->ontologyMapping as $field => $mappedField) {
-            if (!in_array($field, $this->allNewFields)) {
-                unset($this->ontologyMapping[$field]);
+        foreach ($this->ontologyMapping as $prop => $mappedObject) {
+            if (!in_array($prop, $this->collectedProps)) {
+                unset($this->ontologyMapping[$prop]);
             }
         }
-
+        $count = count($data);
+        foreach($this->ontologyMapping as &$mappedObject) {
+            $mappedObject['collectedPercent'] = $mappedObject['collectedCount'] / $count * 100;
+        }
         $import->setOntologyMapping($this->ontologyMapping);
     }
 
-    private function collectKey($key, $parentKey = null, $import)
+    private function slugProp($prop)
     {
-        if (in_array($key, ['__initializer__', '__cloner__', '__isInitialized__'])) {
+        $result = preg_replace('~(^bf_|_)~', '', strtolower($prop));
+        return str_replace('.', '', $result); // dots are not allawed in MongoDB hash keys
+    }
+
+    // Collect an original property of the data imported
+    private function collectProperty($prop, $parentProp = null, $import, $value)
+    {
+        if (in_array($prop, ['__initializer__', '__cloner__', '__isInitialized__'])) {
             return;
         }
-        $keyName = $parentKey ? $parentKey.'/'.$key : $key;
-        if (!$keyName || 0 == strlen($keyName)) {
+        $prop = $parentProp ? $parentProp.'/'.$prop : $prop;
+        $prop = $this->slugProp($prop);
+        if (!$prop || 0 == strlen($prop)) {
             return;
         }
 
-        if (!in_array($keyName, $this->allNewFields)) {
-            $this->allNewFields[] = $keyName;
+        if (!in_array($prop, $this->collectedProps)) {
+            $this->collectedProps[] = $prop;
         }
-        if (!array_key_exists($keyName, $this->ontologyMapping)) {
-            $keyLower = preg_replace('~(^bf_|_)~', '', strtolower($keyName));
-            $value = array_key_exists($keyLower, $this->existingProps) ? $this->existingProps[$keyLower] : '';
+        if (!array_key_exists($prop, $this->ontologyMapping)) {
+            $mappedProp = array_key_exists($prop, $this->existingProps) ? $this->existingProps[$prop] : '';
             // use alternative name, like lat instead of latitude
-            if (!$value && array_key_exists($keyLower, $this->mappedCoreFields)) {
-                $value = $this->mappedCoreFields[$keyLower];
+            if (!$mappedProp && array_key_exists($prop, $this->mappedCoreFields)) {
+                $mappedProp = $this->mappedCoreFields[$prop];
             }
             // Asign mapping
-            if (!$value || !in_array($value, array_values($this->ontologyMapping))) {
-                $this->ontologyMapping[str_replace('.', '', $keyName)] = $value;
+            $alreadyMappedProperties = array_map(function($a) { return $a['mappedProperty']; }, $this->ontologyMapping);
+            if (!$mappedProp || !in_array($mappedProp, $alreadyMappedProperties)) {
+                $this->ontologyMapping[$prop] = [
+                    'mappedProperty' => $mappedProp,
+                    'collectedCount' => 1,
+                    'collectedValues' => [$value]
+                ];
                 $import->setNewOntologyToMap(true);
             }
+        } else {
+            // update count and values
+            $this->ontologyMapping[$prop]['collectedCount']++;
+            // Do not save more than 10 values for same property
+            $valuesCount = count($this->ontologyMapping[$prop]['collectedValues']);
+            $numberValuesSaved = 10;
+            if ($valuesCount < $numberValuesSaved) {
+                $this->ontologyMapping[$prop]['collectedValues'][] = $value;
+                $this->ontologyMapping[$prop]['collectedValues'] = array_unique($this->ontologyMapping[$prop]['collectedValues']);
+            } else if ($valuesCount == $numberValuesSaved) {
+                $this->ontologyMapping[$prop]['collectedValues'][] = '...';
+            }            
         }
     }
 
@@ -234,7 +255,7 @@ class ElementImportMappingService
         foreach ($data as $row) {
             if (isset($row['categories'])) {
                 $categories = $row['categories'];
-                $categories = is_array($categories) ? $categories : explode(',', $categories);
+                $categories = is_array($categories) ? $categories : preg_split("[,;]+/", $categories);
                 foreach ($categories as $category) {
                     if (is_array($category)) {
                         $category = $category['name'];
@@ -283,32 +304,35 @@ class ElementImportMappingService
         $mapping = $this->import->getOntologyMapping();
         foreach ($data as $key => $row) {
             $newRow = [];
-            // First map nested fields
-            foreach ($mapping as $search => $replace) {
-                $searchKeys = explode('/', $search);
-                if (2 == count($searchKeys)) {
-                    $searchkey = $searchKeys[0];
-                    $subkey = $searchKeys[1];
-
-                    if (!in_array($replace, ['/', '']) && isset($data[$key][$searchkey]) && isset($row[$searchkey][$subkey])) {
-                        $newRow = $this->mapAttribute($newRow, $replace, $data[$key][$searchkey][$subkey]);
+            // Fix bad prop names
+            foreach($row as $prop => $value) {
+                $data[$key][$this->slugProp($prop)] = $value;
+            }
+            
+            foreach ($mapping as $prop => $mappedObject) {
+                $mappedProp = $mappedObject['mappedProperty'];
+                $explodedProp = explode('/', $prop);
+                // Map standard properties
+                if (1 == count($explodedProp)) {
+                    if (!in_array($mappedProp, ['/', '']) && isset($row[$prop])) {
+                        $newRow = $this->mapProperty($newRow, $mappedProp, $row[$prop]);
+                    }
+                }
+                // Map nested properties
+                if (2 == count($explodedProp)) {
+                    $prop = $explodedProp[0];
+                    $subProp = $explodedProp[1];
+                    if (!in_array($mappedProp, ['/', '']) && isset($row[$prop]) && isset($row[$prop][$subProp])) {
+                        $newRow = $this->mapProperty($newRow, $mappedProp, $row[$prop][$subProp]);
                     }
                 }
             }
-
-            // Finally map non nested fields
-            foreach ($mapping as $search => $replace) {
-                $searchKeys = explode('/', $search);
-                if (1 == count($searchKeys)) {
-                    $searchkey = $search;
-
-                    if (!in_array($replace, ['/', '']) && isset($data[$key][$searchkey])) {
-                        $newRow = $this->mapAttribute($newRow, $replace, $data[$key][$searchkey]);
-                    }
-                }
+            
+            foreach ($mapping as $searchProp => $mappedObject) {
+                $mappedProp = $mappedObject['mappedProperty'];
+                
             }
-
-            // add streetNumber into streetAddress
+            // Add streetNumber into streetAddress
             if (isset($newRow['streetNumber']) && isset($newRow['streetAddress'])) {
                 $newRow['streetAddress'] = $newRow['streetNumber'].' '.$newRow['streetAddress'];
             }
@@ -329,21 +353,21 @@ class ElementImportMappingService
         return $data;
     }
 
-    // map $value inside $newKey attribute
-    private function mapAttribute($newRow, $newKey, $value)
+    // map $value inside $mappedProp attribute
+    private function mapProperty($newRow, $mappedProp, $value)
     {
         // We allow that multiple keys maps to categories. In this case they will be concatenated
-        if ('categories' == $newKey) {
+        if ('categories' == $mappedProp) {
             if (is_string($value)) {
-                $value = explode(',', $value);
+                $value = preg_split('/[,;]+/', $value);
             }
-            $oldVal = isset($newRow[$newKey]) ? $newRow[$newKey] : [];
+            $oldVal = isset($newRow[$mappedProp]) ? $newRow[$mappedProp] : [];
             $value = array_merge($oldVal, $value);
         }
 
         // replacing existing value only if not set, or if categories because values have been merged
-        if (!isset($newRow[$newKey]) || 'categories' == $newKey) {
-            $newRow[$newKey] = $value;
+        if (!isset($newRow[$mappedProp]) || 'categories' == $mappedProp) {
+            $newRow[$mappedProp] = $value;
         }
 
         return $newRow;

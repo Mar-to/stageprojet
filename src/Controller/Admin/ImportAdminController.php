@@ -17,17 +17,18 @@ class ImportAdminController extends Controller
         $result = $importService->collectData($object);
 
         $showUrl = $this->admin->generateUrl('showData', ['id' => $object->getId()]);
-
+        $anchor = '';
         if (count($object->getOntologyMapping()) <= 1) {
             $this->addFlash('sonata_flash_error', "Un problème semble avoir lieu pendant la lecture des données. Si c'est un <b>fichier CSV</b>, vérifiez que les colonnes sont bien <b>séparées avec des virgules</b> (et non pas avec des point virgules ou des espaces) : <a href='https://help.libreoffice.org/Calc/Importing_and_Exporting_CSV_Files/fr'>Cliquez ici pour savoir comment faire</a>. Vérifiez aussi que <b>l'encodage soit en UTF-8</b>. Si c'est un <b>fichier JSON</b>, vérifiez que le <b>tableau de donnée soit bien à la racine du document</b>. Si ce n'est pas le cas, utilisez l'onglet 'Modifier les données en exécutant du code'");
-        } elseif (!in_array('name', array_values($object->getOntologyMapping()))) {
+        } elseif (!in_array('name', $object->getMappedProperties())) {
             $this->addFlash('sonata_flash_info', 'Merci de remplir le tableau de correspondance des champs. Renseignez au moins le Titre de la fiche');
+            $anchor = '#tab_3';
         } elseif (count($result) > 0) {
             $this->addFlash('sonata_flash_success', 'Les données ont été chargées avec succès.</br>Voici le résultat obtenu pour le premier élément à importer :<pre>'.print_r(reset($result), true).'</pre>'."<a href='$showUrl'>Voir toutes les données</a>");
         } else {
             $this->addFlash('sonata_flash_error', 'Erreur pendant le chargement des données, le résultat est vide');
         }
-        $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]);
+        $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]) . $anchor;
 
         return $this->redirect($url);
     }
@@ -52,7 +53,7 @@ class ImportAdminController extends Controller
     {
         $object = $this->admin->getSubject();
 
-        if (!in_array('name', array_values($object->getOntologyMapping()))) {
+        if (!in_array('name', $object->getMappedProperties())) {
             $this->addFlash('sonata_flash_error', "Avant d'importer les données, vous devez d'abords remplir le tableau de correspondance des champs. Renseignez au moins le Titre de la fiche");
             $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]);
 

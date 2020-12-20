@@ -210,7 +210,7 @@ class ElementImportService
             $config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
             $elementsLinkedFields = [];
             foreach($config->getElementFormFields() as $field) {
-                if ($field->type === 'elements' && in_array($field->name, array_values($import->getOntologyMapping())))
+                if ($field->type === 'elements' && in_array($field->name, $import->getMappedProperties()))
                 {
                     $elementsLinkedFields[] = $field->name;
                     // resetting the reversed field to it will be filled correctly
