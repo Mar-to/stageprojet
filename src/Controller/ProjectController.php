@@ -25,7 +25,7 @@ class ProjectController extends Controller
     protected function generateUrlForProject($project, $route = 'gogo_homepage', $params = [])
     {
         $url = 'http://'.$project->getDomainName().'.'.$this->getParameter('base_url').$this->generateUrl($route, $params);
-        return str_replace('index.php/index.php', 'index.php', $url);
+        return str_replace('index.php/index.php', 'index.php', $url); // Fix if there is no url rewrite
     }
 
     public function createAction(Request $request, DocumentManagerFactory $dmFactory)

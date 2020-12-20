@@ -173,7 +173,7 @@ class WebhookService
 
         return $img
             ? $img->getImageUrl()
-            : str_replace('index.php/', '', $this->baseUrl.'/img/default-icon.png');
+            : str_replace('index.php/', '', $this->baseUrl.'/img/default-icon.png'); // Fix if there is no url rewrite
     }
 
     private function formatData($format, $data)
