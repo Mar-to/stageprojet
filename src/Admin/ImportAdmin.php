@@ -121,7 +121,7 @@ Transformer un attribut
             $formMapper
                 ->tab($title)
                     ->with('Transformer les données à importer')
-                        ->add('ontologyMapping', null, ['attr' => ['class' => 'gogo-mapping-ontology', 'data-form-props' => $formProperties, 'data-props' => $elementProperties]])
+                        ->add('ontologyMapping', null, ['label_attr' => ['style' => 'display:none'], 'attr' => ['class' => 'gogo-mapping-ontology', 'data-form-props' => $formProperties, 'data-props' => $elementProperties]])
                     ->end()
                 ->end();
             if (count($this->getSubject()->getOntologyMapping()) > 0) {
@@ -131,7 +131,7 @@ Transformer un attribut
                 }
                 $formMapper->tab($title)
                     ->with('Faites correspondre les catégories')
-                        ->add('taxonomyMapping', null, ['attr' => ['class' => 'gogo-mapping-taxonomy', 'data-options' => $optionsList]])
+                        ->add('taxonomyMapping', null, ['label_attr' => ['style' => 'display:none'], 'attr' => ['class' => 'gogo-mapping-taxonomy', 'data-options' => $optionsList]])
                     ->end()
                 ->end();
             }
