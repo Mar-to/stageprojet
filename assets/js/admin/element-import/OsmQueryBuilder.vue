@@ -25,7 +25,7 @@
 
         <bounds-picker ref="boundsPicker" :osm-query-object="osmQueryObject" :tileLayer="tileLayer" :default-bounds="defaultBounds"></bounds-picker>
 
-        <label v-show="overpassQuery">Generated Code for the OpenStreetMap query, using Overpass API</label>
+        <label v-show="overpassQuery">Code automatiquement généré pour la requête OpenStreetMap (via OverPass)</label>
         <pre v-show="overpassQuery">{{ overpassQuery }}</pre>
     </div>
 </template>

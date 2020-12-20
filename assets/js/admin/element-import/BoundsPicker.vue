@@ -156,6 +156,9 @@ export default {
             margin: 1.5rem 0;
             border-radius: 3px;
         }
+        .leaflet-pane {
+            z-index: 1;
+        }
     }    
     a.leaflet-control-zoom-in {
         font-size: 18px !important;
