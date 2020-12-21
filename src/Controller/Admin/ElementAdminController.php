@@ -130,11 +130,11 @@ class ElementAdminController extends ElementAdminBulkController
                             $this->admin->generateUrl('list')
                         );
                     }
-                } catch (ModelManagerException $e) {
+                } catch (\Sonata\AdminBundle\Exception\ModelManagerException $e) {
                     $this->handleModelManagerException($e);
 
                     $isFormValid = false;
-                } catch (LockException $e) {
+                } catch (\Sonata\AdminBundle\Exception\LockException $e) {
                     $this->addFlash('sonata_flash_error', $this->trans('flash_lock_error', [
                         '%name%' => $this->escapeHtml($this->admin->toString($object)),
                         '%link_start%' => '<a href="'.$this->admin->generateObjectUrl('edit', $object).'">',

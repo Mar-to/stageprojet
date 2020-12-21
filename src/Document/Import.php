@@ -46,6 +46,12 @@ class Import extends AbstractFile
     public $sourceName;
 
     /**
+     * @var string
+     * @MongoDB\Field(type="string")
+     */
+    public $sourceType;
+
+    /**
      * @var string Url of API to get the data
      * @MongoDB\Field(type="string")
      */
@@ -197,6 +203,19 @@ class Import extends AbstractFile
                 ->atPath('customCode')
                 ->addViolation();
         }
+    }
+
+    public function setSourceType($sourceType)
+    {
+        $this->sourceType = $sourceType;
+        return $this;
+    }
+    public function getSourceType()
+    {
+        if ($this->sourceType) return $this->sourceType;
+        if ($this->osmQueriesJson) return 'openstreetmap';
+        if ($this->url) return 'json';
+        if ($this->file) return 'csv';
     }
 
     /**
@@ -543,9 +562,11 @@ class Import extends AbstractFile
                 ];
             }
         }
+        ksort($this->ontologyMapping);
         uasort($this->ontologyMapping, function($a,$b) {
             return $a['collectedCount'] < $b['collectedCount'];
         });
+        
         return $this->ontologyMapping;
     }
 

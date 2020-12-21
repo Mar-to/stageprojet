@@ -9,8 +9,8 @@
                     <option value="bounds">Dessiner un rectangle sur la carte</option>
                 </select>
             </span>
-            <input @keyup.enter.stop="geocodeAddress" class="form-control" v-model="inputAddress" :disabled="queryType != 'address'" 
-                   placeholder="Une ville, une région, un pays..." />
+            <input @keypress.enter.prevent="geocodeAddress" class="form-control" v-model="inputAddress" :disabled="queryType != 'address'" 
+                   placeholder="Une ville, une région, un pays..." ref="inputAddress"/>
             <span class="input-group-btn">
                 <button type="button" @click="geocodeAddress" class="btn btn-primary"
                        :disabled="queryType != 'address'">

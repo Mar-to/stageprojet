@@ -40,15 +40,15 @@ class UserInteractionService
         }
 
         // Create webhook posts to be dispatched
-      // for Pending contributions, we will wait for the status to be set (i.e. contribution is resolved) before dipatching those events
-      if (6 != $interactType) { // 6 = InteractionType::ModerationResolved
-         foreach ($this->webhooks as $webhook) {
-             $post = new WebhookPost();
-             $post->setWebhook($webhook);
-             $post->setNextAttemptAt(new \DateTime());
-             $contribution->addWebhookPost($post);
-         }
-      }
+        // for Pending contributions, we will wait for the status to be set (i.e. contribution is resolved) before dipatching those events
+        if (6 != $interactType) { // 6 = InteractionType::ModerationResolved
+            foreach ($this->webhooks as $webhook) {
+                $post = new WebhookPost();
+                $post->setWebhook($webhook);
+                $post->setNextAttemptAt(new \DateTime());
+                $contribution->addWebhookPost($post);
+            }
+        }
 
         return $contribution;
     }

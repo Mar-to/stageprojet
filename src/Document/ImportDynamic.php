@@ -13,12 +13,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 class ImportDynamic extends Import
 {
     /**
-     * @var string
-     * @MongoDB\Field(type="string")
-     */
-    public $sourceType;
-
-    /**
      * Get Data from OpenStreetMap using overpass query
      * @MongoDB\Field(type="string")
      */
@@ -113,18 +107,4 @@ class ImportDynamic extends Import
         $this->osmQueriesJson = $json;
         return $this;
     }
-
-    public function setSourceType($sourceType)
-    {
-        $this->sourceType = $sourceType;
-        return $this;
-    }
-    public function getSourceType()
-    {
-        if ($this->sourceType) return $this->sourceType;
-        if ($this->osmQueriesJson) return 'openstreetmap';
-        if ($this->url) return 'json';
-        if ($this->file) return 'csv';
-    }
-
 }

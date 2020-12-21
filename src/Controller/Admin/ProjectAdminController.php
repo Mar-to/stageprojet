@@ -50,7 +50,7 @@ class ProjectAdminController extends Controller
                 $this->admin->delete($object);
                 $this->dropDatabase($object);
                 $this->addFlash('sonata_flash_success', $this->trans('flash_delete_success', ['%name%' => $this->escapeHtml($objectName)], 'SonataAdminBundle'));
-            } catch (ModelManagerException $e) {
+            } catch (\Sonata\AdminBundle\Exception\ModelManagerException $e) {
                 $this->handleModelManagerException($e);
                 $this->addFlash('sonata_flash_error', $this->trans('flash_delete_error', ['%name%' => $this->escapeHtml($objectName)], 'SonataAdminBundle'));
             }

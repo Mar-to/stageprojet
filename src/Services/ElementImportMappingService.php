@@ -97,17 +97,25 @@ class ElementImportMappingService
                 }
 
                 // OPENSTREETMAP
-                if ($this->import->getsourceType() == 'osm') {
-                    unset($data[$key]['type']);
-                    unset($data[$key]['nodes']);
-                    $data[$key] = array_merge($data[$key], $data[$key]['tags']);
-                    unset($data[$key]['tags']);
+                if ($this->import->getSourceType() == 'osm') {
+                    if (isset($data[$key]['center'])) {
+                        $data[$key]['lat'] = $data[$key]['center']['lat'];
+                        $data[$key]['lon'] = $data[$key]['center']['lon'];
+                        unset($data[$key]['center']);
+                    } 
+                    // remove unrelevant metadata so it does not get too noisy for the ontology mapping              
+                    unset($data[$key]['nodes']); 
+                    unset($data[$key]['changeset']); 
+                    unset($data[$key]['uid']); 
+                    unset($data[$key]['user']); 
+                    unset($data[$key]['type']); 
                 }
             } else {
                 // the $row is not an array, probably a string so we ignore it
                 unset($data[$key]);
             }
         }
+        
         // Ontology
         $this->collectOntology($data, $import);
         $data = $this->mapOntology($data);
@@ -165,6 +173,7 @@ class ElementImportMappingService
                 unset($this->ontologyMapping[$prop]);
             }
         }
+        if ($import->getSourceType() == 'osm') unset($this->ontologyMapping['tags']); // no need for the full tags object, better map invidvudal tag
         $count = count($data);
         foreach($this->ontologyMapping as &$mappedObject) {
             $mappedObject['collectedPercent'] = $mappedObject['collectedCount'] / $count * 100;
@@ -184,17 +193,29 @@ class ElementImportMappingService
         if (in_array($prop, ['__initializer__', '__cloner__', '__isInitialized__'])) {
             return;
         }
-        $prop = $parentProp ? $parentProp.'/'.$prop : $prop;
         $prop = $this->slugProp($prop);
+        $parentProp = $this->slugProp($parentProp);
+        $fullProp = $parentProp ? $parentProp.'/'.$prop : $prop;
+        
+        if (!is_string($value)) $value = "";
+
         if (!$prop || 0 == strlen($prop)) {
             return;
         }
 
         if (!in_array($prop, $this->collectedProps)) {
-            $this->collectedProps[] = $prop;
+            $this->collectedProps[] = $fullProp;
         }
-        if (!array_key_exists($prop, $this->ontologyMapping)) {
-            $mappedProp = array_key_exists($prop, $this->existingProps) ? $this->existingProps[$prop] : '';
+        if (!array_key_exists($fullProp, $this->ontologyMapping)) {
+            // if prop with same name exist in the DB, map it directly to itself
+            $mappedProp = in_array($prop, $this->existingProps) ? $prop : '';
+            // handle some special cases
+            if ($import->getSourceType() == 'osm') {
+                switch ($prop) {
+                    case 'source': $mappedProp = 'osm:source'; break; // we don't want to overide GoGoCarto source field with Osm field
+                    case 'openning_hours': $mappedProp = 'osm:openning_hours'; break;    
+                }                 
+            }
             // use alternative name, like lat instead of latitude
             if (!$mappedProp && array_key_exists($prop, $this->mappedCoreFields)) {
                 $mappedProp = $this->mappedCoreFields[$prop];
@@ -202,7 +223,7 @@ class ElementImportMappingService
             // Asign mapping
             $alreadyMappedProperties = array_map(function($a) { return $a['mappedProperty']; }, $this->ontologyMapping);
             if (!$mappedProp || !in_array($mappedProp, $alreadyMappedProperties)) {
-                $this->ontologyMapping[$prop] = [
+                $this->ontologyMapping[$fullProp] = [
                     'mappedProperty' => $mappedProp,
                     'collectedCount' => 1,
                     'collectedValues' => [$value]
@@ -211,15 +232,15 @@ class ElementImportMappingService
             }
         } else {
             // update count and values
-            $this->ontologyMapping[$prop]['collectedCount']++;
+            $this->ontologyMapping[$fullProp]['collectedCount']++;
             // Do not save more than 10 values for same property
-            $valuesCount = count($this->ontologyMapping[$prop]['collectedValues']);
+            $valuesCount = count($this->ontologyMapping[$fullProp]['collectedValues']);
             $numberValuesSaved = 10;
             if ($valuesCount < $numberValuesSaved) {
-                $this->ontologyMapping[$prop]['collectedValues'][] = $value;
-                $this->ontologyMapping[$prop]['collectedValues'] = array_unique($this->ontologyMapping[$prop]['collectedValues']);
+                $this->ontologyMapping[$fullProp]['collectedValues'][] = $value;
+                $this->ontologyMapping[$fullProp]['collectedValues'] = array_filter(array_unique($this->ontologyMapping[$fullProp]['collectedValues']),'strlen');
             } else if ($valuesCount == $numberValuesSaved) {
-                $this->ontologyMapping[$prop]['collectedValues'][] = '...';
+                $this->ontologyMapping[$fullProp]['collectedValues'][] = '...';
             }            
         }
     }
@@ -312,18 +333,19 @@ class ElementImportMappingService
             foreach ($mapping as $prop => $mappedObject) {
                 $mappedProp = $mappedObject['mappedProperty'];
                 $explodedProp = explode('/', $prop);
-                // Map standard properties
-                if (1 == count($explodedProp)) {
-                    if (!in_array($mappedProp, ['/', '']) && isset($row[$prop])) {
-                        $newRow = $this->mapProperty($newRow, $mappedProp, $row[$prop]);
-                    }
-                }
-                // Map nested properties
+                // Map nested properties first (if you didn't map the parent property then it will be gone 
+                // and you'll no longer able to access the subproperty)
                 if (2 == count($explodedProp)) {
                     $prop = $explodedProp[0];
                     $subProp = $explodedProp[1];
                     if (!in_array($mappedProp, ['/', '']) && isset($row[$prop]) && isset($row[$prop][$subProp])) {
                         $newRow = $this->mapProperty($newRow, $mappedProp, $row[$prop][$subProp]);
+                    }
+                }
+                // Map standard properties
+                if (1 == count($explodedProp)) {
+                    if (!in_array($mappedProp, ['/', '']) && isset($row[$prop])) {
+                        $newRow = $this->mapProperty($newRow, $mappedProp, $row[$prop]);
                     }
                 }
             }
@@ -415,14 +437,6 @@ class ElementImportMappingService
         }
 
         return $data;
-    }
-
-    private function array_flatten(array $array)
-    {
-        $return = [];
-        array_walk_recursive($array, function ($a) use (&$return) { $return[] = $a; });
-
-        return $return;
     }
 
     private function createOptionsMappingTable($options = null)

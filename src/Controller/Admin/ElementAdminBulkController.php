@@ -227,7 +227,7 @@ class ElementAdminBulkController extends Controller
                 'sonata_flash_success',
                 $this->trans('flash_batch_delete_success', [], 'SonataAdminBundle')
             );
-        } catch (ModelManagerException $e) {
+        } catch (\Sonata\AdminBundle\Exception\ModelManagerException $e) {
             $this->handleModelManagerException($e);
             $this->addFlash(
                 'sonata_flash_error',

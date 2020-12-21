@@ -120,10 +120,10 @@ class ElementImportService
     // create a mapping table for ontology and taxonomy
     public function collectData($import)
     {
-        $data = $import->getUrl() ? $this->importJson($import, true) : $this->importCsv($import, true);
-        if (!$data) {
-            return null;
-        }
+        
+        if ($import->getUrl()) $data = $this->importJson($import, true);
+        elseif ($import->getFile()) $data = $this->importCsv($import, true);
+        if (!isset($data)) return null;
 
         return $this->mappingService->transform($data, $import);
     }
@@ -230,7 +230,6 @@ class ElementImportService
                 $importedElements = $this->dm->createQueryBuilder('App\Document\Element')
                     ->field('source')->references($import)
                     ->getQuery()->execute();
-                $privateProp = $config->getApi()->getPublicApiPrivateProperties();
                 $i = 0;
                 $size = count($importedElements);
                 foreach ($elementsLinkedFields as $linkField) {

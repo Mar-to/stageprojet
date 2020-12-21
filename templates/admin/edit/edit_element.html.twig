@@ -42,10 +42,8 @@
 
                     <div class="tab-content">
                         {% for code, show_tab in admin.showtabs %}
-                            <div
-                                    class="tab-pane fade{% if loop.first %} in active{% endif %}"
-                                    id="tab_{{ admin.uniqid }}_{{ loop.index }}"
-                            >
+                            <div class="tab-pane fade{% if loop.first %} in active{% endif %}"
+                                 id="tab_{{ admin.uniqid }}_{{ loop.index }}">
                                 <div class="box-body  container-fluid">
                                     <div class="sonata-ba-collapsed-fields">
                                         {% if show_tab.description != false %}

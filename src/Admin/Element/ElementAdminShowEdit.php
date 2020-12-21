@@ -41,56 +41,56 @@ class ElementAdminShowEdit extends ElementAdminList
 
         if ($needModeration) {
             $show
-       ->with('Modération', ['class' => 'col-md-6 col-sm-12'])
-        ->add('moderationState', ChoiceType::class, [
-            'label' => 'Moderation',
-               'choices' => $this->moderationChoices,
-               'template' => 'admin/partials/show_choice_moderation.html.twig',
-               ])
-        ->add('reports', null, ['template' => 'admin/partials/show_pending_reports.html.twig', 'label' => 'Signalements'])
-       ->end();
+              ->with('Modération', ['class' => 'col-md-6 col-sm-12'])
+                ->add('moderationState', ChoiceType::class, [
+                    'label' => 'Moderation',
+                      'choices' => $this->moderationChoices,
+                      'template' => 'admin/partials/show_choice_moderation.html.twig',
+                      ])
+                ->add('reports', null, ['template' => 'admin/partials/show_pending_reports.html.twig', 'label' => 'Signalements'])
+              ->end();
         }
 
         $show
-      ->with('Autre infos', ['class' => 'col-md-6 col-sm-12'])
-        ->add('id')
-        ->add('optionValues', null, [
-            'template' => 'admin/partials/show_option_values.html.twig',
-            'choices' => $this->optionList,
-            'label' => 'Catégories', ])
-        ->add('email', EmailType::class, ['label' => 'Email de contact'])
-        ->add('images', null, ['template' => 'admin/partials/show_element_images.html.twig'])
-        ->add('randomHash')
-        ->add('oldId', null, ['label' => 'Id dans la base de données importée'])
-        ->add('sourceKey', null, ['label' => 'Source'])
-        ->add('createdAt', 'datetime', ['format' => 'd/m/Y à H:i'])
-        ->add('updatedAt', 'datetime', ['format' => 'd/m/Y à H:i'])
-      ->end()
+          ->with('Autre infos', ['class' => 'col-md-6 col-sm-12'])
+            ->add('id')
+            ->add('optionValues', null, [
+                'template' => 'admin/partials/show_option_values.html.twig',
+                'choices' => $this->optionList,
+                'label' => 'Catégories', ])
+            ->add('email', EmailType::class, ['label' => 'Email de contact'])
+            ->add('images', null, ['template' => 'admin/partials/show_element_images.html.twig'])
+            ->add('randomHash')
+            ->add('oldId', null, ['label' => 'Id dans la base de données importée'])
+            ->add('sourceKey', null, ['label' => 'Source'])
+            ->add('createdAt', 'datetime', ['format' => 'd/m/Y à H:i'])
+            ->add('updatedAt', 'datetime', ['format' => 'd/m/Y à H:i'])
+          ->end()
 
-      ->with('Localisation', ['class' => 'col-md-6 col-sm-12'])
-        ->add('address.formatedAddress', null, ['label' => 'Adresse complète'])
-        ->add('address.streetAddress', null, ['label' => 'Adresse'])
-        ->add('address.addressLocality', null, ['label' => 'Ville'])
-          ->add('address.postalCode', null, ['label' => 'Code postal'])
-        ->add('address.addressCountry', null, ['label' => 'Pays'])
-          ->add('geo.latitude')
-          ->add('geo.longitude')
-      ->end()
+          ->with('Localisation', ['class' => 'col-md-6 col-sm-12'])
+            ->add('address.formatedAddress', null, ['label' => 'Adresse complète'])
+            ->add('address.streetAddress', null, ['label' => 'Adresse'])
+            ->add('address.addressLocality', null, ['label' => 'Ville'])
+              ->add('address.postalCode', null, ['label' => 'Code postal'])
+            ->add('address.addressCountry', null, ['label' => 'Pays'])
+              ->add('geo.latitude')
+              ->add('geo.longitude')
+          ->end()
 
-      ->with('Champs personnalisés', ['class' => 'col-md-12 col-sm-12'])
-        ->add('data', null, ['template' => 'admin/partials/show_element_data.html.twig'])
-      ->end()
+          ->with('Champs personnalisés', ['class' => 'col-md-12 col-sm-12'])
+            ->add('data', null, ['template' => 'admin/partials/show_element_data.html.twig'])
+          ->end()
 
-      ->with('Historique des contributions', ['class' => 'col-sm-12'])
-        ->add('contributions', null, ['template' => 'admin/partials/show_contributions.html.twig'])
-      ->end();
+          ->with('Historique des contributions', ['class' => 'col-sm-12'])
+            ->add('contributions', null, ['template' => 'admin/partials/show_contributions.html.twig'])
+          ->end();
 
         $show
-      ->with('JSON', ['class' => 'col-md-12', 'box_class' => 'box box-default'])
-        ->add('compactJson')
-        ->add('baseJson')
-        ->add('privateJson')
-        ->add('adminJson')
-      ->end();
+          ->with('JSON', ['class' => 'col-md-12', 'box_class' => 'box box-default'])
+            ->add('compactJson')
+            ->add('baseJson')
+            ->add('privateJson')
+            ->add('adminJson')
+          ->end();
     }
 }

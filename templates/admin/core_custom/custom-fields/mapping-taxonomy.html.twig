@@ -3,7 +3,7 @@
 {% set object = form.vars.sonata_admin.admin.subject %}
 {% set mapping = object.taxonomyMapping %}
 {% if object.isCategoriesFieldMapped %}
-  <table class="table">
+  <table class="table mapping-table">
     <thead>
       <tr>
         <th class="original">Catégories lues depuis le fichier d'origine</th>
@@ -30,9 +30,6 @@
   <div class="alert alert-info">Veuillez d'abords sélectionner le champs correspondant aux catégories dans l'onglet 'Table de correspondance des champs' puis cliquer sur 'Lire les données'</div>
 {% endif %}
 
-<style>
-  .original { width: 30%; }
-</style>
 <script>
   jQuery(document).ready(function() {
 

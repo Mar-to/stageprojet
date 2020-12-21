@@ -15,18 +15,22 @@ class ImportAdminController extends Controller
     {
         $object = $this->admin->getSubject();
         $result = $importService->collectData($object);
-
+        $count = $result === null ? null : count($result);
         $showUrl = $this->admin->generateUrl('showData', ['id' => $object->getId()]);
         $anchor = '';
-        if (count($object->getOntologyMapping()) <= 1) {
-            $this->addFlash('sonata_flash_error', "Un problème semble avoir lieu pendant la lecture des données. Si c'est un <b>fichier CSV</b>, vérifiez que les colonnes sont bien <b>séparées avec des virgules</b> (et non pas avec des point virgules ou des espaces) : <a href='https://help.libreoffice.org/Calc/Importing_and_Exporting_CSV_Files/fr'>Cliquez ici pour savoir comment faire</a>. Vérifiez aussi que <b>l'encodage soit en UTF-8</b>. Si c'est un <b>fichier JSON</b>, vérifiez que le <b>tableau de donnée soit bien à la racine du document</b>. Si ce n'est pas le cas, utilisez l'onglet 'Modifier les données en exécutant du code'");
+        if ($result === null) {
+            $msg = "Un problème semble avoir lieu pendant la lecture des données.";
+            if ($object->getSourceType() == 'csv') $msg .= "Vérifiez que les colonnes sont bien <b>séparées avec des virgules</b> (et non pas avec des point virgules ou des espaces) : <a href='https://help.libreoffice.org/Calc/Importing_and_Exporting_CSV_Files/fr'>Cliquez ici pour savoir comment faire</a>. Vérifiez aussi que <b>l'encodage soit en UTF-8</b>.";
+            if ($object->getSourceType() == 'json') "Vérifiez que le <b>tableau de donnée soit bien à la racine du JSON</b>. Si ce n'est pas le cas, utilisez l'onglet 'Modifier les données en exécutant du code'";
+            $this->addFlash('sonata_flash_error', $msg);
         } elseif (!in_array('name', $object->getMappedProperties())) {
             $this->addFlash('sonata_flash_info', 'Merci de remplir le tableau de correspondance des champs. Renseignez au moins le Titre de la fiche');
             $anchor = '#tab_3';
-        } elseif (count($result) > 0) {
-            $this->addFlash('sonata_flash_success', 'Les données ont été chargées avec succès.</br>Voici le résultat obtenu pour le premier élément à importer :<pre>'.print_r(reset($result), true).'</pre>'."<a href='$showUrl'>Voir toutes les données</a>");
-        } else {
+        } elseif ($count == 0) {
             $this->addFlash('sonata_flash_error', 'Erreur pendant le chargement des données, le résultat est vide');
+        } elseif ($count > 0) {
+            $this->addFlash('sonata_flash_success', "<b>$count éléments ont été lus avec succès.</b></br>Voici le résultat obtenu pour le premier élément à importer :<pre>".print_r(reset($result), true).'</pre>'."<a href='$showUrl'>Voir toutes les données</a>");
+            $anchor = '#tab_3';
         }
         $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]) . $anchor;
 
@@ -66,7 +70,7 @@ class ImportAdminController extends Controller
         $dm->flush();
 
         if ($request->get('direct')) {
-            $result = $importService->startImport($object);
+            $importService->startImport($object);
         } else {
             $asyncService->callCommand('app:elements:importSource', [$object->getId()]);
         }
@@ -117,7 +121,6 @@ class ImportAdminController extends Controller
                     if ($ontology) {
                         $dm = $this->container->get('doctrine_mongodb');
                         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
-                        $elementsLinkedFields = [];
                         foreach($config->getElementFormFields() as $field) {
                             if ($field->type === 'elements'
                                && in_array($field->name, array_values($ontology))
@@ -129,19 +132,19 @@ class ImportAdminController extends Controller
                             }
                         }
                     }
-
                     $object->setOntologyMapping($ontology);
+
+                    // Taxonomy Mapping
                     if ($request->get('taxonomy')) {
                         $taxonomy = array_map(function ($value) {
                             $array = explode(',', $value[0]);
-
                             return array_filter($array, function ($el) { return '/' != $el; });
                         }, $request->get('taxonomy'));
                     } else {
                         $taxonomy = null;
                     }
-
                     $object->setTaxonomyMapping($taxonomy);
+
                     $object->setNewOntologyToMap(false);
                     $object->setNewTaxonomyToMap(false);
 
@@ -149,28 +152,24 @@ class ImportAdminController extends Controller
 
                     $object = $this->admin->update($object);
 
-                    $this->addFlash(
-                        'sonata_flash_success',
-                        $this->trans(
-                          'flash_edit_success',
-                          ['%name%' => $this->escapeHtml($this->admin->toString($object))],
-                          'SonataAdminBundle'
-                        )
-                      );
-
                     if ($request->get('collect')) {
                         $url = $this->admin->generateUrl('collect', ['id' => $object->getId()]);
                     } elseif ($request->get('import')) {
                         $url = $this->admin->generateUrl('refresh', ['id' => $object->getId()]);
                     } else {
                         $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]);
+                        $this->addFlash('sonata_flash_success', $this->trans(
+                            'flash_edit_success',
+                            ['%name%' => $this->escapeHtml($this->admin->toString($object))],
+                            'SonataAdminBundle' )
+                        );
                     }
 
                     return $this->redirect($url);
-                } catch (ModelManagerException $e) {
+                } catch (\Sonata\AdminBundle\Exception\ModelManagerException $e) {
                     $this->handleModelManagerException($e);
                     $isFormValid = false;
-                } catch (LockException $e) {
+                } catch (\Sonata\AdminBundle\Exception\LockException $e) {
                     $this->addFlash('sonata_flash_error', $this->trans('flash_lock_error', [
                         '%name%' => $this->escapeHtml($this->admin->toString($object)),
                         '%link_start%' => '<a href="'.$this->admin->generateObjectUrl('edit', $object).'">',
@@ -238,9 +237,8 @@ class ImportAdminController extends Controller
                     $object = $this->admin->create($object);
                     // CUSTOM
                     $url = $this->admin->generateUrl('collect', ['id' => $object->getId()]);
-
                     return $this->redirect($url);
-                } catch (ModelManagerException $e) {
+                } catch (\Sonata\AdminBundle\Exception\ModelManagerException $e) {
                     $this->handleModelManagerException($e);
                     $isFormValid = false;
                 }
