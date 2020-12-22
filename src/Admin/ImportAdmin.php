@@ -40,7 +40,8 @@ class ImportAdmin extends AbstractAdmin
 
         $isDynamic = $this->getSubject()->isDynamicImport();
         $title = $isDynamic ? "Import Dynamique, pour afficher des données gérées par quelqu'un d'autre" : 'Importer des données en dur, depuis un fichier CSV ou une API Json';
-
+        $isPersisted = $this->getSubject()->getId();
+        
         $formMapper
             ->tab('Général')
                 ->with($title, ['class' => 'col-md-12'])
@@ -67,30 +68,15 @@ class ImportAdmin extends AbstractAdmin
             $formMapper                    
                     ->add('url', UrlType::class, ['label' => 'Ou URL vers un API Json', 'required' => false]);
         }
-        $formMapper
-                ->end()
-                ->with('Autres options', ['box_class' => 'box box-default', 'class' => 'col-md-12'])
-                    ->add('geocodeIfNecessary', null, ['required' => false, 'label' => 'Géocoder les élements sans latitude ni longitude à partir de leur adresse'])
-                    ->add('createMissingOptions', null, ['required' => false, 'label' => 'Créer les catégories manquantes', 'label_attr' => ['title' => "Si un élément importé a une catégorie qui n'existe pas encore sur votre carte, elle sera automatiquement crée"]])
-                    ->add('optionsToAddToEachElement', ModelType::class, [
-                        'class' => 'App\Document\Option',
-                        'required' => false,
-                        'multiple' => true,
-                        'btn_add' => false,
-                        'label' => 'Catégories à ajouter à chaque élément importé', ], ['admin_code' => 'admin.option_hidden'])
-                    ->add('needToHaveOptionsOtherThanTheOnesAddedToEachElements', null, ['required' => false, 'label' => 'Les éléments importés doivent contenir au moins une catégorie en dehors de celles ajoutées manuellement ci-dessus', 'label_attr' => ['title' => "Sans prendre en compte les catégories ajoutés via le champs \"Catégories à ajouter à chaque élément importé\", si les éléments importés n'ont pas de catégories, ils seront marqués comme \"Modération aucune catégorie renseignée\""]])
-                    ->add('preventImportIfNoCategories', null, ['required' => false, 'label' => "Ne pas importer les éléments qui n'ont aucune catégories", 'label_attr' => ['title' => "Lorsqu'on veut importer seulement une partie des éléments d'une base de donnée, il peut être pratique de mapper uniquement les catégories que l'on veut importer. Mais tous les autres élément seront aussi importés mais sans catégories. En cochant cette option, uniquement les éléments avec une catégorie mappée seront importés"]]);
-        if ($isDynamic) {
-            $formMapper
-                    ->add('fieldToCheckElementHaveBeenUpdated', null, ['required' => false, 'label' => "Nom de l'attribut à comparer pour la mise à jour", 'label_attr' => ['title' => "Lorsqu'on met à jour une source, certains des éléments à importer existent déjà dans notre base de donnée. Vous pouvez renseigner ici un champs qui permettra de comparer si l'élément à été mis à jour au sein de la source depuis le dernier import. Exple de champ: updatedAt, date_maj etc... (laisser vide pour mettre à jour les éléments à chaque fois)"]]);
-        }
-        $formMapper->end();
-        if ($this->getSubject()->getId()) {
+        $formMapper->end();                
+        if ($isPersisted) {
             $formMapper->with('Historique', ['class' => 'col-sm-12'])
                         ->add('currState', null, ['attr' => ['class' => 'gogo-display-logs'], 'label_attr' => ['style' => 'display: none'], 'mapped' => false])
                     ->end();
         }
         $formMapper->end();
+
+        // TAB - Custom Code
         $formMapper->tab('Modifier les données en exécutant du code')
             ->with('Entrez du code qui sera exécuté à la reception des données, avant leur traitement par GoGoCarto', ['description' => "La variable <b>\$data</b> représente le tableau PHP créé à partir des données Csv ou Json. </br>
 <pre>Quelques examples de transformations simple:</pre>
@@ -113,25 +99,49 @@ Transformer un attribut
             ->end()
         ->end();
 
-        if ($this->getSubject()->getId()) {
+        
+        if ($isPersisted) {
+            // TAB - Ontology Mapping
             $title = 'Table de correspondance des champs';
             if ($this->getSubject()->getNewOntologyToMap()) {
                 $title .= ' <label class="label label-info">Nouveaux champs</label>';
             }
             $formMapper
-                ->tab($title)
+                ->tab($title)                    
                     ->with('Transformer les données à importer')
                         ->add('ontologyMapping', null, ['label_attr' => ['style' => 'display:none'], 'attr' => ['class' => 'gogo-mapping-ontology', 'data-form-props' => $formProperties, 'data-props' => $elementProperties]])
                     ->end()
+
+                    ->with('Autres Options', ['box_class' => 'box box-default'])
+                        ->add('geocodeIfNecessary', null, ['required' => false, 'label' => 'Géocoder les élements sans latitude ni longitude à partir de leur adresse']);
+                        if ($isDynamic) {
+                            $formMapper
+                                    ->add('fieldToCheckElementHaveBeenUpdated', null, ['required' => false, 'label' => "Nom de l'attribut à comparer pour la mise à jour", 'label_attr' => ['title' => "Lorsqu'on met à jour une source, certains des éléments à importer existent déjà dans notre base de donnée. Vous pouvez renseigner ici un champs qui permettra de comparer si l'élément à été mis à jour au sein de la source depuis le dernier import. Exple de champ: updatedAt, date_maj etc... (laisser vide pour mettre à jour les éléments à chaque fois)"]]);
+                        }
+                    $formMapper->end()
                 ->end();
-            if (count($this->getSubject()->getOntologyMapping()) > 0) {
+
+            // TAB - Taxonomy Mapping
+            if (count($this->getSubject()->getOntologyMapping()) > 0) {     
                 $title = 'Table de correspondance des catégories';
                 if ($this->getSubject()->getNewTaxonomyToMap()) {
                     $title .= ' <label class="label label-info">Nouvelles catégories</label>';
                 }
-                $formMapper->tab($title)
+                $formMapper->tab($title)          
                     ->with('Faites correspondre les catégories')
                         ->add('taxonomyMapping', null, ['label_attr' => ['style' => 'display:none'], 'attr' => ['class' => 'gogo-mapping-taxonomy', 'data-options' => $optionsList]])
+                    ->end()
+
+                    ->with('Autres Options', ['box_class' => 'box box-default'])
+                        ->add('createMissingOptions', null, ['required' => false, 'label' => 'Créer les catégories manquantes', 'label_attr' => ['title' => "Si un élément importé a une catégorie qui n'existe pas encore sur votre carte, elle sera automatiquement crée"]])
+                        ->add('optionsToAddToEachElement', ModelType::class, [
+                            'class' => 'App\Document\Option',
+                            'required' => false,
+                            'multiple' => true,
+                            'btn_add' => false,
+                            'label' => 'Catégories à ajouter à chaque élément importé', ], ['admin_code' => 'admin.option_hidden'])
+                        ->add('needToHaveOptionsOtherThanTheOnesAddedToEachElements', null, ['required' => false, 'label' => 'Les éléments importés sans catégorie (en dehors de celles ajoutées manuellement ci-dessus) seront marqués comme "à modérer"', 'label_attr' => ['title' => "Sans prendre en compte les catégories ajoutés via le champs \"Catégories à ajouter à chaque élément importé\", si les éléments importés n'ont pas de catégories, ils seront marqués comme \"Modération aucune catégorie renseignée\""]])
+                        ->add('preventImportIfNoCategories', null, ['required' => false, 'label' => "Ne pas importer les éléments qui n'ont aucune catégories", 'label_attr' => ['title' => "Lorsqu'on veut importer seulement une partie des éléments d'une base de donnée, il peut être pratique de mapper uniquement les catégories que l'on veut importer. Mais tous les autres élément seront aussi importés mais sans catégories. En cochant cette option, uniquement les éléments avec une catégorie mappée seront importés"]])
                     ->end()
                 ->end();
             }
@@ -177,10 +187,7 @@ Transformer un attribut
 
         $listMapper
             ->addIdentifier('sourceName', null, ['label' => 'Nom de la source'])
-            // Total count
-            ->add('logs', null, ['label' => "Nombre d'éléments", 'template' => 'admin/partials/import/list_total_count.html.twig'])
-            // non visibles count
-            ;
+            ->add('logs', null, ['label' => "Nombre d'éléments", 'template' => 'admin/partials/import/list_total_count.html.twig']);
         if ($isDynamic) {
             $listMapper
             ->add('idsToIgnore', null, ['label' => 'Infos', 'template' => 'admin/partials/import/list_non_visibles_count.html.twig', 'choices' => $deletedElementsCount])
