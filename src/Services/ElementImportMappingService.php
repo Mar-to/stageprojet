@@ -20,10 +20,11 @@ class ElementImportMappingService
         'title' => 'name', 'nom' => 'name', 'titre' => 'name',
         'mail' => 'email',
         'taxonomy' => 'categories',
+        'addr:housenumber' => 'streetNumber',
         'address' => 'streetAddress', 'addr:street' => 'streetAddress',
         'city' => 'addressLocality', 'addr:city' => 'addressLocality',
         'postcode' => 'postalCode', 'addr:postcode' => 'postalCode',
-        'country' => 'addressCountry', 'addr:country' => 'addressCountry',
+        'country' => 'addressCountry', 'addr:country' => 'addressCountry',        
         'lat' => 'latitude',
         'long' => 'longitude', 'lng' => 'longitude', 'lon' => 'longitude',
     ];

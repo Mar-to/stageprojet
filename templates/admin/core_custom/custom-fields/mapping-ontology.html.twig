@@ -12,7 +12,7 @@
         <th style="width:100px">Nom d'origine</th>
         <th style="width:20px"></th>
         <th>À transformer en <span style="font-weight: normal">(les champs vides ne seront pas importés)</span></th>
-        <th style="width:20px"></th>
+        <th></th>
       </tr>
     </thead>
     <tbody class="table-striped">
@@ -38,7 +38,10 @@
             <input type="text" name="ontology[{{originName}}]" 
                    class="form-control property-selector" value={{mappedObject.mappedProperty}} />
           </td>
-          <td><i class="clear-icon fa fa-ban" title="Ne pas importer ce champ"></i></td>
+          <td>
+            <span class="label field-info"></span>
+            <i class="clear-icon fa fa-ban" title="Ne plus importer ce champ"></i>
+          </td>
         </tr>
       {% endfor %}
     </tbody>
@@ -60,7 +63,9 @@
   td.original[title]:hover { font-weight: bold }
   .arrow-icon { font-size: 17px; }
   .arrow-icon:hover { cursor: pointer; color: #3c8dbc; }
+  .clear-icon { margin-left: 4px; }
   .clear-icon:hover { cursor: pointer; color: #dd4b39; }
+  .field-info { cursor: help }
   td { vertical-align: middle !important; }
   tr.low-used { display: none}
   .mapping-table .select2-container .select2-choice, 
@@ -88,48 +93,33 @@
 <script>
   var importType = "{{ object.sourceType }}";
   jQuery(document).ready(function() {
-
-    $('.property-selector').change(function() {
-      console.log("input change new val", $(this).val());
-      var new_val = $(this).val().replace('.', '_');
-      $(this).val(new_val);
-    });
-    // on arrow click, use the original name
-    $('.arrow-icon').click(function() {
-      $(this).parent().parent().find('.property-selector:not(.select2-container)').val($(this).parent().siblings('.original').text()).trigger('change');
-    });
-
-    $('.clear-icon').click(function() {
-      $(this).parent().parent().find('.property-selector:not(.select2-container)').val("/").trigger('change');
-    });
-
     var formProperties = {{ form.vars.attr["data-form-props"]|raw }};
     var dataProperties = {{ form.vars.attr["data-props"]|raw }};
     var coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'files', 'owner', 'source', 'email', 'openhours', 'streetNumber', 'fullAddress'];
-    var coreData = [], allProperties = [], otherData = []; var importedData = [];
+    var coreData = [], specificData = [], allProperties = [], otherData = []; var importedData = [];
     coreData.push({id: 'id', text: 'Identifiant unique'});
     coreData.push({id: 'name', text: 'Titre de la fiche'});
-    coreData.push({id: 'categories', text: 'Liste des catégories (en tableau ou séparées par des virgules)'});
+    coreData.push({id: 'categories', text: 'Catégories (plusieurs champs sélectionnable)'});
+    coreData.push({id: 'latitude', text: 'Latitude'});
+    coreData.push({id: 'longitude', text: 'Longitude'});
     coreData.push({id: 'fullAddress', text: 'Adresse complète'});
     coreData.push({id: 'streetNumber', text: 'Adresse: numéro de rue'});
     coreData.push({id: 'streetAddress', text: 'Adresse: rue'});
     coreData.push({id: 'addressLocality', text: 'Adresse: ville'});
     coreData.push({id: 'postalCode', text: 'Adresse: code postal'});
-    coreData.push({id: 'addressCountry', text: 'Adresse: pays'});
-    coreData.push({id: 'latitude', text: 'Latitude'});
-    coreData.push({id: 'longitude', text: 'Longitude'});
-    coreData.push({id: 'images', text: "Image(s) sous forme d'url, en tableau, ou séparés par des virgules"});
-    coreData.push({id: 'files', text: "Fichier(s) sous forme d'url, en tableau, ou séparés par des virgules"});
-    coreData.push({id: 'email', text: "Email de l'élement"});
-    coreData.push({id: 'owner', text: "Email de l'utilisateur propriétaire de la fiche"});
-    coreData.push({id: 'source', text: "Origine de l'élément (source)"});    
-    coreData.push({id: 'openHours', text: "Horaires d'ouverture (format GoGoCarto)"});
+    coreData.push({id: 'addressCountry', text: 'Adresse: pays'});    
+    specificData.push({id: 'images', text: "Image(s) sous forme d'url, en tableau, ou séparées par des virgules"});
+    specificData.push({id: 'files', text: "Fichier(s) sous forme d'url, en tableau, ou séparées par des virgules"});
+    specificData.push({id: 'email', text: "Email de l'élement"});
+    specificData.push({id: 'owner', text: "Email de l'utilisateur propriétaire de la fiche"});
+    specificData.push({id: 'source', text: "Origine de l'élément (source)"});    
+    specificData.push({id: 'openHours', text: "Horaires d'ouverture (format GoGoCarto)"});
     if (importType == 'osm') {
-      coreData.push({id: 'osm:source', text: "Source de la donnée OpenStreetMap"});
-      coreData.push({id: 'osm:openning_hours', text: "Horaires d'ouverture (format OSM)"});
+      specificData.push({id: 'osm:source', text: "Source de la donnée OpenStreetMap"});
+      specificData.push({id: 'osm:openning_hours', text: "Horaires d'ouverture (format OSM)"});
     }    
 
-    allProperties = $.map(coreData, function(el) { return el.id });
+    allProperties = $.map(coreData.concat(specificData), function(el) { return el.id });
 
     var formData = [];
     for(var i = 0; i < formProperties.length; i++) {
@@ -163,12 +153,14 @@
     {% endfor %}
 
     options = [{ id: "/", text: ""}]
-    options.push({ text: "Attributs principaux", children: coreData});
-    options.push({ text: "Attributs du formulaire", children: formData});
-    if (otherData.length > 0) options.push({text: "Autres attributs", children: otherData});
-    options.push({ text: "Attributs importés", children: importedData});
+    options.push({ text: "Champs principaux", children: coreData});
+    options.push({ text: "Champs spécifiques", children: specificData});
+    options.push({ text: "Champs du formulaire", children: formData});
+    if (otherData.length > 0) options.push({text: "Autres champs déjà présent dans la base de donnée", children: otherData});
+    options.push({ text: "Champs originaux de l'import", children: importedData});
 
-    $(".property-selector").select2({
+    $(".property-selector")
+      .select2({
         createSearchChoice:function(term, data) {
             if ($(data).filter(function() {
                 return this.text.localeCompare(term)===0;
@@ -176,7 +168,34 @@
             {return {id:term, text:term};}
         },
         data: options
+    }).change(function() {
+      var newVal = $(this).val().replace('.', '_');
+      $(this).val(newVal);
+      var $row = $(this).closest('tr')
+      $row.find('.clear-icon').toggle(newVal != '/')
+      $row.find('.field-info').removeClass('label-primary label-info label-success')
+      var text = '', type = '', title = ''
+      if (coreData.concat(formProperties).map(el => el.id).indexOf(newVal) > -1) {
+        text = "Importé - Éditable"
+        type = "info"
+        title = "Ce champ sera éditable dans le formulaire public"
+      } else if (newVal != '/' && newVal != '') {
+        text = "Importé - Non éditable"
+        type = "primary"
+        title = "Ce champ n'est actuellement pas présent dans le formulaire public. Il sera uniquement éditable depuis l'interface administrateur. Vous pouvez modifier le formulaire public pour rendre ce champ éditable par tous"
+      }
+      $row.find('.field-info').addClass('label-'+type).text(text).attr('title', title)
+    }).trigger('change')
+
+    // on arrow click, use the original name
+    $('.arrow-icon').click(function() {
+      $(this).parent().parent().find('.property-selector:not(.select2-container)').val($(this).parent().siblings('.original').text()).trigger('change');
     });
+
+    $('.clear-icon').click(function() {
+      $(this).parent().parent().find('.property-selector:not(.select2-container)').val("/").trigger('change');
+    });
+
 
   });
 </script>
