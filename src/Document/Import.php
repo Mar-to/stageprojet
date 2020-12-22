@@ -540,8 +540,13 @@ class Import extends AbstractFile
      */
     public function setOntologyMapping($ontologyMapping)
     {
+        if ($ontologyMapping == null) return;
+        foreach($ontologyMapping as $key => $mappedObject) { 
+            if (is_string($mappedObject)) {
+                $ontologyMapping[$key] = array_merge($this->ontologyMapping[$key], ['mappedProperty' => $mappedObject]);
+            }
+        }
         $this->ontologyMapping = $ontologyMapping;
-
         return $this;
     }
 
