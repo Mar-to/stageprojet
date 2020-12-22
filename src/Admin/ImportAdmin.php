@@ -110,16 +110,18 @@ Transformer un attribut
                 ->tab($title)                    
                     ->with('Transformer les données à importer')
                         ->add('ontologyMapping', null, ['label_attr' => ['style' => 'display:none'], 'attr' => ['class' => 'gogo-mapping-ontology', 'data-form-props' => $formProperties, 'data-props' => $elementProperties]])
-                    ->end()
-
-                    ->with('Autres Options', ['box_class' => 'box box-default'])
+                    ->end();
+                
+                if ($this->getSubject()->getSourceType() != 'osm') {
+                        $formMapper->with('Autres Options', ['box_class' => 'box box-default'])
                         ->add('geocodeIfNecessary', null, ['required' => false, 'label' => 'Géocoder les élements sans latitude ni longitude à partir de leur adresse']);
                         if ($isDynamic) {
                             $formMapper
                                     ->add('fieldToCheckElementHaveBeenUpdated', null, ['required' => false, 'label' => "Nom de l'attribut à comparer pour la mise à jour", 'label_attr' => ['title' => "Lorsqu'on met à jour une source, certains des éléments à importer existent déjà dans notre base de donnée. Vous pouvez renseigner ici un champs qui permettra de comparer si l'élément à été mis à jour au sein de la source depuis le dernier import. Exple de champ: updatedAt, date_maj etc... (laisser vide pour mettre à jour les éléments à chaque fois)"]]);
                         }
-                    $formMapper->end()
-                ->end();
+                    $formMapper->end();
+                }
+                $formMapper->end();
 
             // TAB - Taxonomy Mapping
             if (count($this->getSubject()->getOntologyMapping()) > 0) {     

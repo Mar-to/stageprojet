@@ -321,6 +321,7 @@ class Import extends AbstractFile
      */
     public function getGeocodeIfNecessary()
     {
+        if ($this->getSourceType() == 'osm') return false;
         return $this->geocodeIfNecessary;
     }
 
@@ -528,6 +529,7 @@ class Import extends AbstractFile
      */
     public function getFieldToCheckElementHaveBeenUpdated()
     {
+        if ($this->getSourceType() == 'osm') return 'osm:version';
         return $this->fieldToCheckElementHaveBeenUpdated;
     }
 

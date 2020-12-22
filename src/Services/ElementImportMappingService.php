@@ -104,12 +104,11 @@ class ElementImportMappingService
                         $data[$key]['lon'] = $data[$key]['center']['lon'];
                         unset($data[$key]['center']);
                     } 
-                    // remove unrelevant metadata so it does not get too noisy for the ontology mapping              
+                    // remove unrelevant metadata so it does not get too noisy            
                     unset($data[$key]['nodes']); 
                     unset($data[$key]['changeset']); 
                     unset($data[$key]['uid']); 
                     unset($data[$key]['user']); 
-                    unset($data[$key]['type']); 
                 }
             } else {
                 // the $row is not an array, probably a string so we ignore it
@@ -174,7 +173,6 @@ class ElementImportMappingService
                 unset($this->ontologyMapping[$prop]);
             }
         }
-        if ($import->getSourceType() == 'osm') unset($this->ontologyMapping['tags']); // no need for the full tags object, better map invidvudal tag
         $count = count($data);
         foreach($this->ontologyMapping as &$mappedObject) {
             $mappedObject['collectedPercent'] = $mappedObject['collectedCount'] / $count * 100;
@@ -199,7 +197,7 @@ class ElementImportMappingService
         $fullProp = $parentProp ? $parentProp.'/'.$prop : $prop;
         
         if (!is_string($value)) $value = "";
-
+        
         if (!$prop || 0 == strlen($prop)) {
             return;
         }
@@ -215,6 +213,9 @@ class ElementImportMappingService
                 switch ($prop) {
                     case 'source': $mappedProp = 'osm:source'; break; // we don't want to overide GoGoCarto source field with Osm field
                     case 'openning_hours': $mappedProp = 'osm:openning_hours'; break;    
+                    case 'version': $mappedProp = 'osm:version'; break;    
+                    case 'timestamp': $mappedProp = 'osm:timestamp'; break;    
+                    case 'type': $mappedProp = 'osm:type'; break;    
                 }                 
             }
             // use alternative name, like lat instead of latitude

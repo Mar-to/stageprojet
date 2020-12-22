@@ -30,13 +30,17 @@
         {% endif %}
         {% if mappedObject.collectedValues|length > 0 %}
           {% set moreInfos = moreInfos ~ " Valeurs : \n\r" ~ mappedObject.collectedValues|join(', ') %}
-        {% endif %}        
+        {% endif %}  
+        {# For OSM import we only edit the tags, others attributes are automatically mapped #} 
+        {% if object.sourceType == 'osm' and not (originName starts with 'tags/') %}   
+            {% set rowClass = rowClass ~ 'hidden ' %}
+        {% endif %}    
         <tr class="{{ rowClass }}">          
           <td class="original" title="{{ moreInfos }}">{{originName}}</td>
           <td><i class="arrow-icon fa fa-arrow-circle-right" title="Utiliser le nom d'origine"></i></td>
           <td class="mapped">
             <input type="text" name="ontology[{{originName}}]" 
-                   class="form-control property-selector" value={{mappedObject.mappedProperty}} />
+                  class="form-control property-selector" value={{mappedObject.mappedProperty}} />
           </td>
           <td>
             <span class="label field-info"></span>
@@ -97,7 +101,7 @@
     var dataProperties = {{ form.vars.attr["data-props"]|raw }};
     var coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'files', 'owner', 'source', 'email', 'openhours', 'streetNumber', 'fullAddress'];
     var coreData = [], specificData = [], allProperties = [], otherData = []; var importedData = [];
-    coreData.push({id: 'id', text: 'Identifiant unique'});
+    coreData.push({id: 'id', text: "Identifiant unique (dans l'ancienne base de donnée)"});
     coreData.push({id: 'name', text: 'Titre de la fiche'});
     coreData.push({id: 'categories', text: 'Catégories (plusieurs champs sélectionnable)'});
     coreData.push({id: 'latitude', text: 'Latitude'});
@@ -117,6 +121,8 @@
     if (importType == 'osm') {
       specificData.push({id: 'osm:source', text: "Source de la donnée OpenStreetMap"});
       specificData.push({id: 'osm:openning_hours', text: "Horaires d'ouverture (format OSM)"});
+      specificData.push({id: 'osm:version', text: "OSM Version (mappé automatiquement)"});
+      specificData.push({id: 'osm:timestamp', text: "OSM Timestamp (mappé automatiquement)"});
     }    
 
     allProperties = $.map(coreData.concat(specificData), function(el) { return el.id });
@@ -176,11 +182,11 @@
       $row.find('.field-info').removeClass('label-primary label-info label-success')
       var text = '', type = '', title = ''
       if (coreData.concat(formProperties).map(el => el.id).indexOf(newVal) > -1) {
-        text = "Importé - Éditable"
+        text = "Éditable"
         type = "info"
         title = "Ce champ sera éditable dans le formulaire public"
       } else if (newVal != '/' && newVal != '') {
-        text = "Importé - Non éditable"
+        text = "Non éditable"
         type = "primary"
         title = "Ce champ n'est actuellement pas présent dans le formulaire public. Il sera uniquement éditable depuis l'interface administrateur. Vous pouvez modifier le formulaire public pour rendre ce champ éditable par tous"
       }
