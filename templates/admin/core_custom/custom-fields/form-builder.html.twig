@@ -33,7 +33,7 @@
         openhours: function(fieldData) { return { field: 'Bloc contenant un selecteur d\'horaires' }; },
         separator: function(fieldData) { return { field: '<hr>' }; },
         checkbox: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + (fieldData.defaultvalue == "yes" ? 'checked="checked"' : '') + ' type="checkbox"/>' }; },
-        email: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + ' type="email"/><span class="mandatory"> Ce champ est conseillé</span>' }; },
+        email: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + ' type="email"/><span class="mandatory"> Ce champ est conseillé (permet d\'envoyer des emails)</span>' }; },
         images: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + ' type="file" accept="images/*"/>' }; },
         files: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + ' type="file" accept="'+fieldData.accept+'"/>' }; },
         image: function(fieldData) { return { field: '<input id="' + fieldData.name + '"' + ' type="text"/>' }; },
@@ -129,10 +129,10 @@
         dataType: "json",
         fields: fields,
         templates: templates,
-        // i18n: {
-        //   locale: 'fr-FR',
-        //   location: '{{ asset("assets/js/") }}'
-        // },
+        i18n: {
+          locale: 'fr-FR',
+          location: '{{ asset("js/") }}'
+        },
         disableFields: ['hidden', 'file', 'button', 'autocomplete', 'title', 'taxonomy', 'address', 'image'],
         controlOrder: ['text', 'email', 'images', 'textarea', 'checkbox', 'checkbox-group', 'radio-group', 'select', 'date', 'number', 'files', 'elements'],
         disabledAttrs: ['className', 'inline', 'toggle', 'description', 'other', 'multiple'],
@@ -150,7 +150,7 @@
         }, 0);
 
       });
-
+      
       setInterval(function() {
         // prevent adding two of those fields
         $('.input-control[data-type=email]').toggle($('.email-field').length == 0);
@@ -159,7 +159,7 @@
         $('.input-control[data-type=openhours]').toggle($('.openhours-field').length == 0);
 
         // $('.name-wrap input[name=name]').val('email');
-        // get all input names (used after for uniqueness)
+        // get all input names (used to check for uniqueness)
         var allNames = [];
         $('.fld-name').each(function() {
           // Slugify
@@ -168,6 +168,26 @@
           // collect names
           allNames.push($(this).val());
         });
+
+        let dataProperties = {{ form.vars.attr["data-props"]|raw }};
+        
+        let propNameOptions = []
+        for(let prop of dataProperties) {
+          propNameOptions.push({
+            id: prop, text: prop, disabled: allNames.indexOf(prop) > -1
+          })
+        }
+        propNameOptions = propNameOptions.sort((a,b) => a.disabled ? 1 : -1)
+        propNameOptions.unshift({id: '', text: "Choisissez un champ existant ou entrez un nouveau champ", disabled: true})
+        $(".fld-name:visible:not(.initialized)").select2({
+          createSearchChoice:function(term, data) {
+              if ($(data).filter(function() {
+                  return this.text.localeCompare(term)===0;
+              }).length===0)
+              {return {id:term, text:term};}
+          },
+          data: propNameOptions
+        }).addClass('initialized')
 
         $('.fld-name:visible').each(function() {
           // Check names are unique
@@ -263,4 +283,8 @@
     position: absolute;
     padding-left: 2rem;
   }
+
+  /* Make select2 looks like other inputs */
+  .form-wrap.form-builder .form-control.select2-container { padding: 0; }
+  .form-wrap.form-builder .form-control:not(.select2-dropdown-open) .select2-choice { border-radius: 5px !important; }
 </style>

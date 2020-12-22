@@ -20,15 +20,17 @@ class ConfigurationFormAdmin extends ConfigurationAbstractAdmin
 
     protected function configureFormFields(FormMapper $formMapper)
     {
+        $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
+        $repo = $dm->getRepository('App\Document\Element');
+        $elementProperties = json_encode($repo->findAllCustomProperties());
+
         $formMapper
             ->tab('Formulaire')
                 ->with('Configuration du formulaire', ['description' => "
                     <div class='text-and-iframe-container'><div class='iframe-container-aside'><iframe height='200' sandbox='allow-same-origin allow-scripts' src='https://video.colibris-outilslibres.org/videos/embed/2dd4dad3-63fa-4bb4-b48c-e518f8e56d36' frameborder='0' allowfullscreen></iframe></div>
-                    Choisissez ici quels champs constituent un élement de votre base de donnée.
-                    <li>Choisissez bien l'attribut <b>Nom (unique)</b>, avec une valeur compréhensible.</li>
-                    <li>Certains champs sont obligatoires (categories, titre, adresse). </li>
-                    <li>Le champ <b>Email principal</b> sera utilisé pour envoyer des emails à l'élément référencé, pour lui indiquer qu'il a bien été ajouté sur le site, qu'il a été supprimé etc.. C'est donc un champ conseillé si vous souhaitez mettre en place ce genre de communications.</li></div>"])
-                    ->add('elementFormFieldsJson', HiddenType::class, ['attr' => ['class' => 'gogo-form-builder']])
+                    <b>Le formulaire permet d'ajouter/éditer des données depuis l'interface publique</b></br>
+                    Si vous avez importé des données, vous pouvez ajouter un champ au formulaire et le lier au champ importé grâce à l'attribut \"Nom du champ\""])
+                    ->add('elementFormFieldsJson', HiddenType::class, ['attr' => ['class' => 'gogo-form-builder', 'data-props' => $elementProperties]])
                 ->end()
             ->end()
             ->tab('Autres textes et options')
