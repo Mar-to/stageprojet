@@ -50,11 +50,10 @@ class TaxonomyJsonGenerator
     public function preFlush(\Doctrine\ODM\MongoDB\Event\preFlushEventArgs $eventArgs)
     {
         $dm = $eventArgs->getDocumentManager();
-
+        
         foreach ($dm->getUnitOfWork()->getScheduledDocumentInsertions() as $document) {
             if ($document instanceof Option || $document instanceof Category) {
                 $this->needUpdateTaxonomyOnNextFlush = true;
-
                 return;
             }
         }
@@ -62,7 +61,6 @@ class TaxonomyJsonGenerator
         foreach ($dm->getUnitOfWork()->getScheduledDocumentDeletions() as $document) {
             if ($document instanceof Option || $document instanceof Category) {
                 $this->needUpdateTaxonomyOnNextFlush = true;
-
                 return;
             }
         }
@@ -79,15 +77,13 @@ class TaxonomyJsonGenerator
 
     public function updateTaxonomy($dm)
     {
+        $dm->clear(); // remove doctrine cache to load the new categories just created (in case multiple flush in same request)
         $taxonomy = $dm->getRepository('App\Document\Taxonomy')->findTaxonomy();
-        if (!$taxonomy || $taxonomy->preventUpdate) {
+        if (!$taxonomy) {
             return false;
-        }
-        $taxonomy->preventUpdate = true;
-
+        }        
         $rootCategories = $dm->getRepository('App\Document\Category')->findRootCategories();
         $options = $dm->getRepository('App\Document\Option')->findAll();
-
         if (0 == count($rootCategories)) {
             $optionsJson = '[]';
             $taxonomyJson = '[]';
@@ -109,5 +105,6 @@ class TaxonomyJsonGenerator
         $taxonomy->setTaxonomyJson($taxonomyJson);
         $taxonomy->setOptionsJson($optionsJson);
         $dm->flush();
+        return $taxonomy;
     }
 }

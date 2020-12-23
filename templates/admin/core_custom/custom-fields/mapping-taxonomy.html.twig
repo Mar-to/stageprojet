@@ -3,7 +3,7 @@
 {% set object = form.vars.sonata_admin.admin.subject %}
 {% set mapping = object.taxonomyMapping %}
 {% if object.isCategoriesFieldMapped %}
-  <table class="table mapping-table">
+  <table class="table mapping-table mapping-taxonomy-table">
     <thead>
       <tr>
         <th class="original">Catégories lues depuis le fichier d'origine</th>
@@ -18,13 +18,13 @@
         {% if mappedObject.fieldName and mappedObject.fieldName != currentFieldName %}
           {% set currentFieldName = mappedObject.fieldName %}
           <tr>
-            <td class="category-group"><label>Groupe "{{ mappedObject.fieldName|capitalize }}"</label></td>
+            <td class="category-group"><label>Groupe {{ mappedObject.fieldName }}</label></td>
             <td colspan="3"></td>
           </tr>
         {% endif %}
         <tr>
           <td class="original">{{originName}}</td>
-          <td></td>
+          <td><i class="arrow-icon fa fa-arrow-circle-right" title="Créer une catégorie à partir du nom d'origine"></i></td>
           <td class="mapped">
             <input type="text" name="taxonomy[{{originName}}][]" class="form-control category-selector" value="{{mappedObject.mappedCategoryIds|join(',')}}"/>
           </td>
@@ -32,8 +32,12 @@
         </tr>
       {% endfor %}
     </tbody>
-
   </table>
+  <center>
+    <button type="button" class="btn btn-default create-missing-categories">
+      Créer toutes les catégories manquante
+    </button>
+  </center>
 {% else %}
   <div class="alert alert-info">Veuillez d'abords sélectionner le champs correspondant aux catégories dans l'onglet 'Table de correspondance des champs' puis cliquer sur 'Lire les données'</div>
 {% endif %}
@@ -42,7 +46,8 @@
   jQuery(document).ready(function() {
 
     var taxonomy = {{ form.vars.attr["data-options"]|raw }};
-    var formData = [{ id: "", text: ""}]
+    var mappingOptionNameToId = {}
+    var formData = [{ id: "", text: "Selectionnez une catégorie existant ou entrez le nom d'une nouvelle catégorie à créer", disabled: true}]
 
     function recursivelyAddOption(category, parentOption)
     {
@@ -52,6 +57,8 @@
         var option = category.options[i];
         var optionName = parentOption ? parentOption + ' / ' : '';
         optionName += option.name;
+        mappingOptionNameToId[option.name.replace(/,\s*/g, ' ').toLowerCase()] = option.id
+        if (option.customId) mappingOptionNameToId[option.customId.replace(/,\s*/g, ' ').toLowerCase()] = option.id
         formData.push({id: option.id, text: optionName});
         if (option.subcategories)
         {
@@ -66,12 +73,47 @@
 
     $(".category-selector").select2({
         data: formData,
+        createSearchChoice:function(term, data) {
+            if ($(data).filter(function() {
+                return this.text.localeCompare(term)===0;
+            }).length===0) {
+              return {id: `@create:${term}`, text: term + ' (Sera créé au moment de sauvegarder)'};
+            }
+        },
         multiple: true
     });
 
-    $('.clear-icon').click(function() {
+    // on arrow click, use the original name
+    $('.mapping-taxonomy-table .arrow-icon').click(function() {
+      const $parent = $(this).closest('tr')
+      let originCategoryName = $parent.find('.original').text()
+                                      .replace(/^\w/, c => c.toUpperCase()) // capitalize
+                                      .replace(/,\s*/g, ' ') // remove coma cause it's the array delimiter for select2
+      let newCategoryId = originCategoryName
+      let newCategoryIdIfCreated = `@create:${originCategoryName}`
+      if (mappingOptionNameToId[originCategoryName.toLowerCase()]) {
+        newCategoryId = mappingOptionNameToId[originCategoryName.toLowerCase()]
+      }
+      else if (Object.keys(formData).filter(v => [newCategoryId, newCategoryIdIfCreated].includes(v)).length === 0) {
+        newCategoryId = newCategoryIdIfCreated
+        formData.push({id: newCategoryId, text: originCategoryName + ' (Sera créé au moment de sauvegarder)'})
+      }        
+      const input = $parent.find('.category-selector:not(.select2-container)')
+      input.val(newCategoryId).trigger('change');
+    });
+
+    $('.mapping-taxonomy-table .clear-icon').click(function() {
       $(this).parent().parent().find('.category-selector:not(.select2-container)').val("").trigger('change');
     });
+
+    $('.create-missing-categories').click(() => {
+      $('.mapping-taxonomy-table .select2-choices').each(function() { 
+        // if no choice selected then click the arrow 
+        if ($(this).find('.select2-search-choice').length == 0) {
+          $(this).closest('tr').find('.arrow-icon').trigger('click')
+        } 
+      })
+    })
 
   });
 </script>

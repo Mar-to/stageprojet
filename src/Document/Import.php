@@ -58,19 +58,9 @@ class Import extends AbstractFile
     public $url;
 
     /**
-     * @MongoDB\ReferenceOne(targetDocument="App\Document\Category", cascade={"persist"})
-     */
-    private $parentCategoryToCreateOptions = null;
-
-    /**
      * @MongoDB\ReferenceMany(targetDocument="App\Document\Option", cascade={"persist"})
      */
     private $optionsToAddToEachElement = [];
-
-    /**
-     * @MongoDB\Field(type="bool")
-     */
-    private $createMissingOptions = false;
 
     /**
      * @MongoDB\Field(type="bool")
@@ -229,30 +219,6 @@ class Import extends AbstractFile
     }
 
     /**
-     * Set parentCategoryToCreateOptions.
-     *
-     * @param App\Document\Category $parentCategoryToCreateOptions
-     *
-     * @return $this
-     */
-    public function setParentCategoryToCreateOptions(\App\Document\Category $parentCategoryToCreateOptions)
-    {
-        $this->parentCategoryToCreateOptions = $parentCategoryToCreateOptions;
-
-        return $this;
-    }
-
-    /**
-     * Get parentCategoryToCreateOptions.
-     *
-     * @return App\Document\Category $parentCategoryToCreateOptions
-     */
-    public function getParentCategoryToCreateOptions()
-    {
-        return $this->parentCategoryToCreateOptions;
-    }
-
-    /**
      * Set url.
      *
      * @param string $url
@@ -274,30 +240,6 @@ class Import extends AbstractFile
     public function getUrl()
     {
         return $this->url;
-    }
-
-    /**
-     * Set createMissingOptions.
-     *
-     * @param bool $createMissingOptions
-     *
-     * @return $this
-     */
-    public function setCreateMissingOptions($createMissingOptions)
-    {
-        $this->createMissingOptions = $createMissingOptions;
-
-        return $this;
-    }
-
-    /**
-     * Get createMissingOptions.
-     *
-     * @return bool $createMissingOptions
-     */
-    public function getCreateMissingOptions()
-    {
-        return $this->createMissingOptions;
     }
 
     /**
@@ -593,6 +535,12 @@ class Import extends AbstractFile
      */
     public function setTaxonomyMapping($taxonomyMapping)
     {
+        if ($taxonomyMapping == null) return;
+        foreach($taxonomyMapping as $key => $mappedObject) { 
+            if (!is_associative_array($mappedObject)) {
+                $taxonomyMapping[$key] = array_merge($this->taxonomyMapping[$key], ['mappedCategoryIds' => $mappedObject]);
+            }
+        }
         $this->taxonomyMapping = $taxonomyMapping;
 
         return $this;
@@ -607,7 +555,7 @@ class Import extends AbstractFile
     {
         // backward compatibility we used to save mappedObject as a simple categories Ids array
         foreach($this->taxonomyMapping as &$mappedObject) {           
-            if (!is_assciative_array($mappedObject)) {
+            if (!is_associative_array($mappedObject)) {
                 $mappedObject = [ 
                     'mappedCategoryIds' => $mappedObject,
                     'fieldName' => '',

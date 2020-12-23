@@ -44,7 +44,7 @@ class DuplicatesActionsController extends BulkActionsAbstractController
             $duplicates = $dm->createQueryBuilder('App\Document\Element')
                              ->field('id')->in($duplicateIds)
                              ->getQuery()->execute()->toArray();
-            $perfectMatches = array_filter($duplicates, function ($duplicate) use ($element) { return $this->slugify($duplicate->getName()) == $this->slugify($element->getName()); });
+            $perfectMatches = array_filter($duplicates, function ($duplicate) use ($element) { return slugify($duplicate->getName()) == slugify($element->getName()); });
             $otherDuplicates = array_diff($duplicates, $perfectMatches);
             $duplicates[] = $element;
 
@@ -143,32 +143,5 @@ class DuplicatesActionsController extends BulkActionsAbstractController
         $merged->setPrivateData($mergedPrivateData);
 
         return $merged;
-    }
-
-    private function slugify($text)
-    {
-        $text = strtolower($text); // lowercase
-        // replace non letter or digits by -
-        $text = str_replace('é', 'e', $text);
-        $text = str_replace('è', 'e', $text);
-        $text = str_replace('ê', 'e', $text);
-        $text = str_replace('ô', 'o', $text);
-        $text = str_replace('ç', 'c', $text);
-        $text = str_replace('à', 'a', $text);
-        $text = str_replace('â', 'a', $text);
-        $text = str_replace('î', 'i', $text);
-        $text = preg_replace('~[^\pL\d]+~u', '-', $text);
-
-        $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text); // transliterate
-      $text = preg_replace('~[^-\w]+~', '', $text); // remove unwanted characters
-      $text = trim($text, '-'); // trim
-      $text = rtrim($text, 's'); // remove final "s" for plural
-      $text = preg_replace('~-+~', '-', $text); // remove duplicate -
-
-      if (empty($text)) {
-          return '';
-      }
-
-        return $text;
     }
 }

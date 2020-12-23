@@ -202,7 +202,6 @@ class ElementImportService
             $this->dm->flush();
             $this->dm->clear();
 
-            $this->taxonomyJsonGenerator->updateTaxonomy($this->dm);
             $import = $this->dm->getRepository('App\Document\Import')->find($import->getId());
             $this->dm->persist($import);
 

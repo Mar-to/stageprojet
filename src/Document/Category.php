@@ -23,6 +23,12 @@ class Category
 
     /**
      * @var string
+     * @MongoDB\Field(type="string")
+     */
+    private $customId;
+
+    /**
+     * @var string
      *
      * @MongoDB\Field(type="string")
      */
@@ -695,5 +701,29 @@ class Category
     public function getDisplaySuboptionsInline()
     {
         return $this->displaySuboptionsInline;
+    }
+
+        /**
+     * Set customId.
+     *
+     * @param string $customId
+     *
+     * @return $this
+     */
+    public function setCustomId($customId)
+    {
+        $this->customId = $customId;
+
+        return $this;
+    }
+
+    /**
+     * Get customId.
+     *
+     * @return string $customId
+     */
+    public function getCustomId()
+    {
+        return $this->customId;
     }
 }

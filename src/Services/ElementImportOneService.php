@@ -152,7 +152,7 @@ class ElementImportOneService
         }
         $element->setGeo(new Coordinates($lat, $lng));
 
-        $this->createCategories($element, $row, $import);
+        $this->createOptionValues($element, $row, $import);
 
         if ($import->getPreventImportIfNoCategories() && ModerationState::NoOptionProvided == $element->getModerationState()) {
             return 'no_category';
@@ -214,7 +214,7 @@ class ElementImportOneService
             $images = $images_raw;
         } else {
             $keys = array_keys($row);
-            $image_keys = array_filter($keys, function ($key) { return $this->startsWith($key, 'image'); });
+            $image_keys = array_filter($keys, function ($key) { return startsWith($key, 'image'); });
             $images = array_map(function ($key) use ($row) { return $row[$key]; }, $image_keys);
         }
 
@@ -256,43 +256,20 @@ class ElementImportOneService
 
     private function createOpenHours($element, $row)
     {
-        if (!isset($row['openHours']) || !$this->isAssociativeArray($row['openHours'])) {
+        if (!isset($row['openHours']) || !is_associative_array($row['openHours'])) {
             return;
         }
         $element->setOpenHours(new OpenHours($row['openHours']));
     }
 
-    private function isAssociativeArray($a)
-    {
-        if (!is_array($a)) {
-            return false;
-        }
-        foreach (array_keys($a) as $key) {
-            if (!is_int($key)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public function startsWith($haystack, $needle)
-    {
-        $length = strlen($needle);
-
-        return substr($haystack, 0, $length) === $needle;
-    }
-
-    private function createCategories($element, $row, $import)
+    private function createOptionValues($element, $row, $import)
     {
         $element->resetOptionsValues();
         $optionsIdAdded = [];
-        $options = $row['categories'];
-
         $defaultOption = ['index' => 0, 'description' => ''];
-        foreach ($options as $option) {
+        foreach ($row['categories'] as $option) {
             $option = array_merge($defaultOption, $option);
-            $this->addOptionValue($element, $option['mappedId'], $option['index'], $option['description']);
+            $this->addOptionValue($element, $option['id'], $option['index'], $option['description']);
         }
 
         if ($import->getNeedToHaveOptionsOtherThanTheOnesAddedToEachElements()) {

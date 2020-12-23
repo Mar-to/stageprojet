@@ -135,7 +135,6 @@ Transformer un attribut
                     ->end()
 
                     ->with('Autres Options', ['box_class' => 'box box-default'])
-                        ->add('createMissingOptions', null, ['required' => false, 'label' => 'Créer les catégories manquantes', 'label_attr' => ['title' => "Si un élément importé a une catégorie qui n'existe pas encore sur votre carte, elle sera automatiquement crée"]])
                         ->add('optionsToAddToEachElement', ModelType::class, [
                             'class' => 'App\Document\Option',
                             'required' => false,

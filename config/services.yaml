@@ -123,6 +123,7 @@ services:
           - { name: doctrine_mongodb.odm.event_listener, event: preFlush }
 
     App\EventListener\TaxonomyJsonGenerator:
+      public: true
       tags:
           - { name: doctrine_mongodb.odm.event_listener, event: postPersist }
           - { name: doctrine_mongodb.odm.event_listener, event: postFlush }

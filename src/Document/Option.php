@@ -25,7 +25,6 @@ class Option
 
     /**
      * @var string
-     * @Exclude
      * @MongoDB\Field(type="string")
      */
     private $customId;

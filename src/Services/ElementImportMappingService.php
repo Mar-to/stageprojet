@@ -9,8 +9,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 class ElementImportMappingService
 {
     protected $import;
-    protected $createMissingOptions;
-    protected $parentCategoryIdToCreateMissingOptions;
     protected $dm;
     protected $ontologyMapping;
     protected $collectedProps;
@@ -38,9 +36,6 @@ class ElementImportMappingService
     public function transform($data, $import)
     {
         $this->import = $import;
-        $this->createMissingOptions = $import->getCreateMissingOptions();
-        // $parent = $import->getParentCategoryToCreateOptions() ?: $this->dm->getRepository('App\Document\Category')->findOneByIsRootCategory(true);
-        $this->parentCategoryIdToCreateMissingOptions = null; //$parent ? $parent->getId() : null;
 
         // Execute custom code (the <?php is used to have proper code highliting in text editor, we remove it before executing)
         eval(str_replace('<?php', '', $import->getCustomCode()));
@@ -89,7 +84,7 @@ class ElementImportMappingService
                     $data[$key]['longitude'] = $row['geometry']['coordinates'][0];
                     unset($data[$key]['geometry']);
 
-                    if (isset($row['properties']) && is_assciative_array($row['properties'])) {
+                    if (isset($row['properties']) && is_associative_array($row['properties'])) {
                         foreach ($row['properties'] as $field => $value) {
                             $data[$key][$field] = $value;
                         }
@@ -160,7 +155,7 @@ class ElementImportMappingService
         foreach ($data as $row) {
             foreach ($row as $prop => $value) {
                 $this->collectProperty($prop, null, $import, $value);
-                if (is_assciative_array($value) && !in_array($prop, ['openHours', 'modifiedElement'])) {
+                if (is_associative_array($value) && !in_array($prop, ['openHours', 'modifiedElement'])) {
                     foreach ($value as $subprop => $subvalue) {
                         $this->collectProperty($subprop, $prop, $import, $subvalue);
                     }
@@ -275,13 +270,8 @@ class ElementImportMappingService
                             $allNewCategories[] = $category;
                         }
                         if ($category && !array_key_exists($category, $taxonomyMapping)) {
-                            $categorySlug = $this->slugify($category);
+                            $categorySlug = slugify($category);
                             $mappedCategoryId = array_key_exists($categorySlug, $this->mappingTableIds) ? $this->mappingTableIds[$categorySlug]['id'] : '';
-
-                            // create option if does not exist
-                            if ('' == $mappedCategoryId && $this->createMissingOptions) {
-                                $mappedCategoryId = $this->createOption($category);
-                            }
 
                             $taxonomyMapping[$category] = [
                                 'mappedCategoryIds' => [$mappedCategoryId],
@@ -294,14 +284,6 @@ class ElementImportMappingService
                         } else {
                             $taxonomyMapping[$category]['collectedCount']++;
                             $taxonomyMapping[$category]['fieldName'] = $originProp;
-                        }
-                        // create options for previously imported non mapped options
-                        if (array_key_exists($category, $taxonomyMapping)
-                            && (!$taxonomyMapping[$category]
-                                || '/' == $taxonomyMapping[$category]
-                                || '' == $taxonomyMapping[$category])
-                            && $this->createMissingOptions) {
-                            $taxonomyMapping[$category] = [$this->createOption($category)];
                         }
                     }
                 }
@@ -396,34 +378,32 @@ class ElementImportMappingService
     private function mapTaxonomy($data)
     {
         $mapping = $this->import->getTaxonomyMapping();
-        dump($mapping);
         foreach ($data as $key => $row) {
             if (isset($row['categories'])) {
-                $categories = [];
+                $elementCategories = [];
                 $categoriesIds = [];
-                foreach ($row['categories'] as $originProp => $categories) {
+                foreach ($row['categories'] as $fieldName => $categories) {
                     foreach($categories as $category) {
-                        $val = is_array($category) ? $category['name'] : $category;
-                        $val = ltrim(rtrim($val));
-                        if (isset($mapping[$val]['mappedCategoryIds']) && $mapping[$val]['mappedCategoryIds']) {
-                            foreach ($mapping[$val]['mappedCategoryIds'] as $mappedCategoryId) {
+                        $catName = is_array($category) ? $category['name'] : $category;
+                        $catName = ltrim(rtrim($catName));
+                        if (isset($mapping[$catName]['mappedCategoryIds']) && $mapping[$catName]['mappedCategoryIds']) {
+                            foreach ($mapping[$catName]['mappedCategoryIds'] as $mappedCategoryId) {
                                 if (array_key_exists($mappedCategoryId, $this->mappingTableIds)) {
-                                    $newcat['originalValue'] = $val;
-                                    $newcat['mappedName'] = $this->mappingTableIds[$mappedCategoryId]['name'];
-                                    $newcat['mappedId'] = $this->mappingTableIds[$mappedCategoryId]['id'];
-                                    if (!in_array($newcat['mappedId'], $categoriesIds)) {
+                                    $newcat['id'] = $this->mappingTableIds[$mappedCategoryId]['id'];
+                                    if (!in_array($newcat['id'], $categoriesIds)) {
                                         if (isset($category['index'])) {
                                             $newcat['index'] = $category['index'];
                                         }
                                         if (isset($category['description'])) {
                                             $newcat['description'] = $category['description'];
                                         }
-                                        $categories[] = $newcat;
-                                        $categoriesIds[] = $newcat['mappedId'];
+                                        $elementCategories[] = $newcat;
+                                        $categoriesIds[] = $newcat['id'];
                                         $parentIds = $this->mappingTableIds[$mappedCategoryId]['idAndParentsId'];
+                                        // Adds also the parent categories
                                         foreach ($parentIds as $id) {
                                             if (!in_array($id, $categoriesIds)) {
-                                                $categories[] = ['mappedId' => $id, 'info' => "Automatiquement ajoutée (category parente d'une category importée)"];
+                                                $categories[] = ['id' => $id, 'info' => "Automatiquement ajoutée (category parente d'une category importée)"];
                                                 $categoriesIds[] = $id;
                                             }
                                         }
@@ -433,7 +413,7 @@ class ElementImportMappingService
                         }
                     }
                 }
-                $data[$key]['categories'] = $categories;
+                $data[$key]['categories'] = $elementCategories;
             }
         }
 
@@ -452,67 +432,12 @@ class ElementImportMappingService
                 'name' => $option->getName(),
                 'idAndParentsId' => $option->getIdAndParentOptionIds(),
             ];
-            $this->mappingTableIds[$this->slugify($option->getNameWithParent())] = $ids;
-            $this->mappingTableIds[$this->slugify($option->getName())] = $ids;
+            $this->mappingTableIds[slugify($option->getNameWithParent())] = $ids;
+            $this->mappingTableIds[slugify($option->getName())] = $ids;
             $this->mappingTableIds[strval($option->getId())] = $ids;
             if ($option->getCustomId()) {
-                $this->mappingTableIds[$this->slugify($option->getCustomId())] = $ids;
+                $this->mappingTableIds[slugify($option->getCustomId())] = $ids;
             }
         }
-    }
-
-    private function createOption($name)
-    {
-        if ($this->parentCategoryIdToCreateMissingOptions) {
-            $parent = $this->dm->getRepository('App\Document\Category')->find($this->parentCategoryIdToCreateMissingOptions);
-        } else {
-            // create a default category
-            $mainCategory = new Category();
-            $mainCategory->setName('Catégories Principales');
-            $mainCategory->setPickingOptionText('Une catégorie principale');
-            $this->dm->persist($mainCategory);
-            $this->parentCategoryIdToCreateMissingOptions = $mainCategory->getId();
-            $parent = $mainCategory;
-        }
-
-        $option = new Option();
-        $option->setName($name);
-        $option->setParent($parent);
-        $option->setUseIconForMarker(false);
-        $option->setUseColorForMarker(false);
-        $this->dm->persist($option);
-        $this->createOptionsMappingTable([$option]);
-
-        return $option->getId();
-    }
-
-    private function slugify($text)
-    {
-        if (!is_string($text)) {
-            return;
-        }
-        // replace non letter or digits by -
-        $text = str_replace('é', 'e', $text);
-        $text = str_replace('è', 'e', $text);
-        $text = str_replace('ê', 'e', $text);
-        $text = str_replace('ô', 'o', $text);
-        $text = str_replace('ç', 'c', $text);
-        $text = str_replace('à', 'a', $text);
-        $text = str_replace('â', 'a', $text);
-        $text = str_replace('î', 'i', $text);
-        $text = preg_replace('~[^\pL\d]+~u', '-', $text);
-
-        $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text); // transliterate
-    $text = preg_replace('~[^-\w]+~', '', $text); // remove unwanted characters
-    $text = trim($text, '-'); // trim
-    $text = rtrim($text, 's'); // remove final "s" for plural
-    $text = preg_replace('~-+~', '-', $text); // remove duplicate -
-    $text = strtolower($text); // lowercase
-
-    if (empty($text)) {
-        return '';
-    }
-
-        return $text;
     }
 }

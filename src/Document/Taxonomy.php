@@ -24,8 +24,6 @@ class Taxonomy
      */
     private $optionsJson;
 
-    public $preventUpdate = false;
-
     /**
      * Get id.
      *

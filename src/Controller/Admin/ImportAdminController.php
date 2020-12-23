@@ -3,6 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\Document\ImportState;
+use App\Document\Option;
+use App\Document\Category;
 use App\Services\AsyncService;
 use App\Services\ElementImportService;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -115,11 +117,11 @@ class ImportAdminController extends Controller
             // persist if the form was valid and if in preview mode the preview was approved
             if ($isFormValid) {
                 try {
+                    $dm = $this->container->get('doctrine_mongodb')->getManager();
                     // ----- CUSTOM -------
                     // Fix ontology mapping for elements fields with reverse value
                     $ontology = $request->get('ontology');
-                    if ($ontology) {
-                        $dm = $this->container->get('doctrine_mongodb');
+                    if ($ontology) {                        
                         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
                         foreach($config->getElementFormFields() as $field) {
                             if ($field->type === 'elements'
@@ -136,14 +138,42 @@ class ImportAdminController extends Controller
 
                     // Taxonomy Mapping
                     if ($request->get('taxonomy')) {
-                        $taxonomy = array_map(function ($value) {
-                            $array = explode(',', $value[0]);
-                            return array_filter($array, function ($el) { return '/' != $el; });
-                        }, $request->get('taxonomy'));
+                        $currentTaxonomyMapping = $object->getTaxonomyMapping();
+                        $newTaxonomyMapping = $request->get('taxonomy');
+                        $categoriesCreated = [];
+                        foreach($newTaxonomyMapping as $originName => &$mappedCategories) {
+                            $mappedCategories = explode(',', $mappedCategories[0]);
+                            foreach($mappedCategories as $key => $category) {
+                                if (startsWith($category, '@create:')) {
+                                    $category = str_replace('@create:', '', $category);
+                                    $categoryId = strtolower($category);
+                                    if (array_key_exists($categoryId, $categoriesCreated)) {
+                                        $mappedCategories[$key] = $categoriesCreated[$categoryId];
+                                    } else {
+                                        $fieldName = $currentTaxonomyMapping[$originName]['fieldName'];
+                                        $parent = $dm->getRepository('App\Document\Category')->findOneByCustomId($fieldName);
+                                        if (!$parent) {
+                                            $parent = new Category();
+                                            $parent->setCustomId($fieldName);
+                                            $parent->setName($fieldName);
+                                        }
+                                        $newCat = new Option();
+                                        $newCat->setCustomId($categoryId);
+                                        $newCat->setName($category);
+                                        $newCat->setParent($parent);
+                                        $dm->persist($newCat);
+                                        $dm->flush();
+                                        // $dm->clear();
+                                        $categoriesCreated[$categoryId] = $newCat->getId();
+                                        $mappedCategories[$key] = $newCat->getId();
+                                    }                                    
+                                }
+                            }
+                        }
                     } else {
-                        $taxonomy = null;
+                        $newTaxonomyMapping = null;
                     }
-                    $object->setTaxonomyMapping($taxonomy);
+                    $object->setTaxonomyMapping($newTaxonomyMapping);
 
                     $object->setNewOntologyToMap(false);
                     $object->setNewTaxonomyToMap(false);
