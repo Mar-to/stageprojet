@@ -601,10 +601,25 @@ class Import extends AbstractFile
     /**
      * Get taxonomyMapping.
      *
-     * @return hash $taxonomyMapping
+     * @return array $taxonomyMapping
      */
     public function getTaxonomyMapping()
     {
+        // backward compatibility we used to save mappedObject as a simple categories Ids array
+        foreach($this->taxonomyMapping as &$mappedObject) {           
+            if (!is_assciative_array($mappedObject)) {
+                $mappedObject = [ 
+                    'mappedCategoryIds' => $mappedObject,
+                    'fieldName' => '',
+                    'collectedCount' => 0,                    
+                    'collectedPercent' => null
+                ];
+            }
+        }
+        ksort($this->taxonomyMapping);
+        uasort($this->taxonomyMapping, function($a,$b) {
+            return $a['fieldName'] < $b['fieldName'];
+        });
         return $this->taxonomyMapping;
     }
 

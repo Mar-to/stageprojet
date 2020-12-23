@@ -13,12 +13,20 @@
       </tr>
     </thead>
     <tbody class="table-striped">
-      {% for originName, mappedName in mapping %}
+      {% set currentFieldName = '' %}
+      {% for originName, mappedObject in mapping %}
+        {% if mappedObject.fieldName and mappedObject.fieldName != currentFieldName %}
+          {% set currentFieldName = mappedObject.fieldName %}
+          <tr>
+            <td class="category-group"><label>Groupe "{{ mappedObject.fieldName|capitalize }}"</label></td>
+            <td colspan="3"></td>
+          </tr>
+        {% endif %}
         <tr>
           <td class="original">{{originName}}</td>
-          <td>></td>
+          <td></td>
           <td class="mapped">
-            <input type="text" name="taxonomy[{{originName}}][]" class="form-control category-selector" value="{{mappedName|join(',')}}"/>
+            <input type="text" name="taxonomy[{{originName}}][]" class="form-control category-selector" value="{{mappedObject.mappedCategoryIds|join(',')}}"/>
           </td>
           <td><i class="clear-icon fa fa-ban" title="Ne pas utiliser cette catégorie"></i></td>
         </tr>
@@ -67,3 +75,9 @@
 
   });
 </script>
+
+<style>
+  td.category-group {
+    text-transform: uppercase;
+  }
+</style>

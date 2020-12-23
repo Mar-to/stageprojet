@@ -89,7 +89,7 @@ class ElementImportMappingService
                     $data[$key]['longitude'] = $row['geometry']['coordinates'][0];
                     unset($data[$key]['geometry']);
 
-                    if (isset($row['properties']) && $this->isAssociativeArray($row['properties'])) {
+                    if (isset($row['properties']) && is_assciative_array($row['properties'])) {
                         foreach ($row['properties'] as $field => $value) {
                             $data[$key][$field] = $value;
                         }
@@ -160,7 +160,7 @@ class ElementImportMappingService
         foreach ($data as $row) {
             foreach ($row as $prop => $value) {
                 $this->collectProperty($prop, null, $import, $value);
-                if ($this->isAssociativeArray($value) && !in_array($prop, ['openHours', 'modifiedElement'])) {
+                if (is_assciative_array($value) && !in_array($prop, ['openHours', 'modifiedElement'])) {
                     foreach ($value as $subprop => $subvalue) {
                         $this->collectProperty($subprop, $prop, $import, $subvalue);
                     }
@@ -247,28 +247,14 @@ class ElementImportMappingService
         }
     }
 
-    private function isAssociativeArray($a)
-    {
-        if (!is_array($a)) {
-            return false;
-        }
-        foreach (array_keys($a) as $key) {
-            if (!is_int($key)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public function collectTaxonomy($data, $import)
     {
         $taxonomyMapping = $import->getTaxonomyMapping();
         // delete obsolte mapping (if an option have been deleted, but is still in the mapping)
         $allOptionsIds = array_keys($this->dm->createQueryBuilder('App\Document\Option')->select('id')
                                 ->hydrate(false)->getQuery()->execute()->toArray());
-        foreach ($taxonomyMapping as $key => $value) {
-            $taxonomyMapping[$key] = array_filter($value, function ($el) use ($allOptionsIds) {
+        foreach ($taxonomyMapping as $key => $mappedObject) {
+            $taxonomyMapping[$key]['mappedCategoryIds'] = array_filter($mappedObject['mappedCategoryIds'], function ($el) use ($allOptionsIds) {
                 return in_array($el, $allOptionsIds);
             });
         }
@@ -277,38 +263,46 @@ class ElementImportMappingService
         $this->createOptionsMappingTable();
         foreach ($data as $row) {
             if (isset($row['categories'])) {
-                $categories = $row['categories'];
-                $categories = is_array($categories) ? $categories : preg_split("[,;]+/", $categories);
-                foreach ($categories as $category) {
-                    if (is_array($category)) {
-                        $category = $category['name'];
-                    }
-                    $category = ltrim(rtrim($category));
-                    $category = str_replace('.', '_', $category);
-                    if (!in_array($category, $allNewCategories)) {
-                        $allNewCategories[] = $category;
-                    }
-                    if ($category && !array_key_exists($category, $taxonomyMapping)) {
-                        $categorySlug = $this->slugify($category);
-                        $value = array_key_exists($categorySlug, $this->mappingTableIds) ? $this->mappingTableIds[$categorySlug]['id'] : '';
-
-                        // create option if does not exist
-                        if ('' == $value && $this->createMissingOptions) {
-                            $value = $this->createOption($category);
+                foreach($row['categories'] as $originProp => $categories) {
+                    $categories = is_array($categories) ? $categories : preg_split("[,;]+/", $categories);
+                    foreach ($categories as $category) {
+                        if (is_array($category)) {
+                            $category = $category['name'];
                         }
-
-                        $taxonomyMapping[$category] = [$value];
-                        if (!$value) {
-                            $import->setNewTaxonomyToMap(true);
+                        $category = ltrim(rtrim($category));
+                        $category = str_replace('.', '_', $category);
+                        if (!in_array($category, $allNewCategories)) {
+                            $allNewCategories[] = $category;
                         }
-                    }
-                    // create options for previously imported non mapped options
-                    if (array_key_exists($category, $taxonomyMapping)
-                        && (!$taxonomyMapping[$category]
-                            || '/' == $taxonomyMapping[$category]
-                            || '' == $taxonomyMapping[$category])
-                        && $this->createMissingOptions) {
-                        $taxonomyMapping[$category] = [$this->createOption($category)];
+                        if ($category && !array_key_exists($category, $taxonomyMapping)) {
+                            $categorySlug = $this->slugify($category);
+                            $mappedCategoryId = array_key_exists($categorySlug, $this->mappingTableIds) ? $this->mappingTableIds[$categorySlug]['id'] : '';
+
+                            // create option if does not exist
+                            if ('' == $mappedCategoryId && $this->createMissingOptions) {
+                                $mappedCategoryId = $this->createOption($category);
+                            }
+
+                            $taxonomyMapping[$category] = [
+                                'mappedCategoryIds' => [$mappedCategoryId],
+                                'collectedCount' => 1,
+                                'fieldName' => $originProp
+                            ];
+                            if (!$mappedCategoryId) {
+                                $import->setNewTaxonomyToMap(true);
+                            }
+                        } else {
+                            $taxonomyMapping[$category]['collectedCount']++;
+                            $taxonomyMapping[$category]['fieldName'] = $originProp;
+                        }
+                        // create options for previously imported non mapped options
+                        if (array_key_exists($category, $taxonomyMapping)
+                            && (!$taxonomyMapping[$category]
+                                || '/' == $taxonomyMapping[$category]
+                                || '' == $taxonomyMapping[$category])
+                            && $this->createMissingOptions) {
+                            $taxonomyMapping[$category] = [$this->createOption($category)];
+                        }
                     }
                 }
             }
@@ -318,6 +312,9 @@ class ElementImportMappingService
             if (!in_array($category, $allNewCategories)) {
                 unset($taxonomyMapping[$category]);
             }
+        }
+        foreach($taxonomyMapping as &$mappedObject) {
+            $mappedObject['collectedPercent'] = $mappedObject['collectedCount'] / count($data) * 100;
         }
         $import->setTaxonomyMapping($taxonomyMapping);
     }
@@ -341,13 +338,13 @@ class ElementImportMappingService
                     $prop = $explodedProp[0];
                     $subProp = $explodedProp[1];
                     if (!in_array($mappedProp, ['/', '']) && isset($row[$prop]) && isset($row[$prop][$subProp])) {
-                        $newRow = $this->mapProperty($newRow, $mappedProp, $row[$prop][$subProp]);
+                        $newRow = $this->mapProperty($newRow, $mappedProp, $subProp, $row[$prop][$subProp]);
                     }
                 }
                 // Map standard properties
                 if (1 == count($explodedProp)) {
                     if (!in_array($mappedProp, ['/', '']) && isset($row[$prop])) {
-                        $newRow = $this->mapProperty($newRow, $mappedProp, $row[$prop]);
+                        $newRow = $this->mapProperty($newRow, $mappedProp, $prop, $row[$prop]);
                     }
                 }
             }
@@ -377,16 +374,15 @@ class ElementImportMappingService
         return $data;
     }
 
-    // map $value inside $mappedProp attribute
-    private function mapProperty($newRow, $mappedProp, $value)
+    // oldRow have $prop => $value. newRow will have $mappedProp => $value
+    private function mapProperty($newRow, $mappedProp, $prop, $value)
     {
-        // We allow that multiple keys maps to categories. In this case they will be concatenated
-        if ('categories' == $mappedProp) {
-            if (is_string($value)) {
-                $value = preg_split('/[,;]+/', $value);
-            }
+        // We allow mapping multiple fields to "categories", and we remember
+        // here which fields gave which categories
+        if ('categories' == $mappedProp) {            
+            if (is_string($value)) $value = preg_split('/[,;]+/', $value); // convert to Array          
             $oldVal = isset($newRow[$mappedProp]) ? $newRow[$mappedProp] : [];
-            $value = array_merge($oldVal, $value);
+            $value = array_merge($oldVal, [$prop => $value]);
         }
 
         // replacing existing value only if not set, or if categories because values have been merged
@@ -400,33 +396,36 @@ class ElementImportMappingService
     private function mapTaxonomy($data)
     {
         $mapping = $this->import->getTaxonomyMapping();
+        dump($mapping);
         foreach ($data as $key => $row) {
-            if (isset($data[$key]['categories'])) {
+            if (isset($row['categories'])) {
                 $categories = [];
                 $categoriesIds = [];
-                foreach ($row['categories'] as $category) {
-                    $val = is_array($category) ? $category['name'] : $category;
-                    $val = ltrim(rtrim($val));
-                    if (isset($mapping[$val]) && $mapping[$val]) {
-                        foreach ($mapping[$val] as $mappedCategory) {
-                            if (array_key_exists($mappedCategory, $this->mappingTableIds)) {
-                                $newcat['originalValue'] = $val;
-                                $newcat['mappedName'] = $this->mappingTableIds[$mappedCategory]['name'];
-                                $newcat['mappedId'] = $this->mappingTableIds[$mappedCategory]['id'];
-                                if (!in_array($newcat['mappedId'], $categoriesIds)) {
-                                    if (isset($category['index'])) {
-                                        $newcat['index'] = $category['index'];
-                                    }
-                                    if (isset($category['description'])) {
-                                        $newcat['description'] = $category['description'];
-                                    }
-                                    $categories[] = $newcat;
-                                    $categoriesIds[] = $newcat['mappedId'];
-                                    $parentIds = $this->mappingTableIds[$mappedCategory]['idAndParentsId'];
-                                    foreach ($parentIds as $id) {
-                                        if (!in_array($id, $categoriesIds)) {
-                                            $categories[] = ['mappedId' => $id, 'info' => "Automatiquement ajoutée (category parente d'une category importée)"];
-                                            $categoriesIds[] = $id;
+                foreach ($row['categories'] as $originProp => $categories) {
+                    foreach($categories as $category) {
+                        $val = is_array($category) ? $category['name'] : $category;
+                        $val = ltrim(rtrim($val));
+                        if (isset($mapping[$val]['mappedCategoryIds']) && $mapping[$val]['mappedCategoryIds']) {
+                            foreach ($mapping[$val]['mappedCategoryIds'] as $mappedCategoryId) {
+                                if (array_key_exists($mappedCategoryId, $this->mappingTableIds)) {
+                                    $newcat['originalValue'] = $val;
+                                    $newcat['mappedName'] = $this->mappingTableIds[$mappedCategoryId]['name'];
+                                    $newcat['mappedId'] = $this->mappingTableIds[$mappedCategoryId]['id'];
+                                    if (!in_array($newcat['mappedId'], $categoriesIds)) {
+                                        if (isset($category['index'])) {
+                                            $newcat['index'] = $category['index'];
+                                        }
+                                        if (isset($category['description'])) {
+                                            $newcat['description'] = $category['description'];
+                                        }
+                                        $categories[] = $newcat;
+                                        $categoriesIds[] = $newcat['mappedId'];
+                                        $parentIds = $this->mappingTableIds[$mappedCategoryId]['idAndParentsId'];
+                                        foreach ($parentIds as $id) {
+                                            if (!in_array($id, $categoriesIds)) {
+                                                $categories[] = ['mappedId' => $id, 'info' => "Automatiquement ajoutée (category parente d'une category importée)"];
+                                                $categoriesIds[] = $id;
+                                            }
                                         }
                                     }
                                 }

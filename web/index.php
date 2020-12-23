@@ -20,6 +20,13 @@ if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? $_ENV['TRUSTED_HOSTS'] ?? false
     Request::setTrustedHosts([$trustedHosts]);
 }
 
+// Global methods
+function is_assciative_array($a) {
+    if (!is_array($a)) return false;
+    foreach (array_keys($a) as $key) { if (!is_int($key)) return true;  }
+    return false;
+}
+
 $kernel = new Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG']);
 $request = Request::createFromGlobals();
 $response = $kernel->handle($request);
