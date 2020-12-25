@@ -181,7 +181,7 @@
       $row.find('.clear-icon').toggle(newVal != '/')
       $row.find('.field-info').removeClass('label-primary label-info label-success')
       var text = '', type = '', title = ''
-      if (coreData.concat(formProperties).map(el => el.id).indexOf(newVal) > -1) {
+      if (coreData.map(el => el.id).concat(formProperties).indexOf(newVal) > -1) {
         text = "Éditable"
         type = "info"
         title = "Ce champ sera éditable dans le formulaire public"
