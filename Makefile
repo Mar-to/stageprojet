@@ -4,7 +4,6 @@ PROJECT       = app
 EXEC_PHP      = php
 SYMFONY       = $(EXEC_PHP) bin/console
 COMPOSER      = composer
-NPM           = npm
 GIT           = git
 GULP          = gulp
 YARN          = yarn
@@ -51,9 +50,9 @@ install-assets: ## Install the assets
 purge: ## Purge cache and logs
 	rm -rf var/cache/* var/log/*
 
-## —— npm —————————————————
-npm-install: package-lock.json ## Install npm vendors according to the current package-lock.json file
-	$(NPM) install
+## —— Yarn —————————————————
+yarn-install: yarn.lock ## Install npm vendors according to the current yarn.lock file
+	$(YARN) install
 
 build: ## Build the assets
 	$(GULP) build
@@ -85,7 +84,7 @@ commands: ## Display all commands in the project namespace
 
 init: install assets load-fixtures fix-perms ## Initialize the project
 
-install: composer-install npm-install ## Install vendors
+install: composer-install yarn-install ## Install vendors
 
 assets: install-assets build ## Install and build the assets
 
@@ -111,7 +110,7 @@ cs-fix: ## Run php-cs-fixer and fix the code
 gogo-update: ## Update a PROD server to the lastest version of gogocarto
 	$(GIT) reset --hard master
 	$(GIT) pull origin master
-	$(NPM) install
+	$(YARN) install
 	$(GULP) build
 	$(GULP) production
 	$(YARN) encore production
