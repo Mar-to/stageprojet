@@ -1,7 +1,7 @@
 <template>
     <a :href="url" v-if="condition.key" class="btn btn-default btn-icon" 
             target="_blank" :title="title">
-            <i class="fa fa-external-link-square"></i>
+            <i class="fa fa-external-link-square fas fa-external-link-square-alt"></i>
     </a>
 </template>
 

@@ -5,7 +5,7 @@
         <input type="text" class="form-control" ref="inputKey" v-model="condition.key"
                     placeholder="Chercher une clé"/>
         
-        <select data-sonata-select2="false" class="form-control" ref="selectOperator" 
+        <select data-sonata-select2="false" class="condition-operator form-control" ref="selectOperator" 
                 v-model="condition.operator" placeholder="Condition...">
             <option value="">Existe</option>
             <option value="!">N'existe pas</option>

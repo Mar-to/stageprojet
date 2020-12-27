@@ -180,6 +180,12 @@ class Option
      */
     private $subcategories;
 
+    /** 
+    * OpenStreetMap Tags : { amenity: shop, key: value }
+    * @MongoDB\Field(type="hash") 
+    */
+    private $osmTags = [];
+
     public function __construct()
     {
         $this->subcategories = new \Doctrine\Common\Collections\ArrayCollection();
@@ -914,5 +920,41 @@ class Option
     public function getUrl()
     {
         return $this->url;
+    }
+
+    /**
+     * Get the value of osmTags
+     */ 
+    public function getOsmTags()
+    {
+        return $this->osmTags;
+    }
+
+    /**
+     * Set the value of osmTags
+     *
+     * @return  self
+     */ 
+    public function setOsmTags($osmTags)
+    {
+        if (is_string($osmTags)) {
+            $osmTags = (array) json_decode($osmTags);
+        }
+        $this->osmTags = $osmTags;
+        return $this;
+    }
+
+    public function setOsmTag($key, $value)
+    {
+        $this->osmTags[$key] = $value;
+        return $this;
+    }
+
+    public function getOsmTagsStringified() {
+        $result = "";
+        foreach($this->getOsmTags() as $key => $value) {
+            $result .= "[$key=$value]";
+        }
+        return $result;
     }
 }

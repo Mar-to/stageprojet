@@ -102,6 +102,11 @@ class ImportDynamic extends Import
         return $this->osmQueriesJson ?? '{"queries": [], "address": "", "bounds": null}';
     }
 
+    public function getOsmQueries()
+    {
+        return json_decode($this->getOsmQueriesJson())->queries;
+    }
+
     public function setOsmQueriesJson($json) 
     {
         $this->osmQueriesJson = $json;

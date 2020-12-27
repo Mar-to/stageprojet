@@ -15,6 +15,7 @@ use Sonata\AdminBundle\Form\Type\ModelType;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Form\Type\CollectionType;
 use App\Form\CategoryLiteType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class OptionAdmin extends AbstractAdmin
 {
@@ -95,6 +96,10 @@ class OptionAdmin extends AbstractAdmin
             ->add('displayChildrenInMenu', null, ['required' => false, 'label' => 'Dans le menu'])
             ->add('displayChildrenInInfoBar', null, ['required' => false, 'label' => 'Dans la fiche détail'])
             ->add('displayChildrenInForm', null, ['required' => false, 'label' => 'Dans le formulaire'])
+         ->end()
+
+         ->with('Lien avec OpenStreetMap', ['class' => 'col-xs-12 col-md-6', 'box_class' => 'box'])
+            ->add('osmTags', TextType::class, ['required' => false, 'label' => 'Liste de tags OSM', 'attr' => ['class' => 'gogo-osm-tags'], 'label_attr' => ['title' => "Lors d'un export OSM, chaque élément qui aura cette catégorie se verra attribué le tag OSM correspondant"]])
          ->end()
       ->end()
       ;

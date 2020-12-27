@@ -159,11 +159,12 @@ class ImportAdminController extends Controller
                                         }
                                         $newCat = new Option();
                                         $newCat->setCustomId($categoryId);
+                                        if ($object->getSourceType() == 'osm')
+                                            $newCat->setOsmTag($fieldName, $categoryId);
                                         $newCat->setName($category);
                                         $newCat->setParent($parent);
                                         $dm->persist($newCat);
                                         $dm->flush();
-                                        // $dm->clear();
                                         $categoriesCreated[$categoryId] = $newCat->getId();
                                         $mappedCategories[$key] = $newCat->getId();
                                     }                                    
@@ -174,6 +175,20 @@ class ImportAdminController extends Controller
                         $newTaxonomyMapping = null;
                     }
                     $object->setTaxonomyMapping($newTaxonomyMapping);
+
+                    // update option OSM tags of OptionstoAddToEachElement
+                    // For example if the Osm query is "get OSM node with tag amenity=restaurant
+                    // And if we decide to add a category to all those OSM node, then it means
+                    // that this category reflect the OSM tag "amenity=restaurant"
+                    if ($object->getSourceType() == 'osm' && count($object->getOsmQueries()) == 1) {
+                        foreach($object->getOptionsToAddToEachElement() as $option) {
+                            foreach($object->getOsmQueries()[0] as $condition) {
+                                if (in_array($condition->operator, ['='])) {
+                                    $option->setOsmTag($condition->key, $condition->value);
+                                }
+                            }                            
+                        }
+                    }
 
                     $object->setNewOntologyToMap(false);
                     $object->setNewTaxonomyToMap(false);

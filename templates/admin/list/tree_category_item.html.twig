@@ -23,6 +23,7 @@
           <span class="name">{{ option.name }}</span>
           {% if not option.displayInForm or not option.displayInMenu %}<span class="fa fa-eye-slash"></span>{% endif %}
           <span style="opacity: .6;">( {{ option.customStringId }} )</span>
+          <span style="opacity: .6;"> {{ option.osmTagsStringified }} </span>
 	      	{% if option.subcategories|length and not option.unexpandable %}<span class="arrow-after"></span>{% endif %}
       	</span>
       	<span class="actions">
