@@ -118,7 +118,7 @@ class ImportAdminController extends Controller
             if ($isFormValid) {
                 try {
                     $dm = $this->container->get('doctrine_mongodb')->getManager();
-                    // ----- CUSTOM -------
+                    
                     // Fix ontology mapping for elements fields with reverse value
                     $ontology = $request->get('ontology');
                     if ($ontology) {                        
@@ -144,6 +144,7 @@ class ImportAdminController extends Controller
                         foreach($newTaxonomyMapping as $originName => &$mappedCategories) {
                             $mappedCategories = explode(',', $mappedCategories[0]);
                             foreach($mappedCategories as $key => $category) {
+                                // Create categories filled by user
                                 if (startsWith($category, '@create:')) {
                                     $category = str_replace('@create:', '', $category);
                                     $categoryId = strtolower($category);
@@ -193,11 +194,11 @@ class ImportAdminController extends Controller
                     $object->setNewOntologyToMap(false);
                     $object->setNewTaxonomyToMap(false);
 
-                    // ---- END CUSTOM ------
-
+                    $oldUpdatedAt = $object->getMainConfigUpdatedAt();
                     $object = $this->admin->update($object);
 
-                    if ($request->get('collect')) {
+                    // auto collect data if the import config have changed
+                    if ($request->get('collect') || $oldUpdatedAt != $object->getMainConfigUpdatedAt()) {
                         $url = $this->admin->generateUrl('collect', ['id' => $object->getId()]);
                     } elseif ($request->get('import')) {
                         $url = $this->admin->generateUrl('refresh', ['id' => $object->getId()]);
@@ -259,8 +260,6 @@ class ImportAdminController extends Controller
         // the key used to lookup the template
         $templateKey = 'edit';
         $this->admin->checkAccess('create');
-        $class = new \ReflectionClass($this->admin->hasActiveSubClass() ? $this->admin->getActiveSubClass() : $this->admin->getClass());
-
         $object = $this->admin->getNewInstance();
 
         $this->admin->setSubject($object);
@@ -270,10 +269,6 @@ class ImportAdminController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
-            //TODO: remove this check for 4.0
-            if (method_exists($this->admin, 'preValidate')) {
-                $this->admin->preValidate($object);
-            }
             $isFormValid = $form->isValid();
 
             // persist if the form was valid and if in preview mode the preview was approved
@@ -318,6 +313,6 @@ class ImportAdminController extends Controller
           'action' => 'create',
           'form' => $view,
           'object' => $object,
-      ], null);
+        ], null);
     }
 }

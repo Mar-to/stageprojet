@@ -154,9 +154,9 @@ class Import extends AbstractFile
 
     /**
      * @MongoDB\Field(type="date")
-     * @Gedmo\Timestampable(on="update")
+     * @Gedmo\Timestampable(on="change", field={"customCode", "ontologyMapping", "url", "sourceType", "file", "osmQueriesJson"})
      */
-    private $updatedAt;
+    private $mainConfigUpdatedAt;
 
     public function __construct()
     {
@@ -713,5 +713,25 @@ class Import extends AbstractFile
     public function getPreventImportIfNoCategories()
     {
         return $this->preventImportIfNoCategories;
+    }
+
+    /**
+     * Get the value of mainConfigUpdatedAt
+     */ 
+    public function getMainConfigUpdatedAt()
+    {
+        return $this->mainConfigUpdatedAt;
+    }
+
+    /**
+     * Set the value of mainConfigUpdatedAt
+     *
+     * @return  self
+     */ 
+    public function setMainConfigUpdatedAt($mainConfigUpdatedAt)
+    {
+        $this->mainConfigUpdatedAt = $mainConfigUpdatedAt;
+
+        return $this;
     }
 }

@@ -8,7 +8,9 @@
     <p>Dernier import : {{ object.lastRefresh|date('d/m/Y') }}</p>
   {% endif %}
 
-  <button type="submit" class="btn btn-success" name="submit"><i class="fa fa-save" aria-hidden="true"></i>Sauvegarder</button>
+  <button type="submit" class="btn btn-success" name="submit">
+    <i class="fa fa-save" aria-hidden="true"></i>Sauvegarder
+  </button>
 
   {% if object.id != "" and object.ontologyMapping|length > 0 %}
     <button type="submit" class="btn btn-primary" name="import" value="import">
@@ -28,14 +30,44 @@
       <i class="fa fa-eye" aria-hidden="true"></i>Lire les données
     </button>
   {% endif %}
-  <a href="{{ admin.generateObjectUrl('list', object) }}" class="btn btn-default view_link">
-    <i class="fa fa-list" aria-hidden="true"></i>Retour à la liste
-  </a>
   {% if object.id != "" %}
     <a href="{{ admin.generateObjectUrl('delete', object) }}" class="btn btn-danger view_link">
       <i class="fa fa-trash" aria-hidden="true"></i>Supprimer (ainsi que tous les éléments importés)
     </a>
   {% endif %}
 
-{% endblock %}
+  <div class="save-overlay">
+    <div class="save-overlay-content">
+      <p>Sauvegarde et lecture des données en cours...</p>
+      <i class="loading-icon fa fa-spinner fa-spin"></i>
+    </div>
+  </div>
 
+  <script>
+    $(document).on('ready', function() {
+      $('[name=submit], [name=collect]').click(() => $('.save-overlay').show());
+    })
+  </script>
+
+  <style>
+    .save-overlay {
+      display: none;
+      z-index: 500;
+      position: fixed;
+      top: 0; bottom: 0; right: 0; left: 0;
+      background-color: #222c32b8;
+    }
+    .save-overlay-content {
+      position: absolute;
+      top: 40%; left: 0; right: 0;
+      text-align: center;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .save-overlay .loading-icon {
+      font-size: 35px;
+    }
+  </style>
+
+{% endblock %}
