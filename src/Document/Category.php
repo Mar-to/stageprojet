@@ -65,7 +65,7 @@ class Category
      * @Exclude(if="object.getIsMandatory() == true")
      * @MongoDB\Field(type="boolean")
      */
-    private $isMandatory = true;
+    private $isMandatory = false;
 
     /**
      * @var bool
