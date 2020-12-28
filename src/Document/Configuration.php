@@ -13,6 +13,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Gedmo\Mapping\Annotation as Gedmo;
 use OzdemirBurak\Iris\Color\Hex;
 use OzdemirBurak\Iris\Color\Rgba;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * Main Configuration.
@@ -503,6 +505,33 @@ class Configuration implements \JsonSerializable
             if (isset($filter->field)) $compactFields[] = $filter->field;
         }
         return array_unique($compactFields);
+    }
+
+    /**
+     * @Assert\Callback
+     */
+    public function validate(ExecutionContextInterface $context)
+    {
+        $this->validateTemplateOnlyUsePublicProperties($context, $this->getInfobar()->getHeaderTemplate(), 'infobar.headerTemplate');
+        $this->validateTemplateOnlyUsePublicProperties($context, $this->getInfobar()->getBodyTemplate(), 'infobar.bodyTemplate');
+        $this->validateTemplateOnlyUsePublicProperties($context, $this->getMarker()->getPopupTemplate(), 'marker.popupTemplate');
+    }
+
+    private function validateTemplateOnlyUsePublicProperties($context, $template, $path)
+    {
+        $fieldsUsed = extractFieldsUsedInTemplate($template);
+        $privateProps = $this->getApi()->getPublicApiPrivateProperties();
+        $privateFieldsUsed = array_intersect($fieldsUsed, $privateProps);
+        // the email field can be here because it will be replaced by a button to send email
+        $privateFieldsUsed = array_diff($privateFieldsUsed, ['email']);
+        if (count($privateFieldsUsed) > 0) {
+            $fieldsList = strtoupper(implode(', ', $privateFieldsUsed));
+            $context->buildViolation("Les champs \"$fieldsList\" ont été configuré pour ne pas être partagés. Vous ne pouvez pas les utiliser dans la fiche détail. Pour changer la configuration allez dans : Autre Configuration / API")
+                ->atPath($path)
+                ->addViolation()
+            ;
+        }
+        
     }
 
     /**

@@ -44,3 +44,14 @@ function slugify($text) {
 
     return $text;
 }
+
+function extractFieldsUsedInTemplate($string) {
+    $matches = [];
+    preg_match_all('/{{\s*([\w_]*)\s*|[^{}]*}}/', $string, $matches);
+    return array_unique(array_filter(array_map(function ($fieldName) {
+        if ('image' == $fieldName) {
+            $fieldName = 'images';
+        }
+        return $fieldName;
+    }, $matches[1])));
+}

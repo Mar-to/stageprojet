@@ -28,16 +28,7 @@ class ConfigurationMarker
     // Those fields will be used in element compact Json
     public function updateFieldsUsedByTemplate()
     {
-        $matches = [];
-        preg_match_all('/({{\s*[\w_|]*\s*}})/', $this->popupTemplate, $matches);
-        $newFields = array_map(function ($match) {
-            $fieldName = explode('|', preg_replace('/[{}\s]/', '', $match))[0];
-            if ('image' == $fieldName) {
-                $fieldName = 'images';
-            }
-
-            return $fieldName;
-        }, $matches[0]);
+        $newFields = extractFieldsUsedInTemplate($this->popupTemplate);
         $oldFields = $this->fieldsUsedByTemplate;
 
         // if new fields different from old fields (order si not important)
