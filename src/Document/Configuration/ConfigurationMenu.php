@@ -208,7 +208,7 @@ class ConfigurationMenu
     }
     public function getFilters() {
         $result = json_decode($this->getFiltersJson());
-        if (!is_array($result)) return [];
+        if (!is_array($result)) return [["type"=>"taxonomy","label"=>"Filtre Catégories"]];
         return $result;
     }
 }

@@ -51,145 +51,145 @@ class GoGoCartoJsService
         }
 
         $result = [
-      'security' => [
-          'userRoles' => $userGogocartoRole,
-          'userEmail' => $userEmail,
-          'loginAction' => '$("#popup-login").openModal();',
-      ],
-      'language' => 'fr',
-      'translations' => [
-          'element' => $config->getElementDisplayName(),
-          'element.definite' => $config->getElementDisplayNameDefinite(),
-          'element.indefinite' => $config->getElementDisplayNameIndefinite(),
-          'element.plural' => $config->getElementDisplayNamePlural(),
-          'collaborative.moderation.paragaphs' => $config->getCollaborativeModerationExplanations(),
-      ],
-      'menu' => [
-          'width' => $config->getMenu()->getWidth(),
-          'smallWidthStyle' => $config->getMenu()->getSmallWidthStyle(),
-          'showOnePanePerMainOption' => $config->getMenu()->getShowOnePanePerMainOption(),
-          'showCheckboxForMainFilterPane' => $config->getMenu()->getShowCheckboxForMainFilterPane(),
-          'showCheckboxForSubFilterPane' => $config->getMenu()->getShowCheckboxForSubFilterPane(),
-          'displayNumberOfElementForEachCategory' => $config->getMenu()->getDisplayNumberOfElementForEachCategory(),
-          'displayNumberOfElementRoundResults' => $config->getMenu()->getDisplayNumberOfElementRoundResults(),
-          'filters' => json_decode($config->getMenu()->getFiltersJson())
-      ],
-      'infobar' => [
-          'width' => $config->getInfobar()->getWidth(),
-          'headerTemplate' => [
-              'content' => $config->getInfobar()->getHeaderTemplate(),
-              'isMarkdown' => $config->getInfobar()->getHeaderTemplateUseMarkdown(),
-          ],
-          'bodyTemplate' => [
-              'content' => $config->getInfobar()->getBodyTemplate(),
-              'isMarkdown' => $config->getInfobar()->getBodyTemplateUseMarkdown(),
-          ],
-      ],
-      'map' => [
-          'defaultBounds' => $config->getDefaultBounds(),
-          'defaultTileLayer' => $config->getDefaultTileLayer()->getName(),
-          'tileLayers' => $tileLayers,
-          'saveViewportInCookies' => $config->getSaveViewportInCookies(),
-          'saveTileLayerInCookies' => $config->getSaveTileLayerInCookies(),
-          'useClusters' => $config->getMarker()->getUseClusters(),
-      ],
-      'marker' => [
-          'displayPopup' => $config->getMarker()->getDisplayPopup(),
-          'popupAlwaysVisible' => $config->getMarker()->getPopupAlwaysVisible(),
-          'popupTemplate' => [
-              'content' => $config->getMarker()->getPopupTemplate(),
-              'isMarkdown' => $config->getMarker()->getPopupTemplateUseMarkdown(),
-          ],
-      ],
-      'theme' => $config->getTheme(),
-      'colors' => [
-          'text' => $config->getTextColor(),
-          'primary' => $config->getPrimaryColor(),
+            'security' => [
+                'userRoles' => $userGogocartoRole,
+                'userEmail' => $userEmail,
+                'loginAction' => '$("#popup-login").openModal();',
+            ],
+            'language' => 'fr',
+            'translations' => [
+                'element' => $config->getElementDisplayName(),
+                'element.definite' => $config->getElementDisplayNameDefinite(),
+                'element.indefinite' => $config->getElementDisplayNameIndefinite(),
+                'element.plural' => $config->getElementDisplayNamePlural(),
+                'collaborative.moderation.paragaphs' => $config->getCollaborativeModerationExplanations(),
+            ],
+            'menu' => [
+                'width' => $config->getMenu()->getWidth(),
+                'smallWidthStyle' => $config->getMenu()->getSmallWidthStyle(),
+                'showOnePanePerMainOption' => $config->getMenu()->getShowOnePanePerMainOption(),
+                'showCheckboxForMainFilterPane' => $config->getMenu()->getShowCheckboxForMainFilterPane(),
+                'showCheckboxForSubFilterPane' => $config->getMenu()->getShowCheckboxForSubFilterPane(),
+                'displayNumberOfElementForEachCategory' => $config->getMenu()->getDisplayNumberOfElementForEachCategory(),
+                'displayNumberOfElementRoundResults' => $config->getMenu()->getDisplayNumberOfElementRoundResults(),
+                'filters' => $config->getMenu()->getFilters()
+            ],
+            'infobar' => [
+                'width' => $config->getInfobar()->getWidth(),
+                'headerTemplate' => [
+                    'content' => $config->getInfobar()->getHeaderTemplate(),
+                    'isMarkdown' => $config->getInfobar()->getHeaderTemplateUseMarkdown(),
+                ],
+                'bodyTemplate' => [
+                    'content' => $config->getInfobar()->getBodyTemplate(),
+                    'isMarkdown' => $config->getInfobar()->getBodyTemplateUseMarkdown(),
+                ],
+            ],
+            'map' => [
+                'defaultBounds' => $config->getDefaultBounds(),
+                'defaultTileLayer' => $config->getDefaultTileLayer()->getName(),
+                'tileLayers' => $tileLayers,
+                'saveViewportInCookies' => $config->getSaveViewportInCookies(),
+                'saveTileLayerInCookies' => $config->getSaveTileLayerInCookies(),
+                'useClusters' => $config->getMarker()->getUseClusters(),
+            ],
+            'marker' => [
+                'displayPopup' => $config->getMarker()->getDisplayPopup(),
+                'popupAlwaysVisible' => $config->getMarker()->getPopupAlwaysVisible(),
+                'popupTemplate' => [
+                    'content' => $config->getMarker()->getPopupTemplate(),
+                    'isMarkdown' => $config->getMarker()->getPopupTemplateUseMarkdown(),
+                ],
+            ],
+            'theme' => $config->getTheme(),
+            'colors' => [
+                'text' => $config->getTextColor(),
+                'primary' => $config->getPrimaryColor(),
 
-          // Optional colors
-          'secondary' => $config->getDefaultSecondaryColor(),
-          'background' => $config->getDefaultBackgroundColor(),
-          'searchBar' => $config->getDefaultSearchBarColor(),
-          'disabled' => $config->getDefaultDisableColor(),
-          'pending' => $config->getDefaultPendingColor(),
-          'contentBackground' => $config->getDefaultContentBackgroundColor(),
-          'textDark' => $config->getDefaultTextDarkColor(),
-          'textDarkSoft' => $config->getDefaultTextDarkSoftColor(),
-          'textLight' => $config->getDefaultTextLightColor(),
-          'textLightSoft' => $config->getDefaultTextLightSoftColor(),
-          'interactiveSection' => $config->getDefaultInteractiveSectionColor(),
-          'contentBackgroundElementBody' => $config->getDefaultContentBackgroundElementBodyColor(), // by default calculated from contentBackground
+                // Optional colors
+                'secondary' => $config->getDefaultSecondaryColor(),
+                'background' => $config->getDefaultBackgroundColor(),
+                'searchBar' => $config->getDefaultSearchBarColor(),
+                'disabled' => $config->getDefaultDisableColor(),
+                'pending' => $config->getDefaultPendingColor(),
+                'contentBackground' => $config->getDefaultContentBackgroundColor(),
+                'textDark' => $config->getDefaultTextDarkColor(),
+                'textDarkSoft' => $config->getDefaultTextDarkSoftColor(),
+                'textLight' => $config->getDefaultTextLightColor(),
+                'textLightSoft' => $config->getDefaultTextLightSoftColor(),
+                'interactiveSection' => $config->getDefaultInteractiveSectionColor(),
+                'contentBackgroundElementBody' => $config->getDefaultContentBackgroundElementBodyColor(), // by default calculated from contentBackground
 
-          // Non implemented colors
-          // infoBarHeader => undefined, // by default auto colored with main option color, except for transiscope theme
-          // infoBarMenu => undefined,   // by default auto colored with main option color, except for transiscope theme
+                // Non implemented colors
+                // infoBarHeader => undefined, // by default auto colored with main option color, except for transiscope theme
+                // infoBarMenu => undefined,   // by default auto colored with main option color, except for transiscope theme
 
-          // menuOptionHover => undefined, // by default calculated from contentBackground
-          // lineBorder => undefined, // by default calculated from contentBackground
+                // menuOptionHover => undefined, // by default calculated from contentBackground
+                // lineBorder => undefined, // by default calculated from contentBackground
 
-          // mapControlsBgd => undefined,
-          // mapControls => undefined,
-          // mapListBtn => undefined,
-      ],
-      'fonts' => [
-          'mainFont' => $config->getMainFont(),
-          'titleFont' => $config->getTitleFont(),
-      ],
-      'features' => [
-          'listMode' => $this->getConfigFrom($config->getListModeFeature()),
-          'searchPlace' => $this->getConfigFrom($config->getSearchPlaceFeature()),
-          'searchCategories' => $this->getConfigFrom($config->getSearchCategoriesFeature()),
-          'searchElements' => $this->getConfigFrom($config->getSearchElementsFeature(), 'gogo_api_elements_from_text'),
-          'searchGeolocate' => $this->getConfigFrom($config->getSearchGeolocateFeature()),
-          'share' => $this->getConfigFrom($config->getShareFeature()),
-          'report' => $this->getConfigFrom($config->getReportFeature(), 'gogo_report_error_for_element'),
-          'favorite' => $this->getConfigFrom($config->getFavoriteFeature()),
-          'export' => $this->getConfigFrom($config->getExportIframeFeature()),
-          'pending' => $this->getConfigFrom($config->getPendingFeature()),
-          'directModeration' => $this->getConfigFrom($config->getDirectModerationFeature()),
-          'moderation' => $this->getConfigFrom($config->getDirectModerationFeature(), 'gogo_resolve_reports_element'),
-          'elementHistory' => $this->getConfigFrom($config->getDirectModerationFeature()),
-          'directions' => $this->getConfigFrom($config->getDirectionsFeature()),
-          'layers' => $this->getConfigFrom($config->getLayersFeature()),
-          'mapdefaultview' => $this->getConfigFrom($config->getMapDefaultViewFeature()),
+                // mapControlsBgd => undefined,
+                // mapControls => undefined,
+                // mapListBtn => undefined,
+            ],
+            'fonts' => [
+                'mainFont' => $config->getMainFont(),
+                'titleFont' => $config->getTitleFont(),
+            ],
+            'features' => [
+                'listMode' => $this->getConfigFrom($config->getListModeFeature()),
+                'searchPlace' => $this->getConfigFrom($config->getSearchPlaceFeature()),
+                'searchCategories' => $this->getConfigFrom($config->getSearchCategoriesFeature()),
+                'searchElements' => $this->getConfigFrom($config->getSearchElementsFeature(), 'gogo_api_elements_from_text'),
+                'searchGeolocate' => $this->getConfigFrom($config->getSearchGeolocateFeature()),
+                'share' => $this->getConfigFrom($config->getShareFeature()),
+                'report' => $this->getConfigFrom($config->getReportFeature(), 'gogo_report_error_for_element'),
+                'favorite' => $this->getConfigFrom($config->getFavoriteFeature()),
+                'export' => $this->getConfigFrom($config->getExportIframeFeature()),
+                'pending' => $this->getConfigFrom($config->getPendingFeature()),
+                'directModeration' => $this->getConfigFrom($config->getDirectModerationFeature()),
+                'moderation' => $this->getConfigFrom($config->getDirectModerationFeature(), 'gogo_resolve_reports_element'),
+                'elementHistory' => $this->getConfigFrom($config->getDirectModerationFeature()),
+                'directions' => $this->getConfigFrom($config->getDirectionsFeature()),
+                'layers' => $this->getConfigFrom($config->getLayersFeature()),
+                'mapdefaultview' => $this->getConfigFrom($config->getMapDefaultViewFeature()),
 
-          // overwrite roles so even if edit is just allowed to user or admin, an anonymous will see
-          // the edit button in the element info menu
-          'edit' => $this->getConfigFrom(
-                          $config->getEditFeature(),
-                          'gogo_element_edit',
-                          $config->getEditFeature()->isOnlyAllowedForAdmin() ? [] : ['roles' => ['anonymous', 'user', 'admin']]
-                     ),
-          'delete' => $this->getConfigFrom($config->getDeleteFeature(), 'gogo_delete_element'),
+                // overwrite roles so even if edit is just allowed to user or admin, an anonymous will see
+                // the edit button in the element info menu
+                'edit' => $this->getConfigFrom(
+                                $config->getEditFeature(),
+                                'gogo_element_edit',
+                                $config->getEditFeature()->isOnlyAllowedForAdmin() ? [] : ['roles' => ['anonymous', 'user', 'admin']]
+                            ),
+                'delete' => $this->getConfigFrom($config->getDeleteFeature(), 'gogo_delete_element'),
 
-          'vote' => $this->getConfigFrom($config->getCollaborativeModerationFeature(), 'gogo_vote_for_element'),
-          'sendMail' => $this->getConfigFrom($config->getSendMailFeature(), 'gogo_element_send_mail'),
-          'stamp' => $this->getConfigFrom(
-                  $config->getStampFeature(),
-                  'gogo_element_stamp',
-                  ['options' => ['allowedStamps' => $allowedStamps]]
-              ),
-          'customPopup' => $this->getConfigFrom(
-                  $config->getCustomPopupFeature(),
-                  null,
-                  ['options' => [
-                      'text' => $config->getCustomPopupText(),
-                      'showOnlyOnce' => $config->getCustomPopupShowOnlyOnce(),
-                      'id' => $config->getCustomPopupId(),
-                  ]]
-              ),
-      ],
-      'data' => [
-          'taxonomy' => json_decode($taxonomyJson),
-          'elements' => $this->getAbsolutePath('gogo_api_elements_index'),
-          'requestByBounds' => true,
-      ],
-    ];
+                'vote' => $this->getConfigFrom($config->getCollaborativeModerationFeature(), 'gogo_vote_for_element'),
+                'sendMail' => $this->getConfigFrom($config->getSendMailFeature(), 'gogo_element_send_mail'),
+                'stamp' => $this->getConfigFrom(
+                        $config->getStampFeature(),
+                        'gogo_element_stamp',
+                        ['options' => ['allowedStamps' => $allowedStamps]]
+                    ),
+                'customPopup' => $this->getConfigFrom(
+                        $config->getCustomPopupFeature(),
+                        null,
+                        ['options' => [
+                            'text' => $config->getCustomPopupText(),
+                            'showOnlyOnce' => $config->getCustomPopupShowOnlyOnce(),
+                            'id' => $config->getCustomPopupId(),
+                        ]]
+                    ),
+            ],
+            'data' => [
+                'taxonomy' => json_decode($taxonomyJson),
+                'elements' => $this->getAbsolutePath('gogo_api_elements_index'),
+                'requestByBounds' => true,
+            ],
+        ];
 
         if ('transiscope' == $config->getTheme()) {
             $result['images'] = [
-        'buttonOpenMenu' => $config->getFavicon() ? $config->getFavicon()->getImageUrl() : ($config->getLogo() ? $config->getLogo()->getImageUrl() : null),
-      ];
+                'buttonOpenMenu' => $config->getFavicon() ? $config->getFavicon()->getImageUrl() : ($config->getLogo() ? $config->getLogo()->getImageUrl() : null),
+            ];
         }
 
         return $result;
