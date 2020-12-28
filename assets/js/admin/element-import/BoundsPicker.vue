@@ -170,4 +170,7 @@ export default {
         color: #3d3d3d;
         text-indent: 0;
     }    
+    .leaflet-top, .leaflet-bottom {
+        z-index: 1;
+    }
 </style>
