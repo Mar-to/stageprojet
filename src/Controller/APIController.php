@@ -138,9 +138,7 @@ class APIController extends GoGoController
     private function createResponse($text, $config, $status = 200)
     {
         $response = new Response($text, $status);
-        if ($config->getApi()->getInternalApiAuthorizedDomains()) {
-            $response->headers->set('Access-Control-Allow-Origin', $config->getApi()->getInternalApiAuthorizedDomains());
-        }
+        $response->headers->set('Access-Control-Allow-Origin', '*');
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
