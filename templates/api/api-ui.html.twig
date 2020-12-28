@@ -81,7 +81,6 @@
     var defaultBounds = {{ config.getDefaultBounds | json_encode | raw }}
 
     var apiUrlBase = "{{ url('gogo_api_elements_index') }}";
-    var userToken = "{{ config.api.protectPublicApiWithToken ? app.user.token : null }}";
   </script>
 {% endblock %}
 

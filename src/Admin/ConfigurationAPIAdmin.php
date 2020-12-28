@@ -31,7 +31,6 @@ class ConfigurationAPIAdmin extends ConfigurationAbstractAdmin
 
         $formMapper
             ->with('Configuration', ['description' => "<div class='iframe-container'><iframe height='200' sandbox='allow-same-origin allow-scripts' src='https://video.colibris-outilslibres.org/videos/embed/aa05a654-a5d6-472a-bb12-108e0f6ce18e' frameborder='0' allowfullscreen></iframe></div>"])
-                ->add('api.protectPublicApiWithToken', CheckboxType::class, ['label' => "Protéger l'api publique pour récupérer les élément avec des jetons utilisateurs (i.e. besoin de créer un compte pour utiliser l'api publique)", 'required' => false])
                 ->add('api.internalApiAuthorizedDomains', null, ['label' => "Liste des domaines externe qui utiliseront l'API interne. Mettez * si vous voulez que n'importe quel domaine puisse y avoir accès. Cette option est nécessaire si vous voulez afficher vos données avec GoGoCartoJs mais sur un autre serveur.", 'required' => false])
                 ->add('api.publicApiPrivateProperties', ChoiceType::class, ['choices' => $apiPropertiesChanged, 'label' => "Liste des champs que vous ne voulez pas partager dans l'api publique", 'required' => false, 'multiple' => true])
             ->end()

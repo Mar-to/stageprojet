@@ -26,33 +26,13 @@ class APIController extends GoGoController
     public function getElementsAction(Request $request, $id = null, $_format = 'json', DocumentManager $dm)
     {
         $jsonLdRequest = $this->isJsonLdRequest($request, $_format);
-        $token = $request->get('token');
         $ontology = $request->get('ontology') ? strtolower($request->get('ontology')) : 'gogofull';
         $fullRepresentation = $jsonLdRequest || 'gogocompact' != $ontology;
         $elementId = $id ? $id : $request->get('id');
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
-        $protectWithToken = $config->getApi()->getProtectPublicApiWithToken();
-        $apiUiUrl = $this->generateUrl('gogo_api_ui', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        if ($request->isMethod('POST')) { // this kind of call is restricted with cross domain headers
-            $isAdmin = $this->isUserAdmin();
-            $includePrivateFields = true;
-        } elseif (!$protectWithToken || $token) { // otherwise API can be protected by user token
-            if ($protectWithToken) {
-                $user = $dm->getRepository('App\Document\User')->findOneByToken($token);
-                if (!$user) {
-                    $response = 'The token you provided does not correspond to any existing user. Please visit '.$apiUiUrl;
-
-                    return $this->createResponse($response, $config);
-                }
-            }
-            $isAdmin = false;
-            $includePrivateFields = false;
-        } else {
-            $response = 'You need to provide a token to access to this API. Please visit '.$apiUiUrl;
-
-            return $this->createResponse($response, $config);
-        }
+        $isAdmin = $this->isUserAdmin();
+        $includePrivateFields = true;
 
         $elementRepo = $dm->getRepository('App\Document\Element');
 
@@ -210,7 +190,7 @@ class APIController extends GoGoController
     {
         if (count($array) == 0) return '[]';
         $elementsJson = '[';
-        foreach ($array as $value) {
+        foreach ($array as &$value) {
             if ('true' == $fullRepresentation) {
                 $elementJson = $value['baseJson'];
                 if ($includePrivateFields && '{}' != $value['privateJson']) {
@@ -246,24 +226,6 @@ class APIController extends GoGoController
     public function apiUiAction(SessionInterface $session, DocumentManager $dm)
     {
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
-        $protectPublicApiWithToken = $config->getApi()->getProtectPublicApiWithToken();
-
-        $userLoggued = $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED');
-
-        if ($protectPublicApiWithToken && !$userLoggued) {
-            $session->set('_security.main.target_path', 'api');
-
-            return $this->redirectToRoute('fos_user_security_login');
-        }
-
-        if ($protectPublicApiWithToken) {
-            $user = $this->getUser();
-            if (!$user->getToken()) {
-                $user->createToken();
-                $dm->flush();
-            }
-        }
-
         $options = $dm->getRepository('App\Document\Option')->findAll();
 
         return $this->render('api/api-ui.html.twig', ['options' => $options, 'config' => $config]);

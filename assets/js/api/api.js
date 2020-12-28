@@ -61,7 +61,6 @@ if ($('#page-content.api').length > 0)
     if ($('#use-categories').is(':checked') && $('.select-categories').val()) params.categories = $('.select-categories').val();
     if (!$('#include-external').is(':checked')) params.excludeExternal = true;  
     if ($('#use-bounds').is(':checked') && bounds) params.bounds = bounds;  
-    if (userToken) params.token = userToken;
 
     url += '.' + $('input[name=format]:checked').data('value');
     var encodedParams = encodeQueryData(params);
