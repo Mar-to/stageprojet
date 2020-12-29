@@ -171,9 +171,6 @@ class Configuration implements \JsonSerializable
     protected $pendingFeature;
 
     /** @MongoDB\EmbedOne(targetDocument="App\Document\FeatureConfiguration") */
-    protected $sendMailFeature;
-
-    /** @MongoDB\EmbedOne(targetDocument="App\Document\FeatureConfiguration") */
     protected $customPopupFeature;
 
     /** @MongoDB\EmbedOne(targetDocument="App\Document\FeatureConfiguration") */
@@ -479,8 +476,6 @@ class Configuration implements \JsonSerializable
         $this->searchGeolocateFeature = new FeatureConfiguration();
         $this->layersFeature = new FeatureConfiguration();
         $this->mapDefaultViewFeature = new FeatureConfiguration();
-
-        $this->sendMailFeature = new FeatureConfiguration();
 
         $this->addFeature = new FeatureConfiguration();
         $this->editFeature = new FeatureConfiguration();
@@ -1343,30 +1338,6 @@ class Configuration implements \JsonSerializable
     public function getCustomCSS()
     {
         return $this->customCSS;
-    }
-
-    /**
-     * Set sendMailFeature.
-     *
-     * @param App\Document\FeatureConfiguration $sendMailFeature
-     *
-     * @return $this
-     */
-    public function setSendMailFeature(\App\Document\FeatureConfiguration $sendMailFeature)
-    {
-        $this->sendMailFeature = $sendMailFeature;
-
-        return $this;
-    }
-
-    /**
-     * Get sendMailFeature.
-     *
-     * @return App\Document\FeatureConfiguration $sendMailFeature
-     */
-    public function getSendMailFeature()
-    {
-        return $this->sendMailFeature;
     }
 
     /**

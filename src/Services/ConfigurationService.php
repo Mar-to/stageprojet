@@ -54,7 +54,6 @@ class ConfigurationService
             case 'delete':              $feature = $this->config->getDeleteFeature(); break;
             case 'vote':                $feature = $this->config->getCollaborativeModerationFeature(); break;
             case 'pending':             $feature = $this->config->getPendingFeature(); break;
-            case 'sendMail':            $feature = $this->config->getSendMailFeature(); break;
         }
 
         return $feature;

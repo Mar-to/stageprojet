@@ -46,6 +46,9 @@ class ConfigurationInfoBarAdmin extends ConfigurationAbstractAdmin
                     ->add('infobar.bodyTemplateUseMarkdown', CheckboxType::class, ['label' => 'Utiliser la syntaxe markdown pour le body (sinon uniquement la syntaxe Nunjucks)', 'attr' => ['class' => 'use-markdown'], 'required' => false])
                     ->add('infobar.bodyTemplate', null, ['label' => 'Corps de la fiche (body)', 'attr' => ['class' => 'gogo-code-editor', 'data-id' => 'body-template', 'format' => 'twig', 'height' => '500'], 'required' => false])
                 ->end()
+                ->with('Autres Paramètres')
+                    ->add('infobar.width', IntegerType::class, ['label' => 'Largeur de la fiche détail (en pixels, par défaut : 540)', 'required' => false])
+                ->end()
             ->end()
             ->tab('Liste des Champs disponibles (aide)')
                 ->with('')
@@ -74,17 +77,7 @@ class ConfigurationInfoBarAdmin extends ConfigurationAbstractAdmin
 
                         <h3>Débugger des données</h3>
                         Si vous utilisez des données un peu spécifiques de type object, vous pouvez utiliser le filtre 'dump' pour afficher leur contenu {{ my_specific_field|dump }}
-                     "])->end()
-
-            ->end()
-            ->tab('Autres paramètres')
-                ->with('Paramètres')
-                    ->add('infobar.width', IntegerType::class, ['label' => 'Largeur de la fiche détail (en pixels, par défaut : 540)', 'required' => false])
-                ->end()
-                ->with("Masquer l'email de contact en le remplacant par un bouton \"Envoyer un email\"",
-                        ['description' => "<i>Cela permet par exemple d'éviter que des personnes récupèrent tous les emails pour des fin commerciales</i>"])
-                    ->add('sendMailFeature', AdminType::class, $featureFormOption, ['edit' => 'inline'])
-                ->end()
+                    "])->end()
             ->end()
         ;
     }

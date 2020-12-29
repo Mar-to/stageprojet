@@ -91,7 +91,6 @@ class LoadConfiguration implements FixtureInterface
             $configuration->setExportIframeFeature(new FeatureConfiguration(true, false, true, true, true));
             $configuration->setDirectionsFeature(new FeatureConfiguration(true, true, true, true, true));
             $configuration->setPendingFeature(new FeatureConfiguration(true, false, true, true, true));
-            $configuration->setSendMailFeature(new FeatureConfiguration(true, false, true, true, true));
             $configuration->setCustomPopupFeature(new FeatureConfiguration());
             $configuration->setStampFeature(new FeatureConfiguration(true, false, true, true, true));
             $configuration->setSearchPlaceFeature(new FeatureConfiguration(true, true, true, true, true));

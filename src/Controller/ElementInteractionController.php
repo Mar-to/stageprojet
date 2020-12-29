@@ -123,18 +123,12 @@ class ElementInteractionController extends Controller
     public function sendMailAction(Request $request, DocumentManager $dm, ConfigurationService $confService,
                                    MailService $mailService)
     {
-        if (!$confService->isUserAllowed('sendMail', $request)) {
-            return $this->returnResponse(false, "Désolé, vous n'êtes pas autorisé à envoyer des mails !");
-        }
-
         // CHECK REQUEST IS VALID
         if (!$request->get('elementId') || !$request->get('subject') || !$request->get('content') || !$request->get('userEmail')) {
             return $this->returnResponse(false, 'Les paramètres sont incomplets');
         }
 
         $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
-
-        $user = $this->getUser();
 
         $senderMail = $request->get('userEmail');
 

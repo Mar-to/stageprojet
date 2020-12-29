@@ -161,9 +161,9 @@ class GoGoCartoJsService
                                 $config->getEditFeature()->isOnlyAllowedForAdmin() ? [] : ['roles' => ['anonymous', 'user', 'admin']]
                             ),
                 'delete' => $this->getConfigFrom($config->getDeleteFeature(), 'gogo_delete_element'),
+                'sendMail' => [ 'url' => $this->getAbsolutePath('gogo_element_send_mail') ],
 
                 'vote' => $this->getConfigFrom($config->getCollaborativeModerationFeature(), 'gogo_vote_for_element'),
-                'sendMail' => $this->getConfigFrom($config->getSendMailFeature(), 'gogo_element_send_mail'),
                 'stamp' => $this->getConfigFrom(
                         $config->getStampFeature(),
                         'gogo_element_stamp',
