@@ -89,7 +89,6 @@ class ElementAdminShowEdit extends ElementAdminList
           ->with('JSON', ['class' => 'col-md-12', 'box_class' => 'box box-default'])
             ->add('compactJson')
             ->add('baseJson')
-            ->add('privateJson')
             ->add('adminJson')
           ->end();
     }

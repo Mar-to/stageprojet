@@ -277,7 +277,7 @@ class ElementRepository extends DocumentRepository
     {
         // get json representation
         if ('true' == $getFullRepresentation) {
-            $qb->select(['baseJson', 'privateJson']);
+            $qb->select('baseJson');
             if ($isAdmin) {
                 $qb->select('adminJson');
             }

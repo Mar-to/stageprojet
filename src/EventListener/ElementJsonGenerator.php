@@ -72,19 +72,30 @@ class ElementJsonGenerator
 
         // BASIC FIELDS
         $baseJson = json_encode($element);
-        $baseJson = substr($baseJson, 0, -1); // remove last '}'
+        $baseJson = ltrim($baseJson, '{'); // remove first '{'
+        $baseJson = rtrim($baseJson, '}'); // remove last '}'
         if ($element->getAddress()) {
-            $baseJson .= ', "address":'.$element->getAddress()->toJson();
+            $baseJson .= ',"address":'.$element->getAddress()->toJson();
         }
         if ($element->getOpenHours()) {
-            $baseJson .= ', "openHours": '.$element->getOpenHours()->toJson();
+            $baseJson .= ',"openHours": '.$element->getOpenHours()->toJson();
         }
 
         // CREATED AT, UPDATED AT
-        $baseJson .= ', "createdAt":"'.date_format($element->getCreatedAt(), 'd/m/Y à H:i').'"';
+        $baseJson .= ',"createdAt":"'.date_format($element->getCreatedAt(), 'd/m/Y à H:i').'"';
         $updatedAt = $element->getUpdatedAt() ? $element->getUpdatedAt() : $element->getCreatedAt();
         $updatedAtFormated = 'integer' == gettype($updatedAt) ? date('d/m/Y à H:i', $updatedAt) : date_format($updatedAt, 'd/m/Y à H:i');
-        $baseJson .= ', "updatedAt":"'.$updatedAtFormated.'"';
+        $baseJson .= ',"updatedAt":"'.$updatedAtFormated.'"';
+
+        // STATUS
+        $status = strval($element->getStatus());
+        if (!$status || '' == $status || 0 == strlen($status)) {
+            $status = '0';
+        }
+        $baseJson .= ',"status":'.$status;
+        if ($element->getModerationState() != 0) {
+            $baseJson .= ',"moderationState":'.$element->getModerationState();
+        }
 
         // OPTIONS VALUES (= TAXONOMY)
         $sortedOptionsValues = $element->getSortedOptionsValues();
@@ -127,53 +138,41 @@ class ElementJsonGenerator
         if (!in_array('files', $privateProps)) {
             $baseJson .= $filesJson;
         }
+        if (in_array('email', $privateProps) && $element->getEmail()) {
+            $email = $element->isPending() ? $element->getEmail() : "private";
+            $baseJson .= '"email":"'.$email.'",'; // indicate that the email exist, so can show the "send email" button
+        }
         $baseJson = rtrim($baseJson, ',');
 
         // MODIFIED ELEMENT (for pending modification)
         if ($element->isPendingModification() && $element->getModifiedElement()) {
-            $baseJson .= ', "modifiedElement": '.$element->getModifiedElement()->getJson(true, false);
+            $baseJson .= ', "modifiedElement": '.$element->getModifiedElement()->getJson(false);
         }
-        $baseJson .= '}';
-
         $element->setBaseJson($baseJson);
 
-        // -------------------- PRIVATE JSON -------------------------
-        $privateJson = '{';
-        // status
-        $status = strval($element->getStatus());
-        if (!$status || '' == $status || 0 == strlen($status)) {
-            $status = '0';
-        }
-        $privateJson .= '"status": '.$status.',';
-        $privateJson .= '"moderationState": '.$element->getModerationState().',';
-        // CUSTOM PRIVATE DATA
-        foreach ($element->getPrivateData() as $key => $value) {
-            $privateJson .= '"'.$key.'": '.json_encode($value).',';
-        }
-        if (in_array('images', $privateProps)) {
-            $privateJson .= $imagesJson;
-        }
-        if (in_array('files', $privateProps)) {
-            $privateJson .= $filesJson;
-        }
-        $privateJson = rtrim($privateJson, ',');
-        $privateJson .= '}';
-        $element->setPrivateJson($privateJson);
-
-        // ---------------- ADMIN JSON = REPORTS & CONTRIBUTIONS ---------------------
-        $adminJson = '{';
+        // ---------------- ADMIN JSON = REPORTS & CONTRIBUTIONS & PRIVATE DATA ---------------------
+        $adminJson = '';
         if (ElementStatus::ModifiedPendingVersion != $element->getStatus()) {
             $adminJson .= $this->encodeArrayObjectToJson('reports', $element->getUnresolvedReports());
             $adminJson .= $this->encodeArrayObjectToJson('contributions', $element->getContributionsAndResolvedReports());
             if ($element->isPending()) {
                 $adminJson .= $this->encodeArrayObjectToJson('votes', $element->getVotesArray());
                 if ($element->getCurrContribution()) {
-                    $adminJson .= '"pendingContribution":'.$element->getCurrContribution()->toJson();
+                    $adminJson .= '"pendingContribution":'.$element->getCurrContribution()->toJson() . ',';
                 }
-            }
-            $adminJson = rtrim($adminJson, ',');
+            }            
         }
-        $adminJson .= '}';
+        // CUSTOM PRIVATE DATA
+        foreach ($element->getPrivateData() as $key => $value) {
+            $adminJson .= '"'.$key.'": '.json_encode($value).',';
+        }
+        if (in_array('images', $privateProps)) {
+            $adminJson .= $imagesJson;
+        }
+        if (in_array('files', $privateProps)) {
+            $adminJson .= $filesJson;
+        }
+        $adminJson = rtrim($adminJson, ',');
         $element->setAdminJson($adminJson);
 
         // -------------------- COMPACT JSON ----------------

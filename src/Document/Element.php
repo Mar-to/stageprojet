@@ -277,15 +277,6 @@ class Element
     /**
      * @var string
      *
-     * Somes special field returned only for trusted people. this privateJson is concatenated to the baseJson
-     *
-     * @MongoDB\Field(type="string")
-     */
-    private $privateJson;
-
-    /**
-     * @var string
-     *
      * Somes special field returned only for admins. this adminJson is concatenated to the baseJson
      *
      * @MongoDB\Field(type="string")
@@ -543,17 +534,13 @@ class Element
         return $this->isExternal;
     }
 
-    public function getJson($includePrivateJson, $includeAdminJson)
+    public function getJson($includeAdminJson)
     {
-        $result = $this->baseJson;
-        if ($includePrivateJson && $this->privateJson && '{}' != $this->privateJson) {
-            $result = substr($result, 0, -1).','.substr($this->privateJson, 1);
+        $result = '{' . $this->baseJson;
+        if ($includeAdminJson && $this->adminJson && '' != $this->adminJson) {
+            $result .= ','. $this->adminJson;
         }
-        if ($includeAdminJson && $this->adminJson && '{}' != $this->adminJson) {
-            $result = substr($result, 0, -1).','.substr($this->adminJson, 1);
-        }
-
-        return $result;
+        return $result . '}';
     }
 
     public function isPending()
@@ -1308,30 +1295,6 @@ class Element
     public function getStamps()
     {
         return $this->stamps;
-    }
-
-    /**
-     * Set privateJson.
-     *
-     * @param string $privateJson
-     *
-     * @return $this
-     */
-    public function setPrivateJson($privateJson)
-    {
-        $this->privateJson = $privateJson;
-
-        return $this;
-    }
-
-    /**
-     * Get privateJson.
-     *
-     * @return string $privateJson
-     */
-    public function getPrivateJson()
-    {
-        return $this->privateJson;
     }
 
     /**

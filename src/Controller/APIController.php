@@ -30,15 +30,12 @@ class APIController extends GoGoController
         $fullRepresentation = $jsonLdRequest || 'gogocompact' != $ontology;
         $elementId = $id ? $id : $request->get('id');
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
-
         $isAdmin = $this->isUserAdmin();
-        $includePrivateFields = true;
-
         $elementRepo = $dm->getRepository('App\Document\Element');
 
         if ($elementId) {
             $element = $elementRepo->findOneBy(['id' => $elementId]);
-            $elementsJson = $element ? $element->getJson($includePrivateFields, $isAdmin) : null;
+            $elementsJson = $element ? $element->getJson($isAdmin) : null;
         } else {
             if ($request->get('bounds')) {
                 $boxes = [];
@@ -50,7 +47,7 @@ class APIController extends GoGoController
             } else {
                 $elementsFromDB = $elementRepo->findAllPublics($fullRepresentation, $isAdmin, $request);
             }
-            $elementsJson = $this->encodeElementArrayToJsonArray($elementsFromDB, $fullRepresentation, $isAdmin, $includePrivateFields);
+            $elementsJson = $this->encodeElementArrayToJsonArray($elementsFromDB, $fullRepresentation, $isAdmin);
         }
 
         $status = 200;
@@ -114,8 +111,7 @@ class APIController extends GoGoController
         return $this->createResponse($responseJson, $config);
     }
 
-    public function getTaxonomyMappingAction(Request $request, $id = null, $_format = 'json', DocumentManager $dm,
-                                           SerializerInterface $serializer)
+    public function getTaxonomyMappingAction(DocumentManager $dm, SerializerInterface $serializer)
     {
         $options = $dm->getRepository('App\Document\Option')->findAll();
         $result = [];
@@ -184,23 +180,21 @@ class APIController extends GoGoController
         return false;
     }
 
-    private function encodeElementArrayToJsonArray($array, $fullRepresentation, $isAdmin = false, $includePrivateFields = false)
+    private function encodeElementArrayToJsonArray($array, $fullRepresentation, $isAdmin = false)
     {
         if (count($array) == 0) return '[]';
         $elementsJson = '[';
         foreach ($array as &$value) {
             if ('true' == $fullRepresentation) {
-                $elementJson = $value['baseJson'];
-                if ($includePrivateFields && '{}' != $value['privateJson']) {
-                    $elementJson = substr($elementJson, 0, -1).','.substr($value['privateJson'], 1);
-                }
-                if ($isAdmin && '{}' != $value['adminJson']) {
-                    $elementJson = substr($elementJson, 0, -1).','.substr($value['adminJson'], 1);
-                }
+                $elementJson = '{';
                 if (isset($value['score'])) {
-                    $elementJson = substr($elementJson, 1); // remove first '{'
-                    $elementJson = '{"searchScore" : '.$value['score'].','.$elementJson;
+                    $elementJson .= '"searchScore" : '.$value['score'].',';
                 }
+                $elementJson .= $value['baseJson'];
+                if ($isAdmin && '' != $value['adminJson']) {
+                    $elementJson .= ',' . $value['adminJson'];
+                } 
+                $elementJson .= '}';               
             } else {
                 $elementJson = $value['compactJson'];
             }
