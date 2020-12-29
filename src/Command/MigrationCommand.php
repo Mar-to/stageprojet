@@ -41,6 +41,8 @@ class MigrationCommand extends GoGoAbstractCommand
       'app:elements:updateJson all',
       // v2.4.5
       'app:elements:updateJson all',
+      // v3.2.0
+      'app:elements:updateJson all',
     ];
 
     public static $messages = [
