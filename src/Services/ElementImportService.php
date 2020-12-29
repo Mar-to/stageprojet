@@ -133,7 +133,6 @@ class ElementImportService
         if (!$data) {
             return 0;
         }
-
         try {
             // Define the frequency for persisting the data and the current index of records
             $batchSize = 100;
@@ -142,9 +141,8 @@ class ElementImportService
             // do the mapping
             $data = $this->mappingService->transform($data, $import);
 
-            $import->setLastRefresh(time());
             $import->setCurrState(ImportState::InProgress);
-
+            
             $qb = $this->dm->createQueryBuilder('App\Document\Element');
             if ($import->isDynamicImport()) {
                 $import->updateNextRefreshDate();
@@ -203,6 +201,7 @@ class ElementImportService
             $this->dm->clear();
 
             $import = $this->dm->getRepository('App\Document\Import')->find($import->getId());
+            $import->setLastRefresh(time());
             $this->dm->persist($import);
 
             // Link elements between each others

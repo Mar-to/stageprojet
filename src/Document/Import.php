@@ -720,6 +720,11 @@ class Import extends AbstractFile
      */ 
     public function getMainConfigUpdatedAt()
     {
+        if (is_int($this->mainConfigUpdatedAt)) {
+            $date = new \DateTime();
+            $date->setTimestamp($this->mainConfigUpdatedAt);
+            return $date;
+        }
         return $this->mainConfigUpdatedAt;
     }
 

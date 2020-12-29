@@ -200,13 +200,14 @@ class ImportAdminController extends Controller
                     if ($object->getTaxonomyMapping() != $currentTaxonomyMapping) {
                         $object->setMainConfigUpdatedAt(time());
                     }
+
                     $object = $this->admin->update($object);
 
                     // auto collect data if the import config have changed
-                    if ($request->get('collect') || $oldUpdatedAt != $object->getMainConfigUpdatedAt()) {
-                        $url = $this->admin->generateUrl('collect', ['id' => $object->getId()]);
-                    } elseif ($request->get('import')) {
+                    if ($request->get('import')) {
                         $url = $this->admin->generateUrl('refresh', ['id' => $object->getId()]);
+                    } elseif ($request->get('collect') || $oldUpdatedAt != $object->getMainConfigUpdatedAt()) {
+                        $url = $this->admin->generateUrl('collect', ['id' => $object->getId()]);
                     } else {
                         $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]);
                         $this->addFlash('sonata_flash_success', $this->trans(

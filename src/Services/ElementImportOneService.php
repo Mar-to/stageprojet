@@ -25,7 +25,7 @@ class ElementImportOneService
 
     protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'customFormatedAddress', 'latitude', 'longitude', 'images', 'files', 'owner', 'source', 'openHours'];
     protected $privateDataProps;
-
+    protected $mainConfigHaveChangedSinceLastImport;
     /**
      * Constructor.
      */
@@ -49,6 +49,7 @@ class ElementImportOneService
         // Getting the private field of the custom data
         $config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
         $this->privateDataProps = $config->getApi()->getPublicApiPrivateProperties();
+        $this->mainConfigHaveChangedSinceLastImport = $import->getMainConfigUpdatedAt() <= $import->getLastRefresh();
     }
 
     public function createElementFromArray($row, $import)
@@ -94,26 +95,29 @@ class ElementImportOneService
                 }
                 $element = $qb->getQuery()->getSingleResult();
             }
-        }
+        }        
 
         if ($element) { // if the element already exists, we update it
-            $updatedAtField = $import->getFieldToCheckElementHaveBeenUpdated();
-            // if updated date hasn't change, nothing to do
-            if ($updatedAtField && array_key_exists($updatedAtField, $row)) {
-                if ($row[$updatedAtField] && $row[$updatedAtField] == $element->getCustomProperty($updatedAtField)) {
-                    $element->setPreventJsonUpdate(true);
-                    if (ElementStatus::DynamicImportTemp == $element->getStatus()) {
-                        $element->setStatus(ElementStatus::DynamicImport);
-                    }
-                    $this->dm->persist($element);
+            // if main import config has change, we should reimport anyway           
+            if ($this->mainConfigHaveChangedSinceLastImport) {
+                $updatedAtField = $import->getFieldToCheckElementHaveBeenUpdated();
+                // if updated date hasn't change, nothing to do
+                if ($updatedAtField && array_key_exists($updatedAtField, $row)) {
+                    if ($row[$updatedAtField] && $row[$updatedAtField] == $element->getCustomProperty($updatedAtField)) {
+                        $element->setPreventJsonUpdate(true);
+                        if (ElementStatus::DynamicImportTemp == $element->getStatus()) {
+                            $element->setStatus(ElementStatus::DynamicImport);
+                        }
+                        $this->dm->persist($element);
 
-                    return 'nothing_to_do';
-                } else {
-                    $realUpdate = true;
+                        return 'nothing_to_do';
+                    } else {
+                        $realUpdate = true;
+                    }
                 }
             }
             $updateExisting = true;
-            // resetting "geolocc" and "no options" modearation state so it will be calculated again
+            // resetting "geoloc" and "no options" modearation state so it will be calculated again
             if ($element->getModerationState() < 0) {
                 $element->setModerationState(ModerationState::NotNeeded);
             }
@@ -174,7 +178,7 @@ class ElementImportOneService
         if (!$updateExisting) {
             $contribution = $this->interactionService->createContribution(null, 0, $status);
             $element->addContribution($contribution);
-        // $this->mailService->sendAutomatedMail('add', $element, $message);
+            // $this->mailService->sendAutomatedMail('add', $element, $message);
         }
         // create edit contribution if real update
         elseif ($realUpdate) {
