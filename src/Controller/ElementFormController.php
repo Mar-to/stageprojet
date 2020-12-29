@@ -349,7 +349,6 @@ class ElementFormController extends GoGoController
             $user, null);
         } catch (AccountStatusException $ex) {
             // We simply do not authenticate users which do not pass the user
-        // checker (not enabled, expired, etc.).
         }
     }
 

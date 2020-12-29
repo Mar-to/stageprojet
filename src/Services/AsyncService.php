@@ -34,7 +34,7 @@ class AsyncService
             $dbname = $this->dmFactory->getCurrentDbName();
         }
 
-        $commandline = $this->phpPath.' '.$this->consolePath;
+        $commandline = $this->phpPath.' -d memory_limit=-1 '.$this->consolePath;
         $commandline .= ' --env='.$this->env;
         $commandline .= ' '.$commandName;
         foreach ($arguments as $key => $arg) {
@@ -52,6 +52,7 @@ class AsyncService
     protected function runProcess($commandline)
     {
         $process = Process::fromShellCommandline($commandline);
+        $process->setTimeout(0);
         $process->start();
         if ($this->runSynchronously) {
             $process->wait();

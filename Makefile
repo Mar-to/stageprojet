@@ -1,7 +1,7 @@
 # -- Setup ——
 SHELL         = bash
 PROJECT       = app
-EXEC_PHP      = php
+EXEC_PHP      = php -d memory_limit=-1
 SYMFONY       = $(EXEC_PHP) bin/console
 COMPOSER      = composer
 GIT           = git
@@ -114,7 +114,7 @@ gogo-update: ## Update a PROD server to the lastest version of gogocarto
 	$(GULP) build
 	$(GULP) production
 	$(YARN) encore production
-	$(COMPOSER) install
+	COMPOSER_MEMORY_LIMIT=-1 $(COMPOSER) install
 	$(SYMFONY) cache:clear --env=prod
 	$(SYMFONY) db:migrate
 
