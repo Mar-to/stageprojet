@@ -171,7 +171,8 @@ class ImportAdminController extends Controller
                                     }                                    
                                 }
                             }
-                        }
+                        }  
+                        unset($mappedCategories);                      
                     } else {
                         $newTaxonomyMapping = null;
                     }
@@ -195,6 +196,10 @@ class ImportAdminController extends Controller
                     $object->setNewTaxonomyToMap(false);
 
                     $oldUpdatedAt = $object->getMainConfigUpdatedAt();
+                    // check manually for taxonomy change
+                    if ($object->getTaxonomyMapping() != $currentTaxonomyMapping) {
+                        $object->setMainConfigUpdatedAt(time());
+                    }
                     $object = $this->admin->update($object);
 
                     // auto collect data if the import config have changed

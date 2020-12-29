@@ -154,7 +154,7 @@ class Import extends AbstractFile
 
     /**
      * @MongoDB\Field(type="date")
-     * @Gedmo\Timestampable(on="change", field={"customCode", "ontologyMapping", "url", "sourceType", "file", "osmQueriesJson"})
+     * @Gedmo\Timestampable(on="change", field={"customCode", "ontologyMapping", "optionsToAddToEachElement", "url", "sourceType", "file", "osmQueriesJson"})
      */
     private $mainConfigUpdatedAt;
 
