@@ -74,9 +74,10 @@ workbox.routing.registerRoute(
         ]
     })
 );
-
-workbox.precaching.precacheAndRoute(
-    self.__WB_MANIFEST,
-    // Ignore the ?ver= query, as the resources cached by the SW are automatically updated
-    { ignoreURLParametersMatching: [/^(ver|utm_.+)$/] }
-);
+workbox.precaching.precacheAndRoute([]);
+// Following code not working, so using simple preCacheAndRoute (see above)
+// workbox.precaching.precacheAndRoute(
+//     self.__WB_MANIFEST,
+//     // Ignore the ?ver= query, as the resources cached by the SW are automatically updated
+//     { ignoreURLParametersMatching: [/^(ver|utm_.+)$/] }
+// );
