@@ -27,4 +27,10 @@ class CategoryAdminController extends Controller
             'categories' => $rootCategories, 'config' => $config,
         ], null);
     }
+
+    // overide CRUDController method to fix strange issue
+    protected function redirectTo($object)
+    {
+        return $this->redirectToRoute('admin_app_category_edit', ['id' => $object->getId()]);
+    }
 }
