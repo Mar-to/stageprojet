@@ -20,6 +20,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Form\FormError;
 use Geocoder\ProviderAggregator;
 use App\Document\Coordinates;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class RegistrationController extends FosController
 {
@@ -27,9 +28,10 @@ class RegistrationController extends FosController
     private $formFactory;
     private $userManager;
     private $tokenStorage;
+    private $session;
 
     public function __construct($eventDispatcher, $formFactory, $userManager, $tokenStorage, \Swift_Mailer $mailer,
-                                DocumentManager $dm, ProviderAggregator $geocoder)
+                                DocumentManager $dm, ProviderAggregator $geocoder, SessionInterface $session)
     {
         $this->eventDispatcher = $eventDispatcher;
         $this->formFactory = $formFactory;
@@ -49,8 +51,7 @@ class RegistrationController extends FosController
     {
         $config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
         if (!$config->getUser()->getEnableRegistration()) {
-            $session->getFlashBag()->add('error', "Désolé, vous n'êtes pas autorisé à créer un compte.");
-
+            $this->session->getFlashBag()->add('error', "Désolé, vous n'êtes pas autorisé à créer un compte.");
             return $this->redirectToRoute('gogo_directory');
         }
 
