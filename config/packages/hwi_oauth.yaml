@@ -8,7 +8,7 @@ hwi_oauth:
         properties:
             google: gplusUid
             facebook : facebookUid
-            communs: twitterUid
+            communs: communsUid
     resource_owners:
         gplus:
             type:                google

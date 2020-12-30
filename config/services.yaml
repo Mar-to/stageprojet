@@ -24,6 +24,10 @@ parameters:
     oauth_facebook_id: '%env(OAUTH_FACEBOOK_ID)%'
     oauth_facebook_secret: '%env(OAUTH_FACEBOOK_SECRET)%'
     doctrine_mongodb.odm.fixtures_dirs: ['src/DataFixtures/MongoDB']
+    # Overide Hwi OAuth Utils (not declare as a service, so using this param to change the class name)
+    hwi_oauth.security.oauth_utils.class: App\Application\Hwi\OAuthBundle\Security\OAuthUtils
+    hwi_oauth.authentication.listener.oauth.class: App\Application\Hwi\OAuthBundle\Security\OAuthListener
+        
 
 services:
     # default configuration for services in *this* file
@@ -42,6 +46,11 @@ services:
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
+    
+    # Overide Hwi OAuth Connect Controller
+    HWI\Bundle\OAuthBundle\Controller\ConnectController:
+        class: App\Application\Hwi\OAuthBundle\Controller\ConnectController
+    
 
     # ----- GOGO SERVICES ------
 

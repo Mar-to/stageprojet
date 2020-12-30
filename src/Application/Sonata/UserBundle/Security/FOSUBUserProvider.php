@@ -5,9 +5,20 @@ namespace App\Application\Sonata\UserBundle\Security;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\FOSUBUserProvider as BaseClass;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use FOS\UserBundle\Model\UserManagerInterface;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
 class FOSUBUserProvider extends BaseClass
 {
+    
+    public function __construct(UserManagerInterface $userManager, array $properties, FlashBagInterface $flash)
+    {
+        $this->userManager = $userManager;
+        $this->properties = array_merge($this->properties, $properties);
+        $this->accessor = PropertyAccess::createPropertyAccessor();
+        $this->flash = $flash;
+    }
     /**
      * {@inheritdoc}
      */
@@ -38,40 +49,36 @@ class FOSUBUserProvider extends BaseClass
     public function loadUserByOAuthUserResponse(UserResponseInterface $response)
     {
         $username = $response->getUsername();
+        // Find using communsUid, or facebookUid etc...
         $user = $this->userManager->findUserBy([$this->getProperty($response) => $username]);
-
-        //when the user is registrating
+        // If not exist try find existing user with same email
         if (null === $user) {
-            $service = $response->getResourceOwner()->getName();
-            $setter = 'set'.ucfirst($service);
-            $setter_id = $setter.'Uid';
-            $setter_name = $setter.'Name';
-            $setter_token = $setter.'Data';
+            $user = $this->userManager->findUserByEmail($response->getEmail());
+        }
+        $service = $response->getResourceOwner()->getName();
+        // when the user is registrating
+        if (null === $user) {   
             // create new user here
-            $user = $this->userManager->createUser();
-            $user->$setter_id($username);
-            $user->$setter_name($response->getNickname());
-            $user->$setter_token($response->getAccessToken());
-            //I have set all requested data with the user's username
-            //modify here with relevant data
+            $user = $this->userManager->createUser();     
             $user->setUsername($response->getNickname());
             $user->setFirstName($response->getFirstName());
             $user->setLastName($response->getLastName());
             $user->setEmail($response->getEmail());
             $user->setPassword($username);
             $user->setEnabled(true);
-
-            $this->userManager->updateUser($user);
-
-            return $user;
         }
-        //if user exists - go with the HWIOAuth way
-        $user = parent::loadUserByOAuthUserResponse($response);
-        $serviceName = $response->getResourceOwner()->getName();
-        $setter = 'set'.ucfirst($serviceName).'Data';
-        //update access token
-        $user->$setter($response->getAccessToken());
-
+        // Update specific service info (facebookUid, facebookName ...)
+        $setter = 'set'.ucfirst($service);
+        $setter_id = $setter.'Uid';
+        $setter_name = $setter.'Name';
+        $setter_token = $setter.'Data';        
+        $user->$setter_id($username);
+        $user->$setter_name($response->getNickname());
+        $user->$setter_token($response->getAccessToken());
+        $this->userManager->updateUser($user);        
+        
+        // Adds flash message
+        $this->flash->add('success', "Authentification réussie via \"$service\", vous êtes maintenant connecté !");
         return $user;
     }
 }

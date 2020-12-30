@@ -21,3 +21,8 @@ communs_login:
 
 yahoo_login:
     path: /login/check-yahoo
+
+# This route is used in SAAS mode
+gogo_oauth_login:
+    path: /gogo-login/{domainName}/{ressourcePath}
+    controller: App\Application\Hwi\OAuthBundle\Controller\ConnectController::gogoOAuthAction
