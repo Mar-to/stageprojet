@@ -15,7 +15,7 @@
   <tbody>
     {{ self.apiLink("Interface graphique pour construire une api", url('gogo_api_ui')) }}
     {{ self.apiLink("Rechercher un élement", url('gogo_api_elements_from_text', { 'text': 'votre_texte_de_recherche'})) }}
-    {{ self.apiLink("Element unique (remplacer ID par le numéro de l'option)", url('gogo_api_element_get', { 'id': 'ID'})) }}
+    {{ self.apiLink("Un Element (remplacer ID par l'id de l'élement)", url('gogo_api_element_get', { 'id': 'ID'})) }}
   </tbody>
   </table>
 </div>
@@ -26,7 +26,7 @@
   <tbody>
     {{ self.apiLink("Taxonomie", url('gogo_api_taxonomy')) }}
     {{ self.apiLink("Taxonomie sémantique", url('gogo_api_taxonomy', { '_format': 'jsonld'})) }}
-    {{ self.apiLink("Option unique (remplacer ID par le numéro de l'option)", url('gogo_api_taxonomy_show', { 'id': 'ID'})) }}
+    {{ self.apiLink("Une Catégorie (remplacer ID par l'id d ela catégorie)", url('gogo_api_taxonomy_show', { 'id': 'ID'})) }}
     {{ self.apiLink("Liste des options", url('gogo_element_import_available_options')) }}
     {{ self.apiLink("Liste des options avec correspondance id", url('gogo_api_taxonomy_mapping')) }}
   </tbody>
