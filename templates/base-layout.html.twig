@@ -8,10 +8,10 @@
     {# gogocarto contains materializeCss lib, so we load it for all pages #}
     <link rel="stylesheet" href="{{ asset('css/gogocarto.min.css?ver=' ~ version) }}">
 
-    {% include 'custom-head.html.twig' %}
-
     {% block stylesheets %}
     {% endblock %}
+
+    {% include 'custom-head.html.twig' %}
 
     <meta name="robots" content="index, follow, all" />
   </head>
