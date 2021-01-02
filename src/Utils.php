@@ -1,4 +1,9 @@
 <?php
+
+namespace App;
+
+class Utils {} // dummy class, just for the auto loader not to complain
+
 // Global methodds helper. This file is loaded automatically
 function is_associative_array($a) {
     if (!is_array($a)) return false;
