@@ -47,8 +47,10 @@ fix-perms: ## Fix permissions of all var files
 install-assets: ## Install the assets
 	$(SYMFONY) assets:install web/ --symlink
 
-purge: ## Purge cache and logs
-	rm -rf var/cache/* var/log/*
+purge: ## Purge cache
+	rm -rf var/cache/*
+	chown -R www-data var/cache
+	chmod 777 -R var/
 
 ## —— Yarn —————————————————
 yarn-install: yarn.lock ## Install npm vendors according to the current yarn.lock file
