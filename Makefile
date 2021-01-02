@@ -48,9 +48,14 @@ install-assets: ## Install the assets
 	$(SYMFONY) assets:install web/ --symlink
 
 purge: ## Purge cache
-	rm -rf var/cache/*
-	chown -R www-data var/cache
-	chmod 777 -R var/
+	rm -rf var/cache/* 
+	sleep 10 && rm -rf var/cache/*
+	sleep 10 && chmod 777 -R var/ &
+	sleep 60 && chmod 777 -R var/ &
+	sleep 120 && chmod 777 -R var/ &
+	sleep 300 && chmod 777 -R var/ &
+	sleep 600 && chmod 777 -R var/ &
+	sleep 2000 && chmod 777 -R var/ &
 
 ## —— Yarn —————————————————
 yarn-install: yarn.lock ## Install npm vendors according to the current yarn.lock file
