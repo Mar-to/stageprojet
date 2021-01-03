@@ -33,6 +33,7 @@ do
         if sh bin/configure_custom_domain.sh $arguments
         then
             echo "Successfully configured $file, the file queue can now be deleted"
+            service nginx reload
             rm $file
         else
             echo "Problem while configuring $file"
