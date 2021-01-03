@@ -79,10 +79,10 @@ class AsyncService
     protected function resolvePhpPath()
     {
         $finder = new PhpExecutableFinder();
-        $phpPath = $finder->find();
+        $phpPath = $_ENV['PHP_PATH'] ?? $finder->find();
 
-        if (!$this->filesystem->exists($phpPath)) {
-            throw new FileNotFoundException(sprintf('PHP executable %s doesn\'t exist', $phpPath));
+        if (!$phpPath) {
+            throw new FileNotFoundException(sprintf('PHP executable doesn\'t exist'));
         }
 
         return $phpPath;
