@@ -48,8 +48,10 @@ install-assets: ## Install the assets
 	$(SYMFONY) assets:install web/ --symlink
 
 purge: ## Purge cache
-	rm -rf var/cache/* 
-	sleep 10 && rm -rf var/cache/*
+	service nginx stop
+	sleep 1 && rm -rf var/cache/* 
+	service nginx start
+	chmod 777 -R var/
 	sleep 10 && chmod 777 -R var/ &
 	sleep 60 && chmod 777 -R var/ &
 	sleep 120 && chmod 777 -R var/ &
@@ -122,13 +124,5 @@ gogo-update: ## Update a PROD server to the lastest version of gogocarto
 	$(GULP) production
 	$(YARN) encore production
 	COMPOSER_MEMORY_LIMIT=-1 $(COMPOSER) install
-	$(SYMFONY) cache:clear --env=prod
+	make purge
 	$(SYMFONY) db:migrate
-
-	sleep 10 && chmod 777 -R var/ &
-	sleep 60 && chmod 777 -R var/ &
-	sleep 120 && chmod 777 -R var/ &
-	sleep 300 && chmod 777 -R var/ &
-	sleep 600 && chmod 777 -R var/ &
-	sleep 2000 && chmod 777 -R var/ &
-
