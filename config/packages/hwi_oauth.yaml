@@ -17,7 +17,7 @@ hwi_oauth:
             scope:               "email profile"
             options:
                 display: popup #dialog is optimized for popup window
-                csrf: true
+                csrf: false
         facebook:
             type:                facebook
             client_id:           "%oauth_facebook_id%"
