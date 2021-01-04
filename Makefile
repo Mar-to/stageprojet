@@ -119,10 +119,10 @@ cs-fix: ## Run php-cs-fixer and fix the code
 gogo-update: ## Update a PROD server to the lastest version of gogocarto
 	$(GIT) reset --hard master
 	$(GIT) pull origin master
+	COMPOSER_MEMORY_LIMIT=-1 $(COMPOSER) install
 	$(YARN) install
 	$(GULP) build
 	$(GULP) production
-	$(YARN) encore production
-	COMPOSER_MEMORY_LIMIT=-1 $(COMPOSER) install
-	make purge
+	$(YARN) encore production		
 	$(SYMFONY) db:migrate
+	make purge

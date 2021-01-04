@@ -94,7 +94,7 @@ class MigrationCommand extends GoGoAbstractCommand
 
         try {
             // Collecting the Database to be updated
-            $dbs = ['']; // default DB
+            $dbs = [$_ENV['DATABASE_NAME']]; // default DB
             $dbNames = $dm->createQueryBuilder('App\Document\Project')->select('domainName')->hydrate(false)->getQuery()->execute()->toArray();
             foreach ($dbNames as $object) {
                 $dbs[] = $object['domainName'];
