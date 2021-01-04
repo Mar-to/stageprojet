@@ -43,6 +43,13 @@ fix-perms: ## Fix permissions of all var files
 	chown -R www-data var/log
 	chown -R www-data var/sessions
 	chown -R www-data web/uploads
+	chmod 777 -R var/
+	sleep 10 && chmod 777 -R var/ &
+	sleep 60 && chmod 777 -R var/ &
+	sleep 120 && chmod 777 -R var/ &
+	sleep 300 && chmod 777 -R var/ &
+	sleep 600 && chmod 777 -R var/ &
+	sleep 2000 && chmod 777 -R var/ &
 
 install-assets: ## Install the assets
 	$(SYMFONY) assets:install web/ --symlink
@@ -51,13 +58,7 @@ purge: ## Purge cache
 	service nginx stop
 	sleep 1 && rm -rf var/cache/* 
 	service nginx start
-	chmod 777 -R var/
-	sleep 10 && chmod 777 -R var/ &
-	sleep 60 && chmod 777 -R var/ &
-	sleep 120 && chmod 777 -R var/ &
-	sleep 300 && chmod 777 -R var/ &
-	sleep 600 && chmod 777 -R var/ &
-	sleep 2000 && chmod 777 -R var/ &
+	make fix-perms
 
 ## —— Yarn —————————————————
 yarn-install: yarn.lock ## Install npm vendors according to the current yarn.lock file
