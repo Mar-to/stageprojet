@@ -23,6 +23,7 @@ class Kernel extends BaseKernel
                 yield new $class();
             }
         }
+        require $this->getProjectDir().'/src/Utils.php';
     }
 
     public function getProjectDir(): string
