@@ -57,16 +57,9 @@ function extractFieldsUsedInTemplate($string) {
     }, $matches[1])));
 }
 
-// Transform mymap.gogocarto.fr/login/check-facebook to
-// gogocarto.fr/gogo-login/mymap/check-facebook
-// So the SSO will always see the main domain gogocarto.Fr, and never the subdomain mymap.gogocarto.fr
-function transformOauthUrlToUSeRootDomain($url) {
-    if ($_ENV['USE_AS_SAAS'] == "true") {
-        preg_match_all('/^https?:\/\/(\w+)\./', $url, $result);
-        $domainName = $result[1][0];
-        $url = str_replace("login/", "gogo-login/", $url);        
-        $url = preg_replace('/:\/\/\w+\./', '://', $url);
-        $url .= "?domainName=$domainName";
-    }
+// Transform mymap.gogocarto.fr/some-route to gogocarto.fr/some-route
+function getRootProjectUrlFromInstanceUrl($url, $prefix = '/root') {
+    $path = explode($_ENV['BASE_URL'], $url)[1];
+    $url = $_ENV['BASE_PROTOCOL'] . '://' . $_ENV['BASE_URL'] . $prefix . $path;
     return $url;
 }

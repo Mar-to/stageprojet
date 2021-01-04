@@ -21,7 +21,7 @@ class OAuthUtils extends Base
                 $redirectUrl = $this->getServiceAuthUrl($request, $resourceOwner);
             }
         }
-        $redirectUrl = transformOauthUrlToUSeRootDomain($redirectUrl);
+        $redirectUrl = getRootProjectUrlFromInstanceUrl($redirectUrl);
         return $resourceOwner->getAuthorizationUrl($redirectUrl, $extraParameters);
     }
 

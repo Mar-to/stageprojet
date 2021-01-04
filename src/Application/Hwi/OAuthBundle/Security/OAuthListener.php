@@ -72,8 +72,8 @@ class OAuthListener extends AbstractAuthenticationListener
 
         $redirectUrl = $this->httpUtils->createRequest($request, $checkPath)->getUri();
 
-        $redirectUrl = transformOauthUrlToUSeRootDomain($redirectUrl);
-
+        $redirectUrl = getRootProjectUrlFromInstanceUrl($redirectUrl);
+        
         $accessToken = $resourceOwner->getAccessToken($request, $redirectUrl);
         $token = new OAuthToken($accessToken);
         $token->setResourceOwnerName($resourceOwner->getName());
