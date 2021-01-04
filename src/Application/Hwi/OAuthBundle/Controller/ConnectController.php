@@ -13,8 +13,11 @@ class ConnectController extends BaseController
     // So we don't need to register each subdomain for the SSO
     public function gogoOAuthAction(Request $request, SessionInterface $session, $ressourcePath)
     {
-        $domainName = $session->get('domainName');
-        $url = 'http://'.$domainName.'.'.$this->getParameter('base_url'). "/login/$ressourcePath?";
+        if ($this->container->getParameter('use_as_saas') == "true")
+            $domainName = $session->get('domainName') . '.';
+        else
+            $domainName = '';
+        $url = $this->getParameter('base_protocol').'://'.$domainName.$this->getParameter('base_url'). "/login/$ressourcePath?";
         foreach($request->query->all() as $key => $value)
             $url = $url . "$key=$value&";
         return $this->redirect($url);
