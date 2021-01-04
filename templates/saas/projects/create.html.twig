@@ -133,7 +133,8 @@
           .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
           .replace(/\-\-+/g, '-')         // Replace multiple - with single -
           .replace(/^-|-$/g, '');        // Remove beginning and ending -
-       if ($.inArray(result, ['dev', 'test', 'demo', 'carto', 'carto-dev', 'www']) !== -1) result += "_1";
+       if ($.inArray(result, ['dev', 'test', 'demo', 'carto', 'carto-dev', 'www', 'gogocarto_default']) !== -1) result += "_1";
+       result = result.slice(0,30); // limit number of characters
        return result;
     }
   </script>

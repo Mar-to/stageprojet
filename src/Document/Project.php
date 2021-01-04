@@ -139,6 +139,9 @@ class Project
      */
     public function setDomainName($domainName)
     {
+        $domainName = str_replace('.', '', $domainName); // remove dot, not allowed
+        $domainName = str_replace('gogocartofr', '', $domainName); // if people enter test.gogocarto.fr instead of just test
+        $domainName = substr($domainName, 0, 30); // max 30 characters
         $this->domainName = $domainName;
 
         return $this;
