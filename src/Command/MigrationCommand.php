@@ -31,7 +31,9 @@ class MigrationCommand extends GoGoAbstractCommand
       // v3.1.0
       "db.Element.dropIndex(\"name_text\");",
       "db.Element.dropIndex(\"search_index\");",
-      "db.Element.createIndex( {name: \"text\"}, { name: \"search_index\", default_language: \"french\", weights: {name: 1} })"
+      "db.Element.createIndex( {name: \"text\"}, { name: \"search_index\", default_language: \"french\", weights: {name: 1} });",
+      // v3.2
+      'db.Configuration.updateMany({}, {$set: {"user.loginWithLesCommuns": true, "user.loginWithLesGoogle": true, "user.loginWithFacebook": true}});'
     ];
 
     public static $commands = [
@@ -64,7 +66,8 @@ class MigrationCommand extends GoGoAbstractCommand
         "Depuis le site, la recherche par élément peut maintenant fonctionenr sur plusieurs champs. Dans Modèle de Données -> Formulaire, editez un champ pour voir apparaitre la configuration liée à la recherche. Vous pouvez aussi donner des poids différents à chaque champs, par exemple la recherche sur le titre avec un poids de 3 et la recherche dans la description avec un poids de 1",
         "Nouveau moteur de recherche ! Sur la carte, lorsqu'on tape une recherche des suggestions apparaissent pour les éléments et les catégories (bientôt aussi pour les recherchent géographiques)",
         // v3.2
-        "Vous pouvez maintenant configurer l'url de votre carte si vous possédez un nom de domaine (ou un sous domaine). Allez dans Personnalisation -> Configuration Générale et suivez les instructions !"
+        "Vous pouvez maintenant configurer l'url de votre carte si vous possédez un nom de domaine (ou un sous domaine). Allez dans Personnalisation -> Configuration Générale et suivez les instructions !",
+        "La connexion via un compte tiers (Google, Facebook, LesCommuns.org) est maintenant possible ! Changez la configuration dans Utilisateurs -> Configuration"
     ];
 
     public function __construct(DocumentManagerFactory $dm, LoggerInterface $commandsLogger,
