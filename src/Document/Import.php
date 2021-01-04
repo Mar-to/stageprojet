@@ -203,7 +203,7 @@ class Import extends AbstractFile
     public function getSourceType()
     {
         if ($this->sourceType) return $this->sourceType;
-        if ($this->osmQueriesJson) return 'openstreetmap';
+        if (isset($this->osmQueriesJson)) return 'openstreetmap';
         if ($this->url) return 'json';
         if ($this->file) return 'csv';
     }

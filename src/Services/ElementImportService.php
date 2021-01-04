@@ -120,9 +120,8 @@ class ElementImportService
     // create a mapping table for ontology and taxonomy
     public function collectData($import)
     {
-        
         if ($import->getUrl()) $data = $this->importJson($import, true);
-        elseif ($import->getFile()) $data = $this->importCsv($import, true);
+        elseif ($import->getFilePath()) $data = $this->importCsv($import, true);
         if (!isset($data)) return null;
 
         return $this->mappingService->transform($data, $import);

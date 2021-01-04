@@ -135,10 +135,10 @@ class ImportAdminController extends Controller
                         }
                     }
                     $object->setOntologyMapping($ontology);
+                    $currentTaxonomyMapping = $object->getTaxonomyMapping();
 
                     // Taxonomy Mapping
-                    if ($request->get('taxonomy')) {
-                        $currentTaxonomyMapping = $object->getTaxonomyMapping();
+                    if ($request->get('taxonomy')) {                        
                         $newTaxonomyMapping = $request->get('taxonomy');
                         $categoriesCreated = [];
                         foreach($newTaxonomyMapping as $originName => &$mappedCategories) {
