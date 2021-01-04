@@ -64,8 +64,9 @@ function transformOauthUrlToUSeRootDomain($url) {
     if ($_ENV['USE_AS_SAAS'] == "true") {
         preg_match_all('/^https?:\/\/(\w+)\./', $url, $result);
         $domainName = $result[1][0];
-        $url = str_replace("login/", "gogo-login/$domainName/", $url);        
+        $url = str_replace("login/", "gogo-login/", $url);        
         $url = preg_replace('/:\/\/\w+\./', '://', $url);
+        $url .= "?domainName=$domainName";
     }
     return $url;
 }
