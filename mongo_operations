@@ -125,6 +125,15 @@ db.Element.find({'data.image': {$exists: true}}).forEach(function(e) {
     db.Element.save(e);
 });
 
+db.Element.find({'images': {$exists: true}}).forEach(function(e) {
+  e.images.forEach(function(image) {
+      image.fileUrl = image.fileUrl.replace('gogocarto_default', 'presdecheznous');
+      image.filePath = image.filePath.replace('gogocarto_default', 'presdecheznous');
+      image.externalImageUrl = image.externalImageUrl.replace('gogocarto_default', 'presdecheznous');
+  })
+  db.Element.save(e);  
+});
+
 
 db.Element.updateMany({'nonDuplicates.$id': "KBL"}, { $unset: { 'nonDuplicates': ''} })
 
