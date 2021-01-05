@@ -41,21 +41,23 @@ class ElementImportMappingTaxonomyService
                         if (!in_array($category, $allNewCategories)) {
                             $allNewCategories[] = $category;
                         }
-                        if ($category && !array_key_exists($category, $taxonomyMapping)) {
-                            $categorySlug = slugify($category);
-                            $mappedCategoryId = array_key_exists($categorySlug, $this->mappingTableIds) ? $this->mappingTableIds[$categorySlug]['id'] : '';
+                        if ($category) {
+                            if (!array_key_exists($category, $taxonomyMapping)) {
+                                $categorySlug = slugify($category);
+                                $mappedCategoryId = array_key_exists($categorySlug, $this->mappingTableIds) ? $this->mappingTableIds[$categorySlug]['id'] : '';
 
-                            $taxonomyMapping[$category] = [
-                                'mappedCategoryIds' => [$mappedCategoryId],
-                                'collectedCount' => 1,
-                                'fieldName' => $originProp
-                            ];
-                            if (!$mappedCategoryId) {
-                                $import->setNewTaxonomyToMap(true);
+                                $taxonomyMapping[$category] = [
+                                    'mappedCategoryIds' => [$mappedCategoryId],
+                                    'collectedCount' => 1,
+                                    'fieldName' => $originProp
+                                ];
+                                if (!$mappedCategoryId) {
+                                    $import->setNewTaxonomyToMap(true);
+                                }
+                            } else {
+                                $taxonomyMapping[$category]['collectedCount']++;
+                                $taxonomyMapping[$category]['fieldName'] = $originProp;
                             }
-                        } else {
-                            $taxonomyMapping[$category]['collectedCount']++;
-                            $taxonomyMapping[$category]['fieldName'] = $originProp;
                         }
                     }
                 }
