@@ -41,15 +41,21 @@
 </html>
 
 <style>
+  body, html {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    background-color: #354254;
+  }
   #page-content {
     background-color: #f4f4f4;
-      border-radius: 5px;
-      color: #354254;
-      padding: 30px;
-      text-align: center;
-  }
-
-  #page-container {
-    background-color: #354254;
+    border-radius: 5px;
+    color: #354254;
+    padding: 30px;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 30px;
+    margin-top: 10%;
+    text-align: center;
   }
 </style>

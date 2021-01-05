@@ -55,9 +55,7 @@ install-assets: ## Install the assets
 	$(SYMFONY) assets:install web/ --symlink
 
 purge: ## Purge cache
-	service nginx stop
-	sleep 1 && rm -rf var/cache/* 
-	service nginx start
+	rm -rf var/cache/* 
 	make fix-perms
 
 ## —— Yarn —————————————————
@@ -116,10 +114,19 @@ test: phpunit.xml ## Launch unit tests
 cs-fix: ## Run php-cs-fixer and fix the code
 	./vendor/bin/php-cs-fixer fix src/
 
+show-deploy-message:
+	mv web/index.php web/index_backup.php
+	cp web/error.php web/index.php
+	
+hide-deploy-message:
+	mv web/index_backup.php web/index.php
+
 ## —— Deploy & Prod ———————
 gogo-update: ## Update a PROD server to the lastest version of gogocarto
+	service cron stop
 	$(GIT) reset --hard master
 	$(GIT) pull origin master
+	make show-deploy-message
 	COMPOSER_MEMORY_LIMIT=-1 $(COMPOSER) install
 	$(YARN) install
 	$(GULP) build
@@ -127,3 +134,5 @@ gogo-update: ## Update a PROD server to the lastest version of gogocarto
 	$(YARN) encore production		
 	$(SYMFONY) db:migrate
 	make purge
+	make hide-deploy-message
+	service cron start
