@@ -33,7 +33,8 @@ class MigrationCommand extends GoGoAbstractCommand
       "db.Element.dropIndex(\"search_index\");",
       "db.Element.createIndex( {name: \"text\"}, { name: \"search_index\", default_language: \"french\", weights: {name: 1} });",
       // v3.2
-      'db.Configuration.updateMany({}, {$set: {"user.loginWithLesCommuns": true, "user.loginWithLesGoogle": true, "user.loginWithFacebook": true}});'
+      'db.Configuration.updateMany({}, {$set: {"user.loginWithLesCommuns": true, "user.loginWithLesGoogle": true, "user.loginWithFacebook": true}});',
+      'db.Option.updateMany({}, {$set: {osmTags: {}}})',
     ];
 
     public static $commands = [
