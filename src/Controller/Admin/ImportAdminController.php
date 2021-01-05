@@ -165,7 +165,6 @@ class ImportAdminController extends Controller
                                         $newCat->setName($category);
                                         $newCat->setParent($parent);
                                         $dm->persist($newCat);
-                                        $dm->flush();
                                         $categoriesCreated[$categoryId] = $newCat->getId();
                                         $mappedCategories[$key] = $newCat->getId();
                                     }                                    
