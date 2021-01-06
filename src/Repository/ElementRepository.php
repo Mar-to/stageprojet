@@ -377,7 +377,7 @@ class ElementRepository extends DocumentRepository
     public function findFormProperties()
     {
         $formProperties = [];
-        $propTypeToIgnore = ['separator', 'header', 'address', 'title', 'email', 'taxonomy', 'openhours'];
+        $propTypeToIgnore = ['separator', 'header', 'address', 'title', 'taxonomy', 'openhours'];
         $config = $this->getDocumentManager()->getRepository('App\Document\Configuration')->findConfiguration();
         foreach ($config->getElementFormFields() as $key => $field) {
             if (property_exists($field, 'name') && !in_array($field->type, $propTypeToIgnore)) {

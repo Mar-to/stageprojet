@@ -39,6 +39,7 @@ class ElementImportMappingOntologyService
 
         $this->existingProps = $this->dm->getRepository('App\Document\Element')->findAllCustomProperties();
         $this->existingProps = array_merge($this->coreFields, $this->existingProps);
+        $this->existingProps = array_map(function($e) { return strtolower($e); }, $this->existingProps);
         $this->collectedProps = [];
 
         foreach ($data as $row) {
@@ -66,7 +67,7 @@ class ElementImportMappingOntologyService
 
     private function slugProp($prop)
     {
-        $result = preg_replace('~(^bf_|_)~', '', strtolower($prop));
+        $result = preg_replace('~(^bf_|_)~', '', $prop);
         return str_replace('.', '', $result); // dots are not allawed in MongoDB hash keys
     }
 
@@ -91,7 +92,7 @@ class ElementImportMappingOntologyService
         }
         if (!array_key_exists($fullProp, $this->ontologyMapping)) {
             // if prop with same name exist in the DB, map it directly to itself
-            $mappedProp = in_array($prop, $this->existingProps) ? $prop : '';
+            $mappedProp = in_array(strtolower($prop), $this->existingProps) ? $prop : '';
             // handle some special cases
             if ($import->getSourceType() == 'osm') {
                 switch ($prop) {
@@ -103,8 +104,8 @@ class ElementImportMappingOntologyService
                 }                 
             }
             // use alternative name, like lat instead of latitude
-            if (!$mappedProp && array_key_exists($prop, $this->mappedCoreFields)) {
-                $mappedProp = $this->mappedCoreFields[$prop];
+            if (!$mappedProp && array_key_exists(strtolower($prop), $this->mappedCoreFields)) {
+                $mappedProp = $this->mappedCoreFields[strtolower($prop)];
             }
             // Asign mapping
             $alreadyMappedProperties = array_map(function($a) { return $a['mappedProperty']; }, $this->ontologyMapping);
