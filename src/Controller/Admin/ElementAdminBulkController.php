@@ -203,18 +203,19 @@ class ElementAdminBulkController extends Controller
 
         // Add element id to ignore to sources
         $selectedModels = clone $selectedModelQuery;
-        $elementsIdsGroupedBySource = $selectedModels
-            ->map('function() { if (this.source) emit(this.source.$id, this.oldId); }')
-            ->reduce('function(k, vals) {
-                return vals.join(",");
-            }')->getQuery()->execute()->toArray();
-
-        foreach ($elementsIdsGroupedBySource as $value) {
-            $elementIdsForCurrSource = explode(',', $value['value']);
+        $elements = $selectedModels
+            ->select('id', 'source.$id')
+            ->field('source.$id')->exists(true)
+            ->hydrate(false)->getQuery()->execute()->toArray();
+        $elementsIdsGroupedBySource = [];
+        foreach($elements as $element) {
+            $elementsIdsGroupedBySource[$element['source']['$id']][] = $element['_id'];
+        }
+        foreach ($elementsIdsGroupedBySource as $sourceId => $elementIds) {
             $qb = $this->dm->createQueryBuilder(Import::class);
             $qb->updateOne()
-               ->field('id')->equals($value['_id'])
-               ->field('idsToIgnore')->addToSet($qb->expr()->each($elementIdsForCurrSource))
+               ->field('id')->equals($sourceId)
+               ->field('idsToIgnore')->addToSet($qb->expr()->each($elementIds))
                ->getQuery()->execute();
         }
 

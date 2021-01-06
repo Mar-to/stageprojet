@@ -339,31 +339,24 @@ class ElementRepository extends DocumentRepository
 
     public function findDataCustomProperties()
     {
-        return array_merge($this->findPublicCustomProperties(), $this->findPrivateCustomProperties());
+        $imports = $this->getDocumentManager()->getRepository('App\Document\Import')->findAll();
+        $props = [];
+        $propTypeToIgnore = ['', '/'];
+        foreach($imports as $import) {
+            if ($import->getOntologyMapping()) {
+                foreach($import->getOntologyMapping() as $mappedObject) {
+                    $p = $mappedObject['mappedProperty'];
+                    if (isset($p) && !in_array($p, $propTypeToIgnore)) $props[] = $p;
+                }
+            }
+        }
+        $props = array_unique($props);
+        return $props;
     }
 
-    public function findPublicCustomProperties()
+    public function findAllCustomProperties()
     {
-        return $this->findProperties('this.data');
-    }
-
-    public function findPrivateCustomProperties()
-    {
-        return $this->findProperties('this.privateData');
-    }
-
-    private function findProperties($rootPath = 'this')
-    {
-        $qb = $this->createQueryBuilder('App\Document\Element')
-      ->map('function() { for (var key in '.$rootPath.') { emit(key, null); } }')
-      ->reduce('function(k, vals) { return null; }');
-
-        return array_map(function ($array) { return $array['_id']; }, $qb->getQuery()->execute()->toArray());
-    }
-
-    public function findAllCustomProperties($onlyPublic = false)
-    {
-        $dataProperties = $onlyPublic ? $this->findPublicCustomProperties() : $this->findDataCustomProperties();
+        $dataProperties = $this->findDataCustomProperties();
         $allProperties = [];
         foreach ($dataProperties as $prop) {
             $allProperties[] = $prop;
