@@ -258,6 +258,12 @@ services:
         arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: other_config, label: APIs }
+    
+    admin.osm_config:
+        class: App\Admin\ConfigurationOsmAdmin
+        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: other_config, label: OpenStreetMap }
 
     # -- USER CONF ---
 

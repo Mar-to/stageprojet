@@ -9,6 +9,7 @@ use App\Document\Configuration\ConfigurationMarker;
 use App\Document\Configuration\ConfigurationMenu;
 use App\Document\Configuration\ConfigurationUser;
 use App\Document\Configuration\ConfigurationSaas;
+use App\Document\Configuration\ConfigurationOsm;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Gedmo\Mapping\Annotation as Gedmo;
 use OzdemirBurak\Iris\Color\Hex;
@@ -442,6 +443,13 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\EmbedOne(targetDocument="App\Document\Configuration\ConfigurationApi") */
     protected $api;
 
+    // -------------------------
+    // --------- OSM -----------
+    // -------------------------
+
+    /** @MongoDB\EmbedOne(targetDocument="App\Document\Configuration\ConfigurationOsm") */
+    protected $osm;
+
     // ----------------------------
     // ---------- SAAS ------------
     // ----------------------------
@@ -489,6 +497,7 @@ class Configuration implements \JsonSerializable
         $this->menu = new ConfigurationMenu();
         $this->infobar = new ConfigurationInfobar();
         $this->api = new ConfigurationApi();
+        $this->osm = new ConfigurationOsm();
         $this->home = new ConfigurationHome();
         $this->marker = new ConfigurationMarker();
     }
@@ -531,7 +540,7 @@ class Configuration implements \JsonSerializable
                 ->addViolation()
             ;
         }
-        
+
     }
 
     /**
@@ -2867,6 +2876,34 @@ class Configuration implements \JsonSerializable
         }
 
         return $this->api;
+    }
+
+    /**
+     * Set osm.
+     *
+     * @param App\Document\Configuration\ConfigurationOsm $osm
+     *
+     * @return $this
+     */
+    public function setOsm(\App\Document\Configuration\ConfigurationOsm $osm)
+    {
+        $this->osm = $osm;
+
+        return $this;
+    }
+
+    /**
+     * Get osm.
+     *
+     * @return App\Document\Configuration\ConfigurationOsm $osm
+     */
+    public function getOsm()
+    {
+        if (!$this->osm) {
+            $this->osm = new ConfigurationOsm();
+        }
+
+        return $this->osm;
     }
 
     public function setSaas($saas)
