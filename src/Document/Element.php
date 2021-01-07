@@ -21,8 +21,7 @@ abstract class ElementStatus
     const ModifiedByAdmin = 4;
     const ModifiedByOwner = 5;
     const ModifiedFromHash = 6; // in the emails we provide a link to edit the element with a hash validation
-    const DynamicImport = 7; // Element imported from an ExternalSource, they cannot be edited
-    const DynamicImportTemp = 8; // Temporary status used while importing
+    const Imported = 7;
 }
 
 abstract class ModerationState
@@ -374,6 +373,12 @@ class Element
         }
     }
 
+    public function isReadOnly()
+    {
+        if (!$this->getSource()) return true;
+        return $this->getSource()->isDynamicImport();
+    }
+
     public function getShowUrlFromController($router)
     {
         $url = $router->generate('gogo_directory_showElement', ['id' => $this->getId()]);
@@ -511,7 +516,7 @@ class Element
         }
         $duplicates[] = $this;
         usort($duplicates, function ($a, $b) {
-            // Keep in priority the one from our DB instead of the on dynamically imported
+            // Keep in priority the one from our DB instead of the ones dynamically imported
             $aIsDynamicImported = $a->isDynamicImported();
             $bIsDynamicImported = $b->isDynamicImported();
             if ($aIsDynamicImported != $bIsDynamicImported) {

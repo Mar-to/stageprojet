@@ -14,9 +14,6 @@ use JMS\Serializer\Annotation\Expose;
 /** @MongoDB\EmbeddedDocument */
 class OptionValue
 {
-    /** @MongoDB\Id */
-    private $id;
-
     /**
      * @Expose
      * @MongoDB\Field(type="int") @MongoDB\Index
@@ -35,7 +32,7 @@ class OptionValue
      */
     public $index = 0;
 
-    public function toJson($optionName)
+    public function toJson($optionName = null)
     {
         $result = '{';
         $result .= '"id":'.$this->optionId;
@@ -47,16 +44,6 @@ class OptionValue
         $result .= '}';
 
         return $result;
-    }
-
-    /**
-     * Get id.
-     *
-     * @return id $id
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

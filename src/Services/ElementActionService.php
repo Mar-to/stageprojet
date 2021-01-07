@@ -77,7 +77,6 @@ class ElementActionService
     public function savePendingModification($element)
     {
         return $this->elementPendingService->savePendingModification($element);
-        $element->updateTimestamp();
     }
 
     public function resolve($element, $isAccepted, $validationType = ValidationType::Admin, $message = null)

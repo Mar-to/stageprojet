@@ -159,7 +159,7 @@ class ElementRepository extends DocumentRepository
     {
         $qb = $this->createQueryBuilder('App\Document\Element');
 
-        $qb->field('status')->gt(ElementStatus::PendingAdd)->field('status')->notEqual(ElementStatus::DynamicImport);
+        $qb->field('status')->gt(ElementStatus::PendingAdd);
         if ($getCount) {
             $qb->count();
         }
@@ -173,7 +173,7 @@ class ElementRepository extends DocumentRepository
 
         $qb = $this->filterVisibles($qb);
         if ($excludeImported) {
-            $qb->field('status')->notEqual(ElementStatus::DynamicImport);
+            $qb->field('isExternal')->notEqual(true);
         }
         if ($limit) {
             $qb->limit($limit);
@@ -237,7 +237,7 @@ class ElementRepository extends DocumentRepository
         }
 
         if ($request->get('excludeExternal')) {
-            $qb->field('status')->notEqual(ElementStatus::DynamicImport);
+            $qb->field('isExternal')->notEqual(true);
         }
 
         $stampsIds = $request->get('stampsIds');

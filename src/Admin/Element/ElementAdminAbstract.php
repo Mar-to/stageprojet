@@ -26,8 +26,7 @@ class ElementAdminAbstract extends AbstractAdmin
     '4' => 'Modifié par admin',
     '5' => 'Modifié par propriétaire',
     '6' => 'Modifié avec lien direct',
-    '7' => 'Source externe',
-    '8' => "En cours d'importation",
+    '7' => 'Importé'
     ];
 
     protected $moderationChoices = [

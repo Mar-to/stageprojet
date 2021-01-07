@@ -136,7 +136,8 @@ class ElementImportService
             // Define the frequency for persisting the data and the current index of records
             $batchSize = 100;
             $i = 0;
-
+            $previouslyImportedElementIds = [];
+            $newlyImportedElementIds = [];
             // do the mapping
             $data = $this->mappingService->transform($data, $import);
 
@@ -146,12 +147,10 @@ class ElementImportService
             if ($import->isDynamicImport()) {
                 $import->updateNextRefreshDate();
 
-                // before updating the source, we put all elements into DynamicImportTemp status
-                $qb->updateMany()
-                   ->field('source')->references($import)
-                   ->field('status')->gt(ElementStatus::Deleted) // leave the deleted one as they are, so we know we do not need to import them
-                   ->field('status')->set(ElementStatus::DynamicImportTemp)
-                   ->getQuery()->execute();
+                // before updating the source, we collect all elements ids
+                $previouslyImportedElementIds = array_keys($qb->field('source')->references($import)
+                   ->select('id')->hydrate(false)
+                   ->getQuery()->execute()->toArray());
             } else {
                 // before re importing a static source, we delete all previous items
                 $qb->remove()->field('source')->references($import)->getQuery()->execute();
@@ -164,7 +163,12 @@ class ElementImportService
                 try {
                     $import->setCurrMessage("Importation des données $i/$size traitées");
                     $result = $this->importOneService->createElementFromArray($row, $import);
-                    switch ($result) {
+                    $newlyImportedElementIds[] = $result['id'];
+                    // saving modified version so it does not get deleted at the end of the import
+                    if (isset($result['id_pending_modified'])) 
+                        $newlyImportedElementIds[] = $result['id_pending_modified'];
+                    
+                    switch ($result['status']) {
                       case 'nothing_to_do': $this->countElementNothingToDo++; break;
                       case 'created': $this->countElementCreated++; break;
                       case 'updated': $this->countElementUpdated++; break;
@@ -175,6 +179,7 @@ class ElementImportService
                     ++$this->countElementErrors;
                     if (isset($row['id']) && !is_array($row['id'])) {
                         $this->elementIdsErrors[] = ''.$row['id'];
+                        $newlyImportedElementIds[] = ''.$row['id'];
                     }
 
                     if (!array_key_exists($e->getMessage(), $this->errorsCount)) {
@@ -269,32 +274,27 @@ class ElementImportService
 
             $countElemenDeleted = 0;
             if ($import->isDynamicImport()) {
-                if ($this->countElementErrors > 0) {
-                    // If there was an error while retrieving an already existing element
-                    // we set back the status to DynamicImport otherwise it will be deleted just after
-                    $qb = $this->dm->createQueryBuilder('App\Document\Element');
-                    $result = $qb->updateMany()
-                        ->field('source')->references($import)->field('oldId')->in($this->elementIdsErrors)
-                        ->field('status')->set(ElementStatus::DynamicImport)
-                        ->getQuery()->execute();
-                }
-
-                // after updating the source, the element still in DynamicImportTemp are the one who are missing
-                // from the new data received, so we need to delete them
                 $qb = $this->dm->createQueryBuilder('App\Document\Element');
-                $deleteQuery = $qb
-                    ->field('source')->references($import)
-                    ->field('status')->equals(ElementStatus::DynamicImportTemp);
-                // really needed?
-                $deletedElementIds = array_keys($deleteQuery->select('id')->hydrate(false)->getQuery()->execute()->toArray());
+                $elementIdsToDelete = array_diff($previouslyImportedElementIds, $newlyImportedElementIds);
+                // first get proper count (without ElementPendingVersion which are misleading)
+                $countElemenDeleted = $qb->field('source')->references($import)
+                                         ->field('status')->notEqual(ElementStatus::ModifiedPendingVersion)
+                                         ->field('id')->in($elementIdsToDelete)
+                                         ->count()->getQuery()->execute();
+                // delete elements
+                $qb = $this->dm->createQueryBuilder('App\Document\Element');
+                $qb->field('source')->references($import)
+                   ->field('id')->in($elementIdsToDelete)
+                   ->remove()->getQuery()->execute();
+                // delete linked object cause doctrine cascading do not work when deleting with queryBuilder
                 $qb = $this->dm->createQueryBuilder(UserInteraction::class);
-                $qb->field('element.id')->in($deletedElementIds)->remove()->getQuery()->execute();
-
-                $countElemenDeleted = $deleteQuery->remove()->getQuery()->execute()['n'];
+                $qb->field('element.id')->in($elementIdsToDelete)->remove()->getQuery()->execute();
             }
 
             $qb = $this->dm->createQueryBuilder('App\Document\Element');
-            $totalCount = $qb->field('status')->field('source')->references($import)->count()->getQuery()->execute();
+            $totalCount = $qb->field('status')->notEqual(ElementStatus::ModifiedPendingVersion)
+                             ->field('source')->references($import)
+                             ->count()->getQuery()->execute();
 
             $qb = $this->dm->createQueryBuilder('App\Document\Element');
             $elementsMissingGeoCount = $qb->field('source')->references($import)->field('moderationState')->equals(ModerationState::GeolocError)->count()->getQuery()->execute();

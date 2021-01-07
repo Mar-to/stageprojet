@@ -40,7 +40,7 @@ class ElementAdminFilters extends ElementAdminAbstract
                         return;
                     }
 
-                    $queryBuilder->field('status')->gt(ElementStatus::PendingAdd)->notEqual(ElementStatus::DynamicImport);
+                    $queryBuilder->field('status')->gt(ElementStatus::PendingAdd);
 
                     return true;
                 },

@@ -158,6 +158,11 @@ class Import extends AbstractFile
      */
     private $mainConfigUpdatedAt;
 
+    /**
+     * @MongoDB\Field(type="bool")
+     */
+    private $moderateElements = false;
+
     public function __construct()
     {
         $this->logs = new \Doctrine\Common\Collections\ArrayCollection();
@@ -472,7 +477,7 @@ class Import extends AbstractFile
     public function getFieldToCheckElementHaveBeenUpdated()
     {
         if ($this->getSourceType() == 'osm') return 'osm:version';
-        return $this->fieldToCheckElementHaveBeenUpdated;
+        return $this->fieldToCheckElementHaveBeenUpdated ?? 'updateAt';
     }
 
     /**
@@ -736,6 +741,26 @@ class Import extends AbstractFile
     public function setMainConfigUpdatedAt($mainConfigUpdatedAt)
     {
         $this->mainConfigUpdatedAt = $mainConfigUpdatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of moderateElements
+     */ 
+    public function getModerateElements()
+    {
+        return $this->moderateElements;
+    }
+
+    /**
+     * Set the value of moderateElements
+     *
+     * @return  self
+     */ 
+    public function setModerateElements($moderateElements)
+    {
+        $this->moderateElements = $moderateElements;
 
         return $this;
     }

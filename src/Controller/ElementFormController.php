@@ -48,7 +48,7 @@ class ElementFormController extends GoGoController
             $this->addFlash('error', "L'élément demandé n'existe pas...");
 
             return $this->redirectToRoute('gogo_directory');
-        } elseif ($element->getStatus() > ElementStatus::PendingAdd && ElementStatus::DynamicImport != $element->getStatus()
+        } elseif ($element->getStatus() > ElementStatus::PendingAdd && !$element->isReadOnly()
             || $configService->isUserAllowed('directModeration')
             || ($element->isPending() && $element->getRandomHash() == $request->get('hash'))) {
             return $this->renderForm($element, true, $request, $session, $dm, $configService, $elementFormService, $userManager, $elementActionService, $loginManager);

@@ -48,19 +48,22 @@ class ElementPendingService
     // In case of collaborative modification, we actually don't change the elements attributes.
     // Instead we save the modifications in the modifiedElement attributes.
     // The old element as just his status attribute modified, all the other modifications are saved in modifiedelement attribute
-    public function savePendingModification($element)
+    public function savePendingModification($elementToCopy)
     {
-        $modifiedElement = clone $element;
-        $modifiedElement->setId(null);
+        if ($elementToCopy->getModifiedElement()) {
+            $oldModifiedElementId = $elementToCopy->getModifiedElement()->getId();
+            $elementToCopy->setModifiedElement(null);          
+        }
+        $elementToCopy->resetContributions();
+        $elementToCopy->resetReports();
+        $modifiedElement = clone $elementToCopy;
+        $modifiedElement->setId($oldModifiedElementId ?? null); // update previous mopdifiedElement or create a new one        
         $modifiedElement->setStatus(ElementStatus::ModifiedPendingVersion);
 
         // making a real refresh, calling refresh and getting again the element from DB (otherwise there were conflicts)
-        $element->reset();
-        $this->dm->refresh($element);
-        $id = $element->getId();
+        $this->dm->refresh($elementToCopy);
+        $id = $elementToCopy->getId();
         $oldElement = $this->dm->getRepository('App\Document\Element')->find($id);
-
-        $this->dm->persist($modifiedElement);
         $oldElement->setModifiedElement($modifiedElement);
 
         return $oldElement;
@@ -108,7 +111,7 @@ class ElementPendingService
         $modifiedElement = $element->getModifiedElement();
         if ($modifiedElement) {
             // copying following attributes
-            $attributes = ['name', 'geo', 'address', 'optionValues', 'email', 'openHours', 'images', 'data', 'privateData'];
+            $attributes = ['name', 'geo', 'address', 'optionValues', 'email', 'openHours', 'images', 'files', 'data', 'privateData'];
             foreach ($attributes as $key) {
                 $getter = 'get'.ucfirst($key);
                 $setter = 'set'.ucfirst($key);

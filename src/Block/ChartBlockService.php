@@ -35,7 +35,7 @@ class ChartBlockService extends AbstractBlockService
         '4' => 'Modifié par admin',
         '5' => 'Modifié par propriétaire',
         '6' => 'Modifié avec lien direct',
-        '7' => 'Import dynamique',
+        '7' => 'Importé',
     ];
 
     protected $statusColors = [

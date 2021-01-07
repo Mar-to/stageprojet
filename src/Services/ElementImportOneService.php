@@ -20,7 +20,7 @@ class ElementImportOneService
     private $dm;
     private $geocoder;
     private $interactionService;
-
+    private $elementService;
     protected $optionIdsToAddToEachElement = [];
 
     protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'customFormatedAddress', 'latitude', 'longitude', 'images', 'files', 'owner', 'source', 'openHours'];
@@ -30,11 +30,13 @@ class ElementImportOneService
      * Constructor.
      */
     public function __construct(DocumentManager $dm, ProviderAggregator $geocoder,
-                                                UserInteractionService $interactionService)
+                                UserInteractionService $interactionService,
+                                ElementPendingService $elementService)
     {
         $this->dm = $dm;
         $this->geocoder = $geocoder->using('google_maps');
         $this->interactionService = $interactionService;
+        $this->elementService = $elementService;
         $this->currentRow = [];
     }
 
@@ -49,13 +51,12 @@ class ElementImportOneService
         // Getting the private field of the custom data
         $config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
         $this->privateDataProps = $config->getApi()->getPublicApiPrivateProperties();
-        $this->mainConfigHaveChangedSinceLastImport = $import->getMainConfigUpdatedAt() <= $import->getLastRefresh();
+        $this->mainConfigHaveChangedSinceLastImport = $import->getMainConfigUpdatedAt() > $import->getLastRefresh();
     }
 
     public function createElementFromArray($row, $import)
     {
         $updateExisting = false; // if we create a new element or update an existing one
-        $realUpdate = false; // if we are sure that the external has been edited with 'FieldToCheckElementHaveBeenUpdated'
 
         // adds missings fields instead of checking if each field is set before accessing
         $missingFields = array_diff($this->coreFields, array_keys($row));
@@ -67,15 +68,17 @@ class ElementImportOneService
 
         if ($row['id']) {
             if (in_array($row['id'], $import->getIdsToIgnore())) {
-                return;
+                return $this->resultData($element, 'ignored');
             }
             $qb = $this->dm->createQueryBuilder('App\Document\Element');
             $qb->field('source')->references($import);
             $qb->field('oldId')->equals(''.$row['id']);
+            $qb->field('status')->notEqual(ElementStatus::ModifiedPendingVersion);
             $element = $qb->getQuery()->getSingleResult();
         } elseif (is_string($row['name']) && strlen($row['name']) > 0) {
             $qb = $this->dm->createQueryBuilder('App\Document\Element');
             $qb->field('source')->references($import);
+            $qb->field('status')->notEqual(ElementStatus::ModifiedPendingVersion);
             $qb->field('name')->equals($row['name']);
 
             if (is_string($row['latitude']) && strlen($row['latitude']) > 0 && is_string($row['longitude']) && strlen($row['longitude']) > 0) {
@@ -98,33 +101,36 @@ class ElementImportOneService
         }        
 
         if ($element) { // if the element already exists, we update it
+            $updateExisting = true;
             // if main import config has change, we should reimport anyway           
-            if ($this->mainConfigHaveChangedSinceLastImport) {
+            if (!$this->mainConfigHaveChangedSinceLastImport) {
                 $updatedAtField = $import->getFieldToCheckElementHaveBeenUpdated();
-                // if updated date hasn't change, nothing to do
+                // if updatedAtField hasn't change, nothing to do
                 if ($updatedAtField && array_key_exists($updatedAtField, $row)) {
                     if ($row[$updatedAtField] && $row[$updatedAtField] == $element->getCustomProperty($updatedAtField)) {
-                        $element->setPreventJsonUpdate(true);
-                        if (ElementStatus::DynamicImportTemp == $element->getStatus()) {
-                            $element->setStatus(ElementStatus::DynamicImport);
-                        }
+                        $element->setPreventJsonUpdate(true);                        
                         $this->dm->persist($element);
-
-                        return 'nothing_to_do';
+                        return $this->resultData($element, 'nothing_to_do');
                     } else {
-                        $realUpdate = true;
+                        $somethingHasChanged = true;
                     }
                 }
             }
-            $updateExisting = true;
+            
             // resetting "geoloc" and "no options" modearation state so it will be calculated again
             if ($element->getModerationState() < 0) {
                 $element->setModerationState(ModerationState::NotNeeded);
             }
         } else {
             $element = new Element();
+            $element->setStatus(ElementStatus::Imported);
         }
         $this->currentRow = $row;
+
+        $this->createOptionValues($element, $row, $import);
+        if ($import->getPreventImportIfNoCategories() && ModerationState::NoOptionProvided == $element->getModerationState()) {
+            return $this->resultData($element, 'no_category');
+        }
 
         $element->setOldId($row['id']);
         $element->setName($row['name']);
@@ -150,49 +156,68 @@ class ElementImportOneService
                 $lng = $result->getLongitude();
             }
         }
-
         if (0 == $lat || 0 == $lng) {
             $element->setModerationState(ModerationState::GeolocError);
         }
-        $element->setGeo(new Coordinates($lat, $lng));
-
-        $this->createOptionValues($element, $row, $import);
-
-        if ($import->getPreventImportIfNoCategories() && ModerationState::NoOptionProvided == $element->getModerationState()) {
-            return 'no_category';
-        }
-
+        $element->setGeo(new Coordinates($lat, $lng));       
         $this->createImages($element, $row);
         $this->createFiles($element, $row);
         $this->createOpenHours($element, $row);
         $this->saveCustomFields($element, $row);
 
-        if ($import->isDynamicImport()) { // keep the same status for the one who were deleted
-            $status = (!$element->getStatus() || ElementStatus::DynamicImportTemp == $element->getStatus()) ? ElementStatus::DynamicImport : $element->getStatus();
+        if ($updateExisting) {
+            $somethingHasChanged = $somethingHasChanged ?? $this->checkElementHaveChanged($element);
+            if (!$somethingHasChanged) {
+                $element->setPreventJsonUpdate(true);  
+                $this->dm->persist($element);                      
+                return $this->resultData($element, 'nothing_to_do');
+            }
+        }        
+
+        if ($import->getModerateElements()) {
+            if ($element->isPendingAdd()) {
+                // do nothing, we wait for the element to be validated
+            } else {
+                if ($updateExisting) {
+                    $element = $this->elementService->savePendingModification($element);
+                    $this->elementService->createPending($element, true, null);
+                } else {
+                    $this->elementService->createPending($element, false, null);
+                }
+            }            
+        } else {     
+            if ($updateExisting) {
+                // create edit contribution
+                $contribution = $this->interactionService->createContribution(null, 1, $element->getStatus());
+                $element->addContribution($contribution);
+            } else {
+                // create import contribution if first time imported
+                $contribution = $this->interactionService->createContribution(null, 0, $element->getStatus());
+                $element->addContribution($contribution);
+            }
+        }
+
+        if ($import->isDynamicImport()) {
             $element->setIsExternal(true);
-        } else {
-            $status = ElementStatus::AddedByAdmin;
         }
-
-        // create import contribution if first time imported
-        if (!$updateExisting) {
-            $contribution = $this->interactionService->createContribution(null, 0, $status);
-            $element->addContribution($contribution);
-            // $this->mailService->sendAutomatedMail('add', $element, $message);
-        }
-        // create edit contribution if real update
-        elseif ($realUpdate) {
-            $contribution = $this->interactionService->createContribution(null, 1, $status);
-            $element->addContribution($contribution);
-        }
-
-        $element->setStatus($status);
         $element->updateTimestamp();
-        $element->setPreventLinksUpdate(true); // Check the links between elements at the end of the import
+        $element->setPreventLinksUpdate(true); // Check the links between elements all at once at the end of the import
 
         $this->dm->persist($element);
 
-        return $updateExisting ? 'updated' : 'created';
+        return $this->resultData($element, $updateExisting ? 'updated' : 'created');
+    }
+
+    private function resultData($element, $state)
+    {
+        $result = ['status' => $state];
+        if ($element) {
+            $result['id'] = $element->getId();
+            if ($element->isPendingModification()){
+                $result['id_pending_modified'] = $element->getModifiedElement()->getId();
+            }
+        }
+        return $result;
     }
 
     private function saveCustomFields($element, $raw_data)
@@ -204,7 +229,6 @@ class ElementImportOneService
                 $customData[$customField] = $raw_data[$customField];
             }
         }
-
         $element->setCustomData($customData, $this->privateDataProps);
     }
 
@@ -245,7 +269,6 @@ class ElementImportOneService
         if (!is_array($files) || 0 == count($files)) {
             return;
         }
-
         foreach ($files as $url) {
             if (is_string($url) && strlen($url) > 5) {
                 $elementFile = new ElementFile();
@@ -282,14 +305,12 @@ class ElementImportOneService
                 $element->setModerationState(ModerationState::NoOptionProvided);
             }
         }
-
         // Manually add some options to each element imported
         foreach ($this->optionIdsToAddToEachElement as $optionId) {
             if (!in_array($optionId, $optionsIdAdded)) {
                 $optionsIdAdded[] = $this->addOptionValue($element, $optionId);
             }
         }
-
         if (0 == count($element->getOptionValues())) {
             $element->setModerationState(ModerationState::NoOptionProvided);
         }
@@ -307,5 +328,19 @@ class ElementImportOneService
         $element->addOptionValue($optionValue);
 
         return $id;
+    }
+
+    // compare old and new element to see if something has changed
+    private function checkElementHaveChanged($element)
+    {
+        $uow = $this->dm->getUnitOfWork();
+        $uow->computeChangeSets();
+        $changeset = $uow->getDocumentChangeSet($element);
+        $changeset = array_filter($changeset, function($e) {
+            $a = method_exists($e[0], 'toArray') ? $e[0]->toArray() : $e[0];
+            $b = method_exists($e[1], 'toArray') ? $e[1]->toArray() : $e[1];
+            return $a != $b;
+        });
+        return count($changeset);
     }
 }

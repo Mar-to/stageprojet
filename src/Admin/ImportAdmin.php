@@ -57,8 +57,13 @@ class ImportAdmin extends AbstractAdmin
                             'data-title-layer' => $config->getDefaultTileLayer()->getUrl(),
                             'data-default-bounds' => json_encode($config->getDefaultBounds()),
                         ], 'required' => true, 'label' => 'Type de la source'])
-                    
+                ->end()
+                ->with('Paramètres', ['class' => 'col-md-12'])
                     ->add('refreshFrequencyInDays', null, ['required' => false, 'label' => 'Fréquence de mise à jours des données en jours (laisser vide pour ne jamais mettre à jour automatiquement'])
+                    ->add('moderateElements', null, [
+                        'required' => false, 
+                        'label' => 'Modérer les éléments importés',
+                        'label_attr' => ['title' => 'Les éléments importés auront le status "en attente de validation" et devront être manuellement validés. Idem pour des mise à jour d\'éléments existant (modification)']])
                     ->add('idsToIgnore', TextType::class, ['mapped' => false, 'required' => false, 
                         'attr' => ['class' => 'gogo-display-array', 
                         'value' => $this->getSubject()->getIdsToIgnore()], 
