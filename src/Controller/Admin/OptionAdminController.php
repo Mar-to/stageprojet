@@ -14,6 +14,9 @@ class OptionAdminController extends Controller
     // overide CRUDController method to fix strange issue
     protected function redirectTo($object)
     {
+        if ('DELETE' === $this->getRestMethod()) {
+            return $this->redirectToList();
+        }
         return $this->redirectToRoute('admin_app_option_edit', ['id' => $object->getId()]);
     }
 }
