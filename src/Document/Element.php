@@ -66,6 +66,11 @@ class ElementFile extends AbstractFile
 class Element
 {
     /**
+     * Main properties available on all elements
+     */
+    const CORE_FIELDS = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'files', 'owner', 'source', 'openHours', 'email', 'customFormatedAddress'];
+
+    /**
      * @var int
      *
      * @MongoDB\Id(strategy="ALNUM")
@@ -98,7 +103,7 @@ class Element
     /**
      * @var \stdClass
      *
-     * Hisotry of users contributions (add, edit, by whom, how many votes etc...)
+     * History of users contributions (add, edit, by whom, how many votes etc...)
      *
      * @MongoDB\ReferenceMany(targetDocument="App\Document\UserInteractionContribution", cascade={"persist", "delete"})
      */
@@ -640,7 +645,7 @@ class Element
         if ($this->getData() && $data) {
             // keeping also old data
             $data = array_merge($this->getData(), $data);
-        } 
+        }
         $this->setData($data);
     }
 

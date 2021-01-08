@@ -23,7 +23,6 @@ class ElementImportOneService
     private $elementService;
     protected $optionIdsToAddToEachElement = [];
 
-    protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'customFormatedAddress', 'latitude', 'longitude', 'images', 'files', 'owner', 'source', 'openHours'];
     protected $mainConfigHaveChangedSinceLastImport;
     /**
      * Constructor.
@@ -57,7 +56,7 @@ class ElementImportOneService
         $updateExisting = false; // if we create a new element or update an existing one
 
         // adds missings fields instead of checking if each field is set before accessing
-        $missingFields = array_diff($this->coreFields, array_keys($row));
+        $missingFields = array_diff(Element::CORE_FIELDS, array_keys($row));
         foreach ($missingFields as $missingField) {
             $row[$missingField] = ('categories' == $missingField) ? [] : '';
         }
@@ -96,17 +95,17 @@ class ElementImportOneService
                 }
                 $element = $qb->getQuery()->getSingleResult();
             }
-        }        
+        }
 
         if ($element) { // if the element already exists, we update it
             $updateExisting = true;
-            // if main import config has change, we should reimport anyway           
+            // if main import config has change, we should reimport anyway
             if (!$this->mainConfigHaveChangedSinceLastImport) {
                 $updatedAtField = $import->getFieldToCheckElementHaveBeenUpdated();
                 // if updatedAtField hasn't change, nothing to do
                 if ($updatedAtField && array_key_exists($updatedAtField, $row)) {
                     if ($row[$updatedAtField] && $row[$updatedAtField] == $element->getCustomProperty($updatedAtField)) {
-                        $element->setPreventJsonUpdate(true);                        
+                        $element->setPreventJsonUpdate(true);
                         $this->dm->persist($element);
                         return $this->resultData($element, 'nothing_to_do');
                     } else {
@@ -114,7 +113,7 @@ class ElementImportOneService
                     }
                 }
             }
-            
+
             // resetting "geoloc" and "no options" modearation state so it will be calculated again
             if ($element->getModerationState() < 0) {
                 $element->setModerationState(ModerationState::NotNeeded);
@@ -157,7 +156,7 @@ class ElementImportOneService
         if (0 == $lat || 0 == $lng) {
             $element->setModerationState(ModerationState::GeolocError);
         }
-        $element->setGeo(new Coordinates($lat, $lng));       
+        $element->setGeo(new Coordinates($lat, $lng));
         $this->createImages($element, $row);
         $this->createFiles($element, $row);
         $this->createOpenHours($element, $row);
@@ -166,11 +165,11 @@ class ElementImportOneService
         if ($updateExisting) {
             $somethingHasChanged = $somethingHasChanged ?? $this->checkElementHaveChanged($element);
             if (!$somethingHasChanged) {
-                $element->setPreventJsonUpdate(true);  
-                $this->dm->persist($element);                      
+                $element->setPreventJsonUpdate(true);
+                $this->dm->persist($element);
                 return $this->resultData($element, 'nothing_to_do');
             }
-        }        
+        }
 
         if ($import->getModerateElements()) {
             if ($element->isPendingAdd()) {
@@ -182,8 +181,8 @@ class ElementImportOneService
                 } else {
                     $this->elementService->createPending($element, false, null);
                 }
-            }            
-        } else {     
+            }
+        } else {
             if ($updateExisting) {
                 // create edit contribution
                 $contribution = $this->interactionService->createContribution(null, 1, $element->getStatus());
@@ -220,7 +219,7 @@ class ElementImportOneService
 
     private function saveCustomFields($element, $raw_data)
     {
-        $customFields = array_diff(array_keys($raw_data), $this->coreFields);
+        $customFields = array_diff(array_keys($raw_data), Element::CORE_FIELDS);
         $customData = [];
         foreach ($customFields as $customField) {
             if ($customField && is_string($customField)) {

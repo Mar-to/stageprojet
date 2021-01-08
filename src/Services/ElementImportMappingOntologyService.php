@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use App\Document\Element;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 class ElementImportMappingOntologyService
 {
     protected $collectedProps;
     protected $existingProps;
-    protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'files', 'owner', 'source', 'openHours', 'email'];
     protected $mappedCoreFields = [
         'title' => 'name', 'nom' => 'name', 'titre' => 'name',
         'mail' => 'email',
@@ -17,7 +17,7 @@ class ElementImportMappingOntologyService
         'address' => 'streetAddress', 'addr:street' => 'streetAddress',
         'city' => 'addressLocality', 'addr:city' => 'addressLocality',
         'postcode' => 'postalCode', 'addr:postcode' => 'postalCode',
-        'country' => 'addressCountry', 'addr:country' => 'addressCountry',        
+        'country' => 'addressCountry', 'addr:country' => 'addressCountry',
         'lat' => 'latitude',
         'long' => 'longitude', 'lng' => 'longitude', 'lon' => 'longitude',
     ];
@@ -38,7 +38,7 @@ class ElementImportMappingOntologyService
         unset($mappedObject); // prevent edge case https://www.php.net/manual/fr/control-structures.foreach.php
 
         $this->existingProps = $this->dm->getRepository('App\Document\Element')->findAllCustomProperties();
-        $this->existingProps = array_merge($this->coreFields, $this->existingProps);
+        $this->existingProps = array_merge(Element::CORE_FIELDS, $this->existingProps);
         $this->existingProps = array_map(function($e) { return strtolower($e); }, $this->existingProps);
         $this->collectedProps = [];
 
@@ -80,9 +80,9 @@ class ElementImportMappingOntologyService
         $prop = $this->slugProp($prop);
         $parentProp = $this->slugProp($parentProp);
         $fullProp = $parentProp ? $parentProp.'/'.$prop : $prop;
-        
+
         if (!is_string($value)) $value = "";
-        
+
         if (!$prop || 0 == strlen($prop)) {
             return;
         }
@@ -97,11 +97,11 @@ class ElementImportMappingOntologyService
             if ($import->getSourceType() == 'osm') {
                 switch ($prop) {
                     case 'source': $mappedProp = 'osm:source'; break; // we don't want to overide GoGoCarto source field with Osm field
-                    case 'openning_hours': $mappedProp = 'osm:openning_hours'; break;    
-                    case 'version': $mappedProp = 'osm:version'; break;    
-                    case 'timestamp': $mappedProp = 'osm:timestamp'; break;    
-                    case 'type': $mappedProp = 'osm:type'; break;    
-                }                 
+                    case 'opening_hours': $mappedProp = 'osm:opening_hours'; break;
+                    case 'version': $mappedProp = 'osm:version'; break;
+                    case 'timestamp': $mappedProp = 'osm:timestamp'; break;
+                    case 'type': $mappedProp = 'osm:type'; break;
+                }
             }
             // use alternative name, like lat instead of latitude
             if (!$mappedProp && array_key_exists(strtolower($prop), $this->mappedCoreFields)) {
@@ -128,7 +128,7 @@ class ElementImportMappingOntologyService
                 $this->ontologyMapping[$fullProp]['collectedValues'] = array_filter(array_unique($this->ontologyMapping[$fullProp]['collectedValues']),'strlen');
             } else if ($valuesCount == $numberValuesSaved) {
                 $this->ontologyMapping[$fullProp]['collectedValues'][] = '...';
-            }            
+            }
         }
     }
 
@@ -141,11 +141,11 @@ class ElementImportMappingOntologyService
             foreach($row as $prop => $value) {
                 $data[$key][$this->slugProp($prop)] = $value;
             }
-            
+
             foreach ($mapping as $prop => $mappedObject) {
                 $mappedProp = $mappedObject['mappedProperty'];
                 $explodedProp = explode('/', $prop);
-                // Map nested properties first (if you didn't map the parent property then it will be gone 
+                // Map nested properties first (if you didn't map the parent property then it will be gone
                 // and you'll no longer able to access the subproperty)
                 if (2 == count($explodedProp)) {
                     $prop = $explodedProp[0];
@@ -161,10 +161,10 @@ class ElementImportMappingOntologyService
                     }
                 }
             }
-            
+
             foreach ($mapping as $searchProp => $mappedObject) {
                 $mappedProp = $mappedObject['mappedProperty'];
-                
+
             }
             // Add streetNumber into streetAddress
             if (isset($newRow['streetNumber']) && isset($newRow['streetAddress'])) {
@@ -192,8 +192,8 @@ class ElementImportMappingOntologyService
     {
         // We allow mapping multiple fields to "categories", and we remember
         // here which fields gave which categories
-        if ('categories' == $mappedProp) {            
-            if (is_string($value)) $value = preg_split('/[,;]+/', $value); // convert to Array          
+        if ('categories' == $mappedProp) {
+            if (is_string($value)) $value = preg_split('/[,;]+/', $value); // convert to Array
             $oldVal = isset($newRow[$mappedProp]) ? $newRow[$mappedProp] : [];
             $value = array_merge($oldVal, [$prop => $value]);
         }
