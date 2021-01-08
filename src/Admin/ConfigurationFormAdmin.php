@@ -29,7 +29,7 @@ class ConfigurationFormAdmin extends ConfigurationAbstractAdmin
                 ->with('Configuration du formulaire', ['description' => "
                     <div class='text-and-iframe-container'><div class='iframe-container-aside'><iframe height='200' sandbox='allow-same-origin allow-scripts' src='https://video.colibris-outilslibres.org/videos/embed/2dd4dad3-63fa-4bb4-b48c-e518f8e56d36' frameborder='0' allowfullscreen></iframe></div>
                     <b>Le formulaire permet d'ajouter/éditer des données depuis l'interface publique</b></br>
-                    Si vous avez importé des données, vous pouvez ajouter un champ au formulaire et le lier au champ importé grâce à l'attribut \"Nom du champ\""])
+                    Si vous avez importé des données, vous pouvez ajouter un champ au formulaire et le lier au champ importé grâce à l'attribut \"Nom du champ\"</div>"])
                     ->add('elementFormFieldsJson', HiddenType::class, ['attr' => ['class' => 'gogo-form-builder', 'data-props' => $elementProperties]])
                 ->end()
             ->end()
