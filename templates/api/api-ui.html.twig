@@ -74,7 +74,7 @@
 {% endblock %}
 
 {% block page_javascripts %}
-  <script src="{{ asset('js/external-pages.js' ~ version) }}"></script>
+  <script src="{{ asset('js/external-pages.js?v=' ~ version) }}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
   <script>
     var defaultTileLayer = "{{ config.defaultTileLayer.url }}"
