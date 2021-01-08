@@ -2868,7 +2868,7 @@ class Configuration implements \JsonSerializable
         return $this->api;
     }
 
-    public function setSaas(\App\Document\Configuration\ConfigurationSaas $saas)
+    public function setSaas($saas)
     {
         $this->saas = $saas;
 

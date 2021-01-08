@@ -71,6 +71,9 @@ class ProjectController extends Controller
             $projectConf->setAppName($project->getName());
             $projectConf->setAppBaseLine('');
             $projectConf->setDbName($project->getDomainName());
+            $projectConf->setSaas(null);
+            $projectConf->setCustomCSS(null);
+            $projectConf->setCustomJavascript(null);
 
             $tileLayers = $rootDm->getRepository('App\Document\TileLayer')->findAll();
             foreach ($tileLayers as $tileLayer) {
