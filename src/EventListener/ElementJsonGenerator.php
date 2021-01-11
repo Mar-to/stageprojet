@@ -48,7 +48,7 @@ class ElementJsonGenerator
 
         if (array_key_exists("App\Document\Element", $documentManaged)) {
             foreach ($documentManaged["App\Document\Element"] as $key => $element) {
-                if (!$element->getPreventJsonUpdate()) {
+                if (!$element->getPreventJsonUpdate() && $element->getStatus() != ElementStatus::ModifiedPendingVersion) {
                     $element->setPreventJsonUpdate(true); // ensure performing serialization only once
                     $element->checkForModerationStillNeeded();
 
@@ -146,6 +146,7 @@ class ElementJsonGenerator
 
         // MODIFIED ELEMENT (for pending modification)
         if ($element->isPendingModification() && $element->getModifiedElement()) {
+            $this->updateJsonRepresentation($element->getModifiedElement());
             $baseJson .= ', "modifiedElement": '.$element->getModifiedElement()->getJson(false);
         }
         $element->setBaseJson($baseJson);
