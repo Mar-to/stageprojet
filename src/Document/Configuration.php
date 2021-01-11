@@ -2582,7 +2582,8 @@ class Configuration implements \JsonSerializable
      */
     public function setElementFormFieldsJson($elementFormFieldsJson)
     {
-        $this->elementFormFieldsJson = $elementFormFieldsJson;
+        if ($elementFormFieldsJson)
+            $this->elementFormFieldsJson = $elementFormFieldsJson;
 
         return $this;
     }

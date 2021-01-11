@@ -104,6 +104,7 @@ class ConfigurationListener
 
     private function updateSearchIndex($dm, $dbName, $oldPrivateProperties, $newPrivateProperties,
                                        $oldFormFields, $newFormFields) {
+        if (!$oldPrivateProperties || !$newPrivateProperties || !$oldFormFields || !$newFormFields) return;
         $oldSearchIndex = $this->calculateSearchIndexConfig($oldPrivateProperties, $oldFormFields);
         $newSearchIndex = $this->calculateSearchIndexConfig($newPrivateProperties, $newFormFields);
 
