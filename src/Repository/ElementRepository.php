@@ -339,19 +339,14 @@ class ElementRepository extends DocumentRepository
 
     public function findDataCustomProperties()
     {
-        $imports = $this->getDocumentManager()->getRepository('App\Document\Import')->findAll();
-        $props = [];
-        $propTypeToIgnore = ['', '/'];
-        foreach($imports as $import) {
-            if ($import->getOntologyMapping()) {
-                foreach($import->getOntologyMapping() as $mappedObject) {
-                    $p = $mappedObject['mappedProperty'];
-                    if (isset($p) && !in_array($p, $propTypeToIgnore)) $props[] = $p;
+        return executeMongoCommand($this->getDocumentManager(), "
+            var props = [];
+            db.Element.find({}).forEach(function(e) {
+                for(var prop in e.data) {
+                    if (props.indexOf(prop) == -1) props.push(prop);
                 }
-            }
-        }
-        $props = array_unique($props);
-        return $props;
+            });
+            return props;")['retval'];  
     }
 
     public function findAllCustomProperties()
