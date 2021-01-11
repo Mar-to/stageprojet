@@ -1,10 +1,9 @@
 <div class="table-responsive no-padding">
   <table class="table"> 
   <tbody>
-    {% set values = object.data|merge(object.privateData) %}
-    {% for key, data in values %}
+    {% for key, data in object.data %}
       <tr class="sonata-ba-view-container">
-        <th>{{ key }} {% if data in object.privateData %} <i style="font-weight: normal">(privé)</i>{% endif %}</th>
+        <th>{{ key }}</th>
         <td>
           {% if data is iterable %}
             {% for subkey, subdata in data %}

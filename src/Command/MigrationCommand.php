@@ -35,6 +35,11 @@ class MigrationCommand extends GoGoAbstractCommand
       // v3.2
       'db.Configuration.updateMany({}, {$set: {"user.loginWithLesCommuns": true, "user.loginWithLesGoogle": true, "user.loginWithFacebook": true}});',
       'db.Option.updateMany({}, {$set: {osmTags: {}}})',
+      'db.Element.find({}).forEach(function(e) {
+        for(var prop in e.privateData) { e.data[prop] = e.privateData[prop]; }
+        delete e.privateData;
+        db.Element.save(e);
+      });'
     ];
 
     public static $commands = [

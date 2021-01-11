@@ -84,7 +84,6 @@ class DuplicatesActionsController extends BulkActionsAbstractController
 
         $merged = array_shift($sortedDuplicates);
         $mergedData = $merged->getData();
-        $mergedPrivateData = $merged->getPrivateData();
         $mergedOptionIds = $merged->getOptionIds();
 
         foreach ($sortedDuplicates as $duplicate) {
@@ -100,12 +99,6 @@ class DuplicatesActionsController extends BulkActionsAbstractController
                 if ($value && (!array_key_exists($key, $mergedData) || !$mergedData[$key]
                            || ('description' == $key && strlen($value) > strlen($mergedData[$key])))) {
                     $mergedData[$key] = $value;
-                }
-            }
-            foreach ($duplicate->getPrivateData() as $key => $value) {
-                if ($value && (!array_key_exists($key, $mergedPrivateData) || !$mergedPrivateData[$key]
-                           || ('description' == $key && strlen($value) > strlen($mergedPrivateData[$key])))) {
-                    $mergedPrivateData[$key] = $value;
                 }
             }
             // Auto merge special attributes
@@ -140,7 +133,6 @@ class DuplicatesActionsController extends BulkActionsAbstractController
         }
         $merged->setModerationState(ModerationState::NotNeeded);
         $merged->setData($mergedData);
-        $merged->setPrivateData($mergedPrivateData);
 
         return $merged;
     }

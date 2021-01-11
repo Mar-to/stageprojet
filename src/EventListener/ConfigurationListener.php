@@ -25,39 +25,13 @@ class ConfigurationListener
         $document = $args->getDocument();
         $dm = $args->getDocumentManager();
 
-        // Change the database to fit the private property config
-        // There is two attribute in element : data & privateData
-        // If an custom field is private, it will be stored in privateData instead of data
+        // Update Json representation to fit the private property config
         if ($document instanceof ConfigurationApi) {
             $uow = $dm->getUnitOfWork();
             $uow->computeChangeSets();
             $changeset = $uow->getDocumentChangeSet($document);
             if (array_key_exists('publicApiPrivateProperties', $changeset)) {
-                $privatePropChanged = $changeset['publicApiPrivateProperties'];
-                $oldPrivateProperties = $privatePropChanged[0] ? array_values($privatePropChanged[0]) : [];
-                $newPrivateProperties = $privatePropChanged[1] ? array_values($privatePropChanged[1]) : [];
-                $removedProps = array_diff($oldPrivateProperties, $newPrivateProperties);
-                $addedProps = array_diff($newPrivateProperties, $oldPrivateProperties);
-
-                // Update field path (move them between data and privateData object)
-                $qb = $dm->createQueryBuilder('App\Document\Element');
-                $qb = $qb->updateMany();
-                foreach ($removedProps as $key => $prop) {
-                    $qb = $qb->field('privateData.'.$prop)->rename('data.'.$prop);
-                }
-                foreach ($addedProps as $key => $prop) {
-                    $qb = $qb->field('data.'.$prop)->rename('privateData.'.$prop);
-                }
-                $qb->getQuery()->execute();
                 $this->asyncService->callCommand('app:elements:updateJson', ['ids' => 'all']);
-
-                // Update search index
-                $fullConfig = $dm->getRepository('App\Document\Configuration')->findConfiguration();
-                $this->updateSearchIndex($dm, $fullConfig->getDbName(),
-                                         $oldPrivateProperties,
-                                         $newPrivateProperties,
-                                         $fullConfig->getElementFormFieldsJson(),
-                                         $fullConfig->getElementFormFieldsJson());
             }
         }
         if ($document instanceof ConfigurationMarker) {
@@ -77,11 +51,7 @@ class ConfigurationListener
                 $formFieldsChanged = $changeset['elementFormFieldsJson'];
                 $oldFormFields = $formFieldsChanged[0];
                 $newFormFields = $formFieldsChanged[1];
-                $this->updateSearchIndex($dm, $document->getDbName(),
-                                         $document->getApi()->getPublicApiPrivateProperties(),
-                                         $document->getApi()->getPublicApiPrivateProperties(),
-                                         $oldFormFields,
-                                         $newFormFields);
+                $this->updateSearchIndex($dm, $oldFormFields, $newFormFields);
             }
             if (array_key_exists('customDomain', $changeset)) {
                 $customDomainChanged = $changeset['customDomain'];
@@ -102,31 +72,26 @@ class ConfigurationListener
         }
     }
 
-    private function updateSearchIndex($dm, $dbName, $oldPrivateProperties, $newPrivateProperties,
-                                       $oldFormFields, $newFormFields) {
-        if (!$oldPrivateProperties || !$newPrivateProperties || !$oldFormFields || !$newFormFields) return;
-        $oldSearchIndex = $this->calculateSearchIndexConfig($oldPrivateProperties, $oldFormFields);
-        $newSearchIndex = $this->calculateSearchIndexConfig($newPrivateProperties, $newFormFields);
+    private function updateSearchIndex($dm, $oldFormFields, $newFormFields) {
+        if ($oldFormFields == null || $newFormFields == null) return;
+        $oldSearchIndex = $this->calculateSearchIndexConfig($oldFormFields);
+        $newSearchIndex = $this->calculateSearchIndexConfig($newFormFields);
 
         if ($oldSearchIndex != $newSearchIndex) {
             $command = 'db.Element.dropIndex("name_text");'; // Default index created by doctrine
             $command .= 'db.Element.dropIndex("search_index");';
             $command .= "db.Element.createIndex( {$newSearchIndex["fields"]}, { name: \"search_index\", default_language: \"french\", weights: {$newSearchIndex["weights"]} });";
-
-            $mongo = $dm->getConnection()->getMongoClient();
-            $db = $mongo->selectDB($dbName);
-            return $db->execute($command);
+            return executeMongoCommand($dm, $command);
         }
     }
 
-    private function calculateSearchIndexConfig($privateProps, $formFieldsJson) {
+    private function calculateSearchIndexConfig($formFieldsJson) {
         $indexConf = [];
         $indexWeight = [];
         $formFields = json_decode($formFieldsJson);
         foreach ($formFields as $key => $field) {
             if (property_exists($field, 'search') && $field->search) {
-                $path = in_array($field->name, $privateProps) ? 'privateData' : 'data';
-                $path .= '.' . $field->name;
+                $path = "data.{$field->name}";
                 if ($field->name == 'name') $path = 'name';
                 $indexConf[$path] = "text";
                 $indexWeight[$path] = (int) $field->searchWeight;

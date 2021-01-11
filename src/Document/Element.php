@@ -197,15 +197,6 @@ class Element
     /**
      * @var string
      *
-     * All the custom attributes belonging to the Element that we want to keep private (not available in public api)
-     *
-     * @MongoDB\Field(type="hash")
-     */
-    private $privateData = [];
-
-    /**
-     * @var string
-     *
      * A key to clarify the source of the information, i.e. from wich organization/source the
      * element has been imported
      *
@@ -637,40 +628,24 @@ class Element
         $this->resetOptionsValues();
         $this->openHours = null;
         $this->data = null;
-        $this->privateData = null;
     }
 
-    public function setCustomData($data, $privateProps)
+    public function setCustomData($data)
     {
-        $privateData = [];
         if (null != $data) {
             if (array_key_exists('email', $data)) {
                 $this->setEmail($data['email']);
             }
-
-            foreach ($privateProps as $key => $prop) {
-                if (array_key_exists($prop, $data)) {
-                    $privateData[$prop] = $data[$prop];
-                    unset($data[$prop]);
-                }
-            }
         }
         if ($this->getData() && $data) {
+            // keeping also old data
             $data = array_merge($this->getData(), $data);
-        } // keeping also old data
+        } 
         $this->setData($data);
-
-        if ($this->getPrivateData() && $privateData) {
-            $privateData = array_merge($this->getPrivateData(), $privateData);
-        } // keeping also old data
-        $this->setPrivateData($privateData);
     }
 
     public function setCustomProperty($key, $value) {
-        if (isset($this->privateData[$key]))
-            $this->privateData[$key] = $value;
-        else
-            $this->data[$key] = $value;
+        $this->data[$key] = $value;
     }
 
     public function getProperty($key)
@@ -694,15 +669,12 @@ class Element
 
     public function getCustomProperty($key)
     {
-        return array_key_exists($key, $this->data) ? $this->data[$key] : (array_key_exists($key, $this->privateData) ? $this->privateData[$key] : null);
+        return array_key_exists($key, $this->data) ? $this->data[$key] : null;
     }
 
     public function deleteCustomProperty($key)
     {
-        if (isset($this->privateData[$key]))
-            unset($this->privateData[$key]);
-        else if (isset($this->data[$key]))
-            unset($this->data[$key]);
+        if (isset($this->data[$key])) unset($this->data[$key]);
     }
     /**
      * Set status.
@@ -1530,30 +1502,6 @@ class Element
     }
 
     /**
-     * Set data.
-     *
-     * @param hash $data
-     *
-     * @return $this
-     */
-    public function setPrivateData($data)
-    {
-        $this->privateData = $data;
-
-        return $this;
-    }
-
-    /**
-     * Get data.
-     *
-     * @return hash $data
-     */
-    public function getPrivateData()
-    {
-        return $this->privateData;
-    }
-
-    /**
      * Set email.
      *
      * @param string $email
@@ -1580,10 +1528,6 @@ class Element
         if ($this->data && array_key_exists('email', $this->data)) {
             return $this->data['email'];
         }
-        if ($this->privateData && array_key_exists('email', $this->privateData)) {
-            return $this->privateData['email'];
-        }
-
         return '';
     }
 

@@ -63,3 +63,9 @@ function getRootProjectUrlFromInstanceUrl($url, $prefix = '/root') {
     $url = $_ENV['BASE_PROTOCOL'] . '://' . $_ENV['BASE_URL'] . $prefix . $path;
     return $url;
 }
+
+function executeMongoCommand($dm, $command) {
+    $mongo = $dm->getConnection()->getMongoClient();
+    $db = $mongo->selectDB($dm->getConfiguration()->getDefaultDB());
+    return $db->execute($command);
+}

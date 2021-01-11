@@ -221,7 +221,6 @@ class ElementImportService
                         $qb->field('source')->references($import)
                            ->updateMany()
                            ->field("data.$field->reversedBy")->unsetField()
-                           ->field("privateData.$field->reversedBy")->unsetField()
                            ->getQuery()->execute();
                     }
                 }

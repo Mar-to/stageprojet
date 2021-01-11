@@ -125,6 +125,14 @@ db.Element.find({'data.image': {$exists: true}}).forEach(function(e) {
     db.Element.save(e);
 });
 
+var result = [];
+db.Element.find({}).forEach(function(e) {
+    for(var prop in e.data) {
+      if (result.indexOf(prop) == -1) result.push(prop);
+    }
+});
+return result;
+
 db.Element.find({'images': {$exists: true}}).forEach(function(e) {
   e.images.forEach(function(image) {
       image.fileUrl = image.fileUrl.replace('gogocarto_default', 'presdecheznous');

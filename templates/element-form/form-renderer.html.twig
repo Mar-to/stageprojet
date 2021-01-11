@@ -2,7 +2,7 @@
 {% for field in config.getElementFormFields %}
 
   {% if field.name is defined %}
-    {% set elementValue = element.data[field.name] is defined ? element.data[field.name] : element.privateData[field.name] is defined ? element.privateData[field.name] : null %}
+    {% set elementValue = element.getCustomProperty(field.name) %}
   {% endif %}
 
   <div class="field-container field-{{field.type}} {% if field.subtype is defined %}field-{{field.subtype}}{% endif %}" id="field-{{ field.name|default('unknown-name') }}"

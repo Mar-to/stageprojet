@@ -122,9 +122,12 @@ class ElementJsonGenerator
         }
 
         // CUSTOM DATA
+        $customPrivateData = '';
         if ($element->getData()) {
             foreach ($element->getData() as $key => $value) {
-                $baseJson .= '"'.$key.'": '.json_encode($value).',';
+                $propJson = '"'.$key.'": '.json_encode($value).',';
+                if (in_array($key, $privateProps)) $customPrivateData .= $propJson;
+                else $baseJson .= $propJson;
             }
         }
 
@@ -132,12 +135,10 @@ class ElementJsonGenerator
         $baseJson .= $this->encodeArrayObjectToJson('stamps', $element->getStamps());
         $imagesJson = $this->encodeArrayObjectToJson('images', $element->getImages());
         $filesJson = $this->encodeArrayObjectToJson('files', $element->getFiles());
-        if (!in_array('images', $privateProps)) {
-            $baseJson .= $imagesJson;
-        }
-        if (!in_array('files', $privateProps)) {
-            $baseJson .= $filesJson;
-        }
+        if (in_array('images', $privateProps)) $customPrivateData .= $imagesJson;
+        else $baseJson .= $imagesJson;
+        if (in_array('files', $privateProps)) $customPrivateData .= $filesJson;
+        else $baseJson .= $filesJson;
         if (in_array('email', $privateProps) && $element->getEmail()) {
             $email = $element->isPending() ? $element->getEmail() : "private";
             $baseJson .= '"email":"'.$email.'",'; // indicate that the email exist, so can show the "send email" button
@@ -164,15 +165,7 @@ class ElementJsonGenerator
             }            
         }
         // CUSTOM PRIVATE DATA
-        foreach ($element->getPrivateData() as $key => $value) {
-            $adminJson .= '"'.$key.'": '.json_encode($value).',';
-        }
-        if (in_array('images', $privateProps)) {
-            $adminJson .= $imagesJson;
-        }
-        if (in_array('files', $privateProps)) {
-            $adminJson .= $filesJson;
-        }
+        $adminJson .= $customPrivateData;
         $adminJson = rtrim($adminJson, ',');
         $element->setAdminJson($adminJson);
 

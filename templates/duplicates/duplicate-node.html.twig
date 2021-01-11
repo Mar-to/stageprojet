@@ -27,7 +27,7 @@
           </div>
         </div>
         <div class="collapsible-body">
-          {% for key, data in (duplicate.privateData + duplicate.data) %}
+          {% for key, data in duplicate.data %}
             {% if data %}
             <div class="key-value">
               <span class="key">{{ key }}</span>

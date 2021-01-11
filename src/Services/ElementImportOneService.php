@@ -24,7 +24,6 @@ class ElementImportOneService
     protected $optionIdsToAddToEachElement = [];
 
     protected $coreFields = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'customFormatedAddress', 'latitude', 'longitude', 'images', 'files', 'owner', 'source', 'openHours'];
-    protected $privateDataProps;
     protected $mainConfigHaveChangedSinceLastImport;
     /**
      * Constructor.
@@ -50,7 +49,6 @@ class ElementImportOneService
 
         // Getting the private field of the custom data
         $config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
-        $this->privateDataProps = $config->getApi()->getPublicApiPrivateProperties();
         $this->mainConfigHaveChangedSinceLastImport = $import->getMainConfigUpdatedAt() > $import->getLastRefresh();
     }
 
@@ -229,7 +227,7 @@ class ElementImportOneService
                 $customData[$customField] = $raw_data[$customField];
             }
         }
-        $element->setCustomData($customData, $this->privateDataProps);
+        $element->setCustomData($customData);
     }
 
     private function createImages($element, $row)

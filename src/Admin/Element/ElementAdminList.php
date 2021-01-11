@@ -52,13 +52,7 @@ class ElementAdminList extends ElementAdminFilters
                ])
          ->add('updatedAt', 'date', ['format' => 'd/m/Y'])
          ->add('sourceKey', null, ['label' => 'Source'])
-         ->add('optionValues', null, [
-               'template' => 'admin/partials/list_option_values.html.twig',
-               'header_style' => 'width: 250px',
-               'collapse' => true,
-               'choices' => $this->optionList,
-               'label' => 'Catégories',
-            ])
+         ->add('optionsString', null, ['header_style' => 'width: 250px','label' => 'Catégories'])
          ->add('moderationState', ChoiceType::class, [
                'label' => 'Modération',
                'choices' => $this->moderationChoices,

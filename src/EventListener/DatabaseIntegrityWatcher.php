@@ -86,10 +86,8 @@ class DatabaseIntegrityWatcher
                 if ($field->type == 'elements') $elementsFields[] = $field->name;
             }
             if (count($elementsFields)) {
-                $privateProps = $config->getApi()->getPublicApiPrivateProperties();
                 foreach ($elementsFields as $fieldName) {
-                    $fieldPath = in_array($fieldName, $privateProps) ? 'privateData' : 'data';
-                    $fieldPath .= '.' . $fieldName . '.' . $document->getId();
+                    $fieldPath = "data.$fieldName.{$document->getId()}";
                     $dependantElementsIds = array_keys(
                         $dm->getRepository('App\Document\Element')->createQueryBuilder()
                              ->field($fieldPath)->exists(true)
@@ -165,8 +163,7 @@ class DatabaseIntegrityWatcher
                     if (array_key_exists('name', $changeset)) {
                         $newName = $changeset['name'][1];
                         foreach ($elementsFields as $fieldName) {
-                            $fieldPath = in_array($fieldName, $privateProps) ? 'privateData' : 'data';
-                            $fieldPath .= '.' . $fieldName . '.' . $element->getId();
+                            $fieldPath = "data.$fieldName.{$element->getId()}";
                             $dm->getRepository('App\Document\Element')->createQueryBuilder()
                                      ->updateMany()
                                      ->field($fieldPath)->set($newName)
@@ -180,18 +177,15 @@ class DatabaseIntegrityWatcher
                     }
                     // If bidirectional element field have changed, update reverse relation
                     // exple A { parent: B }, we should auto update B { children: A }
-                    foreach ($bidirdectionalElementsFields as $field) {
-                        $path = in_array($field->name, $privateProps) ? 'privateData' : 'data';
-                        if (array_key_exists($path, $changeset)) {
-                            $changes = $changeset[$path];
+                    if (array_key_exists('data', $changeset)) {
+                        foreach ($bidirdectionalElementsFields as $field) {                        
+                            $changes = $changeset['data'];
                             $oldValue = $changes[0] && isset($changes[0][$field->name]) ? array_keys((array) $changes[0][$field->name]) : [];
                             $newValue = $changes[1] && isset($changes[1][$field->name]) ? array_keys((array) $changes[1][$field->name]) : [];
                             $removedElements = array_diff($oldValue, $newValue);
                             $addedElements = array_diff($newValue, $oldValue);
 
-                            $reverseName = $field->reversedBy;
-                            $fieldPath = in_array($reverseName, $privateProps) ? 'privateData' : 'data';
-                            $fieldPath .= '.' . $reverseName . '.' . $element->getId();
+                            $fieldPath = "data.{$field->reversedBy}.{$element->getId()}";
 
                             // Updates elements throught reverse relation
                             if (count($addedElements) > 0) {
