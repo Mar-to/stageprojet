@@ -6,7 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     {# gogocarto contains materializeCss lib, so we load it for all pages #}
-    <link rel="stylesheet" href="{{ asset('css/gogocarto.min.css?ver=' ~ version) }}">
+    <link rel="stylesheet" href="{{ asset('css/gogocarto.css?ver=' ~ version) }}">
 
     {% block stylesheets %}
     {% endblock %}
@@ -28,8 +28,7 @@
 
     {# Mains javascripts libs #}
     <script src="{{ asset('js/gogocarto.js?ver=' ~ version) }}"></script>
-    <script src="{{ asset('js/init-sw.js?ver=' ~ version) }}"></script>
-
+    
     {# Block to add custom javascript to each page #}
     {% block javascripts %}
     {% endblock %}

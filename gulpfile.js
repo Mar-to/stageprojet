@@ -24,9 +24,10 @@ const scriptsElementForm = () =>
     .pipe(gulp.dest('web/js'));
 
 const scriptsLibs = () => {
-  const gogocarto = gulp.src(['node_modules/gogocarto-js/dist/gogocarto.js'])
+  const gogocarto = gulp.src(['node_modules/gogocarto-js/dist/gogocarto.js', 'assets/js/init-sw.js', 'custom/**/*.js'])
+    .pipe(concat('gogocarto.js'))
     .pipe(gulp.dest('web/js'));
-  const sw = gulp.src(['assets/js/vendor/**/*', 'assets/js/init-sw.js'])
+  const sw = gulp.src(['assets/js/vendor/**/*'])
     .pipe(gulp.dest('web/js'));
   return merge(gogocarto, sw);
 };
@@ -55,7 +56,8 @@ const stylesBuild = () => {
 };
 
 const gogocarto_assets = () => {
-  const js = gulp.src(['node_modules/gogocarto-js/dist/*.css*',])
+  const js = gulp.src(['node_modules/gogocarto-js/dist/gogocarto.css', 'custom/**/*.css',])
+    .pipe(concat('gogocarto.css'))
     .pipe(gulp.dest('web/css'));
   const fonts = gulp.src(['node_modules/gogocarto-js/dist/fonts/**/*',])
     .pipe(gulp.dest('web/css/fonts'));

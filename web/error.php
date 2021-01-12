@@ -10,8 +10,8 @@
   <!-- TODO --><meta name="google-site-verification" content="" />  
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />   
  
-  <link rel="stylesheet" href="assets/css/gogocarto.min.css"">  
-   <link rel="stylesheet" href="assets/css/pages.css"> 
+  <link rel="stylesheet" href="web/css/gogocarto.css"">  
+   <link rel="stylesheet" href="web/css/pages.css"> 
   <meta name="robots" content="index, follow, all" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>   
   <link href="https://fonts.googleapis.com/css?family=Lobster|Roboto:400,700" rel="stylesheet"> 
