@@ -622,8 +622,22 @@ class Element
                 $result[] = (string) $optionsValue->getOptionId();
             }
         }
-
         return $result;
+    }
+
+    // Manage easily options, with taking care of index and description
+    public function setOptionIds($optionsIds)
+    {
+        foreach ($this->getOptionValues() as $optionValue) {
+            if (!in_array($optionValue->getOptionId(), $optionsIds)) 
+                $this->removeOptionValue($optionValue);
+        }
+        $optionIdsToAdd = array_diff($optionsIds, $this->getOptionIds());
+        foreach($optionIdsToAdd as $optionId) {
+            $newOptionValue = new OptionValue($optionId);
+            $this->addOptionValue($newOptionValue);
+        }
+        return $this;
     }
 
     public function reset()
@@ -797,7 +811,7 @@ class Element
      */
     public function getOptionValues()
     {
-        return $this->optionValues;
+        return $this->optionValues ?? [];
     }
 
     public function setOptionValues($optionValues)

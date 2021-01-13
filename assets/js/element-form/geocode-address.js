@@ -66,23 +66,24 @@ function geocodeAddress(address) {
 			if (results[0].streetName) streetAddress +=  results[0].streetName;
 
 			geocodedFormatedAddress = "";
-	    if (streetAddress) geocodedFormatedAddress += streetAddress + ', ';
-	    if (results[0].postalCode) geocodedFormatedAddress += results[0].postalCode + ' ';
-	    if (results[0].locality) geocodedFormatedAddress += results[0].locality;
+			if (streetAddress) geocodedFormatedAddress += streetAddress + ', ';
+			if (results[0].postalCode) geocodedFormatedAddress += results[0].postalCode + ' ';
+			if (results[0].locality) geocodedFormatedAddress += results[0].locality;
 
 			$('#input-latitude').val(marker.getLatLng().lat);
 			$('#input-longitude').val(marker.getLatLng().lng);
-			$('#input-postal-code').val(results[0].postalCode);
-			$('#input-country').val(results[0].countryCode);
-			$('#input-city').val(results[0].locality);
+			$('#input-postalCode').val(results[0].postalCode);
+			$('#input-addressCountry').val(results[0].countryCode);
+			$('#input-addressLocality').val(results[0].locality);
 			$('#input-streetAddress').val(streetAddress);
 
 			$('#input-address').val(geocodedFormatedAddress);
 
 			$('#input-address').closest('.input-field').removeClass("error");
 			$('#input-address').removeClass('invalid');
+			$('#geocode-error').hide();
 		}
-		else
+		else if ($('#input-address').length > 0)
 		{
 			$('#input-address').addClass("invalid");
 			$('#input-address').closest('.input-field').addClass("error");
@@ -93,12 +94,14 @@ function geocodeAddress(address) {
 
 			$('#input-latitude').val('');
 			$('#input-longitude').val('');
-			$('#input-postal-code').val('');
-			$('#input-city').val('');
-			$('#input-country').val('');
+			$('#input-postalCode').val('');
+			$('#input-addressLocality').val('');
+			$('#input-addressCountry').val('');
 			$('#input-streetAddress').val('');
 
 			console.log("erreur geocoding", status);
+		} else {
+			$('#geocode-error').text('Erreur lors de la geolocalisation de "' + address + '"').show()
 		}
 
 		$('#geocode-spinner-loader').hide();
@@ -110,10 +113,10 @@ function checkCustomFormatedAddressBeforeSend()
 {
 	if (getInputAddress() != geocodedFormatedAddress)
 	{
-		$('#input-custom-formated-address').val(getInputAddress());
+		$('#input-customFormatedAddress').val(getInputAddress());
 	}
 	else
 	{
-		$('#input-custom-formated-address').val(null);
+		$('#input-customFormatedAddress').val(null);
 	}
 }

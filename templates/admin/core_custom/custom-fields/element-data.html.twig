@@ -1,0 +1,25 @@
+{% set element = form.vars.sonata_admin.admin.subject %}
+
+<h4 style="margin-top: 25px;">Champs Personnalisés</h4>
+<div class="table-responsive no-padding">
+  <table class="table"> 
+  <tbody>
+    {% for key, value in element.data %}
+      <tr class="sonata-ba-view-container">
+        <th>{{ key }}</th>
+        <td>
+          {% set type = "text" %}
+          {% set disabled = false %}
+          {% if not is_string(value) and not is_numeric(value) %}
+            {% set disabled = true %}
+            {% set value = value|json_encode %}
+          {% endif %}
+          <input type="{{ type }}" class="form-control" {{ disabled ? 'disabled="disabled"' : '' }}
+                    name="{{ 'data[' ~ key ~ ']'}}" value="{{ value }}" />
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+  </table>
+</div>
+<h4>Champs Spéciaux</h4>

@@ -19,25 +19,24 @@ class ElementType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-      ->add('name', TextType::class, ['required' => false])
-      ->add('email', TextType::class, ['required' => false])
-      ->add('fullAddress', TextType::class, ['mapped' => false])
-      ->add('address', PostalAddressType::class)
-      ->add('geo', CoordinatesType::class)
-
-      ->add('files', CollectionType::class, [
-                'entry_type' => ElementFileType::class,
-                'allow_add' => true,
-                'allow_delete' => true,
-                'label' => '',
-            ])
-      ->add('images', CollectionType::class, [
-                'entry_type' => ElementImageType::class,
-                'allow_add' => true,
-                'allow_delete' => true,
-                'label' => '',
-            ])
-      ->add('openHours', OpenHoursType::class, ['required' => false]);
+            ->add('name', TextType::class, ['required' => false])
+            ->add('email', TextType::class, ['required' => false])
+            ->add('fullAddress', TextType::class, ['mapped' => false])
+            ->add('address', PostalAddressType::class)
+            ->add('geo', CoordinatesType::class)
+            ->add('files', CollectionType::class, [
+                        'entry_type' => ElementFileType::class,
+                        'allow_add' => true,
+                        'allow_delete' => true,
+                        'label' => '',
+                    ])
+            ->add('images', CollectionType::class, [
+                        'entry_type' => ElementImageType::class,
+                        'allow_add' => true,
+                        'allow_delete' => true,
+                        'label' => '',
+                    ])
+            ->add('openHours', OpenHoursType::class, ['required' => false]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

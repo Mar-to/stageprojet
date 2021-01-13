@@ -3,6 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\Services\ValidationType;
+use App\Document\PostalAddress;
+use App\Document\Coordinates;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 // Split this big controller into two classes
@@ -97,6 +99,13 @@ class ElementAdminController extends ElementAdminBulkController
             if ($isFormValid) {
                 try {
                     $message = $request->get('custom_message') ? $request->get('custom_message') : '';
+
+                    $object->setCustomData($request->get('data'));
+                    $adr = $request->get('address');
+                    $address = new PostalAddress($adr['streetAddress'], $adr['addressLocality'], $adr['postalCode'], $adr['addressCountry'], $adr['customFormatedAddress']);
+                    $object->setAddress($address);
+                    $geo = new Coordinates($request->get('latitude'), $request->get('lontitude'));
+                    $object->setGeo($geo);
 
                     if ($request->get('submit_update_json')) {
                         $this->jsonGenerator->updateJsonRepresentation($object);

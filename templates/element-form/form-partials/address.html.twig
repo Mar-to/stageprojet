@@ -17,11 +17,11 @@
 <!-- HIDDEN input for geolocalization -->
 {{ form_widget(form.geo.latitude, {'id': 'input-latitude'}) }}
 {{ form_widget(form.geo.longitude, {'id': 'input-longitude'}) }}
-{{ form_widget(form.address.postalCode, {'id': 'input-postal-code'}) }}
-{{ form_widget(form.address.addressLocality, {'id': 'input-city'}) }}
+{{ form_widget(form.address.postalCode, {'id': 'input-postalCode'}) }}
+{{ form_widget(form.address.addressLocality, {'id': 'input-addressLocality'}) }}
 {{ form_widget(form.address.streetAddress, {'id': 'input-streetAddress'}) }}
-{{ form_widget(form.address.addressCountry, {'id': 'input-country'}) }}
-{{ form_widget(form.address.customFormatedAddress, {'id': 'input-custom-formated-address'}) }}
+{{ form_widget(form.address.addressCountry, {'id': 'input-addressCountry'}) }}
+{{ form_widget(form.address.customFormatedAddress, {'id': 'input-customFormatedAddress'}) }}
 
 <!-- Map -->
 <div class="map-container col s12" style="position:relative">

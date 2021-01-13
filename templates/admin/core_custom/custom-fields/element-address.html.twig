@@ -1,0 +1,67 @@
+{% set element = form.vars.sonata_admin.admin.subject %}
+{% set config = form.vars.sonata_admin.admin.config %}
+
+{% set fields = { 
+  'streetAddress': 'Rue', 
+  'addressLocality': 'Ville',
+  'postalCode': 'Code Postal',
+  'addressCountry': 'Pays',
+  'customFormatedAddress': 'Address Complète'
+} %}
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+<script src="{{ asset('js/element-form.js?ver=' ~ version) }}"></script>
+
+<div class="table-responsive no-padding">
+  <table class="table"> 
+  <tbody>
+    {% for key, label in fields %}
+      <tr class="sonata-ba-view-container">
+        <th>{{ label }}</th>
+        <td>
+          <input type="text" class="form-control" id="input-{{ key }}"
+                 name="{{ 'address[' ~ key ~ ']'}}" value="{{ element.address|send(key) }}" />
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+  </table>
+  <input type="hidden" name="latitude" id="input-latitude" value="{{ element.geo.latitude }}" />
+  <input type="hidden" name="longitude" id="input-longitude"  value="{{ element.geo.longitude }}" />
+
+  <center>
+    <button type="button" class="btn btn-default geocode-btn">Geocode adresse</button>
+  </center>
+  <div class="alert alert-danger" id="geocode-error"></div>
+  <div id="address-preview-map"></div>
+</div>
+
+<script>
+	  {# var editMode = true; #}
+    var defaultBounds = {{ config.getDefaultBounds|json_encode|raw }};
+    var defaultTileLayer = "{{ config.defaultTileLayer.url }}";
+	  initMap();
+
+    $('.geocode-btn').on('click', function() {
+      var address = "";
+      if ($('#input-customFormatedAddress').val()) {
+        address = $('#input-customFormatedAddress').val();
+      } else {
+        address += $('#input-streetAddress').val() + ' ';
+        address += $('#input-postalCode').val() + ' ' + $('#input-addressLocality').val();
+      }
+      geocodeAddress(address);
+    })    
+</script>
+
+<style>
+  #address-preview-map {
+    height: 200px;
+  }
+  .geocode-btn {
+    margin: -10px 0 10px 0;
+  }
+  #geocode-error {
+    display: none;
+  }
+</style>

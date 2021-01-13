@@ -86,3 +86,17 @@ pre {
   line-height: 13px;
   text-align: left;
 }
+
+.sonata-ba-view-container th {
+    border-top: none !important;
+    vertical-align: middle !important;
+    text-transform: capitalize;
+}
+.sonata-ba-view-container td {
+    border-top: none !important;
+}
+
+.form-control {
+    height: 30px;
+    padding: 3px 12px;
+}

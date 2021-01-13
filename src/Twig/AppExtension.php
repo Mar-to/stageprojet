@@ -22,6 +22,7 @@ class AppExtension extends AbstractExtension
         return [
             new TwigFilter('json_decode', [$this, 'jsonDecode']),
             new TwigFilter('values', [$this, 'values']),
+            new TwigFilter('send', [$this, 'send']),
         ];
     }
 
@@ -35,6 +36,11 @@ class AppExtension extends AbstractExtension
         return $value ? array_values($value) : [];
     }
 
+    public function send($object, $prop) {    
+        $method = 'get'.ucfirst($prop);       
+        return $object->$method();
+    }
+
     public function getFunctions()
     {
         return [
@@ -42,6 +48,8 @@ class AppExtension extends AbstractExtension
             new TwigFunction('new_msgs_count', [$this, 'getNewMessagesCount']),
             new TwigFunction('errors_count', [$this, 'getErrorsCount']),
             new TwigFunction('is_user_allowed', [$this, 'isUserAllowed']),
+            new TwigFunction('is_string', [$this, 'isString']),
+            new TwigFunction('is_numeric', [$this, 'isNumeric']),
         ];
     }
 
@@ -64,4 +72,14 @@ class AppExtension extends AbstractExtension
     {
         return $this->configService->isUserAllowed($featureName);
     }
+
+    public function isString($value)
+    {
+        return is_string($value);
+    }
+
+    public function isNumeric($value)
+    {
+        return is_numeric($value);
+    }    
 }

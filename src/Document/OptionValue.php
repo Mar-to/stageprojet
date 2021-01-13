@@ -32,6 +32,11 @@ class OptionValue
      */
     public $index = 0;
 
+    public function __construct($optionId = null) 
+    {
+        $this->optionId = $optionId;
+    }
+
     public function toJson($optionName = null)
     {
         $result = '{';

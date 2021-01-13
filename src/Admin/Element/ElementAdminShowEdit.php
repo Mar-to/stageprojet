@@ -12,27 +12,79 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use App\Form\OpenHoursType;
+use App\Form\ElementImageType;
+use App\Form\ElementFileType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 class ElementAdminShowEdit extends ElementAdminList
 {
+    public $config;
+
     protected function configureFormFields(FormMapper $formMapper)
     {
+        $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
+        $this->config = $dm->getRepository('App\Document\Configuration')->findConfiguration();  
+        $categories = $dm->createQueryBuilder('App\Document\Option')->select('name')
+                      ->hydrate(false)->getQuery()->execute();
+        $categoriesChoices = [];
+        foreach ($categories as $id => $object) {
+            $categoriesChoices[$object['name']] = $id;
+        }
+
         $formMapper
-      ->with('Informations générales', [])
-          ->add('name')
-      ->add('userOwnerEmail', EmailType::class, ['required' => false, 'label' => "Email de l'utilisateur propriétaire de cette fiche"])
-        ->end();
+          ->with('Informations générales', ['class' => 'col-md-6'])
+            ->add('name', null, ['required' => true, 'label' => "Nom / Titre"])
+            ->add('optionIds', ChoiceType::class, [
+              'required' => false,
+              'multiple' => true,
+              'choices' => $categoriesChoices,
+              'label' => 'Catégories'], ['admin_code' => 'admin.option_hidden'])
+            ->add('data', null, ['label_attr' => ['style' => 'display:none;'], 'attr' => ['class' => 'gogo-element-data']])
+            ->add('userOwnerEmail', EmailType::class, ['required' => false, 'label' => "Email de l'utilisateur propriétaire de cette fiche"])
+            ->add('email', EmailType::class, ['required' => false, 'label' => "Email de l'élément"])
+            ->add('images', CollectionType::class, [
+              'entry_type' => ElementImageType::class,
+              'allow_add' => true,
+              'label' => 'Images',
+              'allow_delete' => true,              
+              'required' => false
+            ])
+            ->add('files', CollectionType::class, [
+              'entry_type' => ElementFileType::class,
+              'allow_add' => true,
+              'allow_delete' => true,
+              'label' => 'Fichiers',
+              'required' => false
+            ])
+            // ->add('openHours', OpenHoursType::class, ['required' => false])
+          ->end()
+          ->with('Localisation', ['class' => 'col-md-6'])
+            ->add('address.streetAddress', TextType::class, ['label_attr' => ['style' => 'display:none;'], 'attr' => ['class' => 'gogo-element-address']])
+          ->end()
+        ;
     }
 
     protected function configureShowFields(ShowMapper $show)
     {
         $needModeration = 0 != $this->subject->getModerationState();
-        $statusClass = $needModeration ? 'col-md-6' : 'col-md-12';
+        
+        $show
+          ->with('Autre infos', ['class' => 'col-md-6 col-sm-12'])
+            ->add('id')
+            ->add('randomHash')
+            ->add('oldId', null, ['label' => 'Id dans la base de données importée'])
+            ->add('sourceKey', null, ['label' => 'Source'])
+            ->add('createdAt', 'datetime', ['format' => 'd/m/Y à H:i'])
+            ->add('updatedAt', 'datetime', ['format' => 'd/m/Y à H:i'])
+          ->end();
+        
         if ($this->subject->isPending()) {
-          $show->with('En attente', ['class' => $statusClass])
+          $show->with('En attente', ['class' => 'col-md-6'])
             ->add('currContribution', null, ['template' => 'admin/partials/show_one_contribution.html.twig'])->end();
         } else {
-          $show->with('Status', ['class' => $statusClass])
+          $show->with('Status', ['class' => 'col-md-6'])
             ->add('status', ChoiceType::class, [
               'choices' => $this->statusChoices,
               'template' => 'admin/partials/show_choice_status.html.twig',
@@ -52,35 +104,6 @@ class ElementAdminShowEdit extends ElementAdminList
         }
 
         $show
-          ->with('Autre infos', ['class' => 'col-md-6 col-sm-12'])
-            ->add('id')
-            ->add('optionValues', null, [
-                'template' => 'admin/partials/show_option_values.html.twig',
-                'choices' => $this->optionList,
-                'label' => 'Catégories', ])
-            ->add('email', EmailType::class, ['label' => 'Email de contact'])
-            ->add('images', null, ['template' => 'admin/partials/show_element_images.html.twig'])
-            ->add('randomHash')
-            ->add('oldId', null, ['label' => 'Id dans la base de données importée'])
-            ->add('sourceKey', null, ['label' => 'Source'])
-            ->add('createdAt', 'datetime', ['format' => 'd/m/Y à H:i'])
-            ->add('updatedAt', 'datetime', ['format' => 'd/m/Y à H:i'])
-          ->end()
-
-          ->with('Localisation', ['class' => 'col-md-6 col-sm-12'])
-            ->add('address.formatedAddress', null, ['label' => 'Adresse complète'])
-            ->add('address.streetAddress', null, ['label' => 'Adresse'])
-            ->add('address.addressLocality', null, ['label' => 'Ville'])
-              ->add('address.postalCode', null, ['label' => 'Code postal'])
-            ->add('address.addressCountry', null, ['label' => 'Pays'])
-              ->add('geo.latitude')
-              ->add('geo.longitude')
-          ->end()
-
-          ->with('Champs personnalisés', ['class' => 'col-md-12 col-sm-12'])
-            ->add('data', null, ['template' => 'admin/partials/show_element_data.html.twig'])
-          ->end()
-
           ->with('Historique des contributions', ['class' => 'col-sm-12'])
             ->add('contributions', null, ['template' => 'admin/partials/show_contributions.html.twig'])
           ->end();
