@@ -29,6 +29,7 @@ class WebhooksPostCommand extends GoGoAbstractCommand
 
     protected function gogoExecute(DocumentManager $dm, InputInterface $input, OutputInterface $output): void
     {
+        $this->webhookService->setDm($dm);
         $numPosts = $this->webhookService->processPosts(10);
 
         $this->log('Nombre webhooks traités : '.$numPosts);

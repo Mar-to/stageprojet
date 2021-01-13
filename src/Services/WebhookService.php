@@ -36,6 +36,8 @@ class WebhookService
         $this->synchService = $synchService;
     }
 
+    public function setDm($dm) { $this->dm = $dm; }
+
     public function processPosts($limit = 5)
     {
         $contributions = $this->dm->createQueryBuilder(UserInteractionContribution::class)
@@ -44,6 +46,7 @@ class WebhookService
             ->field('webhookPosts.nextAttemptAt')->lte(new \DateTime())
             ->limit($limit)
             ->getQuery()->execute();
+        
         if (!$contributions || 0 == $contributions->count()) {
             return 0;
         }
