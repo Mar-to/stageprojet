@@ -164,7 +164,6 @@ class ElementActionService
                 }
             }
         }
-        $contribution = $this->interactionService->createContribution($message, $interactType, $status, $directModerationWithHash);
-        $element->addContribution($contribution);
+        $contribution = $this->interactionService->createContribution($element, $message, $interactType, $status, $directModerationWithHash);
     }
 }

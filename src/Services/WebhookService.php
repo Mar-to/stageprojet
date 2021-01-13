@@ -7,14 +7,14 @@ use App\Document\ConfImage;
 use App\Document\InteractionType;
 use App\Document\UserInteractionContribution;
 use App\Document\WebhookFormat;
-use App\Document\WebhookPost;
+use App\Services\ElementSynchronizationService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Client;
-use GuzzleHttp\Pool;
-use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Promise;
 use http\Exception\InvalidArgumentException;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
+use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class WebhookService
@@ -25,6 +25,7 @@ class WebhookService
 
     public function __construct(DocumentManager $dm, RouterInterface $router,
                                 TokenStorageInterface $securityContext,
+                                ElementSynchronizationService $synchService,
                                 $baseUrl)
     {
         $this->dm = $dm;
@@ -32,81 +33,75 @@ class WebhookService
         $this->securityContext = $securityContext;
         $this->baseUrl = 'http://'.$baseUrl;
         $this->config = $this->dm->getRepository(Configuration::class)->findConfiguration();
+        $this->synchService = $synchService;
     }
 
-    /**
-     * @param WebhookPost[] $webhookPosts
-     */
     public function processPosts($limit = 5)
     {
         $contributions = $this->dm->createQueryBuilder(UserInteractionContribution::class)
-        ->field('status')->exists(true)
-        ->field('webhookPosts.nextAttemptAt')->lte(new \DateTime())
-        ->limit($limit)
-        ->getQuery()->execute();
-
+            ->field('status')->exists(true) // null status are pending contributions, so ignore
+            ->field('webhookPosts.numAttempts')->lte(6) // ignore posts with 6 failures
+            ->field('webhookPosts.nextAttemptAt')->lte(new \DateTime())
+            ->limit($limit)
+            ->getQuery()->execute();
         if (!$contributions || 0 == $contributions->count()) {
             return 0;
         }
 
         $client = new Client();
-        $contributionsToProceed = [];
-        $postsToProceed = [];
+        $promises = [];
 
-        // PREPARE EACH POST (calculate data, url...)
+        // DISPATCH EACH POST
         foreach ($contributions as $contribution) {
             $data = $this->calculateData($contribution);
-            foreach ($contribution->getWebhookPosts() as $webhookPost) {
-                if (!$webhookPost->getStatus()) {
-                    $webhook = $webhookPost->getWebhook();
-                    $webhookPost->setUrl($webhook->getUrl());
+            foreach ($contribution->getWebhookPosts() as $post) {
+                $webhook = $post->getWebhook();
+                
+                if ($webhook) {
                     $jsonData = json_encode($this->formatData($webhook->getFormat(), $data));
-                    $webhookPost->setData($jsonData);
-                    $postsToProceed[] = $webhookPost;
-                    $contributionsToProceed[] = $contribution;
-                }
+                    $promise = $client->postAsync($webhook->getUrl(), [], $jsonData);
+                } else {
+                    // when no webhook it mean it's a special handling, like for OpenStreetMap
+                    $promise = $this->synchService->asyncDispatch($contribution, $data);
+                }                
+                
+                $promise->then(
+                    function (ResponseInterface $res) use ($post, $contribution) {
+                        // TODO: not sure we should always expect 200...
+                        if ($res->getStatusCode() == 200)
+                            $this->handlePostSuccess($post, $contribution);
+                        else 
+                            $this->handlePostFailure($post, $contribution);
+                    },
+                    function (RequestException $e) use($post, $contribution) {
+                        $this->handlePostFailure($post, $contribution);
+                    }
+                );
+                $promises[] = $promise;
             }
         }
 
-        // CREATE POST REQUESTS
-        $requests = function () use ($client, $postsToProceed) {
-            foreach ($postsToProceed as $post) {
-                yield new \GuzzleHttp\Psr7\Request('POST', $post->getUrl(), [], $post->getData());
-            }
-        };
-
-        // SEND REQUEST CONCURRENTLY AND HANDLE RESULTS
-        $pool = new Pool($client, $requests(), [
-            'concurrency' => 5,
-            'fulfilled' => function (Response $response, $index) use ($postsToProceed, $contributionsToProceed) {
-                $post = $postsToProceed[$index];
-                $contribution = $contributionsToProceed[$index];
-                $contribution->removeWebhookPost($post);
-            },
-            'rejected' => function ($reason, $index) use ($postsToProceed, $contributionsToProceed) {
-                $post = $postsToProceed[$index];
-                $attemps = $post->incrementNumAttempts();
-                if ($attemps < 6) {
-                    // After first try, wait 5m, 25m, 2h, 10h, 2d
-                    $intervalInMinutes = pow(5, $attemps);
-                    $interval = new \DateInterval("PT{$intervalInMinutes}M");
-                    $now = new \DateTime();
-                    $post->setNextAttemptAt($now->add($interval));
-                } else {
-                    $post->setStatus('failed');
-                    $post->setNextAttemptAt(new \DateTime('3000-01-01'));
-                }
-            },
-        ]);
-
-        // Initiate the transfers and create a promise
-        $promise = $pool->promise();
-        // Force the pool of requests to complete.
-        $promise->wait();
+        // Wait for the requests to complete, even if some of them fail
+        // Not sure if we need that or not... maybe just for the flush
+        Promise\Utils::settle($promises)->wait();  
 
         $this->dm->flush();
+        return count($promises);
+    }
 
-        return count($postsToProceed);
+    private function handlePostSuccess($post, $contribution)
+    {
+        $contribution->removeWebhookPost($post);
+    }
+
+    private function handlePostFailure($post, $contribution)
+    {
+        $attemps = $post->incrementNumAttempts();
+        // After first try, wait 5m, 25m, 2h, 10h, 2d
+        $intervalInMinutes = pow(5, $attemps);
+        $interval = new \DateInterval("PT{$intervalInMinutes}M");
+        $now = new \DateTime();
+        $post->setNextAttemptAt($now->add($interval));
     }
 
     private function calculateData($contribution)

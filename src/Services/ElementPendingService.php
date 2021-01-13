@@ -37,8 +37,7 @@ class ElementPendingService
             $element->getCurrContribution()->setStatus(ElementStatus::ModifiedByOwner);
         }
 
-        $contribution = $this->interactionService->createContribution(null, $editMode ? 1 : 0, null, false, $userEmail);
-        $element->addContribution($contribution);
+        $contribution = $this->interactionService->createContribution($element, null, $editMode ? 1 : 0, null, false, $userEmail);
 
         $element->setStatus($editMode ? ElementStatus::PendingModification : ElementStatus::PendingAdd);
 

@@ -13,7 +13,11 @@ abstract class PostStatus
 /** @MongoDB\EmbeddedDocument */
 class WebhookPost
 {
-    /** @MongoDB\ReferenceOne(targetDocument="App\Document\Webhook", cascade={"persist"}) */
+    /** 
+     * If webhook is null, it mean it a special WebhookPost which mean custom handling
+     * (for example for OSM). See WekbookService
+     * @MongoDB\ReferenceOne(targetDocument="App\Document\Webhook", cascade={"persist"}) 
+     * */
     public $webhook;
 
     /** @MongoDB\Field(type="int") */
@@ -21,9 +25,6 @@ class WebhookPost
 
     /** @MongoDB\Field(type="date") */
     public $nextAttemptAt;
-
-    /** @MongoDB\Field(type="string") */
-    public $status;
 
     // non persisted attributes
     private $data;
@@ -224,29 +225,5 @@ class WebhookPost
     public function getUrl()
     {
         return $this->url;
-    }
-
-    /**
-     * Set status.
-     *
-     * @param string $status
-     *
-     * @return $this
-     */
-    public function setStatus($status)
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
-    /**
-     * Get status.
-     *
-     * @return string $status
-     */
-    public function getStatus()
-    {
-        return $this->status;
     }
 }

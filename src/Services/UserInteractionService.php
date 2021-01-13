@@ -26,7 +26,7 @@ class UserInteractionService
         $this->webhooks = $this->dm->getRepository(Webhook::class)->findAll();
     }
 
-    public function createContribution($message, $interactType, $status, $directModerationWithHash = false, $email = null)
+    public function createContribution($element, $message, $interactType, $status, $directModerationWithHash = false, $email = null)
     {
         $contribution = new UserInteractionContribution();
         $contribution->setType($interactType);
@@ -43,14 +43,22 @@ class UserInteractionService
         // for Pending contributions, we will wait for the status to be set (i.e. contribution is resolved) before dipatching those events
         if (6 != $interactType) { // 6 = InteractionType::ModerationResolved
             foreach ($this->webhooks as $webhook) {
-                $post = new WebhookPost();
-                $post->setWebhook($webhook);
-                $post->setNextAttemptAt(new \DateTime());
-                $contribution->addWebhookPost($post);
+                $this->createPostFor($contribution, $webhook);
+            }            
+            if ($element && $element->isSynchedWithExternalDatabase()) {
+                $this->createPostFor($contribution, null);
             }
         }
-
+        if ($element) $element->addContribution($contribution);
         return $contribution;
+    }
+
+    private function createPostFor($contribution, $webhook)
+    {
+        $post = new WebhookPost();
+        if ($webhook) $post->setWebhook($webhook);
+        $post->setNextAttemptAt(new \DateTime());
+        $contribution->addWebhookPost($post);
     }
 
     public function resolveContribution($element, $isAccepted, $validationType, $message)

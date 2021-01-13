@@ -104,9 +104,9 @@ class ElementAdminBulkController extends Controller
                 // CREATE CONTRIBUTION
                 $contrib = null;
                 switch ($actionName) {
-                    case 'softDelete': $contrib = $this->interactionService->createContribution($comment, InteractType::Deleted, ElementStatus::Deleted); break;
-                    case 'restore': $contrib = $this->interactionService->createContribution($comment, InteractType::Restored, ElementStatus::AddedByAdmin); break;
-                    case 'resolveReports': $contrib = $this->interactionService->createContribution($comment, InteractType::ModerationResolved, ElementStatus::AdminValidate); break;
+                    case 'softDelete': $contrib = $this->interactionService->createContribution(null, $comment, InteractType::Deleted, ElementStatus::Deleted); break;
+                    case 'restore': $contrib = $this->interactionService->createContribution(null, $comment, InteractType::Restored, ElementStatus::AddedByAdmin); break;
+                    case 'resolveReports': $contrib = $this->interactionService->createContribution(null, $comment, InteractType::ModerationResolved, ElementStatus::AdminValidate); break;
                 }
 
                 // Clear previous interaction with same type pending to be dispatched (prevent dispatching multiple edit event)
@@ -196,7 +196,7 @@ class ElementAdminBulkController extends Controller
         $selectedModels = clone $selectedModelQuery;
         $elementIds = array_keys($selectedModels->select('id')->field('status')->gte(-1)->hydrate(false)->getQuery()->execute()->toArray());
         if (count($elementIds)) {
-            $contribution = $this->interactionService->createContribution(null, InteractType::Deleted, ElementStatus::Deleted);
+            $contribution = $this->interactionService->createContribution(null, null, InteractType::Deleted, ElementStatus::Deleted);
             $contribution->setElementIds($elementIds);
             $this->dm->persist($contribution);
         }

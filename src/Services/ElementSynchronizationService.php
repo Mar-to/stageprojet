@@ -2,8 +2,26 @@
 
 namespace App\Services;
 
+use App\Document\UserInteractionContribution;
+use GuzzleHttp\Promise\Promise;
+use GuzzleHttp\Client;
+
 class ElementSynchronizationService
 {
+    /* 
+        Dispatch the contribution on the original database 
+        Log in into OSM
+        Commit the change...
+    */
+    public function asyncDispatch(UserInteractionContribution $contribution, $preparedData) : Promise
+    {
+        // Should return a Promise, maybe the OSM api can be reached with a final asyncRequest with GuzzleHttp
+        $client = new Client();
+        return $client->postAsync('api.osm.fr');
+        // Or return a custom promise if you are using the PHP library
+        return new Promise();
+    }
+    
     public function elementToOsm($element)
     {
         $osmFeature = [];

@@ -185,12 +185,10 @@ class ElementImportOneService
         } else {
             if ($updateExisting) {
                 // create edit contribution
-                $contribution = $this->interactionService->createContribution(null, 1, $element->getStatus());
-                $element->addContribution($contribution);
+                $contribution = $this->interactionService->createContribution($element, null, 1, $element->getStatus());
             } else {
                 // create import contribution if first time imported
-                $contribution = $this->interactionService->createContribution(null, 0, $element->getStatus());
-                $element->addContribution($contribution);
+                $contribution = $this->interactionService->createContribution($element, null, 0, $element->getStatus());
             }
         }
 
