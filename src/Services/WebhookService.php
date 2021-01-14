@@ -112,10 +112,9 @@ class WebhookService
         // STANDRD CONTIRBUTION
         if ($contribution->getElement()) {
             $element = $contribution->getElement();
-            $this->dm->refresh($element);
             $element->setPreventJsonUpdate(true);
             $link = str_replace('%23', '#', $this->router->generate('gogo_directory_showElement', ['id' => $element->getId()], true));
-            $data = json_decode($element->getBaseJson(), true);
+            $data = json_decode($element->getJson(), true);
         }
         // BATCH CONTRIBUTION
         else {
