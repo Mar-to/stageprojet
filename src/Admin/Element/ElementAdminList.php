@@ -83,24 +83,24 @@ class ElementAdminList extends ElementAdminFilters
         $actions['resolveReports'] = $this->createBatchConfig('Résoudre la modération', 'resolveReports');
 
         $actions['sendMail'] = [
-         'label' => 'Envoyer un mail',
-         'ask_confirmation' => false,
-         'modal' => [
-            ['type' => 'text',      'label' => 'Votre adresse mail',  'id' => 'from'],
-            ['type' => 'text',      'label' => 'Object',  'id' => 'mail-subject'],
-            ['type' => 'textarea',  'label' => 'Contenu', 'id' => 'mail-content'],
-            ['type' => 'checkbox',      'label' => "Envoyer l'email aux éléments",  'id' => 'send-to-element', 'checked' => 'true'],
-            ['type' => 'checkbox',      'label' => "Envoyer l'email aux derniers contributeurs",  'id' => 'send-to-last-contributor', 'checked' => 'false'],
-         ],
-      ];
+            'label' => 'Envoyer un mail',
+            'ask_confirmation' => false,
+            'modal' => [
+                ['type' => 'text',      'label' => 'Votre adresse mail',  'id' => 'from'],
+                ['type' => 'text',      'label' => 'Object',  'id' => 'mail-subject'],
+                ['type' => 'textarea',  'label' => 'Contenu', 'id' => 'mail-content'],
+                ['type' => 'checkbox',      'label' => "Envoyer l'email aux éléments",  'id' => 'send-to-element', 'checked' => 'true'],
+                ['type' => 'checkbox',      'label' => "Envoyer l'email aux derniers contributeurs",  'id' => 'send-to-last-contributor', 'checked' => 'false'],
+            ],
+        ];
         $actions['editOptions'] = [
-         'label' => 'Modifier les catégories',
-         'ask_confirmation' => false,
-         'modal' => [
-           ['type' => 'choice',  'choices' => $this->optionsChoices, 'id' => 'optionsToRemove', 'label' => 'Catégories à supprimer'],
-           ['type' => 'choice',  'choices' => $this->optionsChoices, 'id' => 'optionsToAdd', 'label' => 'Catégories à ajouter'],
-         ],
-      ];
+            'label' => 'Modifier les catégories',
+            'ask_confirmation' => false,
+            'modal' => [
+                ['type' => 'choice',  'choices' => $this->getOptionsChoices(), 'id' => 'optionsToRemove', 'label' => 'Catégories à supprimer'],
+                ['type' => 'choice',  'choices' => $this->getOptionsChoices(), 'id' => 'optionsToAdd', 'label' => 'Catégories à ajouter'],
+            ],
+        ];
         $actions['delete'] = ['label' => 'Supprimer définitivement'];
 
         return $actions;
@@ -109,12 +109,12 @@ class ElementAdminList extends ElementAdminFilters
     protected function createBatchConfig($name, $id)
     {
         return [
-         'label' => $name,
-         'ask_confirmation' => false,
-         'modal' => [
-           ['type' => 'text',  'label' => 'Détail de la modification, raison de la suppression... ce texte remplacera {{ customMessage }} dans les mails automatiques', 'id' => 'comment-'.$id],
-           ['type' => 'checkbox',  'checked' => true, 'label' => 'Ne pas envoyer de mail',  'id' => 'dont-send-mail-'.$id],
-         ],
-      ];
+            'label' => $name,
+            'ask_confirmation' => false,
+            'modal' => [
+                ['type' => 'text',  'label' => 'Détail de la modification, raison de la suppression... ce texte remplacera {{ customMessage }} dans les mails automatiques', 'id' => 'comment-'.$id],
+                ['type' => 'checkbox',  'checked' => true, 'label' => 'Ne pas envoyer de mail',  'id' => 'dont-send-mail-'.$id],
+            ],
+        ];
     }
 }

@@ -91,7 +91,7 @@ class ElementAdminFilters extends ElementAdminAbstract
                },
                 'field_type' => ChoiceType::class,
                 'field_options' => [
-                     'choices' => array_flip($this->optionsChoices),
+                     'choices' => array_flip($this->getOptionsChoices()),
                      'expanded' => false,
                      'multiple' => true,
                     ],
@@ -109,7 +109,7 @@ class ElementAdminFilters extends ElementAdminAbstract
                },
                 'field_type' => ChoiceType::class,
                 'field_options' => [
-                     'choices' => array_flip($this->optionsChoices),
+                     'choices' => array_flip($this->getOptionsChoices()),
                      'expanded' => false,
                      'multiple' => true,
                     ],
@@ -127,7 +127,7 @@ class ElementAdminFilters extends ElementAdminAbstract
                },
                 'field_type' => ChoiceType::class,
                 'field_options' => [
-                     'choices' => array_flip($this->optionsChoices),
+                     'choices' => array_flip($this->getOptionsChoices()),
                      'expanded' => false,
                      'multiple' => true,
                     ],
