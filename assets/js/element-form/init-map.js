@@ -5,8 +5,8 @@ var marker;
 function initMap()
 {
 	var mapCenter;
-
-	if ($('#input-latitude').val() && $('#input-longitude').val())
+	if ($('#input-latitude').val() && $('#input-latitude').val() != 0 &&
+	    $('#input-longitude').val() && $('#input-longitude').val() != 0)
 	{
 		markerPosition = new L.LatLng($('#input-latitude').val(), $('#input-longitude').val());
 		mapCenter = markerPosition;

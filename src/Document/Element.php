@@ -334,6 +334,7 @@ class Element
         $this->nonDuplicates = new \Doctrine\Common\Collections\ArrayCollection();
 
         if (!$this->isPendingModification()) $this->setModifiedElement(null);
+        if (!$this->geo) $this->geo = new Coordinates();
     }
 
     // automatically resolve moderation error
@@ -1131,7 +1132,6 @@ class Element
     public function setGeo(\App\Document\Coordinates $geo)
     {
         $this->geo = $geo;
-
         return $this;
     }
 
@@ -1166,6 +1166,7 @@ class Element
      */
     public function getAddress()
     {
+        if (!$this->address) return new PostalAddress();
         return $this->address;
     }
 

@@ -98,15 +98,9 @@ class ElementAdminController extends ElementAdminBulkController
             // persist if the form was valid and if in preview mode the preview was approved
             if ($isFormValid) {
                 try {
+                    $this->handlesGoGoForm($object, $request);
+
                     $message = $request->get('custom_message') ? $request->get('custom_message') : '';
-
-                    $object->setCustomData($request->get('data'));
-                    $adr = $request->get('address');
-                    $address = new PostalAddress($adr['streetAddress'], $adr['addressLocality'], $adr['postalCode'], $adr['addressCountry'], $adr['customFormatedAddress']);
-                    $object->setAddress($address);
-                    $geo = new Coordinates($request->get('latitude'), $request->get('lontitude'));
-                    $object->setGeo($geo);
-
                     if ($request->get('submit_update_json')) {
                         $this->jsonGenerator->updateJsonRepresentation($object);
                     } elseif ($object->isPending() && ($request->get('submit_accept') || $request->get('submit_refuse'))) {
@@ -168,5 +162,125 @@ class ElementAdminController extends ElementAdminBulkController
         }
 
         return $this->redirectToRoute('admin_app_element_showEdit', ['id' => $id]);
+    }
+
+    private function handlesGoGoForm($element, $request)
+    {
+        $element->setCustomData($request->get('data'));
+        $adr = $request->get('address');
+        $address = new PostalAddress($adr['streetAddress'], $adr['addressLocality'], $adr['postalCode'], $adr['addressCountry'], $adr['customFormatedAddress']);
+        $element->setAddress($address);
+        $geo = new Coordinates($request->get('latitude'), $request->get('lontitude'));
+        $element->setGeo($geo);
+    }
+
+    public function createAction()
+    {
+        $request = $this->getRequest();
+        // the key used to lookup the template
+        $templateKey = 'edit';
+
+        $this->admin->checkAccess('create');
+
+        $class = new \ReflectionClass($this->admin->hasActiveSubClass() ? $this->admin->getActiveSubClass() : $this->admin->getClass());
+
+        if ($class->isAbstract()) {
+            return $this->renderWithExtraParams(
+                '@SonataAdmin/CRUD/select_subclass.html.twig',
+                [
+                    'base_template' => $this->getBaseTemplate(),
+                    'admin' => $this->admin,
+                    'action' => 'create',
+                ],
+                null
+            );
+        }
+
+        $newObject = $this->admin->getNewInstance();
+
+        $preResponse = $this->preCreate($request, $newObject);
+        if (null !== $preResponse) {
+            return $preResponse;
+        }
+
+        $this->admin->setSubject($newObject);
+
+        $form = $this->admin->getForm();
+
+        $form->setData($newObject);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $isFormValid = $form->isValid();
+
+            // persist if the form was valid and if in preview mode the preview was approved
+            if ($isFormValid && (!$this->isInPreviewMode() || $this->isPreviewApproved())) {
+                $submittedObject = $form->getData();
+                $this->admin->setSubject($submittedObject);
+                $this->admin->checkAccess('create', $submittedObject);
+                $this->handlesGoGoForm($submittedObject, $request);
+                $this->elementActionService->add($submittedObject, true, "");
+                
+                try {
+                    $newObject = $this->admin->create($submittedObject);
+
+                    if ($this->isXmlHttpRequest()) {
+                        return $this->handleXmlHttpRequestSuccessResponse($request, $newObject);
+                    }
+
+                    $this->addFlash(
+                        'sonata_flash_success',
+                        $this->trans(
+                            'flash_create_success',
+                            ['%name%' => $this->escapeHtml($this->admin->toString($newObject))],
+                            'SonataAdminBundle'
+                        )
+                    );
+
+                    // redirect to edit mode
+                    return $this->redirectTo($newObject);
+                } catch (ModelManagerException $e) {
+                    $this->handleModelManagerException($e);
+
+                    $isFormValid = false;
+                }
+            }
+
+            // show an error message if the form failed validation
+            if (!$isFormValid) {
+                if ($this->isXmlHttpRequest() && null !== ($response = $this->handleXmlHttpRequestErrorResponse($request, $form))) {
+                    return $response;
+                }
+
+                $this->addFlash(
+                    'sonata_flash_error',
+                    $this->trans(
+                        'flash_create_error',
+                        ['%name%' => $this->escapeHtml($this->admin->toString($newObject))],
+                        'SonataAdminBundle'
+                    )
+                );
+            } elseif ($this->isPreviewRequested()) {
+                // pick the preview template if the form was valid and preview was requested
+                $templateKey = 'preview';
+                $this->admin->getShow();
+            }
+        }
+
+        $formView = $form->createView();
+        // set the theme for the current Admin Form
+        $this->get('twig')->getRuntime(\Symfony\Component\Form\FormRenderer::class)
+             ->setTheme($formView, $this->admin->getFormTheme());
+
+        // NEXT_MAJOR: Remove this line and use commented line below it instead
+        $template = $this->admin->getTemplate($templateKey);
+        // $template = $this->templateRegistry->getTemplate($templateKey);
+
+        return $this->renderWithExtraParams($template, [
+            'action' => 'create',
+            'form' => $formView,
+            'object' => $newObject,
+            'objectId' => null,
+        ], null);
     }
 }
