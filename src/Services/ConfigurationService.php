@@ -21,12 +21,8 @@ class ConfigurationService
         $this->config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
     }
 
-    public function isUserAllowed($featureName, $request = null, $email = null)
+    public function isUserAllowed($featureName, $request = null)
     {
-        if (null === $email && null !== $request) {
-            $email = $request->get('userEmail');
-        }
-
         $user = $this->securityContext->getToken()->getUser();
 
         if ('anon.' == $user) {
@@ -36,7 +32,7 @@ class ConfigurationService
         $feature = $this->getFeatureConfig($featureName);
 
         // CHECK USER IS ALLOWED
-        return $feature->isAllowed($user, $request ? $request->get('iframe') : false, $email);
+        return $feature->isAllowed($user, $request ? $request->get('iframe') : false);
     }
 
     public function getConfig()

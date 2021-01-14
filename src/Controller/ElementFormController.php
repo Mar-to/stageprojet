@@ -97,7 +97,7 @@ class ElementFormController extends GoGoController
         }
         
         // is user not allowed, we show the contributor-login page
-        if (!$configService->isUserAllowed($addEditName, $request, $session->get('userEmail')) && !$isEditingWithHash) {
+        if (!$configService->isUserAllowed($addEditName, $request) && !$isEditingWithHash) {
             // creating simple form to let user enter a email address
             $loginform = $this->get('form.factory')->createNamedBuilder('user', FormType::class)
                 ->add('email', EmailType::class, ['required' => false])

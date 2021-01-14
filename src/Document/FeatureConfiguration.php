@@ -47,7 +47,7 @@ class FeatureConfiguration
         return $roles;
     }
 
-    public function isAllowed($user, $iframe, $userEmail = null)
+    public function isAllowed($user, $iframe)
     {
         if (!$this->getActive() || !$this->getActiveInIframe() && $iframe) {
             return false;
@@ -55,7 +55,7 @@ class FeatureConfiguration
         if (!$user) {
             return $this->getAllowRoleAnonymous();
         }
-        return  ($user->hasRole('ROLE_USER') || !$user && $userEmail) && $this->getAllowRoleUser() ||
+        return  $user->hasRole('ROLE_USER') && $this->getAllowRoleUser() ||
                 $user->isAdmin() && $this->getAllowRoleAdmin();
     }
 
