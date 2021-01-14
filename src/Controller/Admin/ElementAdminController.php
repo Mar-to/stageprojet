@@ -170,7 +170,7 @@ class ElementAdminController extends ElementAdminBulkController
         $adr = $request->get('address');
         $address = new PostalAddress($adr['streetAddress'], $adr['addressLocality'], $adr['postalCode'], $adr['addressCountry'], $adr['customFormatedAddress']);
         $element->setAddress($address);
-        $geo = new Coordinates($request->get('latitude'), $request->get('lontitude'));
+        $geo = new Coordinates($request->get('latitude'), $request->get('longitude'));
         $element->setGeo($geo);
     }
 
