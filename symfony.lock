@@ -226,6 +226,18 @@
     "paragonie/random_compat": {
         "version": "v9.99.99.x-dev"
     },
+    "pear/http_request2": {
+        "version": "v2.4.2"
+    },
+    "pear/log": {
+        "version": "1.13.2"
+    },
+    "pear/net_url2": {
+        "version": "v2.2.2"
+    },
+    "pear/pear_exception": {
+        "version": "v1.0.1"
+    },
     "php": {
         "version": "7.3"
     },
@@ -819,5 +831,8 @@
         "files": [
             "config/packages/bazinga_geocoder.yaml"
         ]
+    },
+    "zoonru/services-openstreetmap": {
+        "version": "dev-master"
     }
 }

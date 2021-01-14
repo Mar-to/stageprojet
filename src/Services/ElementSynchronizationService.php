@@ -2,26 +2,142 @@
 
 namespace App\Services;
 
+use App\Document\Configuration;
 use App\Document\UserInteractionContribution;
-use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Client;
+use GuzzleHttp\Promise\Promise;
+use Services_OpenStreetMap;
+use GuzzleHttp\Psr7\Response;
 
 class ElementSynchronizationService
 {
-    /* 
-        Dispatch the contribution on the original database 
+    public function setDm($dm) {
+        $this->dm = $dm;
+        $this->config = $this->dm->getRepository(Configuration::class)->findConfiguration();
+    }
+
+    /*
+        Dispatch the contribution on the original database
         Log in into OSM
         Commit the change...
     */
     public function asyncDispatch(UserInteractionContribution $contribution, $preparedData) : Promise
     {
-        // Should return a Promise, maybe the OSM api can be reached with a final asyncRequest with GuzzleHttp
-        $client = new Client();
-        return $client->postAsync('api.osm.fr');
-        // Or return a custom promise if you are using the PHP library
-        return new Promise();
+        // Wrap the whole function into a promise to make it asynchronous
+        $promise = new Promise(function () use (&$promise, &$contribution, &$preparedData) {
+             // Init OSM API handler
+            $configOsm = $this->config->getOsm();
+            $osm = new Services_OpenStreetMap([
+                'server' => $this->getOsmServer(),
+                'user' => $configOsm->getOsmUsername(),
+                'password' => $configOsm->getOsmPassword(),
+                'User-Agent' => $this->config->getAppName(),
+                'verbose' => true
+            ]);
+
+            $osmFeature = $this->elementToOsm($contribution->getElement());
+
+            // Get URL of used map
+            $url = 'http://';
+            if ($_ENV['USE_AS_SAAS'] == 'true') { $url .= $this->config->getDbName().'.'; }
+            $url .= $_ENV['BASE_URL'];
+
+            // Check contribution validity according to OSM criterias
+            if($this->allowOsmUpload($contribution, $preparedData)) {
+                $toAdd = null;
+
+                // Process contribution
+                // New feature
+                if($preparedData['action'] == 'add') {
+                    if($preparedData['data']['osm:type'] == 'node') {
+                        $toAdd = $osm->createNode($osmFeature['center']['latitude'], $osmFeature['center']['longitude'], $osmFeature['tags']);
+                    }
+                }
+                // Edit existing feature
+                else if($preparedData['action'] == 'edit') {
+                    $existingFeature = null;
+
+                    switch($preparedData['data']['osm:type']) {
+                        case 'node':
+                            $existingFeature = $osm->getNode($osmFeature['osmId']);
+                            break;
+                        case 'way':
+                            $existingFeature = $osm->getWay($osmFeature['osmId']);
+                            break;
+                        case 'relation':
+                            $existingFeature = $osm->getRelation($osmFeature['osmId']);
+                            break;
+                    }
+
+                    if($existingFeature) {
+                        // Check version number (to make sure Gogocarto version is the latest)
+                        if($existingFeature->getVersion() == intval($osmFeature['version'])) {
+                            // Edit tags
+                            foreach($osmFeature['tags'] as $k => $v) {
+                                if($v == null || $v == '') {
+                                    $existingFeature->removeTag($k);
+                                }
+                                else {
+                                    $existingFeature->setTag($k, $v);
+                                }
+                            }
+
+                            // If node coordinates are edited, check if it is detached
+                            if($preparedData['data']['osm:type'] == 'node' && (!$existingFeature->getWays()->valid() || $existingFeature->getWays()->count() == 0)) {
+                                if($osmFeature['center']['latitude'] != $existingFeature->getLat()) {
+                                    $existingFeature->setLat($osmFeature['center']['latitude']);
+                                }
+
+                                if($osmFeature['center']['longitude'] != $existingFeature->getLon()) {
+                                    $existingFeature->setLon($osmFeature['center']['longitude']);
+                                }
+                            }
+
+                            $toAdd = $existingFeature;
+                        }
+                        else {
+                            return $promise->resolve(new Response(500, [], null, '1.1', 'Feature versions mismatch: '.$osmFeature['version'].' on our side, '.$existingFeature->getVersion().' on OSM'));
+                        }
+                    }
+                    else {
+                        return $promise->resolve(new Response(500, [], null, '1.1', 'Feature does not exist on OSM'));
+                    }
+                }
+
+                // Create changeset and upload changes
+                if(isset($toAdd)) {
+                    $changeset = $osm->createChangeset();
+                    $changeset->setId(-1); // To prevent bug with setTag
+                    $changeset->setTag('host', $url);
+                    $changeset->setTag('gogocarto:user', $contribution->getUserDisplayName());
+                    $changeset->setTag('created_by:library', 'GoGoCarto');
+                    $changeset->setTag('created_by', $this->config->getAppName());
+                    $changeset->begin($this->getOsmComment($preparedData));
+
+                    // Add edited feature to changeset
+                    $changeset->add($toAdd);
+
+                    // Close changeset
+                    if($changeset->commit()) {
+                        return $promise->resolve(new Response(200, [], null, '1.1', 'Success'));
+                    }
+                    else {
+                        return $promise->resolve(new Response(500, [], null, '1.1', 'Error when sending changeset'));
+                    }
+                }
+            }
+            // If we don't send edit to OSM, just resolve promise
+            else {
+                return $promise->resolve(new Response(200, [], null, '1.1', 'Skipped'));
+            }
+        });
+
+        return $promise;
     }
-    
+
+    /**
+     * Convert an element into a JSON-like OSM feature
+     */
     public function elementToOsm($element)
     {
         $osmFeature = [];
@@ -70,7 +186,46 @@ class ElementSynchronizationService
             }
         }
 
+        $osmFeature['osmId'] = $element->getProperty('oldId');
+
         return $osmFeature;
+    }
+
+    /**
+     * Get OSM server URL, cleaned
+     */
+    private function getOsmServer() {
+        $url = $this->config->getOsm()->getOsmHost();
+        if(isset($url)) {
+            if(!str_starts_with($url, "http://") && !str_starts_with($url, "https://")) {
+                $url = "https://" + $url;
+            }
+
+            if(!str_ends_with($url, "/")) {
+                $url .= "/";
+            }
+        }
+        return $url;
+    }
+
+    /**
+     * Generate comment for OSM changeset
+     */
+    private function getOsmComment($preparedData) {
+        $actionsLabels = ['add' => 'Ajout', 'edit' => 'Modification', 'delete' => 'Suppression'];
+        $category = isset($preparedData['data']) && isset($preparedData['data']['categories']) && count($preparedData['data']['categories']) > 0 ? $preparedData['data']['categories'][0] : 'objet';
+        $name = isset($preparedData['data']) && isset($preparedData['data']['name']) ? $preparedData['data']['name'] : null;
+
+        return implode(" ", array_filter([$actionsLabels[$preparedData['action']], $category, $name], function($k) { return $k !== null; }));
+    }
+
+    /**
+     * Should this contribution be sent to OSM ?
+     */
+    private function allowOsmUpload($contribution, $preparedData) {
+        return $contribution->hasBeenAccepted()
+            && $preparedData['action'] != 'delete'
+            && ($preparedData['action'] == 'edit' || ($preparedData['action'] == 'add' && $preparedData['data']['osm:type'] == 'node'));
     }
 
     /**

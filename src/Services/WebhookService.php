@@ -34,6 +34,7 @@ class WebhookService
         $this->securityContext = $securityContext;
         $this->config = $this->dm->getRepository(Configuration::class)->findConfiguration();
         $this->synchService = $synchService;
+        $this->synchService->setDm($dm);
     }
 
     public function processPosts($limit = 5)
@@ -44,7 +45,7 @@ class WebhookService
             ->field('webhookPosts.nextAttemptAt')->lte(new \DateTime())
             ->limit($limit)
             ->execute();
-        
+
         if (!$contributions || 0 == $contributions->count()) {
             return 0;
         }
@@ -57,21 +58,21 @@ class WebhookService
             $data = $this->calculateData($contribution);
             foreach ($contribution->getWebhookPosts() as $post) {
                 $webhook = $post->getWebhook();
-                
+
                 if ($webhook) {
                     $jsonData = json_encode($this->formatData($webhook->getFormat(), $data));
                     $promise = $client->postAsync($webhook->getUrl(), [], $jsonData);
                 } else {
                     // when no webhook it mean it's a special handling, like for OpenStreetMap
                     $promise = $this->synchService->asyncDispatch($contribution, $data);
-                }                
-                
+                }
+
                 $promise->then(
                     function (ResponseInterface $res) use ($post, $contribution) {
                         // TODO: not sure we should always expect 200...
                         if ($res->getStatusCode() == 200)
                             $this->handlePostSuccess($post, $contribution);
-                        else 
+                        else
                             $this->handlePostFailure($post, $contribution);
                     },
                     function (RequestException $e) use($post, $contribution) {
@@ -84,7 +85,7 @@ class WebhookService
 
         // Wait for the requests to complete, even if some of them fail
         // Not sure if we need that or not... maybe just for the flush
-        Promise\Utils::settle($promises)->wait();  
+        Promise\Utils::settle($promises)->wait();
 
         $this->dm->flush();
         return count($promises);
@@ -107,12 +108,12 @@ class WebhookService
 
     private function calculateData($contribution)
     {
-        // STANDRD CONTIRBUTION
+        // STANDARD CONTRIBUTION
         if ($contribution->getElement()) {
             $element = $contribution->getElement();
             $element->setPreventJsonUpdate(true);
             $link = str_replace('%23', '#', $this->router->generate('gogo_directory_showElement', ['id' => $element->getId()], true));
-            $data = json_decode($element->getJson(), true);
+            $data = json_decode($element->getJson(false), true);
         }
         // BATCH CONTRIBUTION
         else {

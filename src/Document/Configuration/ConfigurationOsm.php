@@ -8,6 +8,13 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 class ConfigurationOsm
 {
     /**
+     * OSM host URL
+     *
+     * @MongoDB\Field(type="string")
+     */
+    public $osmHost = "https://www.openstreetmap.org";
+
+    /**
      * OSM user name for instance account
      *
      * @MongoDB\Field(type="string")
@@ -20,6 +27,30 @@ class ConfigurationOsm
      * @MongoDB\Field(type="string")
      */
     public $osmPassword;
+
+    /**
+     * Set osmHost.
+     *
+     * @param string $osmHost
+     *
+     * @return $this
+     */
+    public function setOsmHost($osmHost)
+    {
+        $this->osmHost = $osmHost;
+
+        return $this;
+    }
+
+    /**
+     * Get osmHost.
+     *
+     * @return string $osmHost
+     */
+    public function getOsmHost()
+    {
+        return $this->osmHost;
+    }
 
     /**
      * Set osmUsername.
