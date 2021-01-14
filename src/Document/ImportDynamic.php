@@ -31,6 +31,12 @@ class ImportDynamic extends Import
      */
     private $nextRefresh = null;
 
+    /**
+     * Users to be tonified when error during import, or where new ontology/taxonomy mapping
+     * @MongoDB\ReferenceMany(targetDocument="App\Document\User")
+     */
+    private $usersToNotify;
+
     public function isDynamicImport()
     {
         return true;
@@ -110,6 +116,26 @@ class ImportDynamic extends Import
     public function setOsmQueriesJson($json) 
     {
         $this->osmQueriesJson = $json;
+        return $this;
+    }
+
+    /**
+     * Get users to be tonified when error during import, or where new ontology/taxonomy mapping
+     */ 
+    public function getUsersToNotify()
+    {
+        return $this->usersToNotify;
+    }
+
+    /**
+     * Set users to be tonified when error during import, or where new ontology/taxonomy mapping
+     *
+     * @return  self
+     */ 
+    public function setUsersToNotify($usersToNotify)
+    {
+        $this->usersToNotify = $usersToNotify;
+
         return $this;
     }
 }

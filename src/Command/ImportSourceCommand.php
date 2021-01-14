@@ -6,6 +6,7 @@ use App\Document\ImportState;
 use App\Services\ElementImportService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use App\Services\DocumentManagerFactory;
+use App\Services\UserNotificationService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,9 +17,11 @@ class ImportSourceCommand extends GoGoAbstractCommand
 {
     public function __construct(DocumentManagerFactory $dm, LoggerInterface $commandsLogger,
                                TokenStorageInterface $security,
-                               ElementImportService $importService)
+                               ElementImportService $importService,
+                               UserNotificationService $notifService)
     {
         $this->importService = $importService;
+        $this->notifService = $notifService;
         parent::__construct($dm, $commandsLogger, $security);
     }
 
@@ -47,7 +50,8 @@ class ImportSourceCommand extends GoGoAbstractCommand
             }
 
             $this->log('Updating source '.$import->getSourceName().' for project '.$input->getArgument('dbname').' begins...');
-            $result = $this->importService->startImport($import);
+            // $this->importService->setDm($dm);
+            $result = $this->importService->startImport($import, $manuallyStarted = false);
             $this->log($result);
         } catch (\Exception $e) {
             $this->dm->persist($import);
@@ -55,6 +59,7 @@ class ImportSourceCommand extends GoGoAbstractCommand
             $message = $e->getMessage().'</br>'.$e->getFile().' LINE '.$e->getLine();
             $import->setCurrMessage($message);
             $this->error('Source: '.$import->getSourceName().' - '.$message);
+            $this->notifService->notifyImportError($import);
         }
     }
 }

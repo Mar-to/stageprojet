@@ -78,6 +78,22 @@ class User extends BaseUser
     protected $nextNewsletterDate;
 
     /**
+     * Be notified by email when an Element need moderation
+     * @MongoDB\Field(type="bool")
+     */
+    protected $watchModeration;
+
+    /**
+     * @MongoDB\ReferenceMany(targetDocument="App\Document\Option", cascade={"persist"})
+     */
+    protected $watchModerationOnlyWithOptions;
+
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $watchModerationOnlyWithPostCodes;
+
+    /**
      * @MongoDB\Field(type="int")
      */
     protected $gamification;
@@ -894,5 +910,65 @@ class User extends BaseUser
     public function getCommunsData()
     {
         return $this->communsData;
+    }
+
+    /**
+     * Get be notified by email when an Element need moderation
+     */ 
+    public function getWatchModeration()
+    {
+        return $this->watchModeration;
+    }
+
+    /**
+     * Set be notified by email when an Element need moderation
+     *
+     * @return  self
+     */ 
+    public function setWatchModeration($watchModeration)
+    {
+        $this->watchModeration = $watchModeration;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of watchModerationOnlyWithOptions
+     */ 
+    public function getWatchModerationOnlyWithOptions()
+    {
+        return $this->watchModerationOnlyWithOptions;
+    }
+
+    /**
+     * Set the value of watchModerationOnlyWithOptions
+     *
+     * @return  self
+     */ 
+    public function setWatchModerationOnlyWithOptions($watchModerationOnlyWithOptions)
+    {
+        $this->watchModerationOnlyWithOptions = $watchModerationOnlyWithOptions;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of watchModerationOnlyWithPostCodes
+     */ 
+    public function getWatchModerationOnlyWithPostCodes()
+    {
+        return $this->watchModerationOnlyWithPostCodes;
+    }
+
+    /**
+     * Set the value of watchModerationOnlyWithPostCodes
+     *
+     * @return  self
+     */ 
+    public function setWatchModerationOnlyWithPostCodes($watchModerationOnlyWithPostCodes)
+    {
+        $this->watchModerationOnlyWithPostCodes = $watchModerationOnlyWithPostCodes;
+
+        return $this;
     }
 }

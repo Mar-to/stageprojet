@@ -220,6 +220,25 @@ class ElementRepository extends DocumentRepository
         return $qb->getQuery()->execute();
     }
 
+    public function findModerationElementToNotifyToUser($user)
+    {
+        $qb = $this->createQueryBuilder('App\Document\Element');
+        $qb->field('moderationState')->notEqual(ModerationState::NotNeeded);
+        $qb->field('status')->gt(ElementStatus::AdminRefused);
+        $optionsIds = [];
+        foreach($user->getWatchModerationOnlyWithOptions() as $option)
+            $optionsIds[] = $option->getId();
+        if (count($optionsIds)> 0) 
+            $qb->field('optionValues.optionId')->in($optionsIds);
+        if ($user->getWatchModerationOnlyWithPostCodes()) {
+            $regexp = str_replace(',', '|', $user->getWatchModerationOnlyWithPostCodes());
+            $regexp = "/" . str_replace(' ', '', $regexp) . "/";
+            $qb->field('address.postalCode')->equals(new \MongoRegex($regexp));
+        }
+            
+        return $qb->count()->getQuery()->execute();
+    }
+
     private function queryToArray($qb)
     {
         return $qb->hydrate(false)->getQuery()->execute()->toArray();

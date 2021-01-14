@@ -60,6 +60,13 @@ class ImportAdmin extends AbstractAdmin
                 ->end()
                 ->with('Paramètres', ['class' => 'col-md-12'])
                     ->add('refreshFrequencyInDays', null, ['required' => false, 'label' => 'Fréquence de mise à jours des données en jours (laisser vide pour ne jamais mettre à jour automatiquement'])
+                    ->add('usersToNotify', ModelType::class, [
+                        'class' => 'App\Document\User',
+                        'required' => false,
+                        'multiple' => true,
+                        'btn_add' => false,
+                        'label' => "Utilisateurs à notifier en cas d'erreur, ou lorsque de nouveaux champs/catégories sont à faire correspondre", ], ['admin_code' => 'admin.option_hidden'])
+                    
                     ->add('moderateElements', null, [
                         'required' => false, 
                         'label' => 'Modérer les éléments importés',

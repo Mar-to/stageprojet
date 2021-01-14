@@ -176,7 +176,21 @@ class UserAdmin extends AbstractAdmin
             ->tab('User')
                 ->with('General', ['class' => 'col-md-6'])->end()
                 ->with('Status', ['class' => 'col-md-6'])->end()
-                ->with('Groups', ['class' => 'col-md-12'])->end()
+                ->with('Groups', ['class' => 'col-md-6'])->end()
+                ->with('Notifications', ['class' => 'col-md-12'])
+                    ->add('watchModeration', null, ['label' => "Etre notifié par email lorsque des éléments sont à modérer", 'required' => false])
+                    ->add('watchModerationOnlyWithOptions', ModelType::class, [
+                        'class' => 'App\Document\Option',
+                        'required' => false,
+                        'multiple' => true,
+                        'btn_add' => false,
+                        'label' => 'Seulement pour les éléments ayant une des catégories suivante', ], ['admin_code' => 'admin.option_hidden'])
+                    ->add('watchModerationOnlyWithPostCodes', null, [
+                        'label' => "Seulement pour les éléments avec code postal", 
+                        'label_attr' => ['title' => "Séparés par des virgules. On peut utiliser le symbole * pour choisir tout un département, par example : 40*, 47*, 48500"],
+                        'required' => false,
+                        'attr' => ['placeholder' => '40*, 47*, 48500']])
+                ->end()
             ->end()
             ->tab('Security')
                 ->with('Roles', ['class' => 'col-md-12'])->end()

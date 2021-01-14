@@ -24,22 +24,28 @@ class ElementImportService
     protected $elementIdsErrors = [];
     protected $errorsMessages = [];
     protected $errorsCount = [];
+    protected $manuallyStarted = true;
 
     /**
      * Constructor.
      */
     public function __construct(DocumentManager $dm, ElementImportOneService $importOneService,
                               ElementImportMappingService $mappingService,
-                              TaxonomyJsonGenerator $taxonomyJsonGenerator)
+                              TaxonomyJsonGenerator $taxonomyJsonGenerator,
+                              UserNotificationService $notifService)
     {
         $this->dm = $dm;
         $this->importOneService = $importOneService;
         $this->mappingService = $mappingService;
         $this->taxonomyJsonGenerator = $taxonomyJsonGenerator;
+        $this->notifService = $notifService;
     }
 
-    public function startImport($import)
+    public function setDm($dm) { $this->dm = $dm; }
+
+    public function startImport($import, $manuallyStarted = true)
     {
+        $this->manuallyStarted = $manuallyStarted;
         $this->countElementCreated = 0;
         $this->countElementUpdated = 0;
         $this->countElementNothingToDo = 0;
@@ -326,6 +332,14 @@ class ElementImportService
 
             $import->setCurrState($totalErrors > 0 ? ($totalErrors == $size ? ImportState::Failed : ImportState::Errors) : ImportState::Completed);
             $import->setCurrMessage($log->displayMessage());
+            if ($import->isDynamicImport() && !$this->manuallyStarted) {
+                if ($totalErrors > 0) {
+                    $this->notifService->notifyImportError($import);
+                }
+                if ($import->getNewOntologyToMap() || $import->getNewTaxonomyToMap()) {
+                    $this->notifService->notifyImportMapping($import);
+                }
+            }
 
             $this->dm->flush();
         } catch (\Error $e) {

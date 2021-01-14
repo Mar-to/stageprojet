@@ -59,6 +59,10 @@ services:
       arguments:
         $rootDB: '%root_db%'
 
+    App\Services\UserNotificationService:
+      arguments:
+        $baseUrl: '%base_url%'
+
     # Commands
     App\Command\UpdateProjectsInfoCommand:
       arguments:
@@ -67,6 +71,7 @@ services:
     App\Command\RemoveAbandonnedProjectsCommand:
       arguments:
         $baseUrl: '%base_url%'
+
 
     # Overide FOS Registration Controller
     App\Controller\RegistrationController:
@@ -272,7 +277,9 @@ services:
         arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: sonata_user, label: Configuration }
-
+    
+    # -- Other ---
+        
     admin.etiquettes_config:
         class: App\Admin\StampAdmin
         arguments: [~, App\Document\Stamp, '' ]

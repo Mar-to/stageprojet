@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-use App\Document\User;
 use App\Services\MailService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use App\Services\DocumentManagerFactory;
