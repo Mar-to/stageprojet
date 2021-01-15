@@ -12,7 +12,7 @@ class DataUpdateActionsController extends BulkActionsAbstractController
     public function updateGamificationAction(Request $request, SessionInterface $session, DocumentManager $dm,
                                             GamificationService $gamificationService)
     {
-        $qb = $dm->createQueryBuilder('App\Document\User');
+        $qb = $dm->query('User');
         $qb->field('email')->notEqual(null);
         $query = $qb->getQuery();
         $users = $query->execute();

@@ -39,7 +39,7 @@ final class RemoveAbandonnedProjectsCommand extends GoGoAbstractCommand
     {
         $date = new \DateTime();
 
-        $projectsToWarn = $dm->createQueryBuilder('App\Document\Project')
+        $projectsToWarn = $dm->query('Project')
                         ->field('lastLogin')->lte($date->setTimestamp(strtotime("-12 month")))
                         ->field('warningToDeleteProjectSentAt')->exists(false)
                         ->getQuery()->execute();
@@ -64,7 +64,7 @@ final class RemoveAbandonnedProjectsCommand extends GoGoAbstractCommand
             $dm->persist($project);
         }
 
-        $projectsToDelete = $dm->createQueryBuilder('App\Document\Project')
+        $projectsToDelete = $dm->query('Project')
                         ->field('lastLogin')->lte($date->setTimestamp(strtotime("-12 month")))
                         ->field('warningToDeleteProjectSentAt')->lte($date->setTimestamp(strtotime("-4 month")))
                         ->getQuery()->execute();

@@ -15,7 +15,7 @@ class UserRepository extends DocumentRepository
 {
     public function findNeedsToReceiveNewsletter()
     {
-        $qb = $this->createQueryBuilder('App\Document\User');
+        $qb = $this->query('User');
 
         return $qb->field('newsletterFrequency')->gt(NewsletterFrequencyOptions::Never)
                 ->field('nextNewsletterDate')->lte(new \DateTime())

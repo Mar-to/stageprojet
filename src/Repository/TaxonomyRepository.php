@@ -8,14 +8,14 @@ class TaxonomyRepository extends DocumentRepository
 {
     public function findTaxonomy()
     {
-        $qb = $this->createQueryBuilder('App\Document\Taxonomy');
+        $qb = $this->query('Taxonomy');
 
         return $qb->getQuery()->getSingleResult();
     }
 
     public function findTaxonomyJson($getOnlyOptions = false)
     {
-        $qb = $this->createQueryBuilder('App\Document\Taxonomy');
+        $qb = $this->query('Taxonomy');
         $taxonomy = $qb->hydrate(false)->getQuery()->getSingleResult();
 
         return $getOnlyOptions ? $taxonomy['optionsJson'] : $taxonomy['taxonomyJson'];

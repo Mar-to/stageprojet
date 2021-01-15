@@ -41,7 +41,7 @@ class DuplicatesActionsController extends BulkActionsAbstractController
             }
             // first result was not hydrated, so we can access the search score. Now we can load
             // properly the elements
-            $duplicates = $dm->createQueryBuilder('App\Document\Element')
+            $duplicates = $dm->query('Element')
                              ->field('id')->in($duplicateIds)
                              ->getQuery()->execute()->toArray();
             $perfectMatches = array_filter($duplicates, function ($duplicate) use ($element) { return slugify($duplicate->getName()) == slugify($element->getName()); });

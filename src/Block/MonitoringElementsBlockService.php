@@ -47,8 +47,8 @@ class MonitoringElementsBlockService extends AbstractBlockService
         $validateElements = $this->dm->get('Element')->findValidated(true);
         $allVisibleElements = $this->dm->get('Element')->findVisibles(true, false);
         $visibleNonImportedElements = $this->dm->get('Element')->findVisibles(true, true);
-        $activeUsersCount = $this->dm->createQueryBuilder('App\Document\User')->field('enabled')->equals(true)->count()->getQuery()->execute();
-        $activeUsersNewsletterCount = $this->dm->createQueryBuilder('App\Document\User')->field('enabled')->equals(true)
+        $activeUsersCount = $this->dm->query('User')->field('enabled')->equals(true)->count()->getQuery()->execute();
+        $activeUsersNewsletterCount = $this->dm->query('User')->field('enabled')->equals(true)
                                                                                         ->field('newsletterFrequency')->gt(NewsletterFrequencyOptions::Never)->count()->getQuery()->execute();
 
         $errors = $this->dm->get('GoGoLog')->findBy(['level' => 'error', 'hidden' => false]);

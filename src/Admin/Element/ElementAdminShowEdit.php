@@ -26,7 +26,7 @@ class ElementAdminShowEdit extends ElementAdminList
     {
         $dm = GoGoHelper::getDmFromAdmin($this);
         $this->config = $dm->get('Configuration')->findConfiguration();  
-        $categories = $dm->createQueryBuilder('App\Document\Option')->select('name')
+        $categories = $dm->query('Option')->select('name')
                       ->hydrate(false)->getQuery()->execute();
         $categoriesChoices = [];
         foreach ($categories as $id => $object) {

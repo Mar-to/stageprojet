@@ -67,13 +67,13 @@ class ElementImportOneService
             if (in_array($row['id'], $import->getIdsToIgnore())) {
                 return $this->resultData($element, 'ignored');
             }
-            $qb = $this->dm->createQueryBuilder('App\Document\Element');
+            $qb = $this->dm->query('Element');
             $qb->field('source')->references($import);
             $qb->field('oldId')->equals(''.$row['id']);
             $qb->field('status')->notEqual(ElementStatus::ModifiedPendingVersion);
             $element = $qb->getQuery()->getSingleResult();
         } elseif (is_string($row['name']) && strlen($row['name']) > 0) {
-            $qb = $this->dm->createQueryBuilder('App\Document\Element');
+            $qb = $this->dm->query('Element');
             $qb->field('source')->references($import);
             $qb->field('status')->notEqual(ElementStatus::ModifiedPendingVersion);
             $qb->field('name')->equals($row['name']);

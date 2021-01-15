@@ -136,7 +136,7 @@ class ProjectController extends Controller
 
         $config = $dm->get('Configuration')->findConfiguration();
 
-        $projects = $dm->createQueryBuilder('App\Document\Project')
+        $projects = $dm->query('Project')
                         ->field('published')->equals(true)
                         ->field('dataSize')->gte(10)
                         ->sort('publishedAt', 'desc')

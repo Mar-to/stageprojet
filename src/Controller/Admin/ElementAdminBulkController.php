@@ -110,7 +110,7 @@ class ElementAdminBulkController extends Controller
                 }
 
                 // Clear previous interaction with same type pending to be dispatched (prevent dispatching multiple edit event)
-                $query = $this->dm->createQueryBuilder('App\Document\UserInteractionContribution')
+                $query = $this->dm->query('UserInteractionContribution')
                    ->updateMany()
                    ->field('type')->equals($contrib->getType())
                    ->field('elements.id')->in($elementIds)
@@ -141,7 +141,7 @@ class ElementAdminBulkController extends Controller
 
                 // BATCH RESOLVE REPORTS
                 if ('resolveReports' == $actionName) {
-                    $query = $this->dm->createQueryBuilder('App\Document\UserInteractionReport')
+                    $query = $this->dm->query('UserInteractionReport')
                        ->updateMany()
                        ->field('isResolved')->notEqual(true)
                        ->field('element.id')->in($elementIds)
@@ -329,7 +329,7 @@ class ElementAdminBulkController extends Controller
             foreach ($selectedModels as $selectedModel) {
                 $optionsValues = $selectedModel->getOptionValues()->toArray();
                 if ($optionstoRemoveIds && count($optionstoRemoveIds) > 0) {
-                    $optionsToRemove = $this->dm->createQueryBuilder('App\Document\Option')->field('id')->in($optionstoRemoveIds)
+                    $optionsToRemove = $this->dm->query('Option')->field('id')->in($optionstoRemoveIds)
                                                        ->getQuery()->execute()->toArray();
                     $optionstoRemoveIds = array_map(function ($opt) { return $opt->getIdAndChildrenOptionIds(); }, $optionsToRemove);
                     $optionstoRemoveIds = array_unique($this->flatten($optionstoRemoveIds));
@@ -342,7 +342,7 @@ class ElementAdminBulkController extends Controller
                 }
 
                 if ($optionstoAddIds && count($optionstoAddIds) > 0) {
-                    $optionsToAdd = $this->dm->createQueryBuilder('App\Document\Option')->field('id')->in($optionstoAddIds)->getQuery()->execute()->toArray();
+                    $optionsToAdd = $this->dm->query('Option')->field('id')->in($optionstoAddIds)->getQuery()->execute()->toArray();
                     $optionstoAddIds = array_map(function ($opt) { return $opt->getIdAndParentOptionIds(); }, $optionsToAdd);
                     $optionstoAddIds = array_unique($this->flatten($optionstoAddIds));
 

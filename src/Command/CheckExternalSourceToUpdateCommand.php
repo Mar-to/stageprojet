@@ -30,7 +30,7 @@ class CheckExternalSourceToUpdateCommand extends GoGoAbstractCommand
 
     protected function gogoExecute(DocumentManager $dm, InputInterface $input, OutputInterface $output): void
     {
-        $qb = $dm->createQueryBuilder('App\Document\ImportDynamic');
+        $qb = $dm->query('ImportDynamic');
 
         $dynamicImports = $qb->field('refreshFrequencyInDays')->gt(0)
                 ->field('nextRefresh')->lte(new \DateTime())

@@ -147,7 +147,7 @@ class ElementImportService
 
             $import->setCurrState(ImportState::InProgress);
             
-            $qb = $this->dm->createQueryBuilder('App\Document\Element');
+            $qb = $this->dm->query('Element');
             if ($import->isDynamicImport()) {
                 $import->updateNextRefreshDate();
 
@@ -221,7 +221,7 @@ class ElementImportService
                     $elementsLinkedFields[] = $field->name;
                     // resetting the reversed field to it will be filled correctly
                     if (isset($field->reversedBy)) {
-                        $qb = $this->dm->createQueryBuilder('App\Document\Element');
+                        $qb = $this->dm->query('Element');
                         $qb->field('source')->references($import)
                            ->updateMany()
                            ->field("data.$field->reversedBy")->unsetField()
@@ -232,7 +232,7 @@ class ElementImportService
 
             if (count($elementsLinkedFields) > 0) {
                 // Go through each individual imported elements, and link elements from each other
-                $importedElements = $this->dm->createQueryBuilder('App\Document\Element')
+                $importedElements = $this->dm->query('Element')
                     ->field('source')->references($import)
                     ->getQuery()->execute();
                 $i = 0;
@@ -246,7 +246,7 @@ class ElementImportService
                             $values = array_map('trim', $values);
                             $values = array_filter($values, function($e) { return strlen($e) > 0; });
                             if (count($values) > 0) {
-                                $qb = $this->dm->createQueryBuilder('App\Document\Element');
+                                $qb = $this->dm->query('Element');
                                 $qb->field('source')->references($import);
                                 $qb->addOr($qb->expr()->field('name')->in($values));
                                 $qb->addOr($qb->expr()->field('oldId')->in($values));
@@ -277,7 +277,7 @@ class ElementImportService
 
             $countElemenDeleted = 0;
             if ($import->isDynamicImport()) {
-                $qb = $this->dm->createQueryBuilder('App\Document\Element');
+                $qb = $this->dm->query('Element');
                 $elementIdsToDelete = array_diff($previouslyImportedElementIds, $newlyImportedElementIds);
                 // first get proper count (without ElementPendingVersion which are misleading)
                 $countElemenDeleted = $qb->field('source')->references($import)
@@ -285,7 +285,7 @@ class ElementImportService
                                          ->field('id')->in($elementIdsToDelete)
                                          ->count()->getQuery()->execute();
                 // delete elements
-                $qb = $this->dm->createQueryBuilder('App\Document\Element');
+                $qb = $this->dm->query('Element');
                 $qb->field('source')->references($import)
                    ->field('id')->in($elementIdsToDelete)
                    ->remove()->getQuery()->execute();
@@ -294,14 +294,14 @@ class ElementImportService
                 $qb->field('element.id')->in($elementIdsToDelete)->remove()->getQuery()->execute();
             }
 
-            $qb = $this->dm->createQueryBuilder('App\Document\Element');
+            $qb = $this->dm->query('Element');
             $totalCount = $qb->field('status')->notEqual(ElementStatus::ModifiedPendingVersion)
                              ->field('source')->references($import)
                              ->count()->getQuery()->execute();
 
-            $qb = $this->dm->createQueryBuilder('App\Document\Element');
+            $qb = $this->dm->query('Element');
             $elementsMissingGeoCount = $qb->field('source')->references($import)->field('moderationState')->equals(ModerationState::GeolocError)->count()->getQuery()->execute();
-            $qb = $this->dm->createQueryBuilder('App\Document\Element');
+            $qb = $this->dm->query('Element');
             $elementsMissingTaxoCount = $qb->field('source')->references($import)->field('moderationState')->equals(ModerationState::NoOptionProvided)->count()->getQuery()->execute();
 
             $logData = [

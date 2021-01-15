@@ -43,7 +43,7 @@ class RecentElementsBlockService extends AbstractBlockService
             'context' => $blockContext,
             'settings' => $blockContext->getSettings(),
             'block' => $blockContext->getBlock(),
-            'results' => $this->manager->createQueryBuilder('App\Document\Element')
+            'results' => $this->manager->query('Element')
                             ->field('status')->equals($blockContext->getSettings()['filterStatus'])
                             ->sort('updatedAt', 'DESC')
                             ->limit($blockContext->getSettings()['number'])

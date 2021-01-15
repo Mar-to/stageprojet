@@ -18,7 +18,7 @@ class ElementImportMappingTaxonomyService
     {
         $taxonomyMapping = $import->getTaxonomyMapping();
         // delete obsolte mapping (if an option have been deleted, but is still in the mapping)
-        $allOptionsIds = array_keys($this->dm->createQueryBuilder('App\Document\Option')->select('id')
+        $allOptionsIds = array_keys($this->dm->query('Option')->select('id')
                                 ->hydrate(false)->getQuery()->execute()->toArray());
         foreach ($taxonomyMapping as $key => $mappedObject) {
             $taxonomyMapping[$key]['mappedCategoryIds'] = array_filter($mappedObject['mappedCategoryIds'], function ($el) use ($allOptionsIds) {

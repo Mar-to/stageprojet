@@ -326,7 +326,7 @@ class APIController extends GoGoController
 
     public function hideAllLogsAction(DocumentManager $dm)
     {
-        $qb = $dm->createQueryBuilder('App\Document\GoGoLog');
+        $qb = $dm->query('GoGoLog');
         $qb->updateMany()
        ->field('type')->notEqual('update')
        ->field('hidden')->equals(false)
@@ -337,7 +337,7 @@ class APIController extends GoGoController
 
     public function hideAllMessagesAction(DocumentManager $dm)
     {
-        $qb = $dm->createQueryBuilder('App\Document\GoGoLogUpdate');
+        $qb = $dm->query('GoGoLogUpdate');
         $qb->updateMany()
        ->field('type')->equals('update')
        ->field('hidden')->equals(false)

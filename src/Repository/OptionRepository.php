@@ -14,7 +14,7 @@ class OptionRepository extends DocumentRepository
 {
     public function findOptionsIdsWithText($text)
     {
-        $qbOption = $this->createQueryBuilder('App\Document\Option');
+        $qbOption = $this->query('Option');
         $expr = $qbOption->expr()->operator('$text', ['$search' => (string) $text]);
         $qbOption  //->limit(50)
         ->equals($expr->getQuery())

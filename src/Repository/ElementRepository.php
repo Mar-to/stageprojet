@@ -27,7 +27,7 @@ class ElementRepository extends DocumentRepository
         $forNewlyCreatedElement = $element->getId() == null;
         $forBulkDuplicateDetection = !$forNewlyCreatedElement;
 
-        $qb = $this->createQueryBuilder('App\Document\Element');
+        $qb = $this->query('Element');
 
         // GEO SPATIAL QUERY
         if ($forNewlyCreatedElement) {
@@ -60,7 +60,7 @@ class ElementRepository extends DocumentRepository
 
     public function findWhithinBoxes($bounds, $request, $getFullRepresentation, $isAdmin = false)
     {
-        $qb = $this->createQueryBuilder('App\Document\Element');
+        $qb = $this->query('Element');
 
         $status = ('false' === $request->get('pendings')) ? ElementStatus::AdminValidate : ElementStatus::PendingModification;
         $this->filterVisibles($qb, $status);
@@ -87,7 +87,7 @@ class ElementRepository extends DocumentRepository
     // We use the field "duplicate node" to find them
     public function findDuplicatesNodes($limit = null, $getCount = null)
     {
-        $qb = $this->createQueryBuilder('App\Document\Element');
+        $qb = $this->query('Element');
         $qb->field('isDuplicateNode')->equals(true);
         if ($getCount) {
             $qb->count();
@@ -104,7 +104,7 @@ class ElementRepository extends DocumentRepository
 
     public function findElementsWithText($text, $fullRepresentation = true, $isAdmin = false)
     {
-        $qb = $this->createQueryBuilder('App\Document\Element');
+        $qb = $this->query('Element');
 
         $this->queryText($qb, $text);
         $this->filterVisibles($qb);
@@ -116,7 +116,7 @@ class ElementRepository extends DocumentRepository
 
     public function findElementNamesWithText($text, $excludeId)
     {
-        $qb = $this->createQueryBuilder('App\Document\Element');
+        $qb = $this->query('Element');
 
         $this->queryText($qb, $text);
         $this->filterVisibles($qb);
@@ -128,7 +128,7 @@ class ElementRepository extends DocumentRepository
 
     public function findPendings($getCount = false)
     {
-        $qb = $this->createQueryBuilder('App\Document\Element');
+        $qb = $this->query('Element');
 
         $qb->field('status')->in([ElementStatus::PendingAdd, ElementStatus::PendingModification]);
         if ($getCount) {
@@ -140,7 +140,7 @@ class ElementRepository extends DocumentRepository
 
     public function findModerationNeeded($getCount = false, $moderationState = null)
     {
-        $qb = $this->createQueryBuilder('App\Document\Element');
+        $qb = $this->query('Element');
 
         if (null != $moderationState) {
             $qb->field('moderationState')->equals($moderationState);
@@ -158,7 +158,7 @@ class ElementRepository extends DocumentRepository
 
     public function findValidated($getCount = false)
     {
-        $qb = $this->createQueryBuilder('App\Document\Element');
+        $qb = $this->query('Element');
 
         $qb->field('status')->gt(ElementStatus::PendingAdd);
         if ($getCount) {
@@ -170,7 +170,7 @@ class ElementRepository extends DocumentRepository
 
     public function findVisibles($getCount = false, $excludeImported = false, $limit = null, $skip = null)
     {
-        $qb = $this->createQueryBuilder('App\Document\Element');
+        $qb = $this->query('Element');
 
         $qb = $this->filterVisibles($qb);
         if ($excludeImported) {
@@ -191,7 +191,7 @@ class ElementRepository extends DocumentRepository
 
     public function findAllPublics($getFullRepresentation, $isAdmin, $request = null)
     {
-        $qb = $this->createQueryBuilder('App\Document\Element');
+        $qb = $this->query('Element');
 
         $qb = $this->filterVisibles($qb);
         $qb->field('moderationState')->equals(ModerationState::NotNeeded);
@@ -206,7 +206,7 @@ class ElementRepository extends DocumentRepository
 
     public function findAllElements($limit = null, $skip = null, $getCount = false)
     {
-        $qb = $this->createQueryBuilder('App\Document\Element');
+        $qb = $this->query('Element');
 
         if ($limit) {
             $qb->limit($limit);
@@ -223,7 +223,7 @@ class ElementRepository extends DocumentRepository
 
     public function findModerationElementToNotifyToUser($user)
     {
-        $qb = $this->createQueryBuilder('App\Document\Element');
+        $qb = $this->query('Element');
         $qb->field('moderationState')->notEqual(ModerationState::NotNeeded);
         $qb->field('status')->gt(ElementStatus::AdminRefused);
         $optionsIds = [];
@@ -308,7 +308,7 @@ class ElementRepository extends DocumentRepository
 
     public function findElementsOwnedBy($userEmail)
     {
-        $qb = $this->createQueryBuilder('App\Document\Element');
+        $qb = $this->query('Element');
 
         $qb->field('userOwnerEmail')->equals($userEmail);
         $qb->field('status')->notEqual(ElementStatus::ModifiedPendingVersion);
@@ -320,7 +320,7 @@ class ElementRepository extends DocumentRepository
     // Used by newsletter
     public function findWithinCenterFromDate($lat, $lng, $distance, $date, $limit = null)
     {
-        $qb = $this->createQueryBuilder('App\Document\Element');
+        $qb = $this->query('Element');
         $radius = $distance / 110;
         $qb->field('geo')->withinCenter((float) $lat, (float) $lng, $radius);
         $qb->field('createdAt')->gt($date);
@@ -334,7 +334,7 @@ class ElementRepository extends DocumentRepository
 
     public function findStampedWithId($stampId)
     {
-        $qb = $this->createQueryBuilder('App\Document\Element');
+        $qb = $this->query('Element');
         $qb->field('stamps.id')->in([(float) $stampId]);
         $qb->select('id');
 
@@ -343,7 +343,7 @@ class ElementRepository extends DocumentRepository
 
     public function findPotentialDuplicateOwner($element)
     {
-        $qb = $this->createQueryBuilder('App\Document\Element');
+        $qb = $this->query('Element');
         $qb->field('potentialDuplicates')->includesReferenceTo($element);
 
         return $qb->getQuery()->execute();
@@ -351,7 +351,7 @@ class ElementRepository extends DocumentRepository
 
     public function findOriginalElementOfModifiedPendingVersion($element)
     {
-        $qb = $this->createQueryBuilder('App\Document\Element');
+        $qb = $this->query('Element');
         $qb->field('modifiedElement')->references($element);
 
         return $qb->getQuery()->getSingleResult();

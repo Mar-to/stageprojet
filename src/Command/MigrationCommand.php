@@ -92,7 +92,7 @@ class MigrationCommand extends GoGoAbstractCommand
 
     protected function gogoExecute(DocumentManager $dm, InputInterface $input, OutputInterface $output): void
     {
-        $migrationState = $dm->createQueryBuilder('App\Document\MigrationState')->getQuery()->getSingleResult();
+        $migrationState = $dm->query('MigrationState')->getQuery()->getSingleResult();
         if (null == $migrationState) { // Meaning the migration state was not yet in the place in the code
             $migrationState = new MigrationState();
             $dm->persist($migrationState);
@@ -101,7 +101,7 @@ class MigrationCommand extends GoGoAbstractCommand
         try {
             // Collecting the Database to be updated
             $dbs = [$_ENV['DATABASE_NAME']]; // default DB
-            $dbNames = $dm->createQueryBuilder('App\Document\Project')->select('domainName')->hydrate(false)->getQuery()->execute()->toArray();
+            $dbNames = $dm->query('Project')->select('domainName')->hydrate(false)->getQuery()->execute()->toArray();
             foreach ($dbNames as $object) {
                 $dbs[] = $object['domainName'];
             }

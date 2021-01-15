@@ -37,7 +37,7 @@ class GoGoMainCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $qb = $this->dm->createQueryBuilder('App\Document\ScheduledCommand');
+        $qb = $this->dm->query('ScheduledCommand');
 
         $commandToExecute = $qb->field('nextExecutionAt')->lte(new \DateTime())
                              ->sort('nextExecutionAt', 'ASC')

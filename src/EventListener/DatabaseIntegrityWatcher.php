@@ -56,7 +56,7 @@ class DatabaseIntegrityWatcher
             $qb->remove()->field('source')->references($import)->getQuery()->execute();
         } elseif ($document instanceof Webhook) {
             $webhook = $document;
-            $contributions = $dm->createQueryBuilder('App\Document\UserInteractionContribution')
+            $contributions = $dm->query('UserInteractionContribution')
                                 ->field('webhookPosts.webhook.$id')->equals($webhook->getId())
                                 ->getQuery()->execute();
 
@@ -70,7 +70,7 @@ class DatabaseIntegrityWatcher
             }
         } elseif ($document instanceof Element) {
             // remove dependance from nonDuplicates and potentialDuplicates
-            $qb = $dm->createQueryBuilder('App\Document\Element');
+            $qb = $dm->query('Element');
             $qb->addOr($qb->expr()->field('nonDuplicates.$id')->equals($document->getId()));
             $qb->addOr($qb->expr()->field('potentialDuplicates.$id')->equals($document->getId()));
             $dependantElements = $qb->getQuery()->execute();
@@ -123,7 +123,7 @@ class DatabaseIntegrityWatcher
             $uow->computeChangeSets();
             $changeset = $uow->getDocumentChangeSet($document);
             if (array_key_exists('name', $changeset)) {
-                $query = $dm->createQueryBuilder('App\Document\Element')->field('optionValues.optionId')->in([$document->getId()]);
+                $query = $dm->query('Element')->field('optionValues.optionId')->in([$document->getId()]);
                 $elementIds = array_keys($query->select('id')->hydrate(false)->getQuery()->execute()->toArray());
                 if (count($elementIds)) {
                     $elementIdsString = '"'.implode(',', $elementIds).'"';

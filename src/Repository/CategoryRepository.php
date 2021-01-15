@@ -14,7 +14,7 @@ class CategoryRepository extends DocumentRepository
 {
     public function findRootCategories()
     {
-        $qb = $this->createQueryBuilder('App\Document\Category');
+        $qb = $this->query('Category');
         $qb->field('isRootCategory')->equals(true)->sort('index', 'asc');
 
         return $qb->getQuery()->execute();

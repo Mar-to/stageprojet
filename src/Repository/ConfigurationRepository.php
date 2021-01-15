@@ -14,7 +14,7 @@ class ConfigurationRepository extends DocumentRepository
 {
     public function findConfiguration()
     {
-        $qb = $this->createQueryBuilder('App\Document\Configuration');
+        $qb = $this->query('Configuration');
 
         return $qb->getQuery()->getSingleResult();
     }

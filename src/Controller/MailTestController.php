@@ -76,7 +76,7 @@ class MailTestController extends Controller
             $element = $this->dm->get('User')->findOneByEnabled(true);
             $element->setLocation('bordeaux');
             $element->setGeo(new Coordinates(44.876, -0.512));
-            $qb = $this->dm->createQueryBuilder('App\Document\Element');
+            $qb = $this->dm->query('Element');
             $qb->field('status')->gte(ElementStatus::AdminRefused);
             $qb->field('moderationState')->notIn([ModerationState::GeolocError, ModerationState::NoOptionProvided]);
             $options = $qb->limit(30)->getQuery()->execute();
