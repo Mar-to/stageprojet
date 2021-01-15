@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Document\ElementStatus;
 use App\Document\ModerationState;
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use App\Helper\GoGoHelper;
 
 /**

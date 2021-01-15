@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Document\NewsletterFrequencyOptions;
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 
 /**
  * AboutRepository.
