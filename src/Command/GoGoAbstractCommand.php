@@ -44,7 +44,7 @@ class GoGoAbstractCommand extends Command
             $this->output = $output;
 
             if ($input->getArgument('dbname')) {
-                $this->dm = $this->dmFactory->createForDB($input->getArgument('dbname'));
+                $this->dm = $this->dmFactory->switchCurrManagerToUseDb($input->getArgument('dbname'));
             } else {
                 $this->dm = $this->dmFactory->getRootManager();
             }

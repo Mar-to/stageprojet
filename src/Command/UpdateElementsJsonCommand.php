@@ -45,7 +45,6 @@ class UpdateElementsJsonCommand extends GoGoAbstractCommand
             $this->log('DB Generating json representation for '.$count.' elements...');
 
             $i = 0;
-            $this->elementJsonService->setDm($dm);
             foreach ($elements as $key => $element) {
                 $this->elementJsonService->updateJsonRepresentation($element);
 

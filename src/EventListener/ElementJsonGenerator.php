@@ -17,10 +17,6 @@ class ElementJsonGenerator
         $this->dm = $dm;
     }
 
-    public function setDm($dm) {
-        $this->dm = $dm;
-    }
-
     public function getConfig()
     {
         if (!$this->config) {

@@ -41,8 +41,6 @@ class ElementImportService
         $this->notifService = $notifService;
     }
 
-    public function setDm($dm) { $this->dm = $dm; }
-
     public function startImport($import, $manuallyStarted = true)
     {
         $this->manuallyStarted = $manuallyStarted;

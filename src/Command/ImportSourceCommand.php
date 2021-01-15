@@ -50,7 +50,6 @@ class ImportSourceCommand extends GoGoAbstractCommand
             }
 
             $this->log('Updating source '.$import->getSourceName().' for project '.$input->getArgument('dbname').' begins...');
-            // $this->importService->setDm($dm);
             $result = $this->importService->startImport($import, $manuallyStarted = false);
             $this->log($result);
         } catch (\Exception $e) {

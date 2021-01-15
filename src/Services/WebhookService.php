@@ -36,8 +36,6 @@ class WebhookService
         $this->synchService = $synchService;
     }
 
-    public function setDm($dm) { $this->dm = $dm; }
-
     public function processPosts($limit = 5)
     {
         $contributions = $this->dm->createQueryBuilder(UserInteractionContribution::class)
