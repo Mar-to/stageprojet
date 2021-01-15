@@ -13,6 +13,7 @@ use Sonata\AdminBundle\Form\Type\AdminType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use App\Helper\GoGoHelper;
 
 class ConfigurationInfoBarAdmin extends ConfigurationAbstractAdmin
 {
@@ -24,7 +25,7 @@ class ConfigurationInfoBarAdmin extends ConfigurationAbstractAdmin
     {
         $featureFormOption = ['delete' => false, 'required' => false, 'label_attr' => ['style' => 'display:none']];
 
-        $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
+        $dm = GoGoHelper::getDmFromAdmin($this);
         $apiProperties = $dm->getRepository('App\Document\Element')->findAllCustomProperties();
         $propertiesText = implode($apiProperties, ',');
 

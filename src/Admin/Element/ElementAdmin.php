@@ -9,8 +9,8 @@
 namespace App\Admin\Element;
 
 // custom iterator
-use Application\Sonata\Exporter\Source\DoctrineODMQuerySourceIterator;
 use Sonata\DoctrineMongoDBAdminBundle\Datagrid\ProxyQuery;
+use App\Helper\GoGoHelper;
 
 // There is a chain of inherance to split ElementAdmin in different files
 // ElementAdminShowEdit inherit from ElementAdminList wich inherit from ElementAdminFilters and so on..
@@ -18,7 +18,7 @@ class ElementAdmin extends ElementAdminShowEdit
 {
     public function getExportFields()
     {
-        $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
+        $dm = GoGoHelper::getDmFromAdmin($this);
         $basicFields = [
           'id' => 'id',
           'name' => 'name',

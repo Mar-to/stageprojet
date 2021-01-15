@@ -15,8 +15,8 @@ use Sonata\AdminBundle\Form\Type\CollectionType;
 use Sonata\AdminBundle\Form\Type\ModelType;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use App\Form\OptionLiteType;
+use App\Helper\GoGoHelper;
 
 class CategoryAdmin extends AbstractAdmin
 {
@@ -43,7 +43,7 @@ class CategoryAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         // prevent circular reference, i.e setting a child as parent
-        $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
+        $dm = GoGoHelper::getDmFromAdmin($this);
         $repo = $dm->getRepository('App\Document\Option');
         $parentQuery = null;
         if ($this->subject) {

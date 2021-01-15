@@ -11,6 +11,7 @@ namespace App\Admin;
 use Sonata\AdminBundle\Form\FormMapper;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use App\Helper\GoGoHelper;
 
 class ConfigurationFormAdmin extends ConfigurationAbstractAdmin
 {
@@ -20,7 +21,7 @@ class ConfigurationFormAdmin extends ConfigurationAbstractAdmin
 
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
+        $dm = GoGoHelper::getDmFromAdmin($this);
         $repo = $dm->getRepository('App\Document\Element');
         $elementProperties = json_encode($repo->findAllCustomProperties());
 

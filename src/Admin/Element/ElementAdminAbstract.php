@@ -9,6 +9,7 @@
 namespace App\Admin\Element;
 
 use Sonata\AdminBundle\Admin\AbstractAdmin;
+use App\Helper\GoGoHelper;
 
 class ElementAdminAbstract extends AbstractAdmin
 {
@@ -65,7 +66,7 @@ class ElementAdminAbstract extends AbstractAdmin
     {
       if ($this->optionsChoices == null) {
         $this->optionsChoices = [];
-        $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
+        $dm = GoGoHelper::getDmFromAdmin($this);
         $repo = $dm->getRepository('App\Document\Option');
         $this->optionList = $repo->createQueryBuilder()->select('name')->hydrate(false)->getQuery()->execute()->toArray();
 

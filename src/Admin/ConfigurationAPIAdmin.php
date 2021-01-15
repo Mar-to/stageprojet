@@ -9,9 +9,9 @@
 namespace App\Admin;
 
 use Sonata\AdminBundle\Form\FormMapper;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use App\Helper\GoGoHelper;
 
 class ConfigurationAPIAdmin extends ConfigurationAbstractAdmin
 {
@@ -21,7 +21,7 @@ class ConfigurationAPIAdmin extends ConfigurationAbstractAdmin
 
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
+        $dm = GoGoHelper::getDmFromAdmin($this);
         $apiProperties = $dm->getRepository('App\Document\Element')->findAllCustomProperties();
 
         $apiPropertiesChanged = [];

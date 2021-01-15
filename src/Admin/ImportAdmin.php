@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
+use App\Helper\GoGoHelper;
 
 class ImportAdmin extends AbstractAdmin
 {
@@ -30,7 +31,7 @@ class ImportAdmin extends AbstractAdmin
 
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
+        $dm = GoGoHelper::getDmFromAdmin($this);
         $repo = $dm->getRepository('App\Document\Element');
         $formProperties = json_encode($repo->findFormProperties());
         $elementProperties = json_encode($repo->findDataCustomProperties());
@@ -194,7 +195,7 @@ Transformer un attribut
 
     protected function configureListFields(ListMapper $listMapper)
     {
-        $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
+        $dm = GoGoHelper::getDmFromAdmin($this);
         $deletedElementsCount = $dm->getRepository('App\Document\Element')->findDeletedElementsByImportIdCount();
         $isDynamic = "App\Document\ImportDynamic" == $this->getClass();
 

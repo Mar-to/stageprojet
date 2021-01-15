@@ -16,6 +16,7 @@ use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Form\Type\CollectionType;
 use App\Form\CategoryLiteType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use App\Helper\GoGoHelper;
 
 class OptionAdmin extends AbstractAdmin
 {
@@ -42,7 +43,7 @@ class OptionAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         // prevent circular reference, i.e setting a child as parent
-        $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
+        $dm = GoGoHelper::getDmFromAdmin($this);
         $repo = $dm->getRepository('App\Document\Category');
         $parentQuery = null;
         if ($this->subject) {

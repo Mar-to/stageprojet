@@ -14,7 +14,7 @@ use Sonata\AdminBundle\Form\Type\ModelType;
 use Sonata\FormatterBundle\Form\Type\SimpleFormatterType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use App\Helper\GoGoHelper;
 
 class ConfigurationMapAdmin extends ConfigurationAbstractAdmin
 {
@@ -27,7 +27,7 @@ class ConfigurationMapAdmin extends ConfigurationAbstractAdmin
         $featureStyle = ['class' => 'col-md-6 col-lg-3 gogo-feature'];
         $featureFormOption = ['delete' => false, 'required' => false, 'label_attr' => ['style' => 'display:none']];
         $featureFormTypeOption = ['edit' => 'inline'];
-        $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
+        $dm = GoGoHelper::getDmFromAdmin($this);
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
 
         $formMapper

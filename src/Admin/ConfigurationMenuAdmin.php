@@ -5,8 +5,8 @@ namespace App\Admin;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\AdminType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use App\Helper\GoGoHelper;
 
 class ConfigurationMenuAdmin extends ConfigurationAbstractAdmin
 {
@@ -16,7 +16,7 @@ class ConfigurationMenuAdmin extends ConfigurationAbstractAdmin
 
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
+        $dm = GoGoHelper::getDmFromAdmin($this);
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
         $apiProperties = $dm->getRepository('App\Document\Element')->findAllCustomProperties();
         $propertiesText = implode($apiProperties, ',');

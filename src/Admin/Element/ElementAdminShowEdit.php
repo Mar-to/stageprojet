@@ -13,10 +13,10 @@ use Sonata\AdminBundle\Show\ShowMapper;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use App\Form\OpenHoursType;
 use App\Form\ElementImageType;
 use App\Form\ElementFileType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use App\Helper\GoGoHelper;
 
 class ElementAdminShowEdit extends ElementAdminList
 {
@@ -24,7 +24,7 @@ class ElementAdminShowEdit extends ElementAdminList
 
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
+        $dm = GoGoHelper::getDmFromAdmin($this);
         $this->config = $dm->getRepository('App\Document\Configuration')->findConfiguration();  
         $categories = $dm->createQueryBuilder('App\Document\Option')->select('name')
                       ->hydrate(false)->getQuery()->execute();

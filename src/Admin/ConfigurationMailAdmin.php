@@ -10,6 +10,7 @@ namespace App\Admin;
 
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\AdminType;
+use App\Helper\GoGoHelper;
 
 class ConfigurationMailAdmin extends ConfigurationAbstractAdmin
 {
@@ -19,7 +20,7 @@ class ConfigurationMailAdmin extends ConfigurationAbstractAdmin
 
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $dm = $this->getModelManager()->getDocumentManager('App\Document\Configuration');
+        $dm = GoGoHelper::getDmFromAdmin($this);
         $repo = $dm->getRepository('App\Document\Configuration');
         $config = $repo->findConfiguration();
         $router = $this->getConfigurationPool()->getContainer()->get('router');

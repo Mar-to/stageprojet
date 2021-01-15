@@ -33,4 +33,9 @@ class GoGoHelper
         $url = $_ENV['BASE_PROTOCOL'] . '://' . $_ENV['BASE_URL'] . $prefix . $path;
         return $url;
     }
+
+    static function getDmFromAdmin($adminInstance)
+    {
+        return $adminInstance->getModelManager()->getDocumentManager('App\Document\Configuration');
+    }
 }
