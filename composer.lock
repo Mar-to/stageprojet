@@ -1286,6 +1286,7 @@
                 "mongodb",
                 "persistence"
             ],
+            "abandoned": true,
             "time": "2019-07-11T05:36:15+00:00"
         },
         {
@@ -1294,7 +1295,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seballot/mongodb-odm.git",
-                "reference": "3b387b1c73e0b3f26b38e0005abd594a9f1d143f"
+                "reference": "0b6868572639fed8082c5e849c271e1a3c66e667"
             },
             "require": {
                 "doctrine/annotations": "~1.2",
@@ -1373,7 +1374,7 @@
                 "odm",
                 "persistence"
             ],
-            "time": "2020-12-09T16:45:45+00:00"
+            "time": "2021-01-15T13:50:04+00:00"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
