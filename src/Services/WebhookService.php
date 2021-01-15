@@ -26,12 +26,12 @@ class WebhookService
     public function __construct(DocumentManager $dm, RouterInterface $router,
                                 TokenStorageInterface $securityContext,
                                 ElementSynchronizationService $synchService,
-                                $baseUrl)
+                                UrlService $urlService)
     {
         $this->dm = $dm;
         $this->router = $router;
+        $this->urlService = $urlService;
         $this->securityContext = $securityContext;
-        $this->baseUrl = 'http://'.$baseUrl;
         $this->config = $this->dm->getRepository(Configuration::class)->findConfiguration();
         $this->synchService = $synchService;
     }
@@ -144,7 +144,7 @@ class WebhookService
             case 'delete':
                 return "**SUPPRESSION** {$element} **{$result['data']['name']}** supprimé par *{$result['user']}*";
             default:
-                throw new InvalidArgumentException(sprintf('The webhook action "%s" is invalid.', $result['action']));
+                throw new \InvalidArgumentException(sprintf('The webhook action "%s" is invalid.', $result['action']));
         }
     }
 
@@ -166,9 +166,7 @@ class WebhookService
         /** @var ConfImage $img */
         $img = $this->config->getFavicon() ? $this->config->getFavicon() : $this->config->getLogo();
 
-        return $img
-            ? $img->getImageUrl()
-            : str_replace('index.php/', '', $this->baseUrl.'/img/default-icon.png'); // Fix if there is no url rewrite
+        return $img ? $img->getImageUrl() : $this->urlService->getAssetUrl('/img/default-icon.png');
     }
 
     private function formatData($format, $data)

@@ -6,11 +6,13 @@ use App\Services\DocumentManagerFactory;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Services\GoGoCartoJsService;
+use App\Services\UrlService;
+use App\Helper\GoGoHelper;
 
 class CoreController extends GoGoController
 {
     public function homeAction($force = false, DocumentManagerFactory $dmFactory, SessionInterface $session,
-                               GoGoCartoJsService $gogoJsService)
+                               GoGoCartoJsService $gogoJsService, UrlService $urlService)
     {
         if (!$force && $this->getParameter('use_as_saas') && $dmFactory->isRootProject()) {
             return $this->redirectToRoute('gogo_saas_home');
@@ -18,8 +20,7 @@ class CoreController extends GoGoController
         $dm = $dmFactory->getCurrentManager();
         $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
         if (!$config && $this->getParameter('use_as_saas')) {
-            $url = 'http://'.$this->getParameter('base_url').$this->generateUrl('gogo_saas_home');
-
+            $url = $urlService->generateRootUrl();
             return $this->redirect($url);
         }
         if (!$config->getActivateHomePage()) {
@@ -30,7 +31,6 @@ class CoreController extends GoGoController
         $listWrappers = $dm->getRepository('App\Document\Wrapper')->findAllOrderedByPosition();
         $mainCategory = $dm->getRepository('App\Document\Category')->findOneByIsRootCategory(true);
         $mainOptions = $mainCategory ? $mainCategory->getOptions() : [];
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
 
         $session->clear();
 

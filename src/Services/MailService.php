@@ -8,7 +8,6 @@ use App\Document\News;
 use App\Document\User;
 use App\Document\UserInteractionReport;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Symfony\Component\Routing\RouterInterface;
 use Twig\Environment;
 
 class MailService
@@ -17,26 +16,21 @@ class MailService
     protected $config;
     private $newsRepository;
     protected $mailer;
-    protected $router;
     protected $twig;
     protected $baseUrl;
     protected $email;
     protected $instanceName;
 
-    public function __construct(DocumentManager $dm, \Swift_Mailer $mailer, RouterInterface $router, Environment $twig, $baseUrl, $saas, $fromEmail, $instanceName)
+    public function __construct(DocumentManager $dm, \Swift_Mailer $mailer, Environment $twig, 
+                                UrlService $urlService,
+                                $fromEmail, $instanceName)
     {
         $this->dm = $dm;
         $this->config = $this->dm->getRepository(Configuration::class)->findConfiguration();
         $this->newsRepository = $this->dm->getRepository(News::class);
         $this->mailer = $mailer;
-        $this->router = $router;
+        $this->urlService = $urlService;
         $this->twig = $twig;
-
-        $this->baseUrl = 'http://';
-        if ($saas) {
-            $this->baseUrl .= $this->config->getDbName().'.';
-        }
-        $this->baseUrl .= $baseUrl;
         $this->email = $fromEmail;
         $this->instanceName = $instanceName;
     }
@@ -139,10 +133,10 @@ class MailService
 
     public function draftTemplate($content, $template = 'base')
     {
-        return $this->twig->render(
-                'emails/layout.html.twig',
-                ['content' => $content, 'config' => $this->config, 'homeUrl' => $this->generateRoute('gogo_homepage')]
-            );
+        return $this->twig->render('emails/layout.html.twig', [
+            'content' => $content, 
+            'config' => $this->config, 
+            'homeUrl' => $this->urlService->generateUrl('gogo_homepage')]);
     }
 
     public function getConfig()
@@ -171,12 +165,11 @@ class MailService
     {
         if (null !== $element && $element) {
             if ($element instanceof Element) {
-                $showElementUrl = $this->generateRoute('gogo_directory_showElement', ['id' => $element->getId()]);
-                $showElementUrl = str_replace('%23', '#', $showElementUrl);
-                $editElementUrl = $this->generateRoute('gogo_element_edit', ['id' => $element->getId()]);
+                $showElementUrl = $this->urlService->elementShowUrl($element->getId());
+                $editElementUrl = $this->urlService->generateUrl('gogo_element_edit', ['id' => $element->getId()]);
                 $elementName = $element->getName();
                 $contribution = $element->getCurrContribution();
-                $directEditElementUniqueUrl = $this->generateRoute('gogo_element_edit', ['id' => $element->getId(), 'hash' => $element->getRandomHash()]);
+                $directEditElementUniqueUrl = $this->urlService->generateUrl('gogo_element_edit', ['id' => $element->getId(), 'hash' => $element->getRandomHash()]);
 
                 if ('report' == $mailType && $option && $option instanceof UserInteractionReport) {
                     $user = $option->getUserDisplayName();
@@ -205,9 +198,9 @@ class MailService
             $string = preg_replace('/({{((?:\s)+)?news((?:\s)+)?}})/i', $content, $string);
         }
 
-        $homeUrl = $this->generateRoute('gogo_homepage');
-        $userContributionsUrl = $this->generateRoute('gogo_user_contributions');
-        $userProfileUrl = $this->generateRoute('gogo_user_profile');
+        $homeUrl = $this->urlService->generateUrl('gogo_homepage');
+        $userContributionsUrl = $this->urlService->generateUrl('gogo_user_contributions');
+        $userProfileUrl = $this->urlService->generateUrl('gogo_user_profile');
 
         $string = preg_replace('/({{((?:\s)+)?homeUrl((?:\s)+)?}})/i', $homeUrl, $string);
         $string = preg_replace('/({{((?:\s)+)?customMessage((?:\s)+)?}})/i', $customMessage, $string);
@@ -219,11 +212,6 @@ class MailService
         $string = str_replace('https://https://', 'https://', $string);
 
         return $string;
-    }
-
-    private function generateRoute($routeName, $args = [])
-    {
-        return $this->baseUrl.$this->router->generate($routeName, $args);
     }
 
     private function replaceNewElementsList($string, $elements, $user)
@@ -244,7 +232,7 @@ class MailService
         );
 
         $showOnMapBtnHtml = $this->twig->render('emails/newsletter-show-on-map-button.html.twig',
-            ['config' => $this->config, 'user' => $user, 'directoryUrl' => $this->generateRoute('gogo_directory')]
+            ['config' => $this->config, 'user' => $user, 'directoryUrl' => $this->urlService->generateUrl('gogo_directory')]
         );
 
         $string = preg_replace('/({{((?:\s)+)?pendingElements((?:\s)+)?}})/i', $pendingElementsHtml, $string);

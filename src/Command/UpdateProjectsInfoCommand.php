@@ -16,13 +16,12 @@ use App\Services\DocumentManagerFactory;
 class UpdateProjectsInfoCommand extends Command
 {
     public function __construct(DocumentManagerFactory $dmFactory, LoggerInterface $commandsLogger,
-                                RouterInterface $router, $baseUrl)
+                                RouterInterface $router)
     {
         $this->dmFactory = $dmFactory;
         $this->rootDm = $dmFactory->getRootManager();
         $this->router = $router;
         $this->logger = $commandsLogger;
-        $this->baseUrl = $baseUrl;
         parent::__construct();
     }
 

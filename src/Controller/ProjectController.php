@@ -11,6 +11,7 @@ use App\Document\Project;
 use App\Document\ScheduledCommand;
 use App\Document\Taxonomy;
 use App\Services\DocumentManagerFactory;
+use App\Services\UrlService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use FOS\UserBundle\Model\UserInterface;
 use FOS\UserBundle\Model\UserManagerInterface;
@@ -22,13 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ProjectController extends Controller
 {
-    protected function generateUrlForProject($project, $route = 'gogo_homepage', $params = [])
-    {
-        $url = 'http://'.$project->getDomainName().'.'.$this->getParameter('base_url').$this->generateUrl($route, $params);
-        return str_replace('index.php/index.php', 'index.php', $url); // Fix if there is no url rewrite
-    }
-
-    public function createAction(Request $request, DocumentManagerFactory $dmFactory)
+    public function createAction(Request $request, DocumentManagerFactory $dmFactory, UrlService $urlService)
     {
         if (!$dmFactory->isRootProject()) {
             return $this->redirectToRoute('gogo_homepage');
@@ -119,7 +114,7 @@ class ProjectController extends Controller
 
 
             // REDIRECT to new project
-            $url = $this->generateUrlForProject($project, 'gogo_saas_initialize_project');
+            $url = $urlService->generateUrlFor($project, 'gogo_saas_initialize_project');
             return $this->redirect($url);
         }
 
@@ -131,7 +126,7 @@ class ProjectController extends Controller
     /**
      * @Route("/projects", name="gogo_saas_home")
      */
-    public function homeAction(DocumentManagerFactory $dmFactory)
+    public function homeAction(DocumentManagerFactory $dmFactory, UrlService $urlService)
     {
         if (!$dmFactory->isRootProject()) {
             return $this->redirectToRoute('gogo_homepage');
@@ -149,10 +144,10 @@ class ProjectController extends Controller
         $pinnedProjects = $repository->findBy(['pinned' => true]);
 
         foreach ($projects as $project) {
-            $project->setHomeUrl($this->generateUrlForProject($project));
+            $project->setHomeUrl($urlService->generateUrlFor($project));
         }
         foreach ($pinnedProjects as $project) {
-            $project->setHomeUrl($this->generateUrlForProject($project));
+            $project->setHomeUrl($urlService->generateUrlFor($project));
         }
 
         return $this->render('saas/home.html.twig', [
@@ -212,7 +207,7 @@ class ProjectController extends Controller
     }
 
     // In SAAS Mode, a project is being deleted by the owner
-    public function deleteCurrProjectAction(DocumentManagerFactory $dmFactory)
+    public function deleteCurrProjectAction(DocumentManagerFactory $dmFactory, UrlService $urlService)
     {
         $dm = $dmFactory->getCurrentManager();
         $dbName = $dmFactory->getCurrentDbName();
@@ -226,7 +221,7 @@ class ProjectController extends Controller
         $rootDm->flush();
 
         // Return to SAAS Home Page
-        $url = $this->getParameter('base_protocol') . '://' . $this->getParameter('base_url');
+        $url = $urlService->generateRootUrl();
         return $this->redirect($url);
     }
 }

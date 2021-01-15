@@ -5,18 +5,17 @@ namespace App\Services;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class GoGoCartoJsService
 {
-    public function __construct(DocumentManager $dm, TokenStorageInterface $securityContext, RouterInterface $router, SessionInterface $session, $baseProtocol)
+    public function __construct(DocumentManager $dm, TokenStorageInterface $securityContext, 
+                                UrlService $urlService, SessionInterface $session)
     {
         $this->dm = $dm;
         $this->securityContext = $securityContext;
-        $this->router = $router;
+        $this->urlService = $urlService;
         $this->session = $session;
-        $this->base_protocol = $baseProtocol;
     }
 
     public function getConfig()
@@ -223,6 +222,6 @@ class GoGoCartoJsService
 
     private function getAbsolutePath($route, $params = [])
     {
-        return $this->base_protocol.':'.$this->router->generate($route, $params, UrlGeneratorInterface::NETWORK_PATH);
+        return $this->urlService->generateUrl($route, $params);
     }
 }

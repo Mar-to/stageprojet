@@ -10,19 +10,19 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use App\Document\GoGoLogUpdate;
-use Symfony\Component\Routing\RouterInterface;
+use App\Services\UrlService;
 
 final class RemoveAbandonnedProjectsCommand extends GoGoAbstractCommand
 {
 
     public function __construct(DocumentManagerFactory $dm, LoggerInterface $commandsLogger,
-                               TokenStorageInterface $security, RouterInterface $router,
+                               TokenStorageInterface $security, UrlService $urlService,
                                MailService $mailService,
                                $baseUrl
                            )
     {
         $this->baseUrl = $baseUrl;
-        $this->router = $router;
+        $this->urlService = $urlService;
         $this->mailService = $mailService;
         parent::__construct($dm, $commandsLogger, $security);
     }
@@ -49,7 +49,7 @@ final class RemoveAbandonnedProjectsCommand extends GoGoAbstractCommand
 
         foreach ($projectsToWarn as $project) {
             $subject = "Votre carte créée sur $this->baseUrl peut elle être effacée?";
-            $adminUrl = $this->generateUrlForProject($project, 'sonata_admin_dashboard');
+            $adminUrl = $this->urlService->generateUrlFor($project, 'sonata_admin_dashboard');
             $content = "Bonjour !</br></br> Vous êtes administrateur.ice de la carte {$project->getName()} sur {$this->baseUrl}. Nous avons noté qu'aucun utilisateur ne s'est logué sur cette carte depuis plusieurs mois. Votre projet est-il abandonné?</br>
                 Le nombre de carte sur $this->baseUrl ne cesse de grandir, et cela utilise pas mal de ressources sur notre serveur. Si votre projet n'a plus lieu d'être merci de vous connecter à votre <a href='{$adminUrl}'>espace d'administration</a> et de cliquer sur \"Supprimer mon projet\" en bas du menu de gauche.</br>
                 Si au contraire vous souhaitez conserver votre projet, merci de vous loguer sur votre carte.</br>
@@ -71,7 +71,7 @@ final class RemoveAbandonnedProjectsCommand extends GoGoAbstractCommand
 
         $message = "Les projets suivants sont probablement à supprimer : ";
         foreach ($projectsToDelete as $project) {
-            $projectUrl = $this->generateUrlForProject($project);
+            $projectUrl = $this->urlService->generateUrlFor($project);
             $message .= '<li><a target="_blank" href="' . $projectUrl .'">' . $project->getName() .' / Nombre de points : ' . $project->getDataSize() .'</a></li>';
             $project->setWarningToDeleteProjectSentAt(time());
         }
@@ -83,11 +83,5 @@ final class RemoveAbandonnedProjectsCommand extends GoGoAbstractCommand
         }
 
         $dm->flush();
-
-    }
-
-    protected function generateUrlForProject($project, $route = 'gogo_homepage', $params = [])
-    {
-        return 'http://'.$project->getDomainName().'.'.$this->baseUrl.$this->router->generate($route, $params);
     }
 }

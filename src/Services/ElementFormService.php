@@ -90,19 +90,6 @@ class ElementFormService
         $element->setCustomData($data);
     }
 
-    private function updateWebsiteUrl($element)
-    {
-        // add HTTP:// to url if needed
-        $webSiteUrl = $element->getWebsite();
-        if ($webSiteUrl && '' != $webSiteUrl) {
-            $parsed = parse_url($webSiteUrl);
-            if (empty($parsed['scheme'])) {
-                $webSiteUrl = 'http://'.ltrim($webSiteUrl, '/');
-            }
-            $element->setWebsite($webSiteUrl);
-        }
-    }
-
     private function updateOwner($element, $request, $userEmail)
     {
         if ($request->get('owning')) {

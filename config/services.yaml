@@ -35,23 +35,19 @@ services:
       public: true
       arguments: []
 
-    App\Services\GoGoCartoJsService:
-      arguments:
-        $baseProtocol: '%base_protocol%'
-
     App\Services\AsyncService:
       arguments:
         $rootDir: '%kernel.root_dir%'
         $env: '%kernel.environment%'
-
-    App\Services\WebhookService:
+    
+    App\Services\UrlService:
       arguments:
         $baseUrl: '%base_url%'
+        $baseProtocol: '%base_protocol%'        
+        $useAsSaas: '%use_as_sass%'
 
     App\Services\MailService:
-      arguments:
-        $baseUrl: '%base_url%'
-        $saas: '%use_as_saas%'
+      arguments:        
         $instanceName: '%instance_name%'
         $fromEmail: '%from_email%'
     
@@ -59,15 +55,7 @@ services:
       arguments:
         $rootDB: '%root_db%'
 
-    App\Services\UserNotificationService:
-      arguments:
-        $baseUrl: '%base_url%'
-
     # Commands
-    App\Command\UpdateProjectsInfoCommand:
-      arguments:
-        $baseUrl: '%base_url%'
-
     App\Command\RemoveAbandonnedProjectsCommand:
       arguments:
         $baseUrl: '%base_url%'
