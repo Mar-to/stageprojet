@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Firewall\AbstractAuthenticationListener;
+use App\Helper\GoGoHelper;
 
 class OAuthListener extends AbstractAuthenticationListener
 {
@@ -72,7 +73,7 @@ class OAuthListener extends AbstractAuthenticationListener
 
         $redirectUrl = $this->httpUtils->createRequest($request, $checkPath)->getUri();
 
-        $redirectUrl = getRootProjectUrlFromInstanceUrl($redirectUrl);
+        $redirectUrl = GoGoHelper::getRootProjectUrlFromInstanceUrl($redirectUrl);
         
         $accessToken = $resourceOwner->getAccessToken($request, $redirectUrl);
         $token = new OAuthToken($accessToken);

@@ -6,6 +6,7 @@ use HWI\Bundle\OAuthBundle\Controller\ConnectController as BaseController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use App\Helper\GoGoHelper;
 
 class ConnectController extends BaseController
 {
@@ -38,7 +39,7 @@ class ConnectController extends BaseController
             $url = $request->getUri();
             preg_match_all('/^https?:\/\/(\w+)\./', $url, $result);
             $domainName = $result[1][0];
-            $url = getRootProjectUrlFromInstanceUrl($url, "/root/$domainName");
+            $url = GoGoHelper::getRootProjectUrlFromInstanceUrl($url, "/root/$domainName");
             $this->saveRefererIntoSession($request);
             return $this->redirect($url);
         } else {

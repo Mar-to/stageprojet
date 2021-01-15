@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Document\ElementStatus;
 use App\Document\ModerationState;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use App\Helper\GoGoHelper;
 
 /**
  * ElementRepository.
@@ -358,7 +359,7 @@ class ElementRepository extends DocumentRepository
 
     public function findDataCustomProperties()
     {
-        return executeMongoCommand($this->getDocumentManager(), "
+        return GoGoHelper::executeMongoCommand($this->getDocumentManager(), "
             var props = [];
             db.Element.find({}).forEach(function(e) {
                 for(var prop in e.data) {

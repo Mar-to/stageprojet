@@ -16,6 +16,7 @@ use OzdemirBurak\Iris\Color\Hex;
 use OzdemirBurak\Iris\Color\Rgba;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use App\Helper\GoGoHelper;
 
 /**
  * Main Configuration.
@@ -528,7 +529,7 @@ class Configuration implements \JsonSerializable
 
     private function validateTemplateOnlyUsePublicProperties($context, $template, $path)
     {
-        $fieldsUsed = extractFieldsUsedInTemplate($template);
+        $fieldsUsed = GoGoHelper::extractFieldsUsedInTemplate($template);
         $privateProps = $this->getApi()->getPublicApiPrivateProperties();
         $privateFieldsUsed = array_intersect($fieldsUsed, $privateProps);
         // the email field can be here because it will be replaced by a button to send email

@@ -3,6 +3,7 @@
 namespace App\Document\Configuration;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use App\Helper\GoGoHelper;
 
 /** @MongoDB\EmbeddedDocument */
 class ConfigurationMarker
@@ -28,7 +29,7 @@ class ConfigurationMarker
     // Those fields will be used in element compact Json
     public function updateFieldsUsedByTemplate()
     {
-        $newFields = extractFieldsUsedInTemplate($this->popupTemplate);
+        $newFields = GoGoHelper::extractFieldsUsedInTemplate($this->popupTemplate);
         $oldFields = $this->fieldsUsedByTemplate;
 
         // if new fields different from old fields (order si not important)

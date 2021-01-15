@@ -5,6 +5,7 @@ namespace App\Application\Hwi\OAuthBundle\Security;
 use HWI\Bundle\OAuthBundle\Security\OAuthUtils as Base;
 use HWI\Bundle\OAuthBundle\OAuth\ResourceOwnerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use App\Helper\GoGoHelper;
 
 class OAuthUtils extends Base
 {
@@ -21,7 +22,7 @@ class OAuthUtils extends Base
                 $redirectUrl = $this->getServiceAuthUrl($request, $resourceOwner);
             }
         }
-        $redirectUrl = getRootProjectUrlFromInstanceUrl($redirectUrl);
+        $redirectUrl = GoGoHelper::getRootProjectUrlFromInstanceUrl($redirectUrl);
         return $resourceOwner->getAuthorizationUrl($redirectUrl, $extraParameters);
     }
 

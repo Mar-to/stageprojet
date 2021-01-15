@@ -7,6 +7,7 @@ use App\Document\Configuration;
 use App\Document\Configuration\ConfigurationMarker;
 use App\Services\AsyncService;
 use Symfony\Component\Filesystem\Filesystem;
+use App\Helper\GoGoHelper;
 
 class ConfigurationListener
 {
@@ -81,7 +82,7 @@ class ConfigurationListener
             $command = 'db.Element.dropIndex("name_text");'; // Default index created by doctrine
             $command .= 'db.Element.dropIndex("search_index");';
             $command .= "db.Element.createIndex( {$newSearchIndex["fields"]}, { name: \"search_index\", default_language: \"french\", weights: {$newSearchIndex["weights"]} });";
-            return executeMongoCommand($dm, $command);
+            return GoGoHelper::executeMongoCommand($dm, $command);
         }
     }
 
