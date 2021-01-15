@@ -20,8 +20,8 @@ class CategoryAdminController extends Controller
     public function treeAction()
     {
         $this->admin->checkAccess('list');
-        $config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
-        $rootCategories = $this->dm->getRepository('App\Document\Category')->findRootCategories();
+        $config = $this->dm->get('Configuration')->findConfiguration();
+        $rootCategories = $this->dm->get('Category')->findRootCategories();
 
         return $this->render('admin/list/tree_category.html.twig', [
             'categories' => $rootCategories, 'config' => $config,

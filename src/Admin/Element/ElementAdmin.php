@@ -36,9 +36,9 @@ class ElementAdmin extends ElementAdminShowEdit
           'images' => 'gogo-custom-images',
           'files' => 'gogo-custom-files'
         ];
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->get('Configuration')->findConfiguration();
         $formFieldsMapping = $config->getElementFormFieldsMapping();
-        $props = $dm->getRepository('App\Document\Element')->findDataCustomProperties();
+        $props = $dm->get('Element')->findDataCustomProperties();
         $customFields = [];
 
         // Currently only names are exported

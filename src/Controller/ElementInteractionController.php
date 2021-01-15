@@ -35,7 +35,7 @@ class ElementInteractionController extends Controller
             return $this->returnResponse(false, 'Les paramètres du vote sont incomplets');
         }
 
-        $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
+        $element = $dm->get('Element')->find($request->get('elementId'));
 
         $resultMessage = $voteService->voteForElement($element, $request->get('value'),
                                                       $request->get('comment'),
@@ -55,7 +55,7 @@ class ElementInteractionController extends Controller
             return $this->returnResponse(false, 'Les paramètres du signalement sont incomplets');
         }
 
-        $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
+        $element = $dm->get('Element')->find($request->get('elementId'));
 
         $report = new UserInteractionReport();
         $report->setValue($request->get('value'));
@@ -87,7 +87,7 @@ class ElementInteractionController extends Controller
             return $this->returnResponse(false, 'Les paramètres sont incomplets');
         }
 
-        $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
+        $element = $dm->get('Element')->find($request->get('elementId'));
         $dm->persist($element);
 
         $elementActionService->delete($element, true, $request->get('message'));
@@ -110,7 +110,7 @@ class ElementInteractionController extends Controller
             return $this->returnResponse(false, 'Les paramètres sont incomplets');
         }
 
-        $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
+        $element = $dm->get('Element')->find($request->get('elementId'));
 
         $elementActionService->resolveReports($element, $request->get('comment'), true);
 
@@ -128,7 +128,7 @@ class ElementInteractionController extends Controller
             return $this->returnResponse(false, 'Les paramètres sont incomplets');
         }
 
-        $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
+        $element = $dm->get('Element')->find($request->get('elementId'));
 
         $senderMail = $request->get('userEmail');
 
@@ -153,8 +153,8 @@ class ElementInteractionController extends Controller
             return $this->returnResponse(false, 'Les paramètres sont incomplets');
         }
 
-        $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
-        $stamp = $dm->getRepository('App\Document\Stamp')->find($request->get('stampId'));
+        $element = $dm->get('Element')->find($request->get('elementId'));
+        $stamp = $dm->get('Stamp')->find($request->get('stampId'));
         $user = $this->getUser();
 
         if (!in_array($stamp, $user->getAllowedStamps()->toArray())) {

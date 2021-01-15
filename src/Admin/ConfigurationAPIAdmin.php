@@ -22,7 +22,7 @@ class ConfigurationAPIAdmin extends ConfigurationAbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $dm = GoGoHelper::getDmFromAdmin($this);
-        $apiProperties = $dm->getRepository('App\Document\Element')->findAllCustomProperties();
+        $apiProperties = $dm->get('Element')->findAllCustomProperties();
 
         $apiPropertiesChanged = [];
         foreach ($apiProperties as $key => $value) {

@@ -25,7 +25,7 @@ class ElementAdminShowEdit extends ElementAdminList
     protected function configureFormFields(FormMapper $formMapper)
     {
         $dm = GoGoHelper::getDmFromAdmin($this);
-        $this->config = $dm->getRepository('App\Document\Configuration')->findConfiguration();  
+        $this->config = $dm->get('Configuration')->findConfiguration();  
         $categories = $dm->createQueryBuilder('App\Document\Option')->select('name')
                       ->hydrate(false)->getQuery()->execute();
         $categoriesChoices = [];

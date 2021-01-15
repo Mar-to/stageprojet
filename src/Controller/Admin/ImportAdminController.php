@@ -122,7 +122,7 @@ class ImportAdminController extends Controller
                     // Fix ontology mapping for elements fields with reverse value
                     $ontology = $request->get('ontology');
                     if ($ontology) {                        
-                        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+                        $config = $dm->get('Configuration')->findConfiguration();
                         foreach($config->getElementFormFields() as $field) {
                             if ($field->type === 'elements'
                                && in_array($field->name, array_values($ontology))
@@ -152,7 +152,7 @@ class ImportAdminController extends Controller
                                         $mappedCategories[$key] = $categoriesCreated[$categoryId];
                                     } else {
                                         $fieldName = $currentTaxonomyMapping[$originName]['fieldName'];
-                                        $parent = $dm->getRepository('App\Document\Category')->findOneByCustomId($fieldName);
+                                        $parent = $dm->get('Category')->findOneByCustomId($fieldName);
                                         if (!$parent) {
                                             $parent = new Category();
                                             $parent->setCustomId($fieldName);

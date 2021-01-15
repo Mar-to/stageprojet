@@ -17,13 +17,13 @@ class UserNotificationService
 
     function sendModerationNotifications()
     {
-        $users = $this->dm->getRepository('App\Document\User')
+        $users = $this->dm->get('User')
                     ->findByWatchModeration(true);
         foreach ($users as $user) {
-            $elementsCount = $this->dm->getRepository('App\Document\Element')
+            $elementsCount = $this->dm->get('Element')
                                   ->findModerationElementToNotifyToUser($user);
             if ($elementsCount > 0) {
-                $config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
+                $config = $this->dm->get('Configuration')->findConfiguration();
 
                 $subject = "Des éléments sont à modérer sur {$config->getAppName()}";
                 $url = $this->urlService->generateUrlFor($config, 'gogo_directory');
@@ -42,7 +42,7 @@ class UserNotificationService
         if (!$import->isDynamicImport()) return;
         $import->getUsersToNotify()->count();
         foreach($import->getUsersToNotify() as $user) {
-            $config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
+            $config = $this->dm->get('Configuration')->findConfiguration();
             $importUrl = $this->urlService->generateUrlFor($config, 'admin_app_import_edit', ['id' => $import->getId()]);
             $subject = "Des erreurs ont eu lieu lors d'un import sur {$config->getAppName()}";
             $content = "Bonjour !</br></br>L'import {$import->getSourceName()} semble avoir quelques soucis.. <a href='$importUrl'>Cliquez ici</a> pour essayer d'y remédier";
@@ -54,7 +54,7 @@ class UserNotificationService
     {
         if (!$import->isDynamicImport()) return;
         foreach($import->getUsersToNotify() as $user) {
-            $config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
+            $config = $this->dm->get('Configuration')->findConfiguration();
             $importUrl = $this->urlService->generateUrlFor($config, 'admin_app_import_edit', ['id' => $import->getId()]);
             $subject = "Action requise pour un import sur {$config->getAppName()}";
             $content = "Bonjour !</br></br>L'import {$import->getSourceName()} a de nouveaux champs ou de nouvelles catégories qui auraient peut être besoin de votre attention.. <a href='$importUrl'>Cliquez ici</a> pour accéder aux tables de correspondances";

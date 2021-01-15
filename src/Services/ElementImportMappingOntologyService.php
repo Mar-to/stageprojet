@@ -37,7 +37,7 @@ class ElementImportMappingOntologyService
         }
         unset($mappedObject); // prevent edge case https://www.php.net/manual/fr/control-structures.foreach.php
 
-        $this->existingProps = $this->dm->getRepository('App\Document\Element')->findAllCustomProperties();
+        $this->existingProps = $this->dm->get('Element')->findAllCustomProperties();
         $this->existingProps = array_merge(Element::CORE_FIELDS, $this->existingProps);
         $this->existingProps = array_map(function($e) { return strtolower($e); }, $this->existingProps);
         $this->collectedProps = [];

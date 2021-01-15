@@ -123,7 +123,7 @@ class ElementImportMappingTaxonomyService
     private function createOptionsMappingTable($options = null)
     {
         if (null === $options) {
-            $options = $this->dm->getRepository('App\Document\Option')->findAll();
+            $options = $this->dm->get('Option')->findAll();
         }
 
         foreach ($options as $option) {

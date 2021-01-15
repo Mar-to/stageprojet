@@ -22,7 +22,7 @@ class UrlService
     // Url for current used project
     public function generateUrl($route = 'gogo_homepage', $params = [])
     {
-        $config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $this->dm->get('Configuration')->findConfiguration();
         return $this->generateUrlFor($config, $route, $params);
     }
 

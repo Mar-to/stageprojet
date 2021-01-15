@@ -13,16 +13,16 @@ class TwigHelperService
 
   public function config()
   {
-    return $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
+    return $this->dm->get('Configuration')->findConfiguration();
   }
 
   public function listAbouts()
   {
-    return $this->dm->getRepository('App\Document\About')->findAllOrderedByPosition();
+    return $this->dm->get('About')->findAllOrderedByPosition();
   }
 
   public function countPartners()
   {
-    return count($this->dm->getRepository('App\Document\Partner')->findAll());
+    return count($this->dm->get('Partner')->findAll());
   }
 }

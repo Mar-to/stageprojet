@@ -30,7 +30,7 @@ class DuplicatesActionsController extends BulkActionsAbstractController
           && !array_key_exists($element->getId(), $this->duplicatesFound)
           && !$element->isPotentialDuplicate()) {
 
-            $duplicates = $dm->getRepository('App\Document\Element')->findDuplicatesFor($element);
+            $duplicates = $dm->get('Element')->findDuplicatesFor($element);
             $duplicateIds = [];
             foreach ($duplicates as $duplicate) {
                 if ($duplicate['score'] > 1.4) $duplicateIds[] = $duplicate['_id'];

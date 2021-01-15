@@ -276,7 +276,7 @@ class ElementRepository extends DocumentRepository
 
     private function queryText($qb, $text)
     {
-        $config = $this->getDocumentManager()->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $this->getDocumentManager()->get('Configuration')->findConfiguration();
         if ($config->getSearchExcludingWords()) {
             $text = $text.' --'.str_replace(',', ' --', $config->getSearchExcludingWords());
         }
@@ -386,7 +386,7 @@ class ElementRepository extends DocumentRepository
     {
         $formProperties = [];
         $propTypeToIgnore = ['separator', 'header', 'address', 'title', 'taxonomy', 'openhours'];
-        $config = $this->getDocumentManager()->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $this->getDocumentManager()->get('Configuration')->findConfiguration();
         foreach ($config->getElementFormFields() as $key => $field) {
             if (property_exists($field, 'name') && !in_array($field->type, $propTypeToIgnore)) {
                 $formProperties[] = $field->name;

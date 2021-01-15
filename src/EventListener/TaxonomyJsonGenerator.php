@@ -78,12 +78,12 @@ class TaxonomyJsonGenerator
     public function updateTaxonomy($dm)
     {
         $dm->clear(); // remove doctrine cache to load the new categories just created (in case multiple flush in same request)
-        $taxonomy = $dm->getRepository('App\Document\Taxonomy')->findTaxonomy();
+        $taxonomy = $dm->get('Taxonomy')->findTaxonomy();
         if (!$taxonomy) {
             return false;
         }        
-        $rootCategories = $dm->getRepository('App\Document\Category')->findRootCategories();
-        $options = $dm->getRepository('App\Document\Option')->findAll();
+        $rootCategories = $dm->get('Category')->findRootCategories();
+        $options = $dm->get('Option')->findAll();
         if (0 == count($rootCategories)) {
             $optionsJson = '[]';
             $taxonomyJson = '[]';

@@ -18,9 +18,9 @@ class BulkActionsAbstractController extends Controller
         $elementLeftCount = 0;
         $isStillElementsToProceed = false;
 
-        $elementRepo = $dm->getRepository('App\Document\Element');
+        $elementRepo = $dm->get('Element');
 
-        $optionsRepo = $dm->getRepository('App\Document\Option');
+        $optionsRepo = $dm->get('Option');
         $this->optionList = $optionsRepo->createQueryBuilder()->hydrate(false)->getQuery()->execute()->toArray();
 
         if (!$this->fromBeginning && $request->get('batchFromStep')) {

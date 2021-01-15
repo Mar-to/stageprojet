@@ -22,7 +22,7 @@ class ConfigurationFormAdmin extends ConfigurationAbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $dm = GoGoHelper::getDmFromAdmin($this);
-        $repo = $dm->getRepository('App\Document\Element');
+        $repo = $dm->get('Element');
         $elementProperties = json_encode($repo->findAllCustomProperties());
 
         $formMapper

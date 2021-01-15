@@ -24,7 +24,7 @@ class ElementsRemoveOptionsCommand extends GoGoAbstractCommand
             $this->log('Elements remove options begin, options ids to remove : '.$input->getArgument('ids'));
             $optionsIdDeleted = array_map(function ($string) { return (int) $string; }, explode(',', $input->getArgument('ids')));
 
-            $qb = $dm->getRepository('App\Document\Element')->createQueryBuilder();
+            $qb = $dm->get('Element')->createQueryBuilder();
             $elements = $qb->field('optionValues.optionId')->in($optionsIdDeleted)->getQuery()->execute();
             $this->log($elements->count().' element to proceed');
 

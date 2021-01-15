@@ -13,7 +13,7 @@ class ModerationActionsController extends BulkActionsAbstractController
                                                                DocumentManager $dm,
                                                                ElementActionService $actionService)
     {
-        $repo = $dm->getRepository('App\Document\Element');
+        $repo = $dm->get('Element');
         $elements = $repo->findModerationNeeded(false, 1);
 
         $i = 0;

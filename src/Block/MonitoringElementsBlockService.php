@@ -42,19 +42,19 @@ class MonitoringElementsBlockService extends AbstractBlockService
 
     public function execute(BlockContextInterface $blockContext, Response $response = null)
     {
-        $pendings = $this->dm->getRepository('App\Document\Element')->findPendings(true);
-        $moderationNeeded = $this->dm->getRepository('App\Document\Element')->findModerationNeeded(true);
-        $validateElements = $this->dm->getRepository('App\Document\Element')->findValidated(true);
-        $allVisibleElements = $this->dm->getRepository('App\Document\Element')->findVisibles(true, false);
-        $visibleNonImportedElements = $this->dm->getRepository('App\Document\Element')->findVisibles(true, true);
+        $pendings = $this->dm->get('Element')->findPendings(true);
+        $moderationNeeded = $this->dm->get('Element')->findModerationNeeded(true);
+        $validateElements = $this->dm->get('Element')->findValidated(true);
+        $allVisibleElements = $this->dm->get('Element')->findVisibles(true, false);
+        $visibleNonImportedElements = $this->dm->get('Element')->findVisibles(true, true);
         $activeUsersCount = $this->dm->createQueryBuilder('App\Document\User')->field('enabled')->equals(true)->count()->getQuery()->execute();
         $activeUsersNewsletterCount = $this->dm->createQueryBuilder('App\Document\User')->field('enabled')->equals(true)
                                                                                         ->field('newsletterFrequency')->gt(NewsletterFrequencyOptions::Never)->count()->getQuery()->execute();
 
-        $errors = $this->dm->getRepository('App\Document\GoGoLog')->findBy(['level' => 'error', 'hidden' => false]);
+        $errors = $this->dm->get('GoGoLog')->findBy(['level' => 'error', 'hidden' => false]);
         usort($errors, function ($a, $b) { return $b->getCreatedAt()->getTimestamp() - $a->getCreatedAt()->getTimestamp(); });
 
-        $messages = $this->dm->getRepository('App\Document\GoGoLog')->findBy(['type' => 'update', 'hidden' => false]);
+        $messages = $this->dm->get('GoGoLog')->findBy(['type' => 'update', 'hidden' => false]);
         usort($errors, function ($a, $b) { return $b->getCreatedAt()->getTimestamp() - $a->getCreatedAt()->getTimestamp(); });
 
         // merge settings

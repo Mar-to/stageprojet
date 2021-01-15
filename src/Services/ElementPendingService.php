@@ -62,7 +62,7 @@ class ElementPendingService
         // making a real refresh, calling refresh and getting again the element from DB (otherwise there were conflicts)
         $this->dm->refresh($elementToCopy);
         $id = $elementToCopy->getId();
-        $oldElement = $this->dm->getRepository('App\Document\Element')->find($id);
+        $oldElement = $this->dm->get('Element')->find($id);
         $oldElement->setModifiedElement($modifiedElement);
 
         return $oldElement;

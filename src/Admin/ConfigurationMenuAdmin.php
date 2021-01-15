@@ -17,8 +17,8 @@ class ConfigurationMenuAdmin extends ConfigurationAbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $dm = GoGoHelper::getDmFromAdmin($this);
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
-        $apiProperties = $dm->getRepository('App\Document\Element')->findAllCustomProperties();
+        $config = $dm->get('Configuration')->findConfiguration();
+        $apiProperties = $dm->get('Element')->findAllCustomProperties();
         $propertiesText = implode($apiProperties, ',');
 
         $featureStyle = ['class' => 'col-md-6 col-lg-3 gogo-feature'];

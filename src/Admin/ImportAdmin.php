@@ -32,11 +32,11 @@ class ImportAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $dm = GoGoHelper::getDmFromAdmin($this);
-        $repo = $dm->getRepository('App\Document\Element');
+        $repo = $dm->get('Element');
         $formProperties = json_encode($repo->findFormProperties());
         $elementProperties = json_encode($repo->findDataCustomProperties());
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
-        $taxonomy = $dm->getRepository('App\Document\Taxonomy')->findTaxonomy();
+        $config = $dm->get('Configuration')->findConfiguration();
+        $taxonomy = $dm->get('Taxonomy')->findTaxonomy();
         $optionsList = $taxonomy->getTaxonomyJson();
 
         $isDynamic = $this->getSubject()->isDynamicImport();
@@ -196,7 +196,7 @@ Transformer un attribut
     protected function configureListFields(ListMapper $listMapper)
     {
         $dm = GoGoHelper::getDmFromAdmin($this);
-        $deletedElementsCount = $dm->getRepository('App\Document\Element')->findDeletedElementsByImportIdCount();
+        $deletedElementsCount = $dm->get('Element')->findDeletedElementsByImportIdCount();
         $isDynamic = "App\Document\ImportDynamic" == $this->getClass();
 
         $listMapper

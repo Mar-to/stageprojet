@@ -21,14 +21,14 @@ class DuplicatesController extends GoGoController
 
     public function indexAction(DocumentManager $dm)
     {
-        $options = $dm->getRepository('App\Document\Option')->findAll();
+        $options = $dm->get('Option')->findAll();
         $optionsNames = [];
         foreach ($options as $option) {
             $optionsNames[$option->getId()] = $option->getName();
         }
 
-        $duplicatesNodeCount = $dm->getRepository('App\Document\Element')->findDuplicatesNodes(null, true);
-        $duplicatesNode = $dm->getRepository('App\Document\Element')->findDuplicatesNodes(DuplicatesController::DUPLICATE_BATH_SIZE)->toArray();
+        $duplicatesNodeCount = $dm->get('Element')->findDuplicatesNodes(null, true);
+        $duplicatesNode = $dm->get('Element')->findDuplicatesNodes(DuplicatesController::DUPLICATE_BATH_SIZE)->toArray();
 
         $leftDuplicatesToProceedCount = max($duplicatesNodeCount - DuplicatesController::DUPLICATE_BATH_SIZE, 0);
 
@@ -59,7 +59,7 @@ class DuplicatesController extends GoGoController
                 return $this->returnResponse(false, 'Les paramètres sont incomplets');
             }
 
-            $element = $dm->getRepository('App\Document\Element')->find($request->get('elementId'));
+            $element = $dm->get('Element')->find($request->get('elementId'));
 
             $element->setIsDuplicateNode(false);
             $duplicates = $element->getPotentialDuplicates() ? $element->getPotentialDuplicates()->toArray() : [];

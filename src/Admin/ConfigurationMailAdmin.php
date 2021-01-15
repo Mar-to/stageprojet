@@ -21,7 +21,7 @@ class ConfigurationMailAdmin extends ConfigurationAbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $dm = GoGoHelper::getDmFromAdmin($this);
-        $repo = $dm->getRepository('App\Document\Configuration');
+        $repo = $dm->get('Configuration');
         $config = $repo->findConfiguration();
         $router = $this->getConfigurationPool()->getContainer()->get('router');
 

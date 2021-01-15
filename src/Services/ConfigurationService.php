@@ -18,7 +18,7 @@ class ConfigurationService
     {
         $this->dm = $dm;
         $this->securityContext = $securityContext;
-        $this->config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $this->config = $this->dm->get('Configuration')->findConfiguration();
     }
 
     public function isUserAllowed($featureName, $request = null)

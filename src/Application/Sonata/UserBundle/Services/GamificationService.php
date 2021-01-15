@@ -18,9 +18,9 @@ class GamificationService
 
     public function __construct(DocumentManager $dm)
     {
-        $this->contribsRepo = $dm->getRepository('App\Document\UserInteractionContribution');
-        $this->votesRepo = $dm->getRepository('App\Document\UserInteractionVote');
-        $this->reportsRepo = $dm->getRepository('App\Document\UserInteractionReport');
+        $this->contribsRepo = $dm->get('UserInteractionContribution');
+        $this->votesRepo = $dm->get('UserInteractionVote');
+        $this->reportsRepo = $dm->get('UserInteractionReport');
     }
 
     public function updateGamification($user)

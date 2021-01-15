@@ -33,7 +33,7 @@ class CheckVoteCommand extends GoGoAbstractCommand
 
     protected function gogoExecute(DocumentManager $dm, InputInterface $input, OutputInterface $output): void
     {
-        $elementRepo = $dm->getRepository('App\Document\Element');
+        $elementRepo = $dm->get('Element');
         $elements = $elementRepo->findPendings();
 
         foreach ($elements as $element) {

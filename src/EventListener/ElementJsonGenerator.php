@@ -20,7 +20,7 @@ class ElementJsonGenerator
     public function getConfig()
     {
         if (!$this->config) {
-            $this->config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
+            $this->config = $this->dm->get('Configuration')->findConfiguration();
         }
 
         return $this->config;
@@ -30,7 +30,7 @@ class ElementJsonGenerator
     {
         // load all options so we don't need to do a query on each element being modified
         if (!$this->options) {
-            $this->options = $this->dm->getRepository('App\Document\Option')->createQueryBuilder()
+            $this->options = $this->dm->get('Option')->createQueryBuilder()
                                              ->select('name')->hydrate(false)->getQuery()->execute()->toArray();
         }
 

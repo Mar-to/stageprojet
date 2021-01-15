@@ -12,7 +12,7 @@ class WellKnownController extends GoGoController
 {
     public function assetLinksAction(Request $request, DocumentManager $dm)
     {
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->get('Configuration')->findConfiguration();
 
         if( !$config->getPackageName() || !$config->getSha256CertFingerprints() ) {
             throw new NotFoundHttpException();

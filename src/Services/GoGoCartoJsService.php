@@ -20,14 +20,14 @@ class GoGoCartoJsService
 
     public function getConfig()
     {
-        $taxonomyRep = $this->dm->getRepository('App\Document\Taxonomy');
-        $elementsRep = $this->dm->getRepository('App\Document\Element');
+        $taxonomyRep = $this->dm->get('Taxonomy');
+        $elementsRep = $this->dm->get('Element');
 
-        $tileLayers = $this->dm->getRepository('App\Document\TileLayer')->findAll();
+        $tileLayers = $this->dm->get('TileLayer')->findAll();
 
         $taxonomyJson = $taxonomyRep->findTaxonomyJson();
 
-        $config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $this->dm->get('Configuration')->findConfiguration();
 
         $user = $this->securityContext->getToken() ? $this->securityContext->getToken()->getUser() : null;
 

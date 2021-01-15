@@ -44,7 +44,7 @@ class OptionAdmin extends AbstractAdmin
     {
         // prevent circular reference, i.e setting a child as parent
         $dm = GoGoHelper::getDmFromAdmin($this);
-        $repo = $dm->getRepository('App\Document\Category');
+        $repo = $dm->get('Category');
         $parentQuery = null;
         if ($this->subject) {
           $parentQuery = $repo->createQueryBuilder()

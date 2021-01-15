@@ -18,7 +18,7 @@ class CoreController extends GoGoController
             return $this->redirectToRoute('gogo_saas_home');
         }
         $dm = $dmFactory->getCurrentManager();
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->get('Configuration')->findConfiguration();
         if (!$config && $this->getParameter('use_as_saas')) {
             $url = $urlService->generateRootUrl();
             return $this->redirect($url);
@@ -28,8 +28,8 @@ class CoreController extends GoGoController
         }
 
         // Get Wrapper List
-        $listWrappers = $dm->getRepository('App\Document\Wrapper')->findAllOrderedByPosition();
-        $mainCategory = $dm->getRepository('App\Document\Category')->findOneByIsRootCategory(true);
+        $listWrappers = $dm->get('Wrapper')->findAllOrderedByPosition();
+        $mainCategory = $dm->get('Category')->findOneByIsRootCategory(true);
         $mainOptions = $mainCategory ? $mainCategory->getOptions() : [];
 
         $session->clear();
@@ -43,8 +43,8 @@ class CoreController extends GoGoController
 
     public function partnersAction(DocumentManager $dm)
     {
-        $repository = $dm->getRepository('App\Document\Partner');
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $repository = $dm->get('Partner');
+        $config = $dm->get('Configuration')->findConfiguration();
 
         $listPartners = $repository->findAllOrderedByPosition();
 

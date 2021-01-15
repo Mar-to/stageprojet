@@ -26,7 +26,7 @@ class ConfigurationInfoBarAdmin extends ConfigurationAbstractAdmin
         $featureFormOption = ['delete' => false, 'required' => false, 'label_attr' => ['style' => 'display:none']];
 
         $dm = GoGoHelper::getDmFromAdmin($this);
-        $apiProperties = $dm->getRepository('App\Document\Element')->findAllCustomProperties();
+        $apiProperties = $dm->get('Element')->findAllCustomProperties();
         $propertiesText = implode($apiProperties, ',');
 
         $formMapper

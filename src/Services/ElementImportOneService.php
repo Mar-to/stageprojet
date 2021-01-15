@@ -47,7 +47,7 @@ class ElementImportOneService
         }
 
         // Getting the private field of the custom data
-        $config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $this->dm->get('Configuration')->findConfiguration();
         $this->mainConfigHaveChangedSinceLastImport = $import->getMainConfigUpdatedAt() > $import->getLastRefresh();
     }
 

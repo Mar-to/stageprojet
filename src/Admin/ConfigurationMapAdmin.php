@@ -28,7 +28,7 @@ class ConfigurationMapAdmin extends ConfigurationAbstractAdmin
         $featureFormOption = ['delete' => false, 'required' => false, 'label_attr' => ['style' => 'display:none']];
         $featureFormTypeOption = ['edit' => 'inline'];
         $dm = GoGoHelper::getDmFromAdmin($this);
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->get('Configuration')->findConfiguration();
 
         $formMapper
             ->tab('Paramètres de la carte')

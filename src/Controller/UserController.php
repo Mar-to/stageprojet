@@ -30,12 +30,12 @@ class UserController extends GoGoController
         $user = $this->getUser();
         $userEmail = $user->getEmail();
 
-        $elementsOwned = $dm->getRepository('App\Document\Element')->findElementsOwnedBy($userEmail);
+        $elementsOwned = $dm->get('Element')->findElementsOwnedBy($userEmail);
         $elementsOwned = array_filter($elementsOwned->toArray(), function ($element) use ($userEmail) {
             return !$element->isPending() || $element->getCurrContribution()->getUserEmail() != $userEmail;
         });
 
-        $allContribs = $dm->getRepository('App\Document\UserInteractionContribution')->findByUserEmail($userEmail);
+        $allContribs = $dm->get('UserInteractionContribution')->findByUserEmail($userEmail);
 
         $allContribs = array_filter($allContribs, function ($interaction) {
             return in_array($interaction->getType(), [InteractionType::Add, InteractionType::Edit]);
@@ -74,7 +74,7 @@ class UserController extends GoGoController
         $user = $this->getUser();
         $userEmail = $user->getEmail();
 
-        $votes = $dm->getRepository('App\Document\UserInteractionVote')->findByUserEmail($userEmail);
+        $votes = $dm->get('UserInteractionVote')->findByUserEmail($userEmail);
         usort($votes, function ($a, $b) { return $b->getTimestamp() - $a->getTimestamp(); });
 
         return $this->render('user/contributions/votes.html.twig', ['votes' => $votes]);
@@ -85,7 +85,7 @@ class UserController extends GoGoController
         $user = $this->getUser();
         $userEmail = $user->getEmail();
 
-        $reports = $dm->getRepository('App\Document\UserInteractionReport')->findByUserEmail($userEmail);
+        $reports = $dm->get('UserInteractionReport')->findByUserEmail($userEmail);
         usort($reports, function ($a, $b) { return $b->getTimestamp() - $a->getTimestamp(); });
 
         return $this->render('user/contributions/reports.html.twig', ['reports' => $reports]);
@@ -93,7 +93,7 @@ class UserController extends GoGoController
 
     public function becomeOwnerAction($id, Request $request, SessionInterface $session, DocumentManager $dm)
     {
-        $element = $dm->getRepository('App\Document\Element')->find($id);
+        $element = $dm->get('Element')->find($id);
 
         if (!$element->getUserOwnerEmail()) {
             $user = $this->getUser();
@@ -114,8 +114,8 @@ class UserController extends GoGoController
         $user = $this->getUser();
         $current_user = clone $user;
         $form = $this->get('form.factory')->create(UserProfileType::class, $user);
-        $userRepo = $dm->getRepository('App\Document\User');
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $userRepo = $dm->get('User');
+        $config = $dm->get('Configuration')->findConfiguration();
 
         if (!$user->getNewsletterRange()) {
             $user->setNewsletterRange(50);

@@ -73,7 +73,7 @@ class MailTestController extends Controller
         $options = null;
 
         if ('newsletter' == $mailType) {
-            $element = $this->dm->getRepository('App\Document\User')->findOneByEnabled(true);
+            $element = $this->dm->get('User')->findOneByEnabled(true);
             $element->setLocation('bordeaux');
             $element->setGeo(new Coordinates(44.876, -0.512));
             $qb = $this->dm->createQueryBuilder('App\Document\Element');
@@ -81,7 +81,7 @@ class MailTestController extends Controller
             $qb->field('moderationState')->notIn([ModerationState::GeolocError, ModerationState::NoOptionProvided]);
             $options = $qb->limit(30)->getQuery()->execute();
         } else {
-            $element = $this->dm->getRepository('App\Document\Element')->findVisibles()->getSingleResult();
+            $element = $this->dm->get('Element')->findVisibles()->getSingleResult();
         }
 
         if (!$element) {

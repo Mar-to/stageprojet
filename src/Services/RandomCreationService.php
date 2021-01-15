@@ -68,7 +68,7 @@ class RandomCreationService
         $lngSpan = $NElng - $SOlng;
         $latSpan = $NElat - $SOlat;
 
-        $mainCategories = $this->dm->getRepository('App\Document\Category')->findRootCategories();
+        $mainCategories = $this->dm->get('Category')->findRootCategories();
 
         $lipsum = new LoremIpsum();
 

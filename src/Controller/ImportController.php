@@ -18,7 +18,7 @@ class ImportController extends Controller
 
     public function availableOptionsAction(DocumentManager $dm)
     {
-        $options = $dm->getRepository('App\Document\Option')->findAll();
+        $options = $dm->get('Option')->findAll();
         $bottomOptions = array_filter($options, function ($option) { return 0 == $option->getSubcategoriesCount(); });
         $optionsNames = array_map(function ($option) { return $option->getNameWithParent(); }, $bottomOptions);
 
@@ -27,7 +27,7 @@ class ImportController extends Controller
 
     public function currStateAction($id, DocumentManager $dm)
     {
-        $import = $dm->getRepository('App\Document\Import')->find($id);
+        $import = $dm->get('Import')->find($id);
         $responseArray = [
             'state' => $import->getCurrState(),
             'message' => $import->getCurrMessage(),

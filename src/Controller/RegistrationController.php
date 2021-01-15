@@ -49,7 +49,7 @@ class RegistrationController extends FosController
      */
     public function registerAction(Request $request)
     {
-        $config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $this->dm->get('Configuration')->findConfiguration();
         if (!$config->getUser()->getEnableRegistration()) {
             $this->session->getFlashBag()->add('error', "Désolé, vous n'êtes pas autorisé à créer un compte.");
             return $this->redirectToRoute('gogo_directory');

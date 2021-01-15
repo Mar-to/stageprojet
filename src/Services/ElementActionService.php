@@ -52,7 +52,7 @@ class ElementActionService
     public function edit($element, $sendMail = true, $message = null, $modifiedByOwner = false, $directModerationWithHash = false)
     {
         if (ElementStatus::ModifiedPendingVersion == $element->getStatus()) {
-            $element = $this->dm->getRepository('App\Document\Element')->findOriginalElementOfModifiedPendingVersion($element);
+            $element = $this->dm->get('Element')->findOriginalElementOfModifiedPendingVersion($element);
             $this->resolve($element, true, ValidationType::Admin, $message);
         } elseif ($sendMail) {
             $this->mailService->sendAutomatedMail('edit', $element, $message);
@@ -132,7 +132,7 @@ class ElementActionService
                 $element->setIsDuplicateNode(false);
                 $element->clearPotentialDuplicates();
             } else {
-                $potentialOwners = $this->dm->getRepository('App\Document\Element')->findPotentialDuplicateOwner($element);
+                $potentialOwners = $this->dm->get('Element')->findPotentialDuplicateOwner($element);
                 foreach ($potentialOwners as $key => $owner) {
                     $this->dm->persist($owner);
                     $owner->removePotentialDuplicate($element);

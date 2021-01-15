@@ -61,7 +61,7 @@ class ProjectController extends Controller
             $rootDm = $dm;
 
             // INITALIZE CONFIGURATION (copy root project conf)
-            $rootConf = $rootDm->getRepository('App\Document\Configuration')->findConfiguration();
+            $rootConf = $rootDm->get('Configuration')->findConfiguration();
             $projectConf = clone $rootConf;
             $projectConf->setAppName($project->getName());
             $projectConf->setAppBaseLine('');
@@ -70,7 +70,7 @@ class ProjectController extends Controller
             $projectConf->setCustomCSS(null);
             $projectConf->setCustomJavascript(null);
 
-            $tileLayers = $rootDm->getRepository('App\Document\TileLayer')->findAll();
+            $tileLayers = $rootDm->get('TileLayer')->findAll();
             foreach ($tileLayers as $tileLayer) {
                 $newTileLayer = clone $tileLayer;
                 $projectDm->persist($newTileLayer);
@@ -118,7 +118,7 @@ class ProjectController extends Controller
             return $this->redirect($url);
         }
 
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->get('Configuration')->findConfiguration();
 
         return $this->render('saas/projects/create.html.twig', ['form' => $projectForm->createView(), 'config' => $config]);
     }
@@ -132,9 +132,9 @@ class ProjectController extends Controller
             return $this->redirectToRoute('gogo_homepage');
         }
         $dm = $dmFactory->getCurrentManager();
-        $repository = $dm->getRepository('App\Document\Project');
+        $repository = $dm->get('Project');
 
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->get('Configuration')->findConfiguration();
 
         $projects = $dm->createQueryBuilder('App\Document\Project')
                         ->field('published')->equals(true)
@@ -162,12 +162,12 @@ class ProjectController extends Controller
                                      LoginManagerInterface $loginManager)
     {
         // Return if already existing users
-        $users = $dm->getRepository('App\Document\User')->findAll();
+        $users = $dm->get('User')->findAll();
         if (count($users) > 0) {
             return $this->redirectToRoute('gogo_homepage');
         }
 
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->get('Configuration')->findConfiguration();
 
         // CRATE ADMIN USER
         $user = $userManager->createUser();

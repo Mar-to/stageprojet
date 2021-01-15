@@ -32,7 +32,7 @@ class UpdateProjectsInfoCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $projects = $this->rootDm->getRepository('App\Document\Project')->findAll();
+        $projects = $this->rootDm->get('Project')->findAll();
 
         $this->logger->info('Updating projects informations. '. count($projects) .' projects to update');
 
@@ -41,16 +41,16 @@ class UpdateProjectsInfoCommand extends Command
                 $this->logger->info('  -> Update project '.$project->getName());
                 $dm = $this->dmFactory->createForDB($project->getDomainName());
 
-                $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+                $config = $dm->get('Configuration')->findConfiguration();
                 if (!$config) {
                     $this->logger->error("Project {$project->getDomainName()} does not have config");
                     continue;
                 }
                 $img = $config->getSocialShareImage() ? $config->getSocialShareImage() : $config->getLogo();
                 $imageUrl = $img ? $img->getImageUrl() : null;
-                $dataSize = $dm->getRepository('App\Document\Element')->findVisibles(true);
+                $dataSize = $dm->get('Element')->findVisibles(true);
 
-                $users = $dm->getRepository('App\Document\User')->findAll();
+                $users = $dm->get('User')->findAll();
                 $adminEmails = [];
                 $lastLogin = null;
                 foreach ($users as $key => $user) {

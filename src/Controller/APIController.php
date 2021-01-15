@@ -29,9 +29,9 @@ class APIController extends GoGoController
         $ontology = $request->get('ontology') ? strtolower($request->get('ontology')) : 'gogofull';
         $fullRepresentation = $jsonLdRequest || 'gogocompact' != $ontology;
         $elementId = $id ? $id : $request->get('id');
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->get('Configuration')->findConfiguration();
         $isAdmin = $this->isUserAdmin();
-        $elementRepo = $dm->getRepository('App\Document\Element');
+        $elementRepo = $dm->get('Element');
 
         if ($elementId) {
             $element = $elementRepo->findOneBy(['id' => $elementId]);
@@ -87,14 +87,14 @@ class APIController extends GoGoController
         $jsonLdRequest = $this->isJsonLdRequest($request, $_format);
 
         if ($optionId) {
-            $option = $dm->getRepository('App\Document\Option')->findOneBy(['id' => $optionId]);
+            $option = $dm->get('Option')->findOneBy(['id' => $optionId]);
             $serializationContext = $jsonLdRequest ? SerializationContext::create()->setGroups(['semantic']) : null;
             $dataJson = $serializer->serialize($option, 'json', $serializationContext);
             if ($jsonLdRequest) {
                 $dataJson = '['.$dataJson.']';
             }
         } else {
-            $dataJson = $dm->getRepository('App\Document\Taxonomy')->findTaxonomyJson($jsonLdRequest);
+            $dataJson = $dm->get('Taxonomy')->findTaxonomyJson($jsonLdRequest);
         }
 
         if ($jsonLdRequest) {
@@ -106,14 +106,14 @@ class APIController extends GoGoController
             $responseJson = $dataJson;
         }
 
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->get('Configuration')->findConfiguration();
 
         return $this->createResponse($responseJson, $config);
     }
 
     public function getTaxonomyMappingAction(DocumentManager $dm, SerializerInterface $serializer)
     {
-        $options = $dm->getRepository('App\Document\Option')->findAll();
+        $options = $dm->get('Option')->findAll();
         $result = [];
         foreach ($options as $key => $option) {
             $result[$option->getId()] = $option;
@@ -121,7 +121,7 @@ class APIController extends GoGoController
 
         $responseJson = $serializer->serialize($result, 'json');
 
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->get('Configuration')->findConfiguration();
 
         return $this->createResponse($responseJson, $config);
     }
@@ -144,12 +144,12 @@ class APIController extends GoGoController
     {
         $isAdmin = $this->isUserAdmin();
 
-        $elements = $dm->getRepository('App\Document\Element')->findElementsWithText($request->get('text'), true, $isAdmin);
+        $elements = $dm->get('Element')->findElementsWithText($request->get('text'), true, $isAdmin);
 
         $elementsJson = $this->encodeElementArrayToJsonArray($elements, true, $isAdmin, true);
         $responseJson = '{ "data":'.$elementsJson.', "ontology" : "gogofull"}';
 
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->get('Configuration')->findConfiguration();
 
         return $this->createResponse($responseJson, $config);
     }
@@ -159,11 +159,11 @@ class APIController extends GoGoController
     {
         $isAdmin = $this->isUserAdmin();
 
-        $elements = $dm->getRepository('App\Document\Element')->findElementNamesWithText($request->get('text'), $request->get('excludeId'));
+        $elements = $dm->get('Element')->findElementNamesWithText($request->get('text'), $request->get('excludeId'));
 
         $responseJson = json_encode($elements);
 
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->get('Configuration')->findConfiguration();
 
         return $this->createResponse($responseJson, $config);
     }
@@ -208,7 +208,7 @@ class APIController extends GoGoController
 
     public function getGoGoCartoJsConfigurationAction(DocumentManager $dm, GoGoCartoJsService $gogoJsService)
     {
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->get('Configuration')->findConfiguration();
 
         $gogocartoConf = $gogoJsService->getConfig();
 
@@ -217,15 +217,15 @@ class APIController extends GoGoController
 
     public function apiUiAction(SessionInterface $session, DocumentManager $dm)
     {
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
-        $options = $dm->getRepository('App\Document\Option')->findAll();
+        $config = $dm->get('Configuration')->findConfiguration();
+        $options = $dm->get('Option')->findAll();
 
         return $this->render('api/api-ui.html.twig', ['options' => $options, 'config' => $config]);
     }
 
     public function getManifestAction(Request $request, DocumentManager $dm)
     {
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->get('Configuration')->findConfiguration();
         $img = $config->getFavicon() ? $config->getFavicon() : $config->getLogo();
         $imageData = null;
 
@@ -279,10 +279,10 @@ class APIController extends GoGoController
 
     public function getProjectInfoAction(DocumentManager $dm)
     {
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->get('Configuration')->findConfiguration();
         $img = $config->getSocialShareImage() ? $config->getSocialShareImage() : $config->getLogo();
         $imageUrl = $img ? $img->getImageUrl() : null;
-        $dataSize = $dm->getRepository('App\Document\Element')->findVisibles(true);
+        $dataSize = $dm->get('Element')->findVisibles(true);
 
         $responseArray = [
           'name' => $config->getAppName(),
@@ -299,11 +299,11 @@ class APIController extends GoGoController
 
     public function getConfigurationAction(DocumentManager $dm)
     {
-        $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+        $config = $dm->get('Configuration')->findConfiguration();
         $defaultTileLayer = $config->getDefaultTileLayer()->getName();
         $config = json_decode(json_encode($config));
 
-        $tileLayers = $dm->getRepository('App\Document\TileLayer')->findAll();
+        $tileLayers = $dm->get('TileLayer')->findAll();
 
         $config->defaultTileLayer = $defaultTileLayer;
         $config->tileLayers = $tileLayers;
@@ -315,7 +315,7 @@ class APIController extends GoGoController
 
     public function hideLogAction($id, DocumentManager $dm)
     {
-        $log = $dm->getRepository('App\Document\GoGoLog')->find($id);
+        $log = $dm->get('GoGoLog')->find($id);
         $log->setHidden(true);
         $dm->flush();
         $response = new Response(json_encode(['success' => true]));

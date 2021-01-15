@@ -38,9 +38,9 @@ class ImportSourceCommand extends GoGoAbstractCommand
         try {
             $this->output = $output;
             $sourceNameOrId = $input->getArgument('sourceNameOrImportId');
-            $import = $dm->getRepository('App\Document\Import')->find($sourceNameOrId);
+            $import = $dm->get('Import')->find($sourceNameOrId);
             if (!$import) {
-                $import = $dm->getRepository('App\Document\Import')->findOneBySourceName($sourceNameOrId);
+                $import = $dm->get('Import')->findOneBySourceName($sourceNameOrId);
             }
             if (!$import) {
                 $message = "ERREUR pendant l'import : Aucune source avec pour nom ou id ".$input->getArgument('sourceNameOrImportId')." n'existe dans la base de donnée ".$input->getArgument('dbname');

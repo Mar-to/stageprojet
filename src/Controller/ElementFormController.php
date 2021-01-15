@@ -42,7 +42,7 @@ class ElementFormController extends GoGoController
                                ElementFormService $elementFormService, UserManagerInterface $userManager,
                                ElementActionService $elementActionService, LoginManagerInterface $loginManager)
     {
-        $element = $dm->getRepository('App\Document\Element')->find($id);
+        $element = $dm->get('Element')->find($id);
 
         if (!$element) {
             $this->addFlash('error', "L'élément demandé n'existe pas...");
@@ -106,7 +106,7 @@ class ElementFormController extends GoGoController
             $userEmail = $request->request->get('user')['email'];
             $emailAlreadyUsed = false;
             if ($userEmail) {
-                $othersUsers = $dm->getRepository('App\Document\User')->findByEmail($userEmail);
+                $othersUsers = $dm->get('User')->findByEmail($userEmail);
                 $emailAlreadyUsed = count($othersUsers) > 0;
             }
             $loginform->handleRequest($request);
@@ -190,7 +190,7 @@ class ElementFormController extends GoGoController
             else {
                 // check for duplicates in Add action
                 if (!$editMode && !$editingOwnPendingContrib) {
-                    $duplicates = $dm->getRepository('App\Document\Element')->findDuplicatesFor($element);
+                    $duplicates = $dm->get('Element')->findDuplicatesFor($element);
                     $needToCheckDuplicates = count($duplicates) > 0;
                 } else {
                     $needToCheckDuplicates = false;
@@ -291,7 +291,7 @@ class ElementFormController extends GoGoController
             $session->getFlashBag()->add('notice', $flashMessage);
         }
 
-        $mainCategories = $dm->getRepository('App\Document\Category')->findRootCategories();
+        $mainCategories = $dm->get('Category')->findRootCategories();
 
         return $this->render('element-form/element-form.html.twig',
                     [
@@ -329,7 +329,7 @@ class ElementFormController extends GoGoController
         // check that duplicateselement are in session and are not empty
         elseif ($session->has('duplicatesElements') && count($session->get('duplicatesElements')) > 0) {
             $duplicates = $session->get('duplicatesElements');
-            $config = $dm->getRepository('App\Document\Configuration')->findConfiguration();
+            $config = $dm->get('Configuration')->findConfiguration();
             return $this->render('element-form/check-for-duplicates.html.twig', [
                 'duplicateForm' => $checkDuplicatesForm->createView(),
                 'duplicatesElements' => $duplicates,

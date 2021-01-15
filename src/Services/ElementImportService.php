@@ -200,7 +200,7 @@ class ElementImportService
                     $this->dm->flush();
                     $this->dm->clear();
                     // After flush, we need to get again the import from the DB to avoid doctrine raising errors
-                    $import = $this->dm->getRepository('App\Document\Import')->find($import->getId());
+                    $import = $this->dm->get('Import')->find($import->getId());
                     $this->dm->persist($import);
                 }
             }
@@ -208,12 +208,12 @@ class ElementImportService
             $this->dm->flush();
             $this->dm->clear();
 
-            $import = $this->dm->getRepository('App\Document\Import')->find($import->getId());
+            $import = $this->dm->get('Import')->find($import->getId());
             $import->setLastRefresh(time());
             $this->dm->persist($import);
 
             // Link elements between each others
-            $config = $this->dm->getRepository('App\Document\Configuration')->findConfiguration();
+            $config = $this->dm->get('Configuration')->findConfiguration();
             $elementsLinkedFields = [];
             foreach($config->getElementFormFields() as $field) {
                 if ($field->type === 'elements' && in_array($field->name, $import->getMappedProperties()))
@@ -262,7 +262,7 @@ class ElementImportService
                             $this->dm->flush();
                             $this->dm->clear();
                             // After flush, we need to get again the import from the DB to avoid doctrine raising errors
-                            $import = $this->dm->getRepository('App\Document\Import')->find($import->getId());
+                            $import = $this->dm->get('Import')->find($import->getId());
                             $this->dm->persist($import);
                         }
                     }
@@ -271,7 +271,7 @@ class ElementImportService
                 $this->dm->clear();
 
                 // After flush, we need to get again the import from the DB to avoid doctrine raising errors
-                $import = $this->dm->getRepository('App\Document\Import')->find($import->getId());
+                $import = $this->dm->get('Import')->find($import->getId());
                 $this->dm->persist($import);
             }
 

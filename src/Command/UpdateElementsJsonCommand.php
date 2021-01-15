@@ -33,7 +33,7 @@ class UpdateElementsJsonCommand extends GoGoAbstractCommand
     {
         try {
             if ('all' == $input->getArgument('ids')) {
-                $elements = $dm->getRepository('App\Document\Element')->findAllElements();
+                $elements = $dm->get('Element')->findAllElements();
             } else {
                 $qb = $dm->createQueryBuilder('App\Document\Element');
                 $qb->field('id')->in(explode(',', $input->getArgument('ids')));
