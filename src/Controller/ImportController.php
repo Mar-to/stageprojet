@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Services\RandomCreationService;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 class ImportController extends Controller

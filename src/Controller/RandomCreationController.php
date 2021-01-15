@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Services\RandomCreationService;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 class RandomCreationController extends Controller

@@ -2,7 +2,7 @@
 
 namespace App\Controller\Admin\BulkActions;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 
 class BulkActionsAbstractController extends Controller
 {
