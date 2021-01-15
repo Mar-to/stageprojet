@@ -55,7 +55,7 @@ class ElementRepository extends DocumentRepository
 
         $qb->limit(6);
 
-        return $this->queryToArray($qb);
+        return $qb->hydrate(false)->getArray();
     }
 
     public function findWhithinBoxes($bounds, $request, $getFullRepresentation, $isAdmin = false)
@@ -98,7 +98,7 @@ class ElementRepository extends DocumentRepository
             }
         }
 
-        return $qb->getQuery()->execute();
+        return $qb->execute();
     }
 
 
@@ -123,7 +123,7 @@ class ElementRepository extends DocumentRepository
         $qb->field('id')->notEqual($excludeId);
         $qb->select('name')->limit(20);
 
-        return $this->queryToArray($qb);
+        return $qb->getArray();
     }
 
     public function findPendings($getCount = false)
@@ -135,7 +135,7 @@ class ElementRepository extends DocumentRepository
             $qb->count();
         }
 
-        return $qb->getQuery()->execute();
+        return $qb->execute();
     }
 
     public function findModerationNeeded($getCount = false, $moderationState = null)
@@ -153,7 +153,7 @@ class ElementRepository extends DocumentRepository
             $qb->count();
         }
 
-        return $qb->getQuery()->execute();
+        return $qb->execute();
     }
 
     public function findValidated($getCount = false)
@@ -165,7 +165,7 @@ class ElementRepository extends DocumentRepository
             $qb->count();
         }
 
-        return $qb->getQuery()->execute();
+        return $qb->execute();
     }
 
     public function findVisibles($getCount = false, $excludeImported = false, $limit = null, $skip = null)
@@ -186,7 +186,7 @@ class ElementRepository extends DocumentRepository
             $qb->count();
         }
 
-        return $qb->getQuery()->execute();
+        return $qb->execute();
     }
 
     public function findAllPublics($getFullRepresentation, $isAdmin, $request = null)
@@ -218,7 +218,7 @@ class ElementRepository extends DocumentRepository
             $qb->count();
         }
 
-        return $qb->getQuery()->execute();
+        return $qb->execute();
     }
 
     public function findModerationElementToNotifyToUser($user)
@@ -237,12 +237,12 @@ class ElementRepository extends DocumentRepository
             $qb->field('address.postalCode')->equals(new \MongoRegex($regexp));
         }
             
-        return $qb->count()->getQuery()->execute();
+        return $qb->count()->execute();
     }
 
     private function queryToArray($qb)
     {
-        return $qb->hydrate(false)->getQuery()->execute()->toArray();
+        return $qb->hydrate(false)->execute()->toArray();
     }
 
     private function filterWithRequest($qb, $request)
@@ -314,7 +314,7 @@ class ElementRepository extends DocumentRepository
         $qb->field('status')->notEqual(ElementStatus::ModifiedPendingVersion);
         $qb->sort('updatedAt', 'DESC');
 
-        return $qb->getQuery()->execute();
+        return $qb->execute();
     }
 
     // Used by newsletter
@@ -329,16 +329,14 @@ class ElementRepository extends DocumentRepository
             $qb->limit($limit);
         }
 
-        return $qb->getQuery()->execute();
+        return $qb->execute();
     }
 
     public function findStampedWithId($stampId)
     {
-        $qb = $this->query('Element');
-        $qb->field('stamps.id')->in([(float) $stampId]);
-        $qb->select('id');
-
-        return $this->queryToArray($qb);
+        return $this->query('Element')
+            ->field('stamps.id')->in([(float) $stampId])
+            ->getIds();
     }
 
     public function findPotentialDuplicateOwner($element)
@@ -346,7 +344,7 @@ class ElementRepository extends DocumentRepository
         $qb = $this->query('Element');
         $qb->field('potentialDuplicates')->includesReferenceTo($element);
 
-        return $qb->getQuery()->execute();
+        return $qb->execute();
     }
 
     public function findOriginalElementOfModifiedPendingVersion($element)

@@ -140,7 +140,7 @@ class ProjectController extends Controller
                         ->field('published')->equals(true)
                         ->field('dataSize')->gte(10)
                         ->sort('publishedAt', 'desc')
-                        ->getQuery()->execute();
+                        ->execute();
         $pinnedProjects = $repository->findBy(['pinned' => true]);
 
         foreach ($projects as $project) {

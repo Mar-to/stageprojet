@@ -155,10 +155,8 @@ class APIController extends GoGoController
     }
 
     /* Use is elements field (linking elements betwwen each others) */
-    public function getElementNamessFromTextAction(Request $request, DocumentManager $dm)
+    public function getElementNamesFromTextAction(Request $request, DocumentManager $dm)
     {
-        $isAdmin = $this->isUserAdmin();
-
         $elements = $dm->get('Element')->findElementNamesWithText($request->get('text'), $request->get('excludeId'));
 
         $responseJson = json_encode($elements);
@@ -330,7 +328,7 @@ class APIController extends GoGoController
         $qb->updateMany()
        ->field('type')->notEqual('update')
        ->field('hidden')->equals(false)
-       ->field('hidden')->set(true)->getQuery()->execute();
+       ->field('hidden')->set(true)->execute();
 
         return $this->redirectToRoute('sonata_admin_dashboard');
     }
@@ -341,7 +339,7 @@ class APIController extends GoGoController
         $qb->updateMany()
        ->field('type')->equals('update')
        ->field('hidden')->equals(false)
-       ->field('hidden')->set(true)->getQuery()->execute();
+       ->field('hidden')->set(true)->execute();
 
         return $this->redirectToRoute('sonata_admin_dashboard');
     }

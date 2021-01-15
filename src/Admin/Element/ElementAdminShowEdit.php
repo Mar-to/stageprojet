@@ -26,13 +26,9 @@ class ElementAdminShowEdit extends ElementAdminList
     {
         $dm = GoGoHelper::getDmFromAdmin($this);
         $this->config = $dm->get('Configuration')->findConfiguration();  
-        $categories = $dm->query('Option')->select('name')
-                      ->hydrate(false)->getQuery()->execute();
-        $categoriesChoices = [];
-        foreach ($categories as $id => $object) {
-            $categoriesChoices[$object['name']] = $id;
-        }
-
+        $categories = $dm->query('Option')->select('name')->getArray();
+        $categoriesChoices = array_flip($categories);
+        
         $formMapper
           ->with('Informations générales', ['class' => 'col-md-6'])
             ->add('name', null, ['required' => true, 'label' => "Nom / Titre"])

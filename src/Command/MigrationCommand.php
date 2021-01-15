@@ -101,10 +101,8 @@ class MigrationCommand extends GoGoAbstractCommand
         try {
             // Collecting the Database to be updated
             $dbs = [$_ENV['DATABASE_NAME']]; // default DB
-            $dbNames = $dm->query('Project')->select('domainName')->hydrate(false)->getQuery()->execute()->toArray();
-            foreach ($dbNames as $object) {
-                $dbs[] = $object['domainName'];
-            }
+            $dbNames = $dm->query('Project')->select('domainName')->getArray();
+            foreach ($dbNames as $dbName) $dbs[] = $dbName;
 
             if (count(self::$migrations) > $migrationState->getMigrationIndex()) {
                 $migrationsToRun = array_slice(self::$migrations, $migrationState->getMigrationIndex());

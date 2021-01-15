@@ -17,6 +17,6 @@ class CategoryRepository extends DocumentRepository
         $qb = $this->query('Category');
         $qb->field('isRootCategory')->equals(true)->sort('index', 'asc');
 
-        return $qb->getQuery()->execute();
+        return $qb->execute();
     }
 }

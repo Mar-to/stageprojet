@@ -14,15 +14,10 @@ class BulkActionsAbstractController extends Controller
 
     protected function elementsBulkAction($functionToExecute, $dm, $request, $session)
     {
-        $elementsLeft = null;
-        $elementLeftCount = 0;
         $isStillElementsToProceed = false;
 
         $elementRepo = $dm->get('Element');
-
-        $optionsRepo = $dm->get('Option');
-        $this->optionList = $optionsRepo->createQueryBuilder()->hydrate(false)->getQuery()->execute()->toArray();
-
+        
         if (!$this->fromBeginning && $request->get('batchFromStep')) {
             $batchFromStep = $request->get('batchFromStep');
         } else {

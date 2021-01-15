@@ -79,7 +79,7 @@ class MailTestController extends Controller
             $qb = $this->dm->query('Element');
             $qb->field('status')->gte(ElementStatus::AdminRefused);
             $qb->field('moderationState')->notIn([ModerationState::GeolocError, ModerationState::NoOptionProvided]);
-            $options = $qb->limit(30)->getQuery()->execute();
+            $options = $qb->limit(30)->execute();
         } else {
             $element = $this->dm->get('Element')->findVisibles()->getSingleResult();
         }

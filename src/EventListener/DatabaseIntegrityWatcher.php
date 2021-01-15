@@ -44,7 +44,7 @@ class DatabaseIntegrityWatcher
         if ($document instanceof Group) {
             $group = $document;
             $qb = $dm->get('User')->createQueryBuilder();
-            $users = $qb->field('groups.id')->in([$group->getId()])->getQuery()->execute();
+            $users = $qb->field('groups.id')->in([$group->getId()])->execute();
             if ($users->count() > 0) {
                 foreach ($users as $user) {
                     $user->removeGroup($group);
@@ -52,13 +52,13 @@ class DatabaseIntegrityWatcher
             }
         } elseif ($document instanceof Import || $document instanceof ImportDynamic) {
             $import = $document;
-            $qb = $dm->get('Element')->createQueryBuilder();
-            $qb->remove()->field('source')->references($import)->getQuery()->execute();
+            $qb = $dm->query('Element');
+            $qb->remove()->field('source')->references($import)->execute();
         } elseif ($document instanceof Webhook) {
             $webhook = $document;
             $contributions = $dm->query('UserInteractionContribution')
                                 ->field('webhookPosts.webhook.$id')->equals($webhook->getId())
-                                ->getQuery()->execute();
+                                ->execute();
 
             foreach ($contributions as $contrib) {
                 $contrib->getElement()->setPreventJsonUpdate(true);
@@ -73,7 +73,7 @@ class DatabaseIntegrityWatcher
             $qb = $dm->query('Element');
             $qb->addOr($qb->expr()->field('nonDuplicates.$id')->equals($document->getId()));
             $qb->addOr($qb->expr()->field('potentialDuplicates.$id')->equals($document->getId()));
-            $dependantElements = $qb->getQuery()->execute();
+            $dependantElements = $qb->execute();
             foreach ($dependantElements as $element) {
                 $element->removeNonDuplicate($document);
                 $element->removePotentialDuplicate($document);
@@ -88,16 +88,12 @@ class DatabaseIntegrityWatcher
             if (count($elementsFields)) {
                 foreach ($elementsFields as $fieldName) {
                     $fieldPath = "data.$fieldName.{$document->getId()}";
-                    $dependantElementsIds = array_keys(
-                        $dm->get('Element')->createQueryBuilder()
-                             ->field($fieldPath)->exists(true)
-                             ->select('id')->hydrate(false)->getQuery()->execute()->toArray());
+                    $dependantElementsIds = $dm->query('Element')->field($fieldPath)->exists(true)->getIds();
 
                     if (count($dependantElementsIds)) {
-                        $dm->get('Element')->createQueryBuilder()
-                                 ->updateMany()
-                                 ->field($fieldPath)->unsetField()->exists(true)
-                                 ->getQuery()->execute();
+                        $dm->query('Element')->updateMany()
+                           ->field($fieldPath)->unsetField()->exists(true)
+                           ->execute();
                         $elementIdsString = '"'.implode(',', $dependantElementsIds).'"';
                         $this->asyncService->callCommand('app:elements:updateJson', ['ids' => $elementIdsString]);
                     }
@@ -123,8 +119,9 @@ class DatabaseIntegrityWatcher
             $uow->computeChangeSets();
             $changeset = $uow->getDocumentChangeSet($document);
             if (array_key_exists('name', $changeset)) {
-                $query = $dm->query('Element')->field('optionValues.optionId')->in([$document->getId()]);
-                $elementIds = array_keys($query->select('id')->hydrate(false)->getQuery()->execute()->toArray());
+                $elementIds = $dm->query('Element')
+                                 ->field('optionValues.optionId')->in([$document->getId()])
+                                 ->getIds();
                 if (count($elementIds)) {
                     $elementIdsString = '"'.implode(',', $elementIds).'"';
                     $this->asyncService->callCommand('app:elements:updateJson', ['ids' => $elementIdsString]);
@@ -156,22 +153,19 @@ class DatabaseIntegrityWatcher
                     $uow = $dm->getUnitOfWork();
                     $uow->computeChangeSets();
                     $changeset = $uow->getDocumentChangeSet($element);
-                    $elementToUpdates = [];
-                    $privateProps = $config->getApi()->getPublicApiPrivateProperties();
+                    $elementIdsToUpdate = [];
 
                     // If name have changed, update element which reference this element
                     if (array_key_exists('name', $changeset)) {
                         $newName = $changeset['name'][1];
                         foreach ($elementsFields as $fieldName) {
                             $fieldPath = "data.$fieldName.{$element->getId()}";
-                            $dm->get('Element')->createQueryBuilder()
-                                     ->updateMany()
+                            $dm->query('Element')->updateMany()
                                      ->field($fieldPath)->set($newName)
                                      ->field($fieldPath)->exists(true)
-                                     ->getQuery()->execute();
-                            $elementToUpdates = $elementToUpdates + $dm->get('Element')->createQueryBuilder()
-                                     ->field($fieldPath)->exists(true)
-                                     ->select('id')->hydrate(false)->getQuery()->execute()->toArray();
+                                     ->execute();
+                            $elementIdsToUpdate = array_merge($elementIdsToUpdate, $dm->query('Element')
+                                     ->field($fieldPath)->exists(true)->getIds());
 
                         }
                     }
@@ -189,29 +183,27 @@ class DatabaseIntegrityWatcher
 
                             // Updates elements throught reverse relation
                             if (count($addedElements) > 0) {
-                                $dm->get('Element')->createQueryBuilder()
+                                $dm->query('Element')
                                      ->updateMany()
                                      ->field('id')->in($addedElements)
                                      ->field($fieldPath)->set($element->getName())
-                                     ->getQuery()->execute();
-                                $elementToUpdates = $elementToUpdates + $dm->get('Element')->createQueryBuilder()
-                                     ->field('id')->in($addedElements)
-                                     ->select('id')->hydrate(false)->getQuery()->execute()->toArray();
+                                     ->execute();
+                                $elementIdsToUpdate = array_merge($elementIdsToUpdate, $dm->query('Element')
+                                     ->field('id')->in($addedElements)->getIds());
                             }
                             if (count($removedElements) > 0) {
-                                $dm->get('Element')->createQueryBuilder()
+                                $dm->query('Element')
                                      ->updateMany()
                                      ->field('id')->in($removedElements)
                                      ->field($fieldPath)->unsetField()->exists(true)
-                                     ->getQuery()->execute();
-                                $elementToUpdates = $elementToUpdates + $dm->get('Element')->createQueryBuilder()
-                                     ->field('id')->in($removedElements)
-                                     ->select('id')->hydrate(false)->getQuery()->execute()->toArray();
+                                     ->execute();
+                                $elementIdsToUpdate = array_merge($elementIdsToUpdate, $dm->query('Element')
+                                     ->field('id')->in($removedElements)->getIds());
                             }
                         }
                     }
-                    if (count($elementToUpdates)) {
-                        $ids = array_unique(array_keys($elementToUpdates));
+                    if (count($elementIdsToUpdate)) {
+                        $ids = array_unique($elementIdsToUpdate);
                         $elementIdsString = '"'.implode(',', $ids).'"';
                         $this->asyncService->callCommand('app:elements:updateJson', ['ids' => $elementIdsString]);
                     }

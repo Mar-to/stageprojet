@@ -34,7 +34,7 @@ class CheckExternalSourceToUpdateCommand extends GoGoAbstractCommand
 
         $dynamicImports = $qb->field('refreshFrequencyInDays')->gt(0)
                 ->field('nextRefresh')->lte(new \DateTime())
-                ->getQuery()->execute();
+                ->execute();
 
         $this->log('CheckExternalSourceToUpdate : Nombre de sources à mettre à jour : '.$dynamicImports->count());
 

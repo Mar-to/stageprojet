@@ -40,11 +40,7 @@ class GoGoCartoJsService
         if ($config->getStampFeature()->getActive()) {
             $allowedStamps = is_object($user) ? $user->getAllowedStamps()->toArray() : [];
             foreach ($allowedStamps as $stamp) {
-                $result = $elementsRep->findStampedWithId($stamp->getId());
-                $elementIds = [];
-                foreach ($result as $obj) {
-                    $elementIds[] = $obj['_id'];
-                }
+                $elementIds = $elementsRep->findStampedWithId($stamp->getId());
                 $stamp->setElementIds($elementIds);
             }
         }

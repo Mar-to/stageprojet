@@ -11,7 +11,7 @@ gogo_api_elements_from_text:
 
 gogo_api_element_names_from_text:
     path:     /api/element_names/search
-    defaults: { _controller: App\Controller\APIController::getElementNamessFromTextAction }
+    defaults: { _controller: App\Controller\APIController::getElementNamesFromTextAction }
     requirements:
         methods: GET
 

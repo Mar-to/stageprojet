@@ -62,10 +62,9 @@ class ElementAdminBulkController extends Controller
         $this->admin->checkAccess('edit');
 
         $request = $this->get('request_stack')->getCurrentRequest()->request;
-        $modelManager = $this->admin->getModelManager();
 
         $qb = clone $selectedModelQuery;
-        $elementIds = array_keys($qb->select('id')->hydrate(false)->getQuery()->execute()->toArray());
+        $elementIds = $qb->getIds();
         $elementIdsString = '"'.implode(',', $elementIds).'"';
         $queryArray = $selectedModelQuery->getQuery()->getQuery()['query'];
         // if query is "get all elements", no need to specify all ids
@@ -115,7 +114,7 @@ class ElementAdminBulkController extends Controller
                    ->field('type')->equals($contrib->getType())
                    ->field('elements.id')->in($elementIds)
                    ->field('webhookPosts')->unsetField()->exists(true)
-                   ->getQuery()->execute();
+                   ->execute();
 
                 $contrib->setElementIds($elementIds);
                 $this->dm->persist($contrib);
@@ -137,7 +136,7 @@ class ElementAdminBulkController extends Controller
                     $qb = $qb->field('moderationState')->set(ModerationState::NotNeeded);
                 }
 
-                $qb->getQuery()->execute();
+                $qb->execute();
 
                 // BATCH RESOLVE REPORTS
                 if ('resolveReports' == $actionName) {
@@ -149,7 +148,7 @@ class ElementAdminBulkController extends Controller
                        ->field('resolvedMessage')->set($comment)
                        ->field('resolvedBy')->set($this->getUser()->getEmail())
                        ->field('updatedAt')->set(new \DateTime())
-                       ->getQuery()->execute();
+                       ->execute();
                 }
 
                 $this->dm->flush();
@@ -178,6 +177,7 @@ class ElementAdminBulkController extends Controller
                 $this->dm->clear();
             }
         } catch (\Exception $e) {
+            dump($e);
             $this->addFlash('sonata_flash_error', 'Une erreur est survenue :'.$e->getMessage());
 
             return new RedirectResponse($this->admin->generateUrl('list', ['filter' => $this->admin->getFilterParameters()]));
@@ -194,7 +194,7 @@ class ElementAdminBulkController extends Controller
     {
         // Add contribution for webhook - Get elements visible, no need to add a contirbution if element where already soft deleted for example
         $selectedModels = clone $selectedModelQuery;
-        $elementIds = array_keys($selectedModels->select('id')->field('status')->gte(-1)->hydrate(false)->getQuery()->execute()->toArray());
+        $elementIds = $selectedModels->field('status')->gte(-1)->getIds();
         if (count($elementIds)) {
             $contribution = $this->interactionService->createContribution(null, null, InteractType::Deleted, ElementStatus::Deleted);
             $contribution->setElementIds($elementIds);
@@ -204,19 +204,19 @@ class ElementAdminBulkController extends Controller
         // Add element id to ignore to sources
         $selectedModels = clone $selectedModelQuery;
         $elements = $selectedModels
-            ->select('id', 'source.$id')
+            ->select('oldId', 'source.$id')
             ->field('source.$id')->exists(true)
-            ->hydrate(false)->getQuery()->execute()->toArray();
+            ->getArray();
         $elementsIdsGroupedBySource = [];
         foreach($elements as $element) {
-            $elementsIdsGroupedBySource[$element['source']['$id']][] = $element['_id'];
+            $elementsIdsGroupedBySource[$element['source']['$id']][] = $element['oldId'];
         }
         foreach ($elementsIdsGroupedBySource as $sourceId => $elementIds) {
-            $qb = $this->dm->createQueryBuilder(Import::class);
+            $qb = $this->dm->query('Import');
             $qb->updateOne()
                ->field('id')->equals($sourceId)
                ->field('idsToIgnore')->addToSet($qb->expr()->each($elementIds))
-               ->getQuery()->execute();
+               ->execute();
         }
 
         // Perform remove
@@ -235,9 +235,9 @@ class ElementAdminBulkController extends Controller
                 $this->trans('flash_batch_delete_error', [], 'SonataAdminBundle')
             );
         }
-        // $selectedModelQuery->findAndRemove()->getQuery()->execute();
+        // $selectedModelQuery->findAndRemove()->execute();
 
-        $this->dm->createQueryBuilder(UserInteractionContribution::class)->field('element.id')->in($elementIds)->remove()->getQuery()->execute();
+        $this->dm->createQueryBuilder(UserInteractionContribution::class)->field('element.id')->in($elementIds)->remove()->execute();
 
         $this->dm->flush();
 
@@ -313,7 +313,6 @@ class ElementAdminBulkController extends Controller
         $this->admin->checkAccess('edit');
 
         $request = $this->get('request_stack')->getCurrentRequest()->request;
-        $modelManager = $this->admin->getModelManager();
 
         $selectedModels = $selectedModelQuery->execute();
         $nbreModelsToProceed = $selectedModels->count();
@@ -330,7 +329,7 @@ class ElementAdminBulkController extends Controller
                 $optionsValues = $selectedModel->getOptionValues()->toArray();
                 if ($optionstoRemoveIds && count($optionstoRemoveIds) > 0) {
                     $optionsToRemove = $this->dm->query('Option')->field('id')->in($optionstoRemoveIds)
-                                                       ->getQuery()->execute()->toArray();
+                                                       ->getArray();
                     $optionstoRemoveIds = array_map(function ($opt) { return $opt->getIdAndChildrenOptionIds(); }, $optionsToRemove);
                     $optionstoRemoveIds = array_unique($this->flatten($optionstoRemoveIds));
 
@@ -342,7 +341,7 @@ class ElementAdminBulkController extends Controller
                 }
 
                 if ($optionstoAddIds && count($optionstoAddIds) > 0) {
-                    $optionsToAdd = $this->dm->query('Option')->field('id')->in($optionstoAddIds)->getQuery()->execute()->toArray();
+                    $optionsToAdd = $this->dm->query('Option')->field('id')->in($optionstoAddIds)->getArray();
                     $optionstoAddIds = array_map(function ($opt) { return $opt->getIdAndParentOptionIds(); }, $optionsToAdd);
                     $optionstoAddIds = array_unique($this->flatten($optionstoAddIds));
 

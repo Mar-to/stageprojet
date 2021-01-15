@@ -2,9 +2,7 @@
 
 namespace App\EventListener;
 
-use App\Document\Element;
 use App\Document\ElementStatus;
-use App\Document\ModerationState;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 class ElementJsonGenerator
@@ -30,8 +28,7 @@ class ElementJsonGenerator
     {
         // load all options so we don't need to do a query on each element being modified
         if (!$this->options) {
-            $this->options = $this->dm->get('Option')->createQueryBuilder()
-                                             ->select('name')->hydrate(false)->getQuery()->execute()->toArray();
+            $this->options = $this->dm->query('Option')->select('name')->getArray();
         }
 
         return $this->options;
@@ -102,7 +99,7 @@ class ElementJsonGenerator
             for ($i = 0; $i < $optValuesLength; ++$i) {
                 $optionValue = $sortedOptionsValues[$i];
                 if (isset($options[$optionValue->getOptionId()])) {
-                    $optionName = $options[$optionValue->getOptionId()]['name'];
+                    $optionName = $options[$optionValue->getOptionId()];
                     $elementOptions[] = $optionName;
                     $optionsFullJson[] = $sortedOptionsValues[$i]->toJson(json_encode($optionName));
                 } else {

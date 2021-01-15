@@ -42,7 +42,7 @@ final class RemoveAbandonnedProjectsCommand extends GoGoAbstractCommand
         $projectsToWarn = $dm->query('Project')
                         ->field('lastLogin')->lte($date->setTimestamp(strtotime("-12 month")))
                         ->field('warningToDeleteProjectSentAt')->exists(false)
-                        ->getQuery()->execute();
+                        ->execute();
 
         if ($projectsToWarn->count() > 0)
             $this->log('Nombre de projets avertis de la suppression : '. $projectsToWarn->count());
@@ -67,7 +67,7 @@ final class RemoveAbandonnedProjectsCommand extends GoGoAbstractCommand
         $projectsToDelete = $dm->query('Project')
                         ->field('lastLogin')->lte($date->setTimestamp(strtotime("-12 month")))
                         ->field('warningToDeleteProjectSentAt')->lte($date->setTimestamp(strtotime("-4 month")))
-                        ->getQuery()->execute();
+                        ->execute();
 
         $message = "Les projets suivants sont probablement à supprimer : ";
         foreach ($projectsToDelete as $project) {

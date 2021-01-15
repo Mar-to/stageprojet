@@ -43,7 +43,7 @@ class DuplicatesActionsController extends BulkActionsAbstractController
             // properly the elements
             $duplicates = $dm->query('Element')
                              ->field('id')->in($duplicateIds)
-                             ->getQuery()->execute()->toArray();
+                             ->getArray();
             $perfectMatches = array_filter($duplicates, function ($duplicate) use ($element) { return slugify($duplicate->getName()) == slugify($element->getName()); });
             $otherDuplicates = array_diff($duplicates, $perfectMatches);
             $duplicates[] = $element;

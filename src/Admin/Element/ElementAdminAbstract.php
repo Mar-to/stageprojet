@@ -65,14 +65,8 @@ class ElementAdminAbstract extends AbstractAdmin
     public function getOptionsChoices()
     {
       if ($this->optionsChoices == null) {
-        $this->optionsChoices = [];
         $dm = GoGoHelper::getDmFromAdmin($this);
-        $repo = $dm->get('Option');
-        $this->optionList = $repo->createQueryBuilder()->select('name')->hydrate(false)->getQuery()->execute()->toArray();
-
-        foreach ($this->optionList as $key => $value) {
-            $this->optionsChoices[$key] = array_key_exists('name', $value) ? $value['name'] : 'Nom inconnu';
-        }
+        $this->optionsChoices = $dm->query('Option')->select('name')->getArray();
       }
       return $this->optionsChoices;
     }

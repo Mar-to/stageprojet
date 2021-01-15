@@ -170,7 +170,8 @@
         });
 
         let dataProperties = {{ form.vars.attr["data-props"]|raw }};
-        
+        if (typeof dataProperties == 'object') 
+          dataProperties = Object.values(dataProperties)
         let propNameOptions = []
         for(let prop of dataProperties) {
           propNameOptions.push({

@@ -43,7 +43,7 @@ class WebhookService
             ->field('webhookPosts.numAttempts')->lte(6) // ignore posts with 6 failures
             ->field('webhookPosts.nextAttemptAt')->lte(new \DateTime())
             ->limit($limit)
-            ->getQuery()->execute();
+            ->execute();
         
         if (!$contributions || 0 == $contributions->count()) {
             return 0;

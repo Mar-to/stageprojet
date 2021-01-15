@@ -152,12 +152,10 @@ class ElementImportService
                 $import->updateNextRefreshDate();
 
                 // before updating the source, we collect all elements ids
-                $previouslyImportedElementIds = array_keys($qb->field('source')->references($import)
-                   ->select('id')->hydrate(false)
-                   ->getQuery()->execute()->toArray());
+                $previouslyImportedElementIds = $qb->field('source')->references($import)->getIds();
             } else {
                 // before re importing a static source, we delete all previous items
-                $qb->remove()->field('source')->references($import)->getQuery()->execute();
+                $qb->remove()->field('source')->references($import)->execute();
             }
 
             $this->importOneService->initialize($import);
@@ -225,7 +223,7 @@ class ElementImportService
                         $qb->field('source')->references($import)
                            ->updateMany()
                            ->field("data.$field->reversedBy")->unsetField()
-                           ->getQuery()->execute();
+                           ->execute();
                     }
                 }
             }
@@ -234,7 +232,7 @@ class ElementImportService
                 // Go through each individual imported elements, and link elements from each other
                 $importedElements = $this->dm->query('Element')
                     ->field('source')->references($import)
-                    ->getQuery()->execute();
+                    ->execute();
                 $i = 0;
                 $size = count($importedElements);
                 foreach ($elementsLinkedFields as $linkField) {
@@ -250,10 +248,7 @@ class ElementImportService
                                 $qb->field('source')->references($import);
                                 $qb->addOr($qb->expr()->field('name')->in($values));
                                 $qb->addOr($qb->expr()->field('oldId')->in($values));
-                                $result = $qb->select('name')->hydrate(false)->getQuery()->execute()->toArray();
-                                $result = array_map(function($el) {
-                                    return $el['name'];
-                                }, $result);
+                                $result = $qb->select('name')->getArray();
                                 if (count($result) > 0) $element->setCustomProperty($linkField, $result);
                             }
                         }
@@ -283,26 +278,26 @@ class ElementImportService
                 $countElemenDeleted = $qb->field('source')->references($import)
                                          ->field('status')->notEqual(ElementStatus::ModifiedPendingVersion)
                                          ->field('id')->in($elementIdsToDelete)
-                                         ->count()->getQuery()->execute();
+                                         ->count()->execute();
                 // delete elements
                 $qb = $this->dm->query('Element');
                 $qb->field('source')->references($import)
                    ->field('id')->in($elementIdsToDelete)
-                   ->remove()->getQuery()->execute();
+                   ->remove()->execute();
                 // delete linked object cause doctrine cascading do not work when deleting with queryBuilder
                 $qb = $this->dm->createQueryBuilder(UserInteraction::class);
-                $qb->field('element.id')->in($elementIdsToDelete)->remove()->getQuery()->execute();
+                $qb->field('element.id')->in($elementIdsToDelete)->remove()->execute();
             }
 
             $qb = $this->dm->query('Element');
             $totalCount = $qb->field('status')->notEqual(ElementStatus::ModifiedPendingVersion)
                              ->field('source')->references($import)
-                             ->count()->getQuery()->execute();
+                             ->count()->execute();
 
             $qb = $this->dm->query('Element');
-            $elementsMissingGeoCount = $qb->field('source')->references($import)->field('moderationState')->equals(ModerationState::GeolocError)->count()->getQuery()->execute();
+            $elementsMissingGeoCount = $qb->field('source')->references($import)->field('moderationState')->equals(ModerationState::GeolocError)->count()->execute();
             $qb = $this->dm->query('Element');
-            $elementsMissingTaxoCount = $qb->field('source')->references($import)->field('moderationState')->equals(ModerationState::NoOptionProvided)->count()->getQuery()->execute();
+            $elementsMissingTaxoCount = $qb->field('source')->references($import)->field('moderationState')->equals(ModerationState::NoOptionProvided)->count()->execute();
 
             $logData = [
                 'elementsCount' => $totalCount,

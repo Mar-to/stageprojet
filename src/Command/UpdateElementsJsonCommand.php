@@ -37,7 +37,7 @@ class UpdateElementsJsonCommand extends GoGoAbstractCommand
             } else {
                 $qb = $dm->query('Element');
                 $qb->field('id')->in(explode(',', $input->getArgument('ids')));
-                $elements = $qb->getQuery()->execute();
+                $elements = $qb->execute();
             }
 
             $count = $elements->count();
