@@ -2,10 +2,9 @@
 
 namespace App\Command;
 
-use App\Document\User;
-use App\Services\NewsletterService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use App\Services\DocumentManagerFactory;
+use App\Services\MailService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -13,14 +12,12 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 final class NewsletterCommand extends GoGoAbstractCommand
 {
-    private $newsletterService;
-
     public function __construct(DocumentManagerFactory $dm, LoggerInterface $commandsLogger,
-                               TokenStorageInterface $security,
-                               NewsletterService $newsletterService)
+                               TokenStorageInterface $security, MailService $mailService)
     {
-        $this->newsletterService = $newsletterService;
         parent::__construct($dm, $commandsLogger, $security);
+        $this->mailService = $mailService;
+        $this->remainingEmailsCount = $_ENV['MAX_EMAIL_PER_HOUR'];
     }
 
     protected function gogoConfigure(): void
@@ -31,20 +28,39 @@ final class NewsletterCommand extends GoGoAbstractCommand
        ;
     }
 
+    protected function filterProjects($qb)
+    {
+        return $qb->field('haveNewsletter')->equals(true);
+    }
+
+    private $remainingEmailsCount = 0;
+
     protected function gogoExecute(DocumentManager $dm, InputInterface $input, OutputInterface $output): void
     {
-        $usersRepo = $dm->getRepository(User::class);
+        if ($this->remainingEmailsCount <= 0) return; 
 
-        $users = $usersRepo->findNeedsToReceiveNewsletter();
-        $nbrUsers = $users->count();
+        $users = $dm->get('User')->findNeedsToReceiveNewsletter($this->remainingEmailsCount);
+        $usersCount = $users->count();
+        $this->remainingEmailsCount -= $usersCount;
 
-        foreach ($users as $key => $user) {
+        if ($usersCount)
+            $this->log("Send Newsletter for $usersCount users");
+
+        foreach ($users as $user) {
             $dm->persist($user);
-            $nreElements = $this->newsletterService->sendTo($user);
-            // $this->log('  -> User : ' . $user->getDisplayName() . ', location : ' . $user->getLocation() . ' / ' . $user->getNewsletterRange() . ' km -> Nre Elements : ' .  $nreElements);
-        }
+            $elements = $dm->get('Element')->findWithinCenterFromDate(
+                $user->getGeo()->getLatitude(),
+                $user->getGeo()->getLongitude(),
+                $user->getNewsletterRange(),
+                $user->getLastNewsletterSentAt());
 
+            $elementCount = $elements->count();
+            if ($elementCount > 0) {
+                $this->mailService->sendAutomatedMail('newsletter', $user, null, $elements);
+            }
+            $user->setLastNewsletterSentAt(new \DateTime());
+            $user->updateNextNewsletterDate();
+        }
         $dm->flush();
-        $this->log('Nombre newsletters envoyées : '.$nbrUsers);
     }
 }

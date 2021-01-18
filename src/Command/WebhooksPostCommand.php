@@ -30,7 +30,12 @@ class WebhooksPostCommand extends GoGoAbstractCommand
     protected function gogoExecute(DocumentManager $dm, InputInterface $input, OutputInterface $output): void
     {
         $numPosts = $this->webhookService->processPosts(10);
+        if ($numPosts > 0)
+            $this->log('Nombre webhooks traités : '.$numPosts);
+    }
 
-        $this->log('Nombre webhooks traités : '.$numPosts);
+    protected function filterProjects($qb)
+    {
+        return $qb->field('haveWebhooks')->equals(true);
     }
 }

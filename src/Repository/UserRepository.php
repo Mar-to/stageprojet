@@ -13,13 +13,13 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
  */
 class UserRepository extends DocumentRepository
 {
-    public function findNeedsToReceiveNewsletter()
+    public function findNeedsToReceiveNewsletter($limit)
     {
         $qb = $this->query('User');
 
         return $qb->field('newsletterFrequency')->gt(NewsletterFrequencyOptions::Never)
                 ->field('nextNewsletterDate')->lte(new \DateTime())
-                ->limit(70)
+                ->limit($limit)
                 ->execute();
     }
 }

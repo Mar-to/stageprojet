@@ -1,3 +1,7 @@
+v3.2.1
+======
+* MAJOR: The way of managing SAAS instance cron jobs have changed. In your main database run `db.Project.updateMany({}, {$currentDate: {nextUpdateAt: true}})` and check `docs/installation.md` for new cron jobs configuration
+
 v3.1.4
 ======
 * FEATURE: Ability to configure a custom domain in SASS mode (if the server uses nginx)

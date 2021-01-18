@@ -53,7 +53,6 @@ class Project
     /** @MongoDB\Field(type="date") */
     private $warningToDeleteProjectSentAt;
 
-
     /** @MongoDB\Field(type="string") */
     private $tags;
 
@@ -83,8 +82,21 @@ class Project
     */
     private $publishedAt;
 
-    /** @MongoDB\ReferenceMany(targetDocument="App\Document\ScheduledCommand", inversedBy="project", cascade={"all"}) */
-    private $commands;
+    /**
+     * Each project is updated on a regular basis, i.e. every day for example
+     * @MongoDB\Field(type="date")
+     */
+    private $nextUpdateAt;
+
+    /**
+    * @MongoDB\Field(type="bool")
+    */
+    private $haveWebhooks;
+
+    /**
+    * @MongoDB\Field(type="bool")
+    */
+    private $haveNewsletter;
 
     public function getDbName()
     {
@@ -277,41 +289,6 @@ class Project
         return $this->createdAt;
     }
 
-    public function __construct()
-    {
-        $this->commands = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * Add command.
-     *
-     * @param App\Document\ScheduledCommand $command
-     */
-    public function addCommand(\App\Document\ScheduledCommand $command)
-    {
-        $this->commands[] = $command;
-    }
-
-    /**
-     * Remove command.
-     *
-     * @param App\Document\ScheduledCommand $command
-     */
-    public function removeCommand(\App\Document\ScheduledCommand $command)
-    {
-        $this->commands->removeElement($command);
-    }
-
-    /**
-     * Get commands.
-     *
-     * @return \Doctrine\Common\Collections\Collection $commands
-     */
-    public function getCommands()
-    {
-        return $this->commands;
-    }
-
     public function getAdminEmails() {
         return $this->adminEmails;
     }
@@ -369,6 +346,66 @@ class Project
     }
     public function setWarningToDeleteProjectSentAt($date) {
         $this->warningToDeleteProjectSentAt = $date;
+        return $this;
+    }
+
+    /**
+     * Get each project is updated on a regular basis, i.e. every day for example
+     */ 
+    public function getNextUpdateAt()
+    {
+        return $this->nextUpdateAt;
+    }
+
+    /**
+     * Set each project is updated on a regular basis, i.e. every day for example
+     *
+     * @return  self
+     */ 
+    public function setNextUpdateAt($nextUpdateAt)
+    {
+        $this->nextUpdateAt = $nextUpdateAt;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of haveWebhooks
+     */ 
+    public function getHaveWebhooks()
+    {
+        return $this->haveWebhooks;
+    }
+
+    /**
+     * Set the value of haveWebhooks
+     *
+     * @return  self
+     */ 
+    public function setHaveWebhooks($haveWebhooks)
+    {
+        $this->haveWebhooks = $haveWebhooks;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of haveNewsletter
+     */ 
+    public function getHaveNewsletter()
+    {
+        return $this->haveNewsletter;
+    }
+
+    /**
+     * Set the value of haveNewsletter
+     *
+     * @return  self
+     */ 
+    public function setHaveNewsletter($haveNewsletter)
+    {
+        $this->haveNewsletter = $haveNewsletter;
+
         return $this;
     }
 }

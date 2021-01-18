@@ -37,6 +37,12 @@ class ImportDynamic extends Import
      */
     private $usersToNotify;
 
+    /**
+     * TODO : allow synchronizing OSM import if an OSM account is configured
+     * @MongoDB\Field(type="bool")
+     */
+    private $isSynchronized = false;
+
     public function isDynamicImport()
     {
         return true;
@@ -135,6 +141,26 @@ class ImportDynamic extends Import
     public function setUsersToNotify($usersToNotify)
     {
         $this->usersToNotify = $usersToNotify;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of isSynchronized
+     */ 
+    public function getIsSynchronized()
+    {
+        return $this->isSynchronized;
+    }
+
+    /**
+     * Set the value of isSynchronized
+     *
+     * @return  self
+     */ 
+    public function setIsSynchronized($isSynchronized)
+    {
+        $this->isSynchronized = $isSynchronized;
 
         return $this;
     }

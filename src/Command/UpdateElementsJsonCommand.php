@@ -42,7 +42,7 @@ class UpdateElementsJsonCommand extends GoGoAbstractCommand
 
             $count = $elements->count();
 
-            $this->log('DB Generating json representation for '.$count.' elements...');
+            $this->log('Generating json representation for '.$count.' elements...');
 
             $i = 0;
             foreach ($elements as $key => $element) {

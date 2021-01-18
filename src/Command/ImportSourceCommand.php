@@ -40,16 +40,14 @@ class ImportSourceCommand extends GoGoAbstractCommand
             $sourceNameOrId = $input->getArgument('sourceNameOrImportId');
             $import = $dm->get('Import')->find($sourceNameOrId);
             if (!$import) {
-                $import = $dm->get('Import')->findOneBySourceName($sourceNameOrId);
+                $import = $dm->get('Import')->findOneBy(['sourceName' => $sourceNameOrId]);
             }
             if (!$import) {
-                $message = "ERREUR pendant l'import : Aucune source avec pour nom ou id ".$input->getArgument('sourceNameOrImportId')." n'existe dans la base de donnée ".$input->getArgument('dbname');
+                $message = "ERREUR pendant l'import : Aucune source avec pour nom ou id ".$input->getArgument('sourceNameOrImportId');
                 $this->error($message);
-
                 return;
             }
-
-            $this->log('Updating source '.$import->getSourceName().' for project '.$input->getArgument('dbname').' begins...');
+            $this->log("Updating source $import->getSourceName() begins...");
             $result = $this->importService->startImport($import, $manuallyStarted = false);
             $this->log($result);
         } catch (\Exception $e) {
@@ -57,7 +55,7 @@ class ImportSourceCommand extends GoGoAbstractCommand
             $import->setCurrState(ImportState::Failed);
             $message = $e->getMessage().'</br>'.$e->getFile().' LINE '.$e->getLine();
             $import->setCurrMessage($message);
-            $this->error('Source: '.$import->getSourceName().' - '.$message);
+            $this->error("Source: $import->getSourceName() - $message");
             $this->notifService->notifyImportError($import);
         }
     }

@@ -3,12 +3,10 @@
 namespace App\Controller;
 
 use App\Application\Sonata\UserBundle\Form\Type\RegistrationFormType;
-use App\Command\GoGoMainCommand;
 use App\DataFixtures\MongoDB\LoadConfiguration;
 use App\Document\Category;
 use App\Document\Option;
 use App\Document\Project;
-use App\Document\ScheduledCommand;
 use App\Document\Taxonomy;
 use App\Services\DocumentManagerFactory;
 use App\Services\UrlService;
@@ -42,19 +40,8 @@ class ProjectController extends Controller
 
             // save project
             $dm->persist($project);
-            $dm->flush();
-            // initialize commands
-            $commands = GoGoMainCommand::SCHEDULED_COMMANDS;
-
-            foreach ($commands as $commandName => $period) {
-                $scheduledCommand = new ScheduledCommand();
-                $scheduledCommand->setProject($project);
-                $scheduledCommand->setNextExecutionAt(time());
-                $scheduledCommand->setCommandName($commandName);
-                $project->addCommand($scheduledCommand);
-                $dm->persist($scheduledCommand);
-            }
-            $dm->flush();
+            $project->setNextUpdateAt(time());
+            $dm->flush();      
 
             // initialize new database
             $projectDm = $dmFactory->createForDB($project->getDomainName());

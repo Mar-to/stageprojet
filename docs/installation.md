@@ -31,9 +31,8 @@ Main requirements are :
 1. PHP 7.4
 2. [Composer](https://getcomposer.org/download/)
 3. [Nodejs](https://nodejs.org/en/download/)
-4. [Git](https://git-scm.com/)
+4. [MongoDB](http://php.net/manual/fr/mongodb.installation.php)
 5. Web Server (Apache, Nginx)
-6. [MongoDB](http://php.net/manual/fr/mongodb.installation.php)
 
 Please refer to the dockerfile to know all dependencies : [DockerFile](../docker/server/Dockerfile)
 
@@ -86,16 +85,24 @@ Here are the following cron tab you need to configure
 ```shell
 # for a Normal instance
 @daily php GOGOCARTO_DIR/bin/console --env=prod app:elements:checkvote
-@hourly php GOGOCARTO_DIR/bin/console --env=prod app:users:sendNewsletter
-@hourly php GOGOCARTO_DIR/bin/console --env=prod app:webhooks:post
 @daily php GOGOCARTO_DIR/bin/console --env=prod app:elements:checkExternalSourceToUpdate
+@daily php GOGOCARTO_DIR/bin/console --env=prod app:notify-moderation
+
+@hourly php GOGOCARTO_DIR/bin/console --env=prod app:users:sendNewsletter
+*/5 * * * * php GOGOCARTO_DIR/bin/console --env=prod app:webhooks:post
 ```
 
 ```shell
 # for a SAAS instance
-* * * * * php GOGOCARTO_DIR/bin/console --env=prod app:main-command
-@daily php GOGOCARTO_DIR/bin/console --env=prod app:saas:update-projects-info
+* * * * * php GOGOCARTO_DIR/bin/console --env=prod app:project:update
+# If you have more than 1400 project, you should run it twice a minute :
+* * * * * sleep 30 && php GOGOCARTO_DIR/bin/console --env=prod app:project:update
+# Task ran for every projects that need it at once
+@hourly php GOGOCARTO_DIR/bin/console --env=prod app:users:sendNewsletter
+*/5 * * * * php GOGOCARTO_DIR/bin/console --env=prod app:webhooks:post
+
 @daily php GOGOCARTO_DIR/bin/console --env=prod app:projects:check-for-deleting
+# Next one is for custom domain, it works only with NGINX
 * * * * * cd GOGOCARTO_DIR && sh bin/execute_custom_domain.sh
 ```
 
@@ -108,13 +115,3 @@ make gogo-update
 ```
 
 You can have a look to [the CHANGELOG](../CHANGELOG.md) to know what are the new features and breaking changes.
-
-
-Issues
---------------
-
-If memory limits while using Composer:
-
-```shell
-COMPOSER_MEMORY_LIMIT=-1 composer ...
-```

@@ -40,20 +40,31 @@ class GoGoAbstractCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->dm = $this->dmFactory->getCurrentManager();
         try {
             $this->output = $output;
 
+             // create dummy user, as some code called from command will maybe need the current user informations
+             $token = new AnonymousToken('admin', 'GoGo Gadget au Bot', ['ROLE_ADMIN']);
+             $this->security->setToken($token);
+
             if ($input->getArgument('dbname')) {
                 $this->dm = $this->dmFactory->switchCurrManagerToUseDb($input->getArgument('dbname'));
+                $this->gogoExecute($this->dm, $input, $output);
+            } else if ($_ENV['USE_AS_SAAS']) {
+                $qb = $this->dm->query('Project');
+                $this->filterProjects($qb);                        
+                $dbs = $qb->select('domainName')->getArray();
+                $count = count($dbs);                
+                $this->log("---- Run {$this->getName()} for $count projects", false);
+                foreach($dbs as $dbName) {
+                    $this->dm = $this->dmFactory->createForDB($dbName);;
+                    $this->gogoExecute($this->dm, $input, $output);
+                }                
             } else {
                 $this->dm = $this->dmFactory->getRootManager();
+                $this->gogoExecute($this->dm, $input, $output);
             }
-
-            // create dummy user, as some code called from command will maybe need the current user informations
-            $token = new AnonymousToken('admin', 'GoGo Gadget au Bot', ['ROLE_ADMIN']);
-            $this->security->setToken($token);
-
-            $this->gogoExecute($this->dm, $input, $output);
         } catch (\Exception $e) {
             $message = $e->getMessage().'</br>'.$e->getFile().' LINE '.$e->getLine();
             $this->error('Error executing command: '.$message);
@@ -68,14 +79,22 @@ class GoGoAbstractCommand extends Command
     {
     }
 
-    protected function log($message)
+    // when calling the command with dbName, we run it for all projects
+    // Here we cna filter the project that really need to be processed
+    protected function filterProjects($qb)
     {
+    }
+
+    protected function log($message, $usePrefix = true)
+    {
+        if ($usePrefix) $message = "DB {$this->dm->getConfiguration()->getDefaultDB()} : $message";
         $this->logger->info($message);
         $this->output->writeln($message);
     }
 
     protected function error($message)
     {
+        $message = "DB {$this->dm->getConfiguration()->getDefaultDB()} : $message";
         $this->logger->error($message);
         $this->output->writeln('ERROR '.$message);
         $log = new GoGoLog(GoGoLogLevel::Error, 'Error running '.$this->getName().' : '.$message);

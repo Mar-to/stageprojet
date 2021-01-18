@@ -35,19 +35,20 @@ class CheckExternalSourceToUpdateCommand extends GoGoAbstractCommand
         $dynamicImports = $qb->field('refreshFrequencyInDays')->gt(0)
                 ->field('nextRefresh')->lte(new \DateTime())
                 ->execute();
+        if ($count = $dynamicImports->count() > 0) {
+            $this->log("CheckExternalSourceToUpdate : Nombre de sources à mettre à jour : $count");
 
-        $this->log('CheckExternalSourceToUpdate : Nombre de sources à mettre à jour : '.$dynamicImports->count());
-
-        foreach ($dynamicImports as $key => $import) {
-            $this->log('Updating source : '.$import->getSourceName());
-            try {
-                $this->log($this->importService->startImport($import));
-            } catch (\Exception $e) {
-                $this->dm->persist($import);
-                $import->setCurrState(ImportState::Failed);
-                $message = $e->getMessage().'</br>'.$e->getFile().' LINE '.$e->getLine();
-                $import->setCurrMessage($message);
-                $this->error('Source: '.$import->getSourceName().' - '.$message);
+            foreach ($dynamicImports as $import) {
+                $this->log('Updating source : '.$import->getSourceName());
+                try {
+                    $this->log($this->importService->startImport($import));
+                } catch (\Exception $e) {
+                    $this->dm->persist($import);
+                    $import->setCurrState(ImportState::Failed);
+                    $message = $e->getMessage().'</br>'.$e->getFile().' LINE '.$e->getLine();
+                    $import->setCurrMessage($message);
+                    $this->error('Source: '.$import->getSourceName().' - '.$message);
+                }
             }
         }
     }

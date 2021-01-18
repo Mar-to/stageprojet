@@ -17,8 +17,8 @@ class UserNotificationService
 
     function sendModerationNotifications()
     {
-        $users = $this->dm->get('User')
-                    ->findByWatchModeration(true);
+        $users = $this->dm->get('User')->findByWatchModeration(true);
+        $usersNotified = 0;
         foreach ($users as $user) {
             $elementsCount = $this->dm->get('Element')
                                   ->findModerationElementToNotifyToUser($user);
@@ -33,8 +33,10 @@ class UserNotificationService
                 <a href='{$url}'>Accéder à la carte</a></br></br>
                 Pour changer vos préférences de notification, <a href='$editPreferenceUrl'>cliquez ici</a>";
                 $this->mailService->sendMail($user->getEmail(), $subject, $content);
+                $usersNotified++;
             }
-        }    
+        }   
+        return $usersNotified; 
     }
 
     function notifyImportError($import)
