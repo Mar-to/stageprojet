@@ -25,8 +25,6 @@ abstract class InteractType
  **/
 class ElementActionService
 {
-    protected $preventAddingContribution = false;
-
     /**
      * Constructor.
      */
@@ -144,18 +142,8 @@ class ElementActionService
         $element->setModerationState(ModerationState::NotNeeded);
     }
 
-    public function setPreventAddingContribution($bool)
-    {
-        $this->preventAddingContribution = $bool;
-
-        return $this;
-    }
-
     private function addContribution($element, $message, $interactType, $status, $directModerationWithHash = false)
     {
-        if ($this->preventAddingContribution) {
-            return;
-        }
         // clear contributions with same type that have not been dispatched yet
         if ($element->getContributions()) {
             foreach ($element->getContributions() as $contribution) {
