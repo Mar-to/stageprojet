@@ -121,6 +121,9 @@ show-deploy-message:
 hide-deploy-message:
 	mv web/index_backup.php web/index.php
 
+log-commands-error:
+	tail -n 400 var/log/commands.log | grep -B 1 ERROR
+
 ## —— Deploy & Prod ———————
 gogo-update: ## Update a PROD server to the lastest version of gogocarto
 	service cron stop
