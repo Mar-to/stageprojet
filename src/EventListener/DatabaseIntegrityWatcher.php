@@ -63,7 +63,7 @@ class DatabaseIntegrityWatcher
             foreach ($contributions as $contrib) {
                 $contrib->getElement()->setPreventJsonUpdate(true);
                 foreach ($contrib->getWebhookPosts() as $post) {
-                    if ($post->getWebhook()->getId() == $webhook->getId()) {
+                    if ($post->getWebhook() && $post->getWebhook()->getId() == $webhook->getId()) {
                         $contrib->removeWebhookPost($post);
                     }
                 }
