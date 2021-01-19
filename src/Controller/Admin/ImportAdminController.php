@@ -103,6 +103,8 @@ class ImportAdminController extends Controller
         $this->admin->checkAccess('edit', $object);
         $this->admin->setSubject($object);
 
+        $oldUpdatedAt = $object->getMainConfigUpdatedAt();
+
         $form = $this->admin->getForm();
         $form->setData($object);
         $form->handleRequest($request);
@@ -198,15 +200,13 @@ class ImportAdminController extends Controller
 
                     $object->setNewOntologyToMap(false);
                     $object->setNewTaxonomyToMap(false);
-
-                    $oldUpdatedAt = $object->getMainConfigUpdatedAt();
+                    
                     // check manually for taxonomy change
                     if ($object->getTaxonomyMapping() != $currentTaxonomyMapping) {
                         $object->setMainConfigUpdatedAt(time());
                     }
 
                     $object = $this->admin->update($object);
-
                     // auto collect data if the import config have changed
                     if ($request->get('import')) {
                         $url = $this->admin->generateUrl('refresh', ['id' => $object->getId()]);

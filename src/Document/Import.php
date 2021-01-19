@@ -568,6 +568,7 @@ class Import extends AbstractFile
                     'collectedPercent' => null
                 ];
             }
+            $mappedObject['mappedCategoryIds'] = array_filter($mappedObject['mappedCategoryIds']);
         }
         ksort($this->taxonomyMapping);
         uasort($this->taxonomyMapping, function($a,$b) {
