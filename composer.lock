@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "79ef926f2333e89996ac7c87effb2ce6",
+    "content-hash": "9a1676ddb9ebd85dde371756c13a930d",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -1295,7 +1295,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seballot/mongodb-odm.git",
-                "reference": "0b6868572639fed8082c5e849c271e1a3c66e667"
+                "reference": "b2d96c91cfb39f93861eb938d89ffb418f9083c5"
             },
             "require": {
                 "doctrine/annotations": "~1.2",
@@ -1374,7 +1374,7 @@
                 "odm",
                 "persistence"
             ],
-            "time": "2021-01-15T13:50:04+00:00"
+            "time": "2021-01-18T10:39:55+00:00"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
@@ -3656,10 +3656,6 @@
                 "http",
                 "request"
             ],
-            "support": {
-                "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=HTTP_Request2",
-                "source": "https://github.com/pear/HTTP_Request2"
-            },
             "time": "2016-02-13T20:20:39+00:00"
         },
         {
@@ -3713,10 +3709,6 @@
                 "log",
                 "logging"
             ],
-            "support": {
-                "issues": "https://github.com/pear/Log/issues",
-                "source": "https://github.com/pear/Log"
-            },
             "time": "2020-06-02T00:04:03+00:00"
         },
         {
@@ -3781,10 +3773,6 @@
                 "uri",
                 "url"
             ],
-            "support": {
-                "issues": "https://pear.php.net/bugs/search.php?cmd=display&package_name[]=Net_URL2",
-                "source": "https://github.com/pear/Net_URL2"
-            },
             "time": "2017-08-25T06:16:11+00:00"
         },
         {
@@ -3840,10 +3828,6 @@
             "keywords": [
                 "exception"
             ],
-            "support": {
-                "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=PEAR_Exception",
-                "source": "https://github.com/pear/PEAR_Exception"
-            },
             "time": "2019-12-10T10:24:42+00:00"
         },
         {
@@ -10894,7 +10878,6 @@
             "suggest": {
                 "pear/cache": "*"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-0": {
