@@ -138,7 +138,8 @@ class ImportAdminController extends Controller
                     $currentTaxonomyMapping = $object->getTaxonomyMapping();
 
                     // Taxonomy Mapping
-                    if ($request->get('taxonomy')) {                        
+                    if ($request->get('taxonomy')) {   
+                        $createdParent = [];                     
                         $newTaxonomyMapping = $request->get('taxonomy');
                         $categoriesCreated = [];
                         foreach($newTaxonomyMapping as $originName => &$mappedCategories) {
@@ -152,11 +153,15 @@ class ImportAdminController extends Controller
                                         $mappedCategories[$key] = $categoriesCreated[$categoryId];
                                     } else {
                                         $fieldName = $currentTaxonomyMapping[$originName]['fieldName'];
-                                        $parent = $dm->get('Category')->findOneByCustomId($fieldName);
+                                        if (array_key_exists($fieldName, $createdParent))
+                                            $parent = $createdParent[$fieldName];
+                                        else
+                                            $parent = $dm->get('Category')->findOneByCustomId($fieldName);
                                         if (!$parent) {
                                             $parent = new Category();
                                             $parent->setCustomId($fieldName);
                                             $parent->setName($fieldName);
+                                            $createdParent[$fieldName] = $parent;
                                         }
                                         $newCat = new Option();
                                         $newCat->setCustomId($categoryId);
