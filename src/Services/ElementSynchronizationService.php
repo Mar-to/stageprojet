@@ -2,18 +2,19 @@
 
 namespace App\Services;
 
-use App\Document\Configuration;
 use App\Document\UserInteractionContribution;
-use GuzzleHttp\Client;
 use GuzzleHttp\Promise\Promise;
 use Services_OpenStreetMap;
 use GuzzleHttp\Psr7\Response;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 class ElementSynchronizationService
 {
-    public function setDm($dm) {
+    public function __construct(DocumentManager $dm, UrlService $urlService)
+    {
         $this->dm = $dm;
-        $this->config = $this->dm->getRepository(Configuration::class)->findConfiguration();
+        $this->urlService = $urlService;
+        $this->config = $this->dm->get('Configuration')->findConfiguration();
     }
 
     /*
@@ -37,10 +38,8 @@ class ElementSynchronizationService
 
             $osmFeature = $this->elementToOsm($contribution->getElement());
 
-            // Get URL of used map
-            $url = 'http://';
-            if ($_ENV['USE_AS_SAAS'] == 'true') { $url .= $this->config->getDbName().'.'; }
-            $url .= $_ENV['BASE_URL'];
+            // Get URL of current map
+            $url = $this->urlService->generateUrl();
 
             // Check contribution validity according to OSM criterias
             if($this->allowOsmUpload($contribution, $preparedData)) {

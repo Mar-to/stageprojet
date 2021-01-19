@@ -32,9 +32,8 @@ class WebhookService
         $this->router = $router;
         $this->urlService = $urlService;
         $this->securityContext = $securityContext;
-        $this->config = $this->dm->getRepository(Configuration::class)->findConfiguration();
+        $this->config = $this->dm->get('Configuration')->findConfiguration();
         $this->synchService = $synchService;
-        $this->synchService->setDm($dm);
     }
 
     public function processPosts($limit = 5)
