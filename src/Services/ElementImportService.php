@@ -165,7 +165,8 @@ class ElementImportService
                 try {
                     $import->setCurrMessage("Importation des données $i/$size traitées");
                     $result = $this->importOneService->createElementFromArray($row, $import);
-                    $newlyImportedElementIds[] = $result['id'];
+                    if (isset($result['id']))
+                        $newlyImportedElementIds[] = $result['id'];
                     // saving modified version so it does not get deleted at the end of the import
                     if (isset($result['id_pending_modified'])) 
                         $newlyImportedElementIds[] = $result['id_pending_modified'];
