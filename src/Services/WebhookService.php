@@ -16,6 +16,7 @@ use Symfony\Component\Routing\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Psr\Log\LoggerInterface;
 
 class WebhookService
 {
@@ -26,7 +27,8 @@ class WebhookService
     public function __construct(DocumentManager $dm, RouterInterface $router,
                                 TokenStorageInterface $securityContext,
                                 ElementSynchronizationService $synchService,
-                                UrlService $urlService)
+                                UrlService $urlService,
+                                LoggerInterface $commandsLogger)
     {
         $this->dm = $dm;
         $this->router = $router;
@@ -34,6 +36,7 @@ class WebhookService
         $this->securityContext = $securityContext;
         $this->config = $this->dm->get('Configuration')->findConfiguration();
         $this->synchService = $synchService;
+        $this->logger = $commandsLogger;
     }
 
     public function processPosts($limit = 5)
@@ -72,10 +75,10 @@ class WebhookService
                         if ($res->getStatusCode() == 200)
                             $this->handlePostSuccess($post, $contribution);
                         else
-                            $this->handlePostFailure($post, $contribution);
+                            $this->handlePostFailure($res->getReasonPhrase(), $post, $contribution);
                     },
                     function (RequestException $e) use($post, $contribution) {
-                        $this->handlePostFailure($post, $contribution);
+                        $this->handlePostFailure($e->getMessage(), $post, $contribution);
                     }
                 );
                 $promises[] = $promise;
@@ -95,9 +98,10 @@ class WebhookService
         $contribution->removeWebhookPost($post);
     }
 
-    private function handlePostFailure($post, $contribution)
+    private function handlePostFailure($errorMessage, $post, $contribution)
     {
         $attemps = $post->incrementNumAttempts();
+        $this->logger->error("Webhook for contribution {$contribution->getId()} : $errorMessage");
         // After first try, wait 5m, 25m, 2h, 10h, 2d
         $intervalInMinutes = pow(5, $attemps);
         $interval = new \DateInterval("PT{$intervalInMinutes}M");
