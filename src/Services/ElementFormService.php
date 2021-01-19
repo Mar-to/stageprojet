@@ -44,9 +44,7 @@ class ElementFormService
     // Here is a function to detect minor changes
     private function isMinorModification($element, $originalElement, $dm)
     {
-        $uow = $dm->getUnitOfWork();
-        $uow->computeChangeSets();
-        $changeset = $uow->getDocumentChangeSet($element);
+        $changeset = $dm->getChangeSet($element);
         $attributesChanged = array_keys($changeset);
 
         $sameOptionValues = $element->getOptionIds() == $originalElement->getOptionIds();

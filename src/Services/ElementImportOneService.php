@@ -46,8 +46,6 @@ class ElementImportOneService
             $this->dm->persist($option->getParent()); // Strange bug, need to manually persist parent
         }
 
-        // Getting the private field of the custom data
-        $config = $this->dm->get('Configuration')->findConfiguration();
         $this->mainConfigHaveChangedSinceLastImport = $import->getMainConfigUpdatedAt() > $import->getLastRefresh();
     }
 
@@ -328,9 +326,7 @@ class ElementImportOneService
     // compare old and new element to see if something has changed
     private function checkElementHaveChanged($element)
     {
-        $uow = $this->dm->getUnitOfWork();
-        $uow->computeChangeSets();
-        $changeset = $uow->getDocumentChangeSet($element);
+        $changeset = $this->dm->getChangeSet($element);
         $changeset = array_filter($changeset, function($e) {
             $a = method_exists($e[0], 'toArray') ? $e[0]->toArray() : $e[0];
             $b = method_exists($e[1], 'toArray') ? $e[1]->toArray() : $e[1];

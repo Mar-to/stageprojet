@@ -1295,7 +1295,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seballot/mongodb-odm.git",
-                "reference": "b2d96c91cfb39f93861eb938d89ffb418f9083c5"
+                "reference": "0573d288d20f5b91db82765f4ec7be250da69a0b"
             },
             "require": {
                 "doctrine/annotations": "~1.2",
@@ -1374,7 +1374,7 @@
                 "odm",
                 "persistence"
             ],
-            "time": "2021-01-18T10:39:55+00:00"
+            "time": "2021-01-19T11:51:27+00:00"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
@@ -11474,8 +11474,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.4"
+        "php": "^7.3"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "platform-dev": []
 }

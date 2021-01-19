@@ -25,29 +25,20 @@ class ConfigurationListener
     {
         $document = $args->getDocument();
         $dm = $args->getDocumentManager();
-
+        $changeset = $dm->getChangeSet($document);
         // Update Json representation to fit the private property config
-        if ($document instanceof ConfigurationApi) {
-            $uow = $dm->getUnitOfWork();
-            $uow->computeChangeSets();
-            $changeset = $uow->getDocumentChangeSet($document);
+        if ($document instanceof ConfigurationApi) {            
             if (array_key_exists('publicApiPrivateProperties', $changeset)) {
                 $this->asyncService->callCommand('app:elements:updateJson', ['ids' => 'all']);
             }
         }
         if ($document instanceof ConfigurationMarker) {
-            $uow = $dm->getUnitOfWork();
-            $uow->computeChangeSets();
-            $changeset = $uow->getDocumentChangeSet($document);
             if (array_key_exists('fieldsUsedByTemplate', $changeset)) {
                 $this->asyncService->callCommand('app:elements:updateJson', ['ids' => 'all']);
             }
         }
 
         if ($document instanceof Configuration) {
-            $uow = $dm->getUnitOfWork();
-            $uow->computeChangeSets();
-            $changeset = $uow->getDocumentChangeSet($document);
             if (array_key_exists('elementFormFieldsJson', $changeset)) {
                 $formFieldsChanged = $changeset['elementFormFieldsJson'];
                 $oldFormFields = $formFieldsChanged[0];

@@ -115,9 +115,7 @@ class DatabaseIntegrityWatcher
         // When changing the name of one Option, we need to update json representation of every element
         // using this option
         if ($document instanceof Option) {
-            $uow = $dm->getUnitOfWork();
-            $uow->computeChangeSets();
-            $changeset = $uow->getDocumentChangeSet($document);
+            $changeset = $dm->getChangeSet($document);
             if (array_key_exists('name', $changeset)) {
                 $elementIds = $dm->query('Element')
                                  ->field('optionValues.optionId')->in([$document->getId()])
@@ -150,9 +148,7 @@ class DatabaseIntegrityWatcher
                     }
                 }
                 if (count($elementsFields)) {
-                    $uow = $dm->getUnitOfWork();
-                    $uow->computeChangeSets();
-                    $changeset = $uow->getDocumentChangeSet($element);
+                    $changeset = $dm->getChangeSet($element);
                     $elementIdsToUpdate = [];
 
                     // If name have changed, update element which reference this element
