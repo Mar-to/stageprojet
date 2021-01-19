@@ -47,7 +47,7 @@ class ImportSourceCommand extends GoGoAbstractCommand
                 $this->error($message);
                 return;
             }
-            $this->log("Updating source $import->getSourceName() begins...");
+            $this->log("Updating source {$import->getSourceName()} begins...");
             $result = $this->importService->startImport($import, $manuallyStarted = false);
             $this->log($result);
         } catch (\Exception $e) {
@@ -55,7 +55,7 @@ class ImportSourceCommand extends GoGoAbstractCommand
             $import->setCurrState(ImportState::Failed);
             $message = $e->getMessage().'</br>'.$e->getFile().' LINE '.$e->getLine();
             $import->setCurrMessage($message);
-            $this->error("Source: $import->getSourceName() - $message");
+            $this->error("Source: {$import->getSourceName()} - $message");
             $this->notifService->notifyImportError($import);
         }
     }
