@@ -2,11 +2,15 @@
 
 namespace App\Services;
 
+use App\Document\Configuration;
 use App\Document\UserInteractionContribution;
+use GuzzleHttp\Client;
 use GuzzleHttp\Promise\Promise;
 use Services_OpenStreetMap;
 use GuzzleHttp\Psr7\Response;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use App\Document\GoGoLog;
+use App\Document\GoGoLogLevel;
 
 class ElementSynchronizationService
 {
@@ -26,15 +30,16 @@ class ElementSynchronizationService
     {
         // Wrap the whole function into a promise to make it asynchronous
         $promise = new Promise(function () use (&$promise, &$contribution, &$preparedData) {
-             // Init OSM API handler
-            $configOsm = $this->config->getOsm();
-            $osm = new Services_OpenStreetMap([
-                'server' => $this->getOsmServer(),
-                'user' => $configOsm->getOsmUsername(),
-                'password' => $configOsm->getOsmPassword(),
-                'User-Agent' => $this->config->getAppName(),
-                'verbose' => true
-            ]);
+            try {
+                // Init OSM API handler
+                $configOsm = $this->config->getOsm();
+                $osm = new Services_OpenStreetMap([
+                    'server' => $this->getOsmServer(),
+                    'user' => $configOsm->getOsmUsername(),
+                    'password' => $configOsm->getOsmPassword(),
+                    'User-Agent' => $this->config->getAppName(),
+                    'verbose' => true
+                ]);
 
             $osmFeature = $this->elementToOsm($contribution->getElement());
 
@@ -43,91 +48,111 @@ class ElementSynchronizationService
 
             // Check contribution validity according to OSM criterias
             if($this->allowOsmUpload($contribution, $preparedData)) {
-                $toAdd = null;
+                    $toAdd = null;
 
-                // Process contribution
-                // New feature
-                if($preparedData['action'] == 'add') {
-                    if($preparedData['data']['osm:type'] == 'node') {
-                        $toAdd = $osm->createNode($osmFeature['center']['latitude'], $osmFeature['center']['longitude'], $osmFeature['tags']);
+                    // Process contribution
+                    // New feature
+                    if($preparedData['action'] == 'add') {
+                        if($preparedData['data']['osm:type'] == 'node') {
+                            $toAdd = $osm->createNode($osmFeature['center']['latitude'], $osmFeature['center']['longitude'], $osmFeature['tags']);
+                        }
                     }
-                }
-                // Edit existing feature
-                else if($preparedData['action'] == 'edit') {
-                    $existingFeature = null;
+                    // Edit existing feature
+                    else if($preparedData['action'] == 'edit') {
+                        $existingFeature = null;
 
-                    switch($preparedData['data']['osm:type']) {
-                        case 'node':
-                            $existingFeature = $osm->getNode($osmFeature['osmId']);
-                            break;
-                        case 'way':
-                            $existingFeature = $osm->getWay($osmFeature['osmId']);
-                            break;
-                        case 'relation':
-                            $existingFeature = $osm->getRelation($osmFeature['osmId']);
-                            break;
-                    }
+                        switch($preparedData['data']['osm:type']) {
+                            case 'node':
+                                $existingFeature = $osm->getNode($osmFeature['osmId']);
+                                break;
+                            case 'way':
+                                $existingFeature = $osm->getWay($osmFeature['osmId']);
+                                break;
+                            case 'relation':
+                                $existingFeature = $osm->getRelation($osmFeature['osmId']);
+                                break;
+                        }
 
-                    if($existingFeature) {
-                        // Check version number (to make sure Gogocarto version is the latest)
-                        if($existingFeature->getVersion() == intval($osmFeature['version'])) {
-                            // Edit tags
-                            foreach($osmFeature['tags'] as $k => $v) {
-                                if($v == null || $v == '') {
-                                    $existingFeature->removeTag($k);
+                        if($existingFeature) {
+                            // Check version number (to make sure Gogocarto version is the latest)
+                            if($existingFeature->getVersion() == intval($osmFeature['version'])) {
+                                // Edit tags
+                                foreach($osmFeature['tags'] as $k => $v) {
+                                    if($v == null || $v == '') {
+                                        $existingFeature->removeTag($k);
+                                    }
+                                    else {
+                                        $existingFeature->setTag($k, $v);
+                                    }
                                 }
-                                else {
-                                    $existingFeature->setTag($k, $v);
+
+                                // If node coordinates are edited, check if it is detached
+                                if($preparedData['data']['osm:type'] == 'node' && (!$existingFeature->getWays()->valid() || $existingFeature->getWays()->count() == 0)) {
+                                    if($osmFeature['center']['latitude'] != $existingFeature->getLat()) {
+                                        $existingFeature->setLat($osmFeature['center']['latitude']);
+                                    }
+
+                                    if($osmFeature['center']['longitude'] != $existingFeature->getLon()) {
+                                        $existingFeature->setLon($osmFeature['center']['longitude']);
+                                    }
                                 }
+
+                                $toAdd = $existingFeature;
                             }
-
-                            // If node coordinates are edited, check if it is detached
-                            if($preparedData['data']['osm:type'] == 'node' && (!$existingFeature->getWays()->valid() || $existingFeature->getWays()->count() == 0)) {
-                                if($osmFeature['center']['latitude'] != $existingFeature->getLat()) {
-                                    $existingFeature->setLat($osmFeature['center']['latitude']);
-                                }
-
-                                if($osmFeature['center']['longitude'] != $existingFeature->getLon()) {
-                                    $existingFeature->setLon($osmFeature['center']['longitude']);
-                                }
+                            else {
+                                $message = 'Feature versions mismatch: '.$osmFeature['version'].' on our side, '.$existingFeature->getVersion().' on OSM';
+                                $log = new GoGoLog(GoGoLogLevel::Error, 'Error during OSM sync : '.$message);
+                                $this->dm->persist($log);
+                                $this->dm->flush();
+                                return $promise->resolve(new Response(500, [], null, '1.1', $message));
                             }
-
-                            $toAdd = $existingFeature;
                         }
                         else {
-                            return $promise->resolve(new Response(500, [], null, '1.1', 'Feature versions mismatch: '.$osmFeature['version'].' on our side, '.$existingFeature->getVersion().' on OSM'));
+                            $message = 'Feature does not exist on OSM';
+                            $log = new GoGoLog(GoGoLogLevel::Error, 'Error during OSM sync : '.$message);
+                            $this->dm->persist($log);
+                            $this->dm->flush();
+                            return $promise->resolve(new Response(500, [], null, '1.1', $message));
                         }
                     }
-                    else {
-                        return $promise->resolve(new Response(500, [], null, '1.1', 'Feature does not exist on OSM'));
+
+                    // Create changeset and upload changes
+                    if(isset($toAdd)) {
+                        $changeset = $osm->createChangeset();
+                        $changeset->setId(-1); // To prevent bug with setTag
+                        $changeset->setTag('host', $url);
+                        $changeset->setTag('gogocarto:user', $contribution->getUserDisplayName());
+                        $changeset->setTag('created_by:library', 'GoGoCarto');
+                        $changeset->setTag('created_by', $this->config->getAppName());
+                        $changeset->begin($this->getOsmComment($preparedData));
+
+                        // Add edited feature to changeset
+                        $changeset->add($toAdd);
+
+                        // Close changeset
+                        if($changeset->commit()) {
+                            return $promise->resolve(new Response(200, [], null, '1.1', 'Success'));
+                        }
+                        else {
+                            $message = 'Error when sending changeset';
+                            $log = new GoGoLog(GoGoLogLevel::Error, 'Error during OSM sync : '.$message);
+                            $this->dm->persist($log);
+                            $this->dm->flush();
+                            return $promise->resolve(new Response(500, [], null, '1.1', $message));
+                        }
                     }
                 }
-
-                // Create changeset and upload changes
-                if(isset($toAdd)) {
-                    $changeset = $osm->createChangeset();
-                    $changeset->setId(-1); // To prevent bug with setTag
-                    $changeset->setTag('host', $url);
-                    $changeset->setTag('gogocarto:user', $contribution->getUserDisplayName());
-                    $changeset->setTag('created_by:library', 'GoGoCarto');
-                    $changeset->setTag('created_by', $this->config->getAppName());
-                    $changeset->begin($this->getOsmComment($preparedData));
-
-                    // Add edited feature to changeset
-                    $changeset->add($toAdd);
-
-                    // Close changeset
-                    if($changeset->commit()) {
-                        return $promise->resolve(new Response(200, [], null, '1.1', 'Success'));
-                    }
-                    else {
-                        return $promise->resolve(new Response(500, [], null, '1.1', 'Error when sending changeset'));
-                    }
+                // If we don't send edit to OSM, just resolve promise
+                else {
+                    $message = 'Skipped sending OSM feature';
+                    $log = new GoGoLog(GoGoLogLevel::Info, $message);
+                    $this->dm->persist($log);
+                    $this->dm->flush();
+                    return $promise->resolve(new Response(200, [], null, '1.1', $message));
                 }
             }
-            // If we don't send edit to OSM, just resolve promise
-            else {
-                return $promise->resolve(new Response(200, [], null, '1.1', 'Skipped'));
+            catch(Exception $e) {
+                return $promise->resolve(new Response(200, [], null, '1.1', $e->getMessage()));
             }
         });
 
