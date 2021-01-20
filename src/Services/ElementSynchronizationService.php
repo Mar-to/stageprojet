@@ -41,13 +41,13 @@ class ElementSynchronizationService
                     'verbose' => true
                 ]);
 
-            $osmFeature = $this->elementToOsm($contribution->getElement());
+                $osmFeature = $this->elementToOsm($contribution->getElement());
 
-            // Get URL of current map
-            $url = $this->urlService->generateUrl();
+                // Get URL of current map
+                $url = $this->urlService->generateUrl();
 
-            // Check contribution validity according to OSM criterias
-            if($this->allowOsmUpload($contribution, $preparedData)) {
+                // Check contribution validity according to OSM criterias
+                if($this->allowOsmUpload($contribution, $preparedData)) {
                     $toAdd = null;
 
                     // Process contribution
