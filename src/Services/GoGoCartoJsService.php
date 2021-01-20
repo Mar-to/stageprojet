@@ -45,6 +45,15 @@ class GoGoCartoJsService
             }
         }
 
+        $readonlySources = $this->dm->query('ImportDynamic')
+                                    ->field('isSynchronized')->notEqual(true)
+                                    ->select('sourceName')->getArray();
+        $editFeatureConf = [
+            'options' => ['readonlySources' => array_values($readonlySources)]
+        ];
+        if (!$config->getEditFeature()->isOnlyAllowedForAdmin()) {
+            $editFeatureConf['roles'] = ['anonymous', 'user', 'admin'];
+        }
         $result = [
             'security' => [
                 'userRoles' => $userGogocartoRole,
@@ -153,7 +162,7 @@ class GoGoCartoJsService
                 'edit' => $this->getConfigFrom(
                                 $config->getEditFeature(),
                                 'gogo_element_edit',
-                                $config->getEditFeature()->isOnlyAllowedForAdmin() ? [] : ['roles' => ['anonymous', 'user', 'admin']]
+                                $editFeatureConf
                             ),
                 'delete' => $this->getConfigFrom($config->getDeleteFeature(), 'gogo_delete_element'),
                 'sendMail' => [ 'url' => $this->getAbsolutePath('gogo_element_send_mail') ],
