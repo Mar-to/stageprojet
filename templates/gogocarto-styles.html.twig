@@ -160,6 +160,16 @@
     border-top: 1px solid #d0d0d0;
   }
 
+  input[type=range]::-webkit-slider-thumb {
+    background: {{ primary }};
+  }
+  input[type=range]::-ms-thumb {
+    background: {{ primary }};
+  }
+  input[type=range]::-moz-range-thumb {
+    background: {{ primary }};
+  }
+
   #page-content.contributor-login .email-already-in-use { color: {{ error }}; }
   form.gogo_user_profile .error ul li, form.fos_user_registration_register .error ul li { color: {{ error }}; }
 

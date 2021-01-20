@@ -57,10 +57,9 @@
 {% block user_page_javascripts %}
   <script>
     $(document).ready(function()
-    {
+    { 
       $('.range-value').text($('#input-range').val());
-      $('#input-range').change(function()
-      {
+      $('#input-range').on('input', function() {
         $('.range-value').text($(this).val());
       });
 
