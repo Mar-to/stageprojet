@@ -366,7 +366,7 @@ class ElementRepository extends DocumentRepository
                 "_id" => null,
                 "allkeys" => ['$addToSet' => '$arrayofkeyvalue.k']
             ]]
-        ]);
+            ], ['cursor' => true]);
         return $result['result'][0]['allkeys'] ?? [];
     }
 
