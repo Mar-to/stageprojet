@@ -68,7 +68,7 @@ class Element
     /**
      * Main properties available on all elements
      */
-    const CORE_FIELDS = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'files', 'owner', 'source', 'openHours', 'email', 'customFormatedAddress'];
+    const CORE_FIELDS = ['id', 'name', 'categories', 'streetAddress', 'addressLocality', 'postalCode', 'addressCountry', 'latitude', 'longitude', 'images', 'files', 'owner', 'source', 'sourceKey', 'openHours', 'email', 'customFormatedAddress'];
 
     /**
      * @var int

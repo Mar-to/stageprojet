@@ -126,6 +126,22 @@ class DatabaseIntegrityWatcher
                 }
             }
         }
+        if ($document instanceof ImportDynamic) {
+            $changeset = $dm->getChangeSet($document);
+            if (array_key_exists('sourceName', $changeset)) {
+                $dm->query('Element')->updateMany()                
+                                 ->field('sourceKey')->set($changeset['sourceName'][1])
+                                 ->field('source')->references($document)
+                                 ->execute();
+                $elementIds = $dm->query('Element')
+                                 ->field('source')->references($document)
+                                 ->getIds();
+                if (count($elementIds)) {
+                    $elementIdsString = '"'.implode(',', $elementIds).'"';
+                    $this->asyncService->callCommand('app:elements:updateJson', ['ids' => $elementIdsString]);
+                }
+            }
+        }
     }
 
     public function preFlush(\Doctrine\ODM\MongoDB\Event\PreFlushEventArgs $eventArgs)

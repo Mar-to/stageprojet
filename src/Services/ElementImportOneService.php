@@ -132,8 +132,9 @@ class ElementImportOneService
         $address = new PostalAddress($row['streetAddress'], $row['addressLocality'], $row['postalCode'], $row['addressCountry'], $row['customFormatedAddress']);
         $element->setAddress($address);
 
-        $defaultSourceName = $import ? $import->getSourceName() : 'Inconnu';
-        $element->setSourceKey((strlen($row['source']) > 0 && 'Inconnu' != $row['source']) ? $row['source'] : $defaultSourceName);
+        $sourceKey = $import ? $import->getSourceName() : 'Inconnu';
+        if (!$import->isDynamicImport() && (strlen($row['source']) > 0 && 'Inconnu' != $row['source'])) $sourceKey = $row['source'];
+        $element->setSourceKey($sourceKey);
         $element->setSource($import);
 
         if (array_key_exists('owner', $row)) {
@@ -183,10 +184,10 @@ class ElementImportOneService
         } else {
             if ($updateExisting) {
                 // create edit contribution
-                $contribution = $this->interactionService->createContribution($element, null, 1, $element->getStatus());
+                $this->interactionService->createContribution($element, null, 1, $element->getStatus());
             } else {
                 // create import contribution if first time imported
-                $contribution = $this->interactionService->createContribution($element, null, 0, $element->getStatus());
+                $this->interactionService->createContribution($element, null, 0, $element->getStatus());
             }
         }
 

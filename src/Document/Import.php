@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique;
 
 abstract class ImportState
 {
@@ -28,6 +29,7 @@ abstract class ImportState
  * @MongoDB\InheritanceType("SINGLE_COLLECTION")
  * @MongoDB\DiscriminatorField("type")
  * @MongoDB\DiscriminatorMap({"normal"="Import", "dynamic"="ImportDynamic"})
+ * @Unique(fields="sourceName")
  */
 class Import extends AbstractFile
 {
