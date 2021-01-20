@@ -65,7 +65,7 @@
   td.original { width: 30%; }
   td.original[title] { cursor: help; }
   td.original[title]:hover { font-weight: bold }
-  .arrow-icon { font-size: 17px; }
+  .arrow-icon { font-size: 17px; padding-top: 3px;}
   .arrow-icon:hover { cursor: pointer; color: #3c8dbc; }
   .clear-icon { margin-left: 4px; }
   .clear-icon:hover { cursor: pointer; color: #dd4b39; }
@@ -76,11 +76,17 @@
   .mapping-table .select2-container .select2-choices { 
     line-height: 1.8;
   }
+  td.mapped {
+    padding-left: 0 !important;
+  }
   .mapping-table .select2-container:not(.select2-container-active) .select2-choice,
   .mapping-table .select2-container:not(.select2-container-active) .select2-choices { 
     box-shadow: none;
     border: none;
     border-bottom: 1px solid #eee;
+  }
+  .select2-choice>span:first-child, .select2-chosen, .select2-container .select2-choices .select2-search-field input {
+    padding-top: 3px !important;
   }
   .table>tbody>tr>th, .table>tbody>tr>td {
     border-top: none;
@@ -96,6 +102,8 @@
 
 <script>
   var importType = "{{ object.sourceType }}";
+  var importIsDynamic = "{{ object.isDynamicImport }}";
+
   jQuery(document).ready(function() {
     var formProperties = {{ form.vars.attr["data-form-props"]|raw }};
     var dataProperties = {{ form.vars.attr["data-props"]|raw }};
@@ -116,7 +124,8 @@
     specificData.push({id: 'files', text: "Fichier(s) sous forme d'url, en tableau, ou séparées par des virgules"});
     specificData.push({id: 'email', text: "Email de l'élement"});
     specificData.push({id: 'owner', text: "Email de l'utilisateur propriétaire de la fiche"});
-    specificData.push({id: 'source', text: "Origine de l'élément (source)"});    
+    if (!importIsDynamic)
+      specificData.push({id: 'source', text: "Origine de l'élément (source)"});    
     specificData.push({id: 'openHours', text: "Horaires d'ouverture (format GoGoCarto)"});
     if (importType == 'osm') {
       specificData.push({id: 'osm:source', text: "Source de la donnée OpenStreetMap"});
