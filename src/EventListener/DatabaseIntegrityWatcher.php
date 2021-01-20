@@ -135,83 +135,92 @@ class DatabaseIntegrityWatcher
         $documentManaged = $dm->getUnitOfWork()->getIdentityMap();
 
         if (array_key_exists("App\Document\Element", $documentManaged)) {
-            foreach ($documentManaged["App\Document\Element"] as $key => $element) {
-                if ($element->getPreventLinksUpdate()) return;
-                // Fixs elements referencing this element
-                $elementsFields = [];
-                $bidirdectionalElementsFields = [];
-                $config = $this->getConfig($dm);
-                foreach ($config->getElementFormFields() as $field) {
-                    if ($field->type == 'elements') {
-                        $elementsFields[] = $field->name;
-                        if (isset($field->reversedBy)) $bidirdectionalElementsFields[] = $field;
-                    }
-                }
-                if (count($elementsFields)) {
-                    $changeset = $dm->getChangeSet($element);
-                    $elementIdsToUpdate = [];
-
-                    // If name have changed, update element which reference this element
-                    if (array_key_exists('name', $changeset)) {
-                        $newName = $changeset['name'][1];
-                        foreach ($elementsFields as $fieldName) {
-                            $fieldPath = "data.$fieldName.{$element->getId()}";
-                            $dm->query('Element')->updateMany()
-                                     ->field($fieldPath)->set($newName)
-                                     ->field($fieldPath)->exists(true)
-                                     ->execute();
-                            $elementIdsToUpdate = array_merge($elementIdsToUpdate, $dm->query('Element')
-                                     ->field($fieldPath)->exists(true)->getIds());
-
-                        }
-                    }
-                    // If bidirectional element field have changed, update reverse relation
-                    // exple A { parent: B }, we should auto update B { children: A }
-                    if (array_key_exists('data', $changeset)) {
-                        foreach ($bidirdectionalElementsFields as $field) {                        
-                            $changes = $changeset['data'];
-                            $oldValue = $changes[0] && isset($changes[0][$field->name]) ? array_keys((array) $changes[0][$field->name]) : [];
-                            $newValue = $changes[1] && isset($changes[1][$field->name]) ? array_keys((array) $changes[1][$field->name]) : [];
-                            $removedElements = array_diff($oldValue, $newValue);
-                            $addedElements = array_diff($newValue, $oldValue);
-
-                            $fieldPath = "data.{$field->reversedBy}.{$element->getId()}";
-
-                            // Updates elements throught reverse relation
-                            if (count($addedElements) > 0) {
-                                $dm->query('Element')
-                                     ->updateMany()
-                                     ->field('id')->in($addedElements)
-                                     ->field($fieldPath)->set($element->getName())
-                                     ->execute();
-                                $elementIdsToUpdate = array_merge($elementIdsToUpdate, $dm->query('Element')
-                                     ->field('id')->in($addedElements)->getIds());
-                            }
-                            if (count($removedElements) > 0) {
-                                $dm->query('Element')
-                                     ->updateMany()
-                                     ->field('id')->in($removedElements)
-                                     ->field($fieldPath)->unsetField()->exists(true)
-                                     ->execute();
-                                $elementIdsToUpdate = array_merge($elementIdsToUpdate, $dm->query('Element')
-                                     ->field('id')->in($removedElements)->getIds());
-                            }
-                        }
-                    }
-                    if (count($elementIdsToUpdate)) {
-                        $ids = array_unique($elementIdsToUpdate);
-                        $elementIdsString = '"'.implode(',', $ids).'"';
-                        $this->asyncService->callCommand('app:elements:updateJson', ['ids' => $elementIdsString]);
-                    }
-                }
-            }
+            $this->updateLinksBetweenElements($documentManaged["App\Document\Element"], $dm);
         }
 
         // On option delete
         $optionsDeleted = array_filter($dm->getUnitOfWork()->getScheduledDocumentDeletions(), function ($doc) { return $doc instanceof Option; });
         if (count($optionsDeleted) > 0) {
             $optionsIdDeleted = array_map(function ($option) { return $option->getId(); }, $optionsDeleted);
-            $this->asyncService->callCommand('app:elements:removeOptions', ['ids' => implode($optionsIdDeleted, ',')]);
+            $this->asyncService->callCommand('app:elements:removeOptions', ['ids' => implode(',', $optionsIdDeleted)]);
+        }
+    }
+
+    private function updateLinksBetweenElements($elements, $dm)
+    {
+        $elementsFields = [];
+        $bidirdectionalElementsFields = [];
+        $config = $this->getConfig($dm);
+        foreach ($config->getElementFormFields() as $field) {
+            if ($field->type == 'elements') {
+                $elementsFields[] = $field->name;
+                if (isset($field->reversedBy)) $bidirdectionalElementsFields[] = $field;
+            }
+        }
+
+        $elementIdsToUpdate = [];
+
+        foreach ($elements as $element) {
+            if ($element->getPreventLinksUpdate()) return;
+
+            // Fixs elements referencing this element            
+            if (count($elementsFields)) {
+                $changeset = $dm->getChangeSet($element);
+
+                // If name have changed, update element which reference this element
+                if (array_key_exists('name', $changeset)) {
+                    $newName = $changeset['name'][1];
+                    foreach ($elementsFields as $fieldName) {
+                        $fieldPath = "data.$fieldName.{$element->getId()}";
+                        $dm->query('Element')->updateMany()
+                                    ->field($fieldPath)->set($newName)
+                                    ->field($fieldPath)->exists(true)
+                                    ->execute();
+                        $elementIdsToUpdate = array_merge($elementIdsToUpdate, $dm->query('Element')
+                                    ->field($fieldPath)->exists(true)->getIds());
+
+                    }
+                }
+                // If bidirectional element field have changed, update reverse relation
+                // exple A { parent: B }, we should auto update B { children: A }
+                if (array_key_exists('data', $changeset)) {
+                    foreach ($bidirdectionalElementsFields as $field) {                        
+                        $changes = $changeset['data'];
+                        $oldValue = $changes[0] && isset($changes[0][$field->name]) ? array_keys((array) $changes[0][$field->name]) : [];
+                        $newValue = $changes[1] && isset($changes[1][$field->name]) ? array_keys((array) $changes[1][$field->name]) : [];
+                        $removedElements = array_diff($oldValue, $newValue);
+                        $addedElements = array_diff($newValue, $oldValue);
+
+                        $fieldPath = "data.{$field->reversedBy}.{$element->getId()}";
+
+                        // Updates elements throught reverse relation
+                        if (count($addedElements) > 0) {
+                            $dm->query('Element')
+                                    ->updateMany()
+                                    ->field('id')->in($addedElements)
+                                    ->field($fieldPath)->set($element->getName())
+                                    ->execute();
+                            $elementIdsToUpdate = array_merge($elementIdsToUpdate, $dm->query('Element')
+                                    ->field('id')->in($addedElements)->getIds());
+                        }
+                        if (count($removedElements) > 0) {
+                            $dm->query('Element')
+                                    ->updateMany()
+                                    ->field('id')->in($removedElements)
+                                    ->field($fieldPath)->unsetField()->exists(true)
+                                    ->execute();
+                            $elementIdsToUpdate = array_merge($elementIdsToUpdate, $dm->query('Element')
+                                    ->field('id')->in($removedElements)->getIds());
+                        }
+                    }
+                }                
+            }
+        }
+
+        if (count($elementIdsToUpdate)) {
+            $ids = array_unique($elementIdsToUpdate);
+            $elementIdsString = '"'.implode(',', $ids).'"';
+            $this->asyncService->callCommand('app:elements:updateJson', ['ids' => $elementIdsString]);
         }
     }
 }
