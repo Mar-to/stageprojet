@@ -357,14 +357,17 @@ class ElementRepository extends DocumentRepository
 
     public function findDataCustomProperties()
     {
-        return GoGoHelper::executeMongoCommand($this->getDocumentManager(), "
-            var props = [];
-            db.Element.find({}).forEach(function(e) {
-                for(var prop in e.data) {
-                    if (props.indexOf(prop) == -1) props.push(prop);
-                }
-            });
-            return props;")['retval'];  
+        // Run this command manually cause objectToArray has not yet been imlpement in Doctrine MongoDB (01/2021)
+        $collection = $this->getDocumentManager()->getCollection('Element');
+        $result = $collection->aggregate([
+            ['$project' => ["arrayofkeyvalue" => ['$objectToArray' => '$data']]],
+            ['$unwind' => '$arrayofkeyvalue'],
+            ['$group' => [
+                "_id" => null,
+                "allkeys" => ['$addToSet' => '$arrayofkeyvalue.k']
+            ]]
+        ]);
+        return $result['result'][0]['allkeys'] ?? [];
     }
 
     public function findAllCustomProperties()

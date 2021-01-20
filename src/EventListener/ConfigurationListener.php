@@ -70,10 +70,15 @@ class ConfigurationListener
         $newSearchIndex = $this->calculateSearchIndexConfig($newFormFields);
 
         if ($oldSearchIndex != $newSearchIndex) {
-            $command = 'db.Element.dropIndex("name_text");'; // Default index created by doctrine
-            $command .= 'db.Element.dropIndex("search_index");';
-            $command .= "db.Element.createIndex( {$newSearchIndex["fields"]}, { name: \"search_index\", default_language: \"french\", weights: {$newSearchIndex["weights"]} });";
-            return GoGoHelper::executeMongoCommand($dm, $command);
+            $db = $dm->getDB();
+            $db->command(["deleteIndexes" => 'Element',"index" => "name_text"]);
+            $db->command(["deleteIndexes" => 'Element',"index" => "search_index"]);
+            $db->selectCollection('Element')->createIndex($newSearchIndex["fields"], [
+                'name' => "search_index", 
+                "default_language" => "french", 
+                "weights" => $newSearchIndex["weights"]
+            ]);
+            return ;
         }
     }
 
@@ -94,6 +99,6 @@ class ConfigurationListener
             $indexConf = ['name' => 'text'];
             $indexWeight = ['name' => 1];
         }
-        return ['fields' => json_encode($indexConf), 'weights' => json_encode($indexWeight)];
+        return ['fields' => $indexConf, 'weights' => $indexWeight];
     }
 }

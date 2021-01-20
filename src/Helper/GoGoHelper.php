@@ -6,12 +6,6 @@ use App\Document\Configuration;
 
 class GoGoHelper
 {
-    static function executeMongoCommand($dm, $command) {
-        $mongo = $dm->getConnection()->getMongoClient();
-        $db = $mongo->selectDB($dm->getConfiguration()->getDefaultDB());
-        return $db->execute($command);
-    }
-
     // Extract the name of the Element fields used in a nunjuck template
     static function extractFieldsUsedInTemplate($string) {
         $matches = [];
