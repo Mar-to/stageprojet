@@ -74,7 +74,7 @@ class ImportAdminController extends Controller
         if ($request->get('direct')) {
             $importService->startImport($object);
         } else {
-            $asyncService->callCommand('app:elements:importSource', [$object->getId()]);
+            $asyncService->callCommand('app:elements:importSource', [$object->getId(), $manuallystarted = true]);
         }
 
         $redirectionUrl = $this->admin->generateUrl('edit', ['id' => $object->getId()]);

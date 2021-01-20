@@ -94,11 +94,11 @@ class GoGoAbstractCommand extends Command
 
     protected function error($message)
     {
-        $message = "DB {$this->dm->getConfiguration()->getDefaultDB()} : $message";
-        $this->logger->error($message);
-        $this->output->writeln('ERROR '.$message);
         $log = new GoGoLog(GoGoLogLevel::Error, 'Error running '.$this->getName().' : '.$message);
         $this->dm->persist($log);
+        $message = "DB {$this->dm->getConfiguration()->getDefaultDB()} : $message";
+        $this->logger->error($message);
+        $this->output->writeln('ERROR '.$message);        
         $this->dm->flush();
     }
 }
