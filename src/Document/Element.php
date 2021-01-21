@@ -378,9 +378,7 @@ class Element
 
     public function isSynchedWithExternalDatabase()
     {
-        // TODO is should be configured on the external source (i.e the import)
-        // not all the import will want the imported data to be editable and synchronized
-        return $this->getIsExternal() && $this->getSource()->getSourceType() == 'osm';
+        return $this->getIsExternal() && $this->getSource()->getIsSynchronized();
     }
 
     public function getShowUrlFromController($router)

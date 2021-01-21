@@ -9,15 +9,15 @@
         <th>{{ key }}</th>
         <td>
           {% set type = "text" %}
-          {% set disabled = false %}
+          {% set readonly = false %}
           {% if not is_string(value) and not is_numeric(value) %}
-            {% set disabled = true %}
+            {% set readonly = true %}
             {% set value = value|json_encode %}
           {% endif %}
           {% if key matches '/^osm\:/' %}
-            {% set disabled = true %}
+            {% set readonly = true %}
           {% endif %}
-          <input type="{{ type }}" class="form-control" {{ disabled ? 'disabled="disabled"' : '' }}
+          <input type="{{ type }}" class="form-control" {{ readonly ? 'readonly="readonly"' : '' }}
                     name="{{ 'data[' ~ key ~ ']'}}" value="{{ value }}" />
         </td>
       </tr>
