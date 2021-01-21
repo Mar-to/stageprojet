@@ -41,7 +41,8 @@ class ElementSynchronizationService
                     'verbose' => true
                 ]);
 
-                $osmFeature = $this->elementToOsm($contribution->getElement());
+                $element = $contribution->getElement();
+                $osmFeature = $this->elementToOsm($element);
 
                 // Get URL of current map
                 $url = $this->urlService->generateUrl();
@@ -53,7 +54,7 @@ class ElementSynchronizationService
                     // Process contribution
                     // New feature
                     if($preparedData['action'] == 'add') {
-                        if($preparedData['data']['osm:type'] == 'node') {
+                        if($element->getProperty('osm:type') == 'node') {
                             $toAdd = $osm->createNode($osmFeature['center']['latitude'], $osmFeature['center']['longitude'], $osmFeature['tags']);
                         }
                     }
@@ -61,7 +62,7 @@ class ElementSynchronizationService
                     else if($preparedData['action'] == 'edit') {
                         $existingFeature = null;
 
-                        switch($preparedData['data']['osm:type']) {
+                        switch($element->getProperty('osm:type')) {
                             case 'node':
                                 $existingFeature = $osm->getNode($osmFeature['osmId']);
                                 break;
@@ -87,7 +88,7 @@ class ElementSynchronizationService
                                 }
 
                                 // If node coordinates are edited, check if it is detached
-                                if($preparedData['data']['osm:type'] == 'node' && (!$existingFeature->getWays()->valid() || $existingFeature->getWays()->count() == 0)) {
+                                if($element->getProperty('osm:type') == 'node' && (!$existingFeature->getWays()->valid() || $existingFeature->getWays()->count() == 0)) {
                                     if($osmFeature['center']['latitude'] != $existingFeature->getLat()) {
                                         $existingFeature->setLat($osmFeature['center']['latitude']);
                                     }
@@ -130,10 +131,35 @@ class ElementSynchronizationService
                         $changeset->add($toAdd);
 
                         // Close changeset
-                        if($changeset->commit()) {
+                        try {
+                            $changeset->commit();
+
+                            // Update version in case of feature edit
+                            if($preparedData['action'] == 'edit') {
+                                $toUpdateInDb = null;
+                                switch($element->getProperty('osm:type')) {
+                                    case 'node':
+                                        $toUpdateInDb = $osm->getNode($osmFeature['osmId']);
+                                        break;
+                                    case 'way':
+                                        $toUpdateInDb = $osm->getWay($osmFeature['osmId']);
+                                        break;
+                                    case 'relation':
+                                        $toUpdateInDb = $osm->getRelation($osmFeature['osmId']);
+                                        break;
+                                }
+
+                                if($toUpdateInDb) {
+                                    $element->setCustomProperty('osm:version', $toUpdateInDb->getVersion());
+                                    $element->setCustomProperty('osm:timestamp', strval($toUpdateInDb->getAttributes()->timestamp));
+                                    $this->dm->persist($element);
+                                    $this->dm->flush();
+                                }
+                            }
+
                             return $promise->resolve(new Response(200, [], null, '1.1', 'Success'));
                         }
-                        else {
+                        catch(Exception $e) {
                             $message = 'Error when sending changeset';
                             $log = new GoGoLog(GoGoLogLevel::Error, 'Error during OSM sync : '.$message);
                             $this->dm->persist($log);
@@ -152,7 +178,7 @@ class ElementSynchronizationService
                 }
             }
             catch(Exception $e) {
-                return $promise->resolve(new Response(200, [], null, '1.1', $e->getMessage()));
+                return $promise->resolve(new Response(500, [], null, '1.1', $e->getMessage()));
             }
         });
 
@@ -249,7 +275,7 @@ class ElementSynchronizationService
     private function allowOsmUpload($contribution, $preparedData) {
         return $contribution->hasBeenAccepted()
             && $preparedData['action'] != 'delete'
-            && ($preparedData['action'] == 'edit' || ($preparedData['action'] == 'add' && $preparedData['data']['osm:type'] == 'node'));
+            && ($preparedData['action'] == 'edit' || ($preparedData['action'] == 'add' && $contribution->getElement()->getProperty('osm:type') == 'node'));
     }
 
     /**
