@@ -36,11 +36,9 @@ class MigrationCommand extends Command
       // v3.2
       'db.Configuration.updateMany({}, {$set: {"user.loginWithLesCommuns": true, "user.loginWithLesGoogle": true, "user.loginWithFacebook": true}});',
       'db.Option.updateMany({}, {$set: {osmTags: {}}})',
-      'db.Element.find({ privateData: { $exists: true, $ne: {} } }).forEach(function(e) {
-        for(var prop in e.privateData) { e.data[prop] = e.privateData[prop]; }
-        delete e.privateData;
-        db.Element.save(e);
-      });'
+      'var mapping = {}; 
+       db.Element.find({ privateData: { $exists: true, $ne: {} } }).forEach(function(doc){Object.keys(doc.privateData).forEach(function(key){mapping["privateData." + key]="data." + key})}); 
+       db.Element.updateMany({ privateData: { $exists: true, $ne: {} } }, {$rename: mapping})'
     ];
 
     public static $commands = [
