@@ -59,12 +59,12 @@ class ProjectUpdateCommand extends Command
                 $interval = new \DateInterval('PT24H');
                 $project->setNextUpdateAt($dateNow->add($interval));
                 // Update Project Info - return false means the project is wrongly configured, like without config
-                if (!$this->updateProjectInfo($project)) {
-                    return;
-                }
+                $result = $this->updateProjectInfo($project);
 
                 $rootDm->persist($project);
                 $rootDm->flush();
+
+                if (!$result) return;
 
                 $this->logger->info("---- PROJECT {$project->getDbName()} : Update infos & run daily commands");
 
