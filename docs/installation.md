@@ -103,7 +103,7 @@ Here are the following cron tab you need to configure
 
 @daily php GOGOCARTO_DIR/bin/console --env=prod app:projects:check-for-deleting
 # Next one is for custom domain, it works only with NGINX
-* * * * * cd GOGOCARTO_DIR && sh bin/execute_custom_domain.sh
+0 * * * * cd GOGOCARTO_DIR &&bash bin/execute_custom_domain.sh
 ```
 
 ### Updating GoGoCarto
