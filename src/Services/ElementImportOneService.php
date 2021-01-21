@@ -176,18 +176,17 @@ class ElementImportOneService
             } else {
                 if ($updateExisting) {
                     $element = $this->elementService->savePendingModification($element);
-                    $this->elementService->createPending($element, true, null);
+                    $this->elementService->createPending($element, true, null, true);
                 } else {
-                    $this->elementService->createPending($element, false, null);
+                    $this->elementService->createPending($element, false, null, true);
                 }
             }
         } else {
             if ($updateExisting) {
-                // create edit contribution
-                $this->interactionService->createContribution($element, null, 1, $element->getStatus());
+                // edit, do not create contribution
             } else {
                 // create import contribution if first time imported
-                $this->interactionService->createContribution($element, null, 0, $element->getStatus());
+                $this->interactionService->createContribution($element, null, 4, $element->getStatus(), null, null, true);
             }
         }
 

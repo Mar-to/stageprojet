@@ -29,7 +29,7 @@ class ElementPendingService
     // When element in added or modified by non admin, we go throw this function
     // It create an appropriate contribution, and set the status to pending
     // We could also send a confirmation mail to the contributor for example
-    public function createPending($element, $editMode, $userEmail)
+    public function createPending($element, $editMode, $userEmail, $automatic = false)
     {
         // in case user edit it's own contribution, the element is still pending, and
         // we want to make it pending again. So we resolve the previous contribution
@@ -37,7 +37,7 @@ class ElementPendingService
             $element->getCurrContribution()->setStatus(ElementStatus::ModifiedByOwner);
         }
 
-        $contribution = $this->interactionService->createContribution($element, null, $editMode ? 1 : 0, null, false, $userEmail);
+        $this->interactionService->createContribution($element, null, $editMode ? 1 : 0, null, false, $userEmail, $automatic);
 
         $element->setStatus($editMode ? ElementStatus::PendingModification : ElementStatus::PendingAdd);
 

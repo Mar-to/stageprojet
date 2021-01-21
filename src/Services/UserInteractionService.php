@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Document\ElementStatus;
 use App\Document\UserInteractionContribution;
+use App\Document\InteractionType;
 use App\Document\Webhook;
 use App\Document\WebhookPost;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -26,22 +27,22 @@ class UserInteractionService
         $this->webhooks = $this->dm->getRepository(Webhook::class)->findAll();
     }
 
-    public function createContribution($element, $message, $interactType, $status, $directModerationWithHash = false, $email = null)
+    public function createContribution($element, $message, $interactType, $status, $directModerationWithHash = false, $email = null, $automatic = false)
     {
         $contribution = new UserInteractionContribution();
         $contribution->setType($interactType);
-        $contribution->updateUserInformation($this->securityContext, $email, $directModerationWithHash);
+        $contribution->updateUserInformation($this->securityContext, $email, $directModerationWithHash, $automatic);
         $contribution->setResolvedMessage($message);
 
         // pending contribution does not have status
         if ($status) {
-            $contribution->updateResolvedBy($this->securityContext, null, $directModerationWithHash);
+            $contribution->updateResolvedBy($this->securityContext, null, $directModerationWithHash, $automatic);
             $contribution->setStatus($status);
         }
 
         // Create webhook posts to be dispatched
         // for Pending contributions, we will wait for the status to be set (i.e. contribution is resolved) before dipatching those events
-        if (6 != $interactType) { // 6 = InteractionType::ModerationResolved
+        if (!$automatic && $interactType != InteractionType::ModerationResolved) { 
             foreach ($this->webhooks as $webhook) {
                 $this->createPostFor($contribution, $webhook);
             }            
