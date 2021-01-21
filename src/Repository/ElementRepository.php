@@ -357,17 +357,29 @@ class ElementRepository extends DocumentRepository
 
     public function findDataCustomProperties()
     {
-        // Run this command manually cause objectToArray has not yet been imlpement in Doctrine MongoDB (01/2021)
-        $collection = $this->getDocumentManager()->getCollection('Element');
-        $result = $collection->aggregate([
-            ['$project' => ["arrayofkeyvalue" => ['$objectToArray' => '$data']]],
-            ['$unwind' => '$arrayofkeyvalue'],
-            ['$group' => [
-                "_id" => null,
-                "allkeys" => ['$addToSet' => '$arrayofkeyvalue.k']
-            ]]
-            ], ['cursor' => true]);
-        return $result['result'][0]['allkeys'] ?? [];
+        if ($_ENV['MONGO_VERSION'] == 4) {
+            // Run this command manually cause objectToArray has not yet been imlpement in Doctrine MongoDB (01/2021)
+            $collection = $this->getDocumentManager()->getCollection('Element');
+            $result = $collection->aggregate([
+                ['$project' => ["arrayofkeyvalue" => ['$objectToArray' => '$data']]],
+                ['$unwind' => '$arrayofkeyvalue'],
+                ['$group' => [
+                    "_id" => null,
+                    "allkeys" => ['$addToSet' => '$arrayofkeyvalue.k']
+                ]]
+                ], ['cursor' => true]);
+            return $result['result'][0]['allkeys'] ?? [];
+        } else {
+            $result =  $this->getDocumentManager()->getDB()->execute("
+                var props = [];
+                db.Element.find({}).forEach(function(e) {
+                    for(var prop in e.data) {
+                        if (props.indexOf(prop) == -1) props.push(prop);
+                    }
+                });
+                return props;");
+            return $result['retval'];  
+        }
     }
 
     public function findAllCustomProperties()
