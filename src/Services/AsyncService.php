@@ -41,7 +41,6 @@ class AsyncService
             $commandline .= ' '.$arg;
         }
         $commandline .= ' '.$dbname;
-        $commandline .= ' > /tmp/command.log 2>/tmp/command.log';
         if (!$this->runSynchronously) {
             $commandline .= ' &';
         }
@@ -52,11 +51,9 @@ class AsyncService
     protected function runProcess($commandline)
     {
         $process = Process::fromShellCommandline($commandline);
+        $process->disableOutput();
         $process->setTimeout(0);
-        $process->start();
-        if ($this->runSynchronously) {
-            $process->wait();
-        }
+        $process->run();
 
         return $process->getPid();
     }
