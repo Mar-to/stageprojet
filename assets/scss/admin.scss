@@ -100,3 +100,9 @@ pre {
     height: 30px;
     padding: 3px 12px;
 }
+.select2-container .select2-choice {
+    height: 30px;
+}
+.select2-choice>span:first-child, .select2-chosen, .select2-container .select2-choices .select2-search-field input {
+    padding: 5px 12px;
+}
