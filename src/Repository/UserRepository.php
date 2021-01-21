@@ -20,6 +20,6 @@ class UserRepository extends DocumentRepository
         return $qb->field('newsletterFrequency')->gt(NewsletterFrequencyOptions::Never)
                 ->field('nextNewsletterDate')->lte(new \DateTime())
                 ->limit($limit)
-                ->execute();
+                ->getArray();
     }
 }

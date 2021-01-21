@@ -40,7 +40,7 @@ final class NewsletterCommand extends GoGoAbstractCommand
         if ($this->remainingEmailsCount <= 0) return; 
 
         $users = $dm->get('User')->findNeedsToReceiveNewsletter($this->remainingEmailsCount);
-        $usersCount = $users->count();
+        $usersCount = count($users);
         $this->remainingEmailsCount -= $usersCount;
 
         if ($usersCount)
