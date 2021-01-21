@@ -134,8 +134,8 @@ gogo-update: ## Update a PROD server to the lastest version of gogocarto
 	$(YARN) install
 	$(GULP) build
 	$(GULP) production
-	$(YARN) encore production		
-	$(SYMFONY) db:migrate
-	make purge
+	$(YARN) encore production	
+	make purge	
+	$(SYMFONY) db:migrate	
 	make hide-deploy-message
 	service cron start
