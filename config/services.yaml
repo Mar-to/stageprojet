@@ -231,6 +231,12 @@ services:
         arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: App Mobile }
+    
+    admin.custom_js_css_config:
+        class: App\Admin\ConfigurationCustomJsCssAdmin
+        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Custom Css / Js }
 
     admin.email_config:
         class: App\Admin\ConfigurationMailAdmin
