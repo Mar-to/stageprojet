@@ -37,9 +37,9 @@ class UrlService
         elseif($domainName instanceof Configuration) {
             $config = $domainName;
             $domainName = $domainName->getDbName();
-        }        
-        
-        if ($config && $config->getCustomDomain()) {
+        }     
+        // When using from a command (without REQUEST) we want to use the customDomain (for emails for example)
+        if ($config && $config->getCustomDomain() && empty($_REQUEST)) {
             $url .= rtrim($config->getCustomDomain(), '/');
         } else {
             $url .= "$this->baseProtocol://";

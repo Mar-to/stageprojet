@@ -6,15 +6,16 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 class GoGoCartoJsService
 {
     public function __construct(DocumentManager $dm, TokenStorageInterface $securityContext, 
-                                UrlService $urlService, SessionInterface $session)
+                                RouterInterface $router, SessionInterface $session)
     {
         $this->dm = $dm;
         $this->securityContext = $securityContext;
-        $this->urlService = $urlService;
+        $this->router = $router;
         $this->session = $session;
     }
 
@@ -227,6 +228,6 @@ class GoGoCartoJsService
 
     private function getAbsolutePath($route, $params = [])
     {
-        return $this->urlService->generateUrl($route, $params);
+        return $this->router->generate($route, $params, UrlGeneratorInterface::ABSOLUTE_URL);
     }
 }
