@@ -35,4 +35,5 @@ export default {
     .btn.btn-icon i {
         margin: 0;
     }
+    .btn-icon { padding: 4px 10px;}
 </style>

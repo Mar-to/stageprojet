@@ -88,6 +88,7 @@ export default {
     .condition-container {
         display: flex;
         align-items: center;
+        .btn-icon { padding: 4px 10px;}
     }
     .condition {
         display: flex;
