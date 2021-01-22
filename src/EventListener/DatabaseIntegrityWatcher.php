@@ -106,8 +106,9 @@ class DatabaseIntegrityWatcher
     public function postRemove(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $args): void
     {
         $document = $args->getDocument();
-        $dm = $args->getDocumentManager();
-        
+        if ($document instanceof Import || $document instanceof ImportDynamic) {
+            $this->asyncService->callCommand('app:import:remove', ['importId' => $document->getId()]);
+        }
     }
 
     public function preUpdate(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $args)
