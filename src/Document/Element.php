@@ -370,10 +370,10 @@ class Element
         }
     }
 
-    public function isReadOnly()
+    public function isEditable()
     {
         if (!$this->getSource()) return true;
-        return !$this->isSynchedWithExternalDatabase();
+        return $this->isSynchedWithExternalDatabase();
     }
 
     public function isSynchedWithExternalDatabase()
