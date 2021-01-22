@@ -106,7 +106,7 @@ class ProjectUpdateCommand extends Command
         }
         $haveWebhooks = $dm->query('Webhook')->count()->execute() > 0
                      || $dm->query('Import')->field('isSynchronized')->equals(true)->getCount() > 0;
-        $haveNewsletter = $config->getNewsletterMail()->getActive()
+        $haveNewsletter = $config->getNewsletterMail() && $config->getNewsletterMail()->getActive()
                        && $dm->query('User')->field('newsletterFrequency')->gt(0)->getCount() > 0;
         
         $project->setName($config->getAppName());
