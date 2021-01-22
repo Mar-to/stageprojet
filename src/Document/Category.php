@@ -147,7 +147,7 @@ class Category
     /**
      * @var string
      * @Exclude
-     * @MongoDB\Field(type="boolean")
+     * @MongoDB\Field(type="boolean") @MongoDB\Index
      */
     private $isRootCategory = false;
 

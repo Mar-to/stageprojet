@@ -30,7 +30,7 @@ class UserInteractionReport extends UserInteraction
     private $comment;
 
     /**
-     * @MongoDB\Field(type="bool")
+     * @MongoDB\Field(type="bool") @MongoDB\Index
      */
     private $isResolved;
 

@@ -326,9 +326,9 @@ class APIController extends GoGoController
     {
         $qb = $dm->query('GoGoLog');
         $qb->updateMany()
-       ->field('type')->notEqual('update')
-       ->field('hidden')->equals(false)
-       ->field('hidden')->set(true)->execute();
+            ->field('type')->notEqual('update')
+            ->field('hidden')->equals(false)
+            ->field('hidden')->set(true)->execute();
 
         return $this->redirectToRoute('sonata_admin_dashboard');
     }
@@ -337,9 +337,9 @@ class APIController extends GoGoController
     {
         $qb = $dm->query('GoGoLogUpdate');
         $qb->updateMany()
-       ->field('type')->equals('update')
-       ->field('hidden')->equals(false)
-       ->field('hidden')->set(true)->execute();
+            ->field('type')->equals('update')
+            ->field('hidden')->equals(false)
+            ->field('hidden')->set(true)->execute();
 
         return $this->redirectToRoute('sonata_admin_dashboard');
     }

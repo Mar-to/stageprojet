@@ -16,14 +16,15 @@ class WebhookPost
     /** 
      * If webhook is null, it mean it a special WebhookPost which mean custom handling
      * (for example for OSM). See WekbookService
+     * @MongoDB\Index
      * @MongoDB\ReferenceOne(targetDocument="App\Document\Webhook", cascade={"persist"}) 
      * */
     public $webhook;
 
-    /** @MongoDB\Field(type="int") */
+    /** @MongoDB\Field(type="int") @MongoDB\Index */
     public $numAttempts;
 
-    /** @MongoDB\Field(type="date") */
+    /** @MongoDB\Field(type="date") @MongoDB\Index */
     public $nextAttemptAt;
 
     // non persisted attributes

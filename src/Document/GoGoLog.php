@@ -55,8 +55,8 @@ class GoGoLog
 
     /**
      * @var bool
-     *           When user click "dismiss" log, it will not appear again
-     * @MongoDB\Field(type="bool")
+     * When user click "dismiss" log, it will not appear again
+     * @MongoDB\Field(type="bool") @MongoDB\Index
      */
     private $hidden = false;
 

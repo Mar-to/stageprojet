@@ -85,6 +85,9 @@ class ProjectUpdateCommand extends Command
     {
         $dm = $this->dmFactory->createForDB($project->getDbName());
 
+        // ensure index are up to date
+        $dm->getSchemaManager()->updateIndexes();
+
         $config = $dm->get('Configuration')->findConfiguration();
         if (!$config) {
             $this->logger->error("Project {$project->getDomainName()} does not have config");

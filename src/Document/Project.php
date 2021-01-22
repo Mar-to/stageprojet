@@ -10,6 +10,9 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @MongoDB\Document
  * @Unique(fields="name")
  * @Unique(fields="domainName")
+ * @MongoDB\Indexes({
+ *   @MongoDB\Index(keys={"name"="text"})
+ * })
  */
 class Project
 {
@@ -21,14 +24,14 @@ class Project
     private $id;
 
     /**
-     * @MongoDB\Field(type="string")
+     * @MongoDB\Field(type="string") @MongoDB\Index
      */
     private $name;
 
     /**
      * domain-name.my-server-url.org.
      *
-     * @MongoDB\Field(type="string")
+     * @MongoDB\Field(type="string") @MongoDB\Index
      */
     private $domainName;
 
@@ -41,16 +44,16 @@ class Project
     /** @MongoDB\Field(type="string") */
     private $description;
 
-    /** @MongoDB\Field(type="int") */
+    /** @MongoDB\Field(type="int") @MongoDB\Index */
     private $dataSize = 0;
 
     /** @MongoDB\Field(type="string") */
     private $adminEmails;
 
-    /** @MongoDB\Field(type="date") */
+    /** @MongoDB\Field(type="date") @MongoDB\Index */
     private $lastLogin;
 
-    /** @MongoDB\Field(type="date") */
+    /** @MongoDB\Field(type="date") @MongoDB\Index */
     private $warningToDeleteProjectSentAt;
 
     /** @MongoDB\Field(type="string") */
@@ -58,14 +61,14 @@ class Project
 
     /**
     * Pin some project to make them more visible on home page
-    * @MongoDB\Field(type="bool")
+    * @MongoDB\Field(type="bool") @MongoDB\Index
     */
     private $pinned = false;
 
     /**
      * @var date
      *
-     * @MongoDB\Field(type="date")
+     * @MongoDB\Field(type="date") @MongoDB\Index
      * @Gedmo\Timestampable(on="create")
      */
     private $createdAt;
@@ -73,7 +76,7 @@ class Project
     /**
     * Each project can choose to be published or not on the home project list
     *
-    * @MongoDB\Field(type="bool")
+    * @MongoDB\Field(type="bool") @MongoDB\Index
     */
     private $published;
 
@@ -84,17 +87,17 @@ class Project
 
     /**
      * Each project is updated on a regular basis, i.e. every day for example
-     * @MongoDB\Field(type="date")
+     * @MongoDB\Field(type="date") @MongoDB\Index
      */
     private $nextUpdateAt;
 
     /**
-    * @MongoDB\Field(type="bool")
+    * @MongoDB\Field(type="bool") @MongoDB\Index
     */
     private $haveWebhooks;
 
     /**
-    * @MongoDB\Field(type="bool")
+    * @MongoDB\Field(type="bool") @MongoDB\Index
     */
     private $haveNewsletter;
 

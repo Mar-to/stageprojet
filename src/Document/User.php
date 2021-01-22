@@ -52,7 +52,7 @@ class User extends BaseUser
      * Newletter sending the recently added elements
      * See NewsletterFrequencyOptions.
      *
-     * @MongoDB\Field(type="int")
+     * @MongoDB\Field(type="int") @MongoDB\Index
      */
     protected $newsletterFrequency;
 
@@ -73,7 +73,7 @@ class User extends BaseUser
     /**
      * The date where the next newsletter has to be send.
      *
-     * @MongoDB\Field(type="date")
+     * @MongoDB\Field(type="date") @MongoDB\Index
      */
     protected $nextNewsletterDate;
 
@@ -146,7 +146,7 @@ class User extends BaseUser
 
     /**
      * @var bool
-     * @MongoDB\Field(type="boolean")
+     * @MongoDB\Field(type="boolean") @MongoDB\Index
      */
     protected $enabled;
 

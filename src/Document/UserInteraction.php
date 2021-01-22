@@ -63,6 +63,7 @@ class UserInteraction
      * @var \stdClass
      *
      * Elements related to this interaction
+     * @MongoDB\Index
      * @MongoDB\ReferenceOne(targetDocument="App\Document\Element")
      */
     protected $element;
@@ -88,7 +89,7 @@ class UserInteraction
     /**
      * @var date
      *
-     * @MongoDB\Field(type="date")
+     * @MongoDB\Field(type="date") @MongoDB\Index
      * @Gedmo\Timestampable(on="create")
      */
     protected $createdAt;
@@ -96,7 +97,7 @@ class UserInteraction
     /**
      * @var date
      *
-     * @MongoDB\Field(type="date")
+     * @MongoDB\Field(type="date") @MongoDB\Index
      */
     protected $updatedAt;
 

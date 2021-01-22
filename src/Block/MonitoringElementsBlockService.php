@@ -49,7 +49,7 @@ class MonitoringElementsBlockService extends AbstractBlockService
         $visibleNonImportedElements = $this->dm->get('Element')->findVisibles(true, true);
         $activeUsersCount = $this->dm->query('User')->field('enabled')->equals(true)->count()->execute();
         $activeUsersNewsletterCount = $this->dm->query('User')->field('enabled')->equals(true)
-                                                                                        ->field('newsletterFrequency')->gt(NewsletterFrequencyOptions::Never)->count()->execute();
+                                            ->field('newsletterFrequency')->gt(NewsletterFrequencyOptions::Never)->count()->execute();
 
         $errors = $this->dm->get('GoGoLog')->findBy(['level' => 'error', 'hidden' => false]);
         usort($errors, function ($a, $b) { return $b->getCreatedAt()->getTimestamp() - $a->getCreatedAt()->getTimestamp(); });

@@ -10,17 +10,17 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 class PostalAddress
 {
     /**
-     * @MongoDB\Field(type="string")
+     * @MongoDB\Field(type="string") @MongoDB\Index
      */
     private $streetAddress;
 
     /**
-     * @MongoDB\Field(type="string")
+     * @MongoDB\Field(type="string") @MongoDB\Index
      */
     private $addressLocality;
 
     /**
-     * @MongoDB\Field(type="string")
+     * @MongoDB\Field(type="string") @MongoDB\Index
      */
     private $postalCode;
 

@@ -87,7 +87,7 @@ class Element
     /**
      * If element need moderation we write here the type of modification needed.
      *
-     * @MongoDB\Field(type="int")
+     * @MongoDB\Field(type="int") @MongoDB\Index
      */
     private $moderationState = 0;
 
@@ -212,7 +212,7 @@ class Element
     /**
      * The source from where the element has been imported or created.
      *
-     * @MongoDB\ReferenceOne(targetDocument="App\Document\Import")
+     * @MongoDB\ReferenceOne(targetDocument="App\Document\Import") @MongoDB\Index
      */
     private $source;
 
@@ -227,7 +227,7 @@ class Element
 
     /**
      * potential duplicates stored by detect duplicate bulk action.
-     *
+     * @MongoDB\Index
      * @MongoDB\ReferenceMany(targetDocument="App\Document\Element")
      */
     private $potentialDuplicates;
@@ -236,14 +236,14 @@ class Element
      * To simlifu duplicates process, we store the element which have been treated in the duplicates detection
      * Because if we check duplicates for element A, and element B and C are detected as potential duplicates, then
      * we do not detect duplicates for B and C.
-     *
+     * @MongoDB\Index
      * @MongoDB\Field(type="bool", nullable=true)
      */
     private $isDuplicateNode = false;
 
     /**
      * Mark some element as Non duplicates, so if we run again the duplicate detection they will not be detected.
-     *
+     * @MongoDB\Index
      * @MongoDB\ReferenceMany(targetDocument="App\Document\Element")
      */
     private $nonDuplicates;
@@ -299,14 +299,14 @@ class Element
     private $randomHash;
 
     /**
-     * @MongoDB\Field(type="string")
+     * @MongoDB\Field(type="string") @MongoDB\Index
      */
     private $userOwnerEmail;
 
     /**
      * Shorcut to know if this element is managed by a dynamic source.
      *
-     * @MongoDB\Field(type="bool")
+     * @MongoDB\Field(type="bool") @MongoDB\Index
      */
     private $isExternal;
 
@@ -314,7 +314,7 @@ class Element
      * When actions are made by many person (like moderation, duplicates check...) we lock the elements currently proceed by someone
      * so noone else make action on the same element.
      *
-     * @MongoDB\Field(type="int")
+     * @MongoDB\Field(type="int") @MongoDB\Index
      */
     private $lockUntil = 0;
 
