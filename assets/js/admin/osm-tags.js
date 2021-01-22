@@ -1,7 +1,7 @@
 import Vue from 'vue/dist/vue.esm'
 import OsmCondition from './element-import/OsmQueryBuilderCondition.vue'
 
-$(document).on('ready', function() {
+document.addEventListener('DOMContentLoaded', function() {
     if ($('.osm-tags-field').length > 0) {
         new Vue({
             el: ".osm-tags-field",

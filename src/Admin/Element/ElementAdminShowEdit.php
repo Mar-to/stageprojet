@@ -28,6 +28,8 @@ class ElementAdminShowEdit extends ElementAdminList
         $this->config = $dm->get('Configuration')->findConfiguration();  
         $categories = $dm->query('Option')->select('name')->getArray();
         $categoriesChoices = array_flip($categories);
+        $elementProperties = $dm->get('Element')->findDataCustomProperties();
+        $elementProperties = array_values(array_diff($elementProperties, array_keys($this->getSubject()->getData())));
         
         $formMapper
           ->with('Informations générales', ['class' => 'col-md-6'])
@@ -37,7 +39,12 @@ class ElementAdminShowEdit extends ElementAdminList
               'multiple' => true,
               'choices' => $categoriesChoices,
               'label' => 'Catégories'], ['admin_code' => 'admin.option_hidden'])
-            ->add('data', null, ['label_attr' => ['style' => 'display:none;'], 'attr' => ['class' => 'gogo-element-data']])
+            ->add('data', null, [
+              'label_attr' => ['style' => 'display:none;'], 
+              'attr' => [
+                'class' => 'gogo-element-data',
+                'data-props' => json_encode($elementProperties)
+              ]])
             ->add('userOwnerEmail', EmailType::class, ['required' => false, 'label' => "Email de l'utilisateur propriétaire de cette fiche"])
             ->add('email', EmailType::class, ['required' => false, 'label' => "Email de l'élément"])
             ->add('images', CollectionType::class, [

@@ -1,5 +1,5 @@
 // CONFIGURATION ADMIN, disable the whole feature box according to checkbox "feature active"
-$(document).ready(function() {
+document.addEventListener('DOMContentLoaded', function() {
     checkCollaborativeVoteActivated();
     $('.collaborative-feature .sonata-ba-field.sonata-ba-field-inline-natural > .form-group:first-child .icheckbox_square-blue .iCheck-helper').click(checkCollaborativeVoteActivated);
 
