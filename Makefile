@@ -63,8 +63,8 @@ yarn-install: yarn.lock ## Install npm vendors according to the current yarn.loc
 	$(YARN) install
 
 build: ## Build the assets
-	$(GULP) build
 	$(YARN) encore dev
+	$(GULP) build	
 
 watch:
 	$(GULP) watch &
