@@ -16,7 +16,7 @@ use App\Document\ImportDynamic;
 use App\Document\Option;
 use App\Document\Webhook;
 use App\Services\AsyncService;
-
+use Sonata\DoctrineMongoDBAdminBundle\Model\ModelManager;
 /* check database integrity : for example when removing an option, need to remove all references to this options */
 class DatabaseIntegrityWatcher
 {
@@ -50,10 +50,6 @@ class DatabaseIntegrityWatcher
                     $user->removeGroup($group);
                 }
             }
-        } elseif ($document instanceof Import || $document instanceof ImportDynamic) {
-            $import = $document;
-            $qb = $dm->query('Element');
-            $qb->remove()->field('source')->references($import)->execute();
         } elseif ($document instanceof Webhook) {
             $webhook = $document;
             $contributions = $dm->query('UserInteractionContribution')
@@ -105,6 +101,13 @@ class DatabaseIntegrityWatcher
                 $config->setDefaultTileLayer(null);
             }
         }
+    }
+
+    public function postRemove(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $args): void
+    {
+        $document = $args->getDocument();
+        $dm = $args->getDocumentManager();
+        
     }
 
     public function preUpdate(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $args)

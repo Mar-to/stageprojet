@@ -235,9 +235,6 @@ class ElementAdminBulkController extends Controller
                 $this->trans('flash_batch_delete_error', [], 'SonataAdminBundle')
             );
         }
-        // $selectedModelQuery->findAndRemove()->execute();
-
-        $this->dm->createQueryBuilder(UserInteractionContribution::class)->field('element.id')->in($elementIds)->remove()->execute();
 
         $this->dm->flush();
 

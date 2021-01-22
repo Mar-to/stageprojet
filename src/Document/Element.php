@@ -96,7 +96,7 @@ class Element
      *
      * Users can report some problem related to the Element (no more existing, wrong informations...)
      *
-     * @MongoDB\ReferenceMany(targetDocument="App\Document\UserInteractionReport", cascade={"persist", "delete"})
+     * @MongoDB\ReferenceMany(targetDocument="App\Document\UserInteractionReport", cascade={"persist", "remove"})
      */
     private $reports;
 
@@ -105,7 +105,7 @@ class Element
      *
      * History of users contributions (add, edit, by whom, how many votes etc...)
      *
-     * @MongoDB\ReferenceMany(targetDocument="App\Document\UserInteractionContribution", cascade={"persist", "delete"})
+     * @MongoDB\ReferenceMany(targetDocument="App\Document\UserInteractionContribution", cascade={"persist", "remove"})
      */
     private $contributions;
 
@@ -115,7 +115,7 @@ class Element
      * When a user propose a modification to an element, the modified element in saved in this attributes,
      * so we keep recording both versions (the old one and the new one) and so we can display the diff
      *
-     * @MongoDB\ReferenceOne(targetDocument="App\Document\Element", cascade={"persist", "delete"})
+     * @MongoDB\ReferenceOne(targetDocument="App\Document\Element", cascade={"persist", "remove"})
      */
     private $modifiedElement;
 

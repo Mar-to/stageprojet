@@ -155,7 +155,8 @@ class ElementImportService
                 $previouslyImportedElementIds = $qb->field('source')->references($import)->getIds();
             } else {
                 // before re importing a static source, we delete all previous items
-                $qb->remove()->field('source')->references($import)->execute();
+                $qb->field('source')->references($import)->batchRemove();
+                $this->dm->persist($import); // batch remove call a dm->clear so need to eprsist again
             }
 
             $this->importOneService->initialize($import);
@@ -279,15 +280,13 @@ class ElementImportService
                 $countElemenDeleted = $qb->field('source')->references($import)
                                          ->field('status')->notEqual(ElementStatus::ModifiedPendingVersion)
                                          ->field('id')->in($elementIdsToDelete)
-                                         ->count()->execute();
+                                         ->getCount();
                 // delete elements
                 $qb = $this->dm->query('Element');
                 $qb->field('source')->references($import)
                    ->field('id')->in($elementIdsToDelete)
-                   ->remove()->execute();
-                // delete linked object cause doctrine cascading do not work when deleting with queryBuilder
-                $qb = $this->dm->createQueryBuilder(UserInteraction::class);
-                $qb->field('element.id')->in($elementIdsToDelete)->remove()->execute();
+                   ->batchRemove();
+                $this->dm->persist($import); // batch remove call a dm->clear so need to eprsist again
             }
 
             $qb = $this->dm->query('Element');
