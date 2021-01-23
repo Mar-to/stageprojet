@@ -25,6 +25,8 @@ final class RemoveAbandonnedProjectsCommand extends GoGoAbstractCommand
         $this->urlService = $urlService;
         $this->mailService = $mailService;
         parent::__construct($dm, $commandsLogger, $security);
+
+        $this->runOnlyOnRootDatabase = true;
     }
 
     protected function gogoConfigure(): void
@@ -43,7 +45,7 @@ final class RemoveAbandonnedProjectsCommand extends GoGoAbstractCommand
                         ->field('lastLogin')->lte($date->setTimestamp(strtotime("-12 month")))
                         ->field('warningToDeleteProjectSentAt')->exists(false)
                         ->execute();
-
+                        
         if ($projectsToWarn->count() > 0)
             $this->log('Nombre de projets avertis de la suppression : '. $projectsToWarn->count());
 
