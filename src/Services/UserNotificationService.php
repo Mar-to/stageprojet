@@ -23,13 +23,13 @@ class UserNotificationService
             $elementsCount = $this->dm->get('Element')
                                   ->findModerationElementToNotifyToUser($user);
             if ($elementsCount > 0) {
-                $config = $this->dm->get('Configuration')->findConfiguration();
-
-                $subject = "Des éléments sont à modérer sur {$config->getAppName()}";
-                $url = $this->urlService->generateUrlFor($config, 'gogo_directory');
-                $editPreferenceUrl = $this->urlService->generateUrlFor($config, 'admin_app_user_edit', ['id' => $user->getId()]);
-                $elementsCountText = $elementsCount == 1 ? "{$config->getElementDisplayName()} est" : "{$config->getElementDisplayNamePlural()} sont";
-                $content = "Bonjour !</br></br>$elementsCount $elementsCountText à modérer sur la carte \"{$config->getAppName()}\"</br></br>
+                // strange bug, if using doctrine we get the config of the root project... so using MongoClient instead
+                $config = $this->dm->getCollection('Configuration')->findOne();
+                $subject = "Des éléments sont à modérer sur {$config['appName']}";
+                $url = $this->urlService->generateUrlFor($config['dbName'], 'gogo_directory');
+                $editPreferenceUrl = $this->urlService->generateUrlFor($config['dbName'], 'admin_app_user_edit', ['id' => $user->getId()]);
+                $elementsCountText = $elementsCount == 1 ? "{$config['elementDisplayName']} est" : "{$config['elementDisplayNamePlural']} sont";
+                $content = "Bonjour !</br></br>$elementsCount $elementsCountText à modérer sur la carte \"{$config['appName']}\"</br></br>
                 <a href='{$url}'>Accéder à la carte</a></br></br>
                 Pour changer vos préférences de notification, <a href='$editPreferenceUrl'>cliquez ici</a>";
                 $this->mailService->sendMail($user->getEmail(), $subject, $content);
