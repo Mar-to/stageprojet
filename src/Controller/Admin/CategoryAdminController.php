@@ -34,6 +34,6 @@ class CategoryAdminController extends Controller
         if ('DELETE' === $this->getRestMethod()) {
             return $this->redirectToList();
         }
-        return $this->redirectToRoute('admin_app_option_edit', ['id' => $object->getId()]);
+        return $this->redirectToRoute('admin_app_category_edit', ['id' => $object->getId()]);
     }
 }
