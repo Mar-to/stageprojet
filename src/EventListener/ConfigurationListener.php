@@ -64,22 +64,33 @@ class ConfigurationListener
         }
     }
 
+    public function manuallyUpdateIndex($dm)
+    {
+        $formFields = $dm->get('Configuration')->findConfiguration()->getElementFormFieldsJson();
+        $this->commitIndex($dm, $this->calculateSearchIndexConfig($formFields));
+    }
+
     private function updateSearchIndex($dm, $oldFormFields, $newFormFields) {
         if ($oldFormFields == null || $newFormFields == null) return;
         $oldSearchIndex = $this->calculateSearchIndexConfig($oldFormFields);
         $newSearchIndex = $this->calculateSearchIndexConfig($newFormFields);
 
         if ($oldSearchIndex != $newSearchIndex) {
-            $db = $dm->getDB();
-            $db->command(["deleteIndexes" => 'Element',"index" => "name_text"]);
-            $db->command(["deleteIndexes" => 'Element',"index" => "search_index"]);
-            $db->selectCollection('Element')->createIndex($newSearchIndex["fields"], [
-                'name' => "search_index", 
-                "default_language" => "french", 
-                "weights" => $newSearchIndex["weights"]
-            ]);
+            $this->commitIndex($dm, $newSearchIndex);
             return ;
         }
+    }
+
+    private function commitIndex($dm, $indexConf)
+    {
+        $db = $dm->getDB();
+        $db->command(["deleteIndexes" => 'Element',"index" => "name_text"]);
+        $db->command(["deleteIndexes" => 'Element',"index" => "search_index"]);
+        $db->selectCollection('Element')->createIndex($indexConf["fields"], [
+            'name' => "search_index", 
+            "default_language" => "french", 
+            "weights" => $indexConf["weights"]
+        ]);
     }
 
     private function calculateSearchIndexConfig($formFieldsJson) {

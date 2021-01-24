@@ -18,10 +18,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\EventListener\ConfigurationListener;
 
 class ProjectController extends Controller
 {
-    public function createAction(Request $request, DocumentManagerFactory $dmFactory, UrlService $urlService)
+    public function createAction(Request $request, DocumentManagerFactory $dmFactory, UrlService $urlService,
+                                 ConfigurationListener $confService)
     {
         if (!$dmFactory->isRootProject()) {
             return $this->redirectToRoute('gogo_homepage');
@@ -98,7 +100,7 @@ class ProjectController extends Controller
             $projectDm->flush();
 
             $projectDm->getSchemaManager()->updateIndexes();
-
+            $confService->manuallyUpdateIndex($projectDm);
 
             // REDIRECT to new project
             $url = $urlService->generateUrlFor($project, 'gogo_saas_initialize_project');

@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Services\AsyncService;
 use App\Services\DocumentManagerFactory;
+use App\EventListener\ConfigurationListener;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,11 +25,12 @@ class ProjectUpdateCommand extends Command
     ];
 
     public function __construct(DocumentManagerFactory $dmFactory, LoggerInterface $commandsLogger,
-                                AsyncService $asyncService)
+                                AsyncService $asyncService, ConfigurationListener $confService)
     {
         $this->dmFactory = $dmFactory;
         $this->asyncService = $asyncService;
         $this->logger = $commandsLogger;
+        $this->confService = $confService;
         parent::__construct();
     }
 
@@ -87,6 +89,7 @@ class ProjectUpdateCommand extends Command
 
         // ensure index are up to date
         $dm->getSchemaManager()->updateIndexes();
+        $this->confService->manuallyUpdateIndex($dm);
 
         $config = $dm->get('Configuration')->findConfiguration();
         if (!$config) {

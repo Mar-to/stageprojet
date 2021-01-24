@@ -59,8 +59,7 @@ class ElementFile extends AbstractFile
  * @MongoDB\Document(repositoryClass="App\Repository\ElementRepository")
  * @Vich\Uploadable
  * @MongoDB\Indexes({
- *   @MongoDB\Index(keys={"geo"="2d"}),
- *   @MongoDB\Index(keys={"name"="text"})
+ *   @MongoDB\Index(keys={"geo"="2d"})
  * })
  */
 class Element
