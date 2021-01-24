@@ -55,6 +55,8 @@ class ProjectUpdateCommand extends Command
             }
 
             if ($project !== null) {
+                $this->logger->info("---- PROJECT {$project->getDbName()} : Update infos & run daily commands");
+
                 // Updating next execution time
                 $dateNow = new \DateTime();
                 $dateNow->setTimestamp(time());
@@ -66,9 +68,10 @@ class ProjectUpdateCommand extends Command
                 $rootDm->persist($project);
                 $rootDm->flush();
 
-                if (!$result) return;
-
-                $this->logger->info("---- PROJECT {$project->getDbName()} : Update infos & run daily commands");
+                if (!$result) {
+                    $this->logger->error('Error while update project info');
+                    return;   
+                }             
 
                 // run daily commands
                 $this->asyncService->setRunSynchronously(true);
@@ -87,15 +90,16 @@ class ProjectUpdateCommand extends Command
     {
         $dm = $this->dmFactory->createForDB($project->getDbName());
 
-        // ensure index are up to date
-        $dm->getSchemaManager()->updateIndexes();
-        $this->confService->manuallyUpdateIndex($dm);
-
         $config = $dm->get('Configuration')->findConfiguration();
         if (!$config) {
             $this->logger->error("Project {$project->getDomainName()} does not have config");
             return false;
         }
+
+        // ensure index are up to date
+        $dm->getSchemaManager()->updateIndexes();
+        $this->confService->manuallyUpdateIndex($dm);
+        
         $img = $config->getSocialShareImage() ? $config->getSocialShareImage() : $config->getLogo();
         $imageUrl = $img ? $img->getImageUrl() : null;
         $dataSize = $dm->get('Element')->findVisibles(true);
