@@ -62,10 +62,13 @@ class ProjectUpdateCommand extends Command
                 $dateNow->setTimestamp(time());
                 $interval = new \DateInterval('PT24H');
                 $project->setNextUpdateAt($dateNow->add($interval));
+
+                $rootDm->persist($project);
+                $rootDm->flush();
+
                 // Update Project Info - return false means the project is wrongly configured, like without config
                 $result = $this->updateProjectInfo($project);
 
-                $rootDm->persist($project);
                 $rootDm->flush();
 
                 if (!$result) {
