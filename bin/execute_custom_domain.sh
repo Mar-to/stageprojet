@@ -19,7 +19,7 @@ do
             rm /etc/nginx/sites-available/$CUSTOM_URL /etc/nginx/sites-enabled/$CUSTOM_URL
             rm $file       
             echo "Reload Nginx" 
-            service nginx reload       
+            /etc/init.d/nginx reload     
         fi
     fi
 done
@@ -38,7 +38,7 @@ do
             if sh bin/configure_custom_domain.sh $arguments
             then
                 echo "Successfully configured $file, the file queue can now be deleted"
-                service nginx reload
+                /etc/init.d/nginx reload 
                 rm $file
             else
                 echo "Problem while configuring $file"

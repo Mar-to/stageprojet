@@ -33,7 +33,7 @@ server {
 
 ln -s /etc/nginx/sites-available/$CUSTOM_URL /etc/nginx/sites-enabled/$CUSTOM_URL
 
-service nginx reload
+/etc/init.d/nginx reload 
 
 # Creat ceertificate
 if certbot certonly --rsa-key-size 4096 --webroot -w /var/www/certbot/ --email $CONTACT_EMAIL --agree-tos --text --renew-hook "/usr/sbin/nginx -s reload" -d $CUSTOM_URL
@@ -65,7 +65,7 @@ then
     }
   }" > /etc/nginx/sites-available/$CUSTOM_URL
 
-  service nginx reload
+  /etc/init.d/nginx reload 
 
   exit 0 # sucess
 else
