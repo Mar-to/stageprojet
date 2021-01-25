@@ -40,7 +40,7 @@ do
             if sh bin/configure_custom_domain.sh $arguments
             then
                 echo "Successfully configured $file, the file queue can now be deleted"
-                /etc/init.d/nginx reload 
+                sleep 10 && /etc/init.d/nginx reload 
                 rm $file
             else
                 echo "Problem while configuring $file"
