@@ -9,7 +9,8 @@ do
     then
         fileContent=`cat $file`
         CUSTOM_URL=($fileContent) # get first word
-        echo "\n\n\nRemoving subdomain for $file : $CUSTOM_URL"
+        echo $'\n\n\n'
+        echo "REMOVING SUBDOMAIN for $file : $CUSTOM_URL"
         if [ -n "$CUSTOM_URL" ]; then
             echo "Remove previous certificates if exists"
             if [ -e /etc/letsencrypt/live/$CUSTOM_URL/cert.pem ]; then
@@ -28,12 +29,13 @@ for file in var/file_queues/custom_domain_to_configure/*
 do    
     if [ -e $file ] 
     then
+        echo $'\n\n\n'
         if [[ $(find "$file" -mmin +300 -print) ]]; then
-            echo "File $file is older than 5 hours, so deleting it"
+            echo "DELET OLD FILE : File $file is older than 5 hours, so deleting it"
             mv $file var/file_queues/custom_domain_to_remove/
         else
             arguments=`cat $file`
-            echo "\n\n\nConfigure new domain for $file : $arguments"
+            echo "CONFIGURE NEW DOMAIN for $file : $arguments"
 
             if sh bin/configure_custom_domain.sh $arguments
             then
