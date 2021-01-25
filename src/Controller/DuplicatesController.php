@@ -21,11 +21,7 @@ class DuplicatesController extends GoGoController
 
     public function indexAction(DocumentManager $dm)
     {
-        $options = $dm->get('Option')->findAll();
-        $optionsNames = [];
-        foreach ($options as $option) {
-            $optionsNames[$option->getId()] = $option->getName();
-        }
+        $optionsNames = $dm->query('Option')->select('name')->getArray();
 
         $duplicatesNodeCount = $dm->get('Element')->findDuplicatesNodes(null, true);
         $duplicatesNode = $dm->get('Element')->findDuplicatesNodes(DuplicatesController::DUPLICATE_BATH_SIZE)->toArray();

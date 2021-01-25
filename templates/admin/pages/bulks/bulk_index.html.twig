@@ -2,12 +2,7 @@
 
 {% block page_title %}Action de masse{% endblock %}
 
-{% block page_content %}
-  <iframe height="190" sandbox="allow-same-origin allow-scripts" src="https://video.colibris-outilslibres.org/videos/embed/b3367cfb-445d-441c-b368-15038890897a" frameborder="0" allowfullscreen></iframe>
-  <div>
-    <a class="btn btn-primary" href={{ path('gogo_bulk_actions_detect_duplicates') }}>Détecter les doublons</a>
-    <a class="btn btn-primary" href={{ path('gogo_duplicates_index') }}>Gérer les doublons détectés</a>
-  </div>
+{% block page_content %}  
   <div><a class="btn btn-danger" href={{ path('gogo_bulk_actions_delete_element_reported') }}>Supprimer les éléments reportés comme n'existant plus</a></div>
 
   <style>

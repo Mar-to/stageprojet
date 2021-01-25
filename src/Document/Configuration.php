@@ -10,6 +10,7 @@ use App\Document\Configuration\ConfigurationMenu;
 use App\Document\Configuration\ConfigurationUser;
 use App\Document\Configuration\ConfigurationSaas;
 use App\Document\Configuration\ConfigurationOsm;
+use App\Document\Configuration\ConfigurationDuplicates;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Gedmo\Mapping\Annotation as Gedmo;
 use OzdemirBurak\Iris\Color\Hex;
@@ -450,6 +451,9 @@ class Configuration implements \JsonSerializable
 
     /** @MongoDB\EmbedOne(targetDocument="App\Document\Configuration\ConfigurationOsm") */
     protected $osm;
+    
+    /** @MongoDB\EmbedOne(targetDocument="App\Document\Configuration\ConfigurationDuplicates") */
+    protected $duplicates;
 
     // ----------------------------
     // ---------- SAAS ------------
@@ -499,6 +503,7 @@ class Configuration implements \JsonSerializable
         $this->infobar = new ConfigurationInfobar();
         $this->api = new ConfigurationApi();
         $this->osm = new ConfigurationOsm();
+        $this->duplicates = new ConfigurationDuplicates();
         $this->home = new ConfigurationHome();
         $this->marker = new ConfigurationMarker();
     }
@@ -3534,6 +3539,29 @@ class Configuration implements \JsonSerializable
     public function setCustomDomain($domain)
     {
         $this->customDomain = $domain;
+        return $this;
+    }
+
+    /**
+     * Get the value of duplicates
+     */ 
+    public function getDuplicates()
+    {
+        if (!$this->duplicates) {
+            $this->duplicates = new ConfigurationDuplicates();
+        }
+        return $this->duplicates;
+    }
+
+    /**
+     * Set the value of duplicates
+     *
+     * @return  self
+     */ 
+    public function setDuplicates($duplicates)
+    {
+        $this->duplicates = $duplicates;
+
         return $this;
     }
 }

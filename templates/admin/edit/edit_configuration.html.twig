@@ -7,6 +7,7 @@
   {% if admin.hasroute('edit') and admin.isGranted('EDIT') %}
       <button class="btn btn-success" type="submit" name="btn_update_and_edit"><i class="fa fa-save" aria-hidden="true"></i> Mettre à jour</button>
   {% endif %}
+  {% block other_actions %}{% endblock %}
 {% endblock %}
 
 

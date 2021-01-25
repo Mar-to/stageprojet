@@ -352,6 +352,12 @@ services:
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Hide" }
 
+    admin.duplicates_config:
+        class: App\Admin\ConfigurationDuplicatesAdmin
+        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: data, label: Gestion des Doublons }
+
     # ------- SAAS ---------
 
     admin.project:

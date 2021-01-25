@@ -1,0 +1,10 @@
+{% extends 'admin/edit/edit_configuration.html.twig' %}
+
+{% block other_actions %}
+  <a class="btn btn-primary" href={{ path('gogo_bulk_actions_detect_duplicates') }}>Détecter les doublons</a>
+  <a class="btn btn-primary" href={{ path('gogo_duplicates_index') }}>Gérer les doublons détectés</a>
+{% endblock %}
+
+
+
+
