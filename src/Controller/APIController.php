@@ -224,6 +224,8 @@ class APIController extends GoGoController
     public function getManifestAction(Request $request, DocumentManager $dm)
     {
         $config = $dm->get('Configuration')->findConfiguration();
+        if (!$config) return new Response(json_encode(['error' => "No configuration found"]));
+        
         $img = $config->getFavicon() ? $config->getFavicon() : $config->getLogo();
         $imageData = null;
 

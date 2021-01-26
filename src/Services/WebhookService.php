@@ -21,7 +21,7 @@ use Psr\Log\LoggerInterface;
 class WebhookService
 {
     protected $dm;
-
+    protected $config;
     protected $router;
 
     public function __construct(DocumentManager $dm, RouterInterface $router,
@@ -34,9 +34,14 @@ class WebhookService
         $this->router = $router;
         $this->urlService = $urlService;
         $this->securityContext = $securityContext;
-        $this->config = $this->dm->get('Configuration')->findConfiguration();
         $this->synchService = $synchService;
         $this->logger = $commandsLogger;
+    }
+
+    public function getConfig()
+    {
+        if (!$this->config) $this->config = $this->dm->get('Configuration')->findConfiguration();
+        return $this->config;
     }
 
     public function processPosts($limit = 5)
@@ -139,7 +144,7 @@ class WebhookService
 
     private function getNotificationText($result)
     {
-        $element = $this->config->getElementDisplayName();
+        $element = $this->getConfig()->getElementDisplayName();
         switch ($result['action']) {
             case 'add':
                 return "**AJOUT** {$element} **{$result['data']['name']}** ajouté par {$result['user']}\n[Lien vers la fiche]({$result['link']})";
@@ -157,7 +162,7 @@ class WebhookService
 
     private function getBatchNotificationText($result)
     {
-        $elements = $this->config->getElementDisplayNamePlural();
+        $elements = $this->getConfig()->getElementDisplayNamePlural();
         $title = $this->transTitle[$result['action']];
         $text = $this->transText[$result['action']];
         $count = count($result['data']['ids']);
@@ -168,7 +173,7 @@ class WebhookService
     private function getBotIcon()
     {
         /** @var ConfImage $img */
-        $img = $this->config->getFavicon() ? $this->config->getFavicon() : $this->config->getLogo();
+        $img = $this->getConfig()->getFavicon() ? $this->getConfig()->getFavicon() : $this->getConfig()->getLogo();
 
         return $img ? $img->getImageUrl() : $this->urlService->getAssetUrl('/img/default-icon.png');
     }
@@ -181,7 +186,7 @@ class WebhookService
 
             case WebhookFormat::Mattermost:
                 return [
-                    'username' => $this->config->getAppName(),
+                    'username' => $this->getConfig()->getAppName(),
                     'icon_url' => $this->getBotIcon(),
                     'text' => $data['text'],
                 ];

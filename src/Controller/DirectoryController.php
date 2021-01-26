@@ -18,9 +18,9 @@ class DirectoryController extends GoGoController
     public function appShell(Request $request, DocumentManager $dm)
     {
         $config = $dm->get('Configuration')->findConfiguration();
-
+        
         $params = ['gogoConfigUrl' => $this->generateUrl('gogo_api_gogocartojs_configuration')];
-        if( $config->getHideHeaderInPwa() ) $params['hideHeader'] = true;
+        $params['hideHeader'] = $config->getHideHeaderInPwa() ?? false;
 
         return $this->render('directory/directory.html.twig', $params);
     }

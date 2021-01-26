@@ -29,7 +29,8 @@ class GoGoCartoJsService
         $taxonomyJson = $taxonomyRep->findTaxonomyJson();
 
         $config = $this->dm->get('Configuration')->findConfiguration();
-
+        if (!$config) return [];
+        
         $user = $this->securityContext->getToken() ? $this->securityContext->getToken()->getUser() : null;
 
         $roles = is_object($user) ? $user->getRoles() : [];

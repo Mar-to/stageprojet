@@ -14,11 +14,18 @@ use App\Document\GoGoLogLevel;
 
 class ElementSynchronizationService
 {
+    protected $config;
+    
     public function __construct(DocumentManager $dm, UrlService $urlService)
     {
         $this->dm = $dm;
         $this->urlService = $urlService;
-        $this->config = $this->dm->get('Configuration')->findConfiguration();
+    }
+
+    public function getConfig()
+    {
+        if (!$this->config) $this->config = $this->dm->get('Configuration')->findConfiguration();
+        return $this->config;
     }
 
     /*
@@ -32,12 +39,12 @@ class ElementSynchronizationService
         $promise = new Promise(function () use (&$promise, &$contribution, &$preparedData) {
             try {
                 // Init OSM API handler
-                $configOsm = $this->config->getOsm();
+                $configOsm = $this->getConfig()->getOsm();
                 $osm = new Services_OpenStreetMap([
                     'server' => $this->getOsmServer(),
                     'user' => $configOsm->getOsmUsername(),
                     'password' => $configOsm->getOsmPassword(),
-                    'User-Agent' => $this->config->getAppName(),
+                    'User-Agent' => $this->getConfig()->getAppName(),
                     'verbose' => true
                 ]);
 
@@ -123,7 +130,7 @@ class ElementSynchronizationService
                         $changeset->setTag('host', $url);
                         $changeset->setTag('gogocarto:user', $contribution->getUserDisplayName());
                         $changeset->setTag('created_by:library', 'GoGoCarto');
-                        $changeset->setTag('created_by', $this->config->getAppName());
+                        $changeset->setTag('created_by', $this->getConfig()->getAppName());
                         $changeset->begin($this->getOsmComment($preparedData));
 
                         // Add edited feature to changeset
@@ -219,7 +226,7 @@ class ElementSynchronizationService
      * Get OSM server URL, cleaned
      */
     private function getOsmServer() {
-        $url = $this->config->getOsm()->getOsmHost();
+        $url = $this->getConfig()->getOsm()->getOsmHost();
         if(isset($url)) {
             if(!str_starts_with($url, "http://") && !str_starts_with($url, "https://")) {
                 $url = "https://" + $url;

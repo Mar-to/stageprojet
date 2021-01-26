@@ -18,7 +18,6 @@ class ConfigurationService
     {
         $this->dm = $dm;
         $this->securityContext = $securityContext;
-        $this->config = $this->dm->get('Configuration')->findConfiguration();
     }
 
     public function isUserAllowed($featureName, $request = null)
@@ -37,19 +36,21 @@ class ConfigurationService
 
     public function getConfig()
     {
-        return $this->config;
+        return $this->dm->get('Configuration')->findConfiguration();
     }
 
     public function getFeatureConfig($featureName)
     {
+        if (!$this->getConfig()) return null;
+        
         switch ($featureName) {
-            case 'report':              $feature = $this->config->getReportFeature(); break;
-            case 'add':                 $feature = $this->config->getAddFeature(); break;
-            case 'edit':                $feature = $this->config->getEditFeature(); break;
-            case 'directModeration':    $feature = $this->config->getDirectModerationFeature(); break;
-            case 'delete':              $feature = $this->config->getDeleteFeature(); break;
-            case 'vote':                $feature = $this->config->getCollaborativeModerationFeature(); break;
-            case 'pending':             $feature = $this->config->getPendingFeature(); break;
+            case 'report':              $feature = $this->getConfig()->getReportFeature(); break;
+            case 'add':                 $feature = $this->getConfig()->getAddFeature(); break;
+            case 'edit':                $feature = $this->getConfig()->getEditFeature(); break;
+            case 'directModeration':    $feature = $this->getConfig()->getDirectModerationFeature(); break;
+            case 'delete':              $feature = $this->getConfig()->getDeleteFeature(); break;
+            case 'vote':                $feature = $this->getConfig()->getCollaborativeModerationFeature(); break;
+            case 'pending':             $feature = $this->getConfig()->getPendingFeature(); break;
         }
 
         return $feature;
