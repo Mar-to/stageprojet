@@ -34,6 +34,29 @@ db.Element.aggregate(
     {"$project": {"name" : "$_id", "_id" : 0, "uniqueIds" : "$uniqueIds", "status": "$status"} }
 )
 
+db.User.aggregate(
+    {"$group": { "_id": "$emailCanonical", uniqueIds: { $addToSet: "$_id" },"count": { "$sum": 1 } } },
+    {"$match": { "_id" : { "$ne" : null } , "count" : {"$gt": 1} } },
+    {"$sort": {"count": -1}},
+    {"$project": {"value" : "$_id", "_id" : 0, "ids" : "$uniqueIds", "count": "$count"} }
+).forEach(function(result){
+  var users = db.User.find({_id: { $in: result.ids}}).sort({lastLogin: -1});
+  var userToKeep;
+  users.forEach(function(user) {
+    if (!userToKeep) {
+      userToKeep = user;
+      print("\n\n\nKeep user " + user.usernameCanonical + ' / ' + user.email);
+    } else {
+      print("  -> Merge with " + user.usernameCanonical + ' / ' + user.email);
+      for(var key in user) {
+        if (!userToKeep[key]) { userToKeep[key] = user[key]; }
+      };
+      db.User.remove(user);
+    }
+  });
+  db.User.save(userToKeep);
+});
+
 db.Element.aggregate([
    {
       $unwind: "$contributions"
