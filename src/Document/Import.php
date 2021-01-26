@@ -496,7 +496,7 @@ class Import extends AbstractFile
             if (is_string($mappedObject)) {
                 $ontologyMapping[$key] = array_merge($this->ontologyMapping[$key], ['mappedProperty' => $mappedObject]);
             } else {
-                $ontologyMapping[$key]['mappedProperty'] = slugify($mappedObject['mappedProperty']);
+                $ontologyMapping[$key]['mappedProperty'] = slugify($mappedObject['mappedProperty'], false);
             }
         }
         $this->ontologyMapping = $ontologyMapping;
