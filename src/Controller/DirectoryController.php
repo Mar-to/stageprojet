@@ -20,7 +20,7 @@ class DirectoryController extends GoGoController
         $config = $dm->get('Configuration')->findConfiguration();
         
         $params = ['gogoConfigUrl' => $this->generateUrl('gogo_api_gogocartojs_configuration')];
-        $params['hideHeader'] = $config->getHideHeaderInPwa() ?? false;
+        $params['hideHeader'] = $config ? $config->getHideHeaderInPwa() : false;
 
         return $this->render('directory/directory.html.twig', $params);
     }
