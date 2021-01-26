@@ -254,10 +254,12 @@ class APIController extends GoGoController
             $icon['sizes'] = $imageData->height().'x'.$imageData->width();
             $icon['mime'] = $imageData->mime();
         }
-        $shortName = $config->getAppNameShort() && strlen($config->getAppNameShort()) > 0 ? $config->getAppNameShort() : $config->getAppName();
+        $shortName = $config->getAppNameShort() && strlen($config->getAppNameShort()) > 0 ? 
+                     mb_substr($config->getAppNameShort(), 0, 12) : 
+                     mb_substr($config->getAppName(), 0, 11) . '.';
         $responseArray = [
           'name' => $config->getAppName(),
-          'short_name' => str_split($shortName, 12)[0],
+          'short_name' => $shortName,
           'lang' => 'fr',
           'start_url' => $this->generateUrl('gogo_app_shell') . '#/carte/autour-de-moi',
           'display' => 'standalone',
