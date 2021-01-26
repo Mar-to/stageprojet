@@ -8,3 +8,4 @@ sentry:
             - Symfony\Component\Security\Core\Exception\AccessDeniedException
             - MongoDB\Driver\Exception\ConnectionTimeoutException
             - MongoConnectionException
+            - Symfony\Component\Console\Exception\CommandNotFoundException 
