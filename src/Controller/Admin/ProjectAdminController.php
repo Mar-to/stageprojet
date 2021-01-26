@@ -6,13 +6,16 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Sonata\AdminBundle\Controller\CRUDController as Controller;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\Process\Process;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class ProjectAdminController extends Controller
 {
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, LoggerInterface $projectsLogger, TokenStorageInterface $securityContext)
     {
         $this->dm = $dm;
+        $this->logger = $projectsLogger;
+        $this->security = $securityContext;
     }
 
     /**
@@ -67,6 +70,8 @@ class ProjectAdminController extends Controller
 
     private function dropDatabase($project)
     {
+        $user = $this->security->getToken()->getUser();
+        $this->logger->info("FROM MAIN PROJECT : Project {$project->getDbName()} being deleted by {$user->getUsername()}");
         // Drop the database of this project
         $mongo = $this->dm->getConnection()->getMongo();
         $mongo->selectDB($project->getDbName())->command(['dropDatabase' => 1]);

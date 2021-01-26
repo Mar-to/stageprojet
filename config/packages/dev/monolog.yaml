@@ -1,5 +1,5 @@
 monolog:
-    channels: ['commands']
+    channels: ['commands', 'projects']
     handlers:
         # main:
         # uncomment to get logging in your browser
@@ -20,6 +20,11 @@ monolog:
             path: "%kernel.logs_dir%/commands.log"
             level: debug
             channels: ['commands']
+        projects:
+            type: stream
+            path: "%kernel.logs_dir%/projects.log"
+            level: info
+            channels: ['projects']
         console:
             type:   console
             process_psr_3_messages: false

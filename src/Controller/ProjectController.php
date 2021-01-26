@@ -19,6 +19,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\EventListener\ConfigurationListener;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class ProjectController extends Controller
 {
@@ -196,10 +198,20 @@ class ProjectController extends Controller
     }
 
     // In SAAS Mode, a project is being deleted by the owner
-    public function deleteCurrProjectAction(DocumentManagerFactory $dmFactory, UrlService $urlService)
+    public function deleteCurrProjectAction(DocumentManagerFactory $dmFactory, UrlService $urlService,
+                                            LoggerInterface $projectsLogger, TokenStorageInterface $securityContext)
     {
+        $user = $securityContext->getToken()->getUser();
         $dm = $dmFactory->getCurrentManager();
         $dbName = $dmFactory->getCurrentDbName();
+
+        if (!$user || !$user->hasRole('ROLE_SUPER_ADMIN')) {
+            $username = $user ? 'Unknown User' : $user->getUsername();
+            $projectsLogger->error("The user $username have tried to delete $dbName but is not a super admin");
+        } else {
+            $projectsLogger->info("Project $dbName being deleted by {$user->getUsername()}");
+        }    
+
         $mongo = $dm->getConnection()->getMongoClient();
         $db = $mongo->selectDB($dbName);
         $db->command(['dropDatabase' => 1]);

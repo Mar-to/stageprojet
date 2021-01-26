@@ -1,5 +1,5 @@
 monolog:
-    channels: ['commands']
+    channels: ['commands', 'projects']
     handlers:
         main:
             type: fingers_crossed
@@ -11,6 +11,11 @@ monolog:
             path: "%kernel.logs_dir%/commands.log"
             level: info
             channels: ['commands']
+        projects:
+            type: stream
+            path: "%kernel.logs_dir%/projects.log"
+            level: info
+            channels: ['projects']
         nested:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"
