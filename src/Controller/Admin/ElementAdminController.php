@@ -169,7 +169,7 @@ class ElementAdminController extends ElementAdminBulkController
     {
         $newData = [];
         foreach($request->get('data') as $key => $value) {
-            $newData[slugify($key)] = $value;
+            $newData[slugify($key, false)] = $value;
         }
         $element->setCustomData($newData);
         $adr = $request->get('address');

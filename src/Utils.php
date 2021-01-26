@@ -20,8 +20,8 @@ function endsWith( $haystack, $needle ) {
    return substr( $haystack, -$length ) === $needle;
 }
 
-function slugify($text) {
-    $text = strtolower($text); // lowercase
+function slugify($text, $lowercase = true) {
+    if ($lowercase) $text = strtolower($text); // lowercase
     
     $text = str_replace('é', 'e', $text);
     $text = str_replace('è', 'e', $text);
