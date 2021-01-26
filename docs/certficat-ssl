@@ -2,18 +2,12 @@ ssh sur serveur gogocarto
 
 certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --preferred-challenges dns-01 --agree-tos --manual-public-ip-logging-ok -d *.gogocarto.fr -d gogocarto.fr
 
-comme il y a 2 domaines *.gogocarto.fr ET gogocarto.fr
-il te donne un premier code en te demandant de le mettre sur gandi
-puis d'appuyer sur entree apres 3 minutes (temps de diffusion)
-mais faut appuyer direct sur entrée car un deuxième code est donné, celui pour gogocarto.fr
-
 le truc a faire a la main c'est donc d'aller sur https://admin.gandi.net, choisir le domaine gogocarto.fr puis Enregistrement dns
 if faut éditer l'entrée txt acme-challenge pour gogocarto.fr et mettre al valeur donnée par la ligne de commande
 
 Bug chelou, il faut toujours faire l'operation 2fois, c'est que à al deuxième que ça marche
 
-puis restart nginx
-systemctl restart nginx
+puis service nginx restart
 
 Only renew?
 -----
