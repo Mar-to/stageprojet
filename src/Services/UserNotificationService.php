@@ -24,6 +24,7 @@ class UserNotificationService
                                   ->findModerationElementToNotifyToUser($user);
             if ($elementsCount > 0) {
                 // strange bug, if using doctrine we get the config of the root project... so using MongoClient instead
+                // Update: I think the bug does not occurs anymore...
                 $config = $this->dm->getCollection('Configuration')->findOne();
                 $subject = "Des éléments sont à modérer sur {$config['appName']}";
                 $url = $this->urlService->generateUrlFor($config['dbName'], 'gogo_directory');

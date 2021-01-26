@@ -26,7 +26,6 @@ class MailService
                                 $fromEmail, $instanceName)
     {
         $this->dm = $dm;
-        $this->config = $this->dm->getRepository(Configuration::class)->findConfiguration();
         $this->newsRepository = $this->dm->getRepository(News::class);
         $this->mailer = $mailer;
         $this->urlService = $urlService;
@@ -135,12 +134,13 @@ class MailService
     {
         return $this->twig->render('emails/layout.html.twig', [
             'content' => $content, 
-            'config' => $this->config, 
+            'config' => $this->getConfig(), 
             'homeUrl' => $this->urlService->generateUrl('gogo_homepage')]);
     }
 
     public function getConfig()
     {
+        if (!$this->config) $this->config = $this->dm->get('Configuration')->findConfiguration();
         return $this->config;
     }
 
@@ -149,13 +149,13 @@ class MailService
         $mailConfig = null;
 
         switch ($mailType) {
-            case 'add':            $mailConfig = $this->config->getAddMail(); break;
-            case 'edit':           $mailConfig = $this->config->getEditMail(); break;
-            case 'delete':         $mailConfig = $this->config->getDeleteMail(); break;
-            case 'validation':     $mailConfig = $this->config->getValidationMail(); break;
-            case 'refusal':        $mailConfig = $this->config->getRefusalMail(); break;
-            case 'report':         $mailConfig = $this->config->getReportResolvedMail(); break;
-            case 'newsletter':     $mailConfig = $this->config->getNewsletterMail(); break;
+            case 'add':            $mailConfig = $this->getConfig()->getAddMail(); break;
+            case 'edit':           $mailConfig = $this->getConfig()->getEditMail(); break;
+            case 'delete':         $mailConfig = $this->getConfig()->getDeleteMail(); break;
+            case 'validation':     $mailConfig = $this->getConfig()->getValidationMail(); break;
+            case 'refusal':        $mailConfig = $this->getConfig()->getRefusalMail(); break;
+            case 'report':         $mailConfig = $this->getConfig()->getReportResolvedMail(); break;
+            case 'newsletter':     $mailConfig = $this->getConfig()->getNewsletterMail(); break;
         }
 
         return $mailConfig;
@@ -193,7 +193,7 @@ class MailService
             $content = '';
             foreach ($lastNews as $news) {
                 $content .= $this->twig->render('emails/news.html.twig',
-                    ['news' => $news, 'config' => $this->config]);
+                    ['news' => $news, 'config' => $this->getConfig()]);
             }
             $string = preg_replace('/({{((?:\s)+)?news((?:\s)+)?}})/i', $content, $string);
         }
@@ -224,15 +224,15 @@ class MailService
         $newElements = array_filter($elements, function ($el) { return !$el->isPending(); });
 
         $pendingElementsHtml = $this->twig->render('emails/newsletter-new-elements.html.twig',
-            ['elements' => $pendingElements, 'config' => $this->config, 'baseUrl' => $this->baseUrl]
+            ['elements' => $pendingElements, 'config' => $this->getConfig(), 'baseUrl' => $this->baseUrl]
         );
 
         $newElementsHtml = $this->twig->render('emails/newsletter-new-elements.html.twig',
-            ['elements' => $newElements, 'config' => $this->config, 'baseUrl' => $this->baseUrl]
+            ['elements' => $newElements, 'config' => $this->getConfig(), 'baseUrl' => $this->baseUrl]
         );
 
         $showOnMapBtnHtml = $this->twig->render('emails/newsletter-show-on-map-button.html.twig',
-            ['config' => $this->config, 'user' => $user, 'directoryUrl' => $this->urlService->generateUrl('gogo_directory')]
+            ['config' => $this->getConfig(), 'user' => $user, 'directoryUrl' => $this->urlService->generateUrl('gogo_directory')]
         );
 
         $string = preg_replace('/({{((?:\s)+)?pendingElements((?:\s)+)?}})/i', $pendingElementsHtml, $string);
