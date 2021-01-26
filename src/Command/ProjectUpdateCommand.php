@@ -81,8 +81,6 @@ class ProjectUpdateCommand extends Command
                 foreach(self::DAILY_COMMANDS as $commandName) {
                     $this->asyncService->callCommand($commandName, [], $project->getDbName());
                 }
-            } else {
-                $this->logger->error("PROJECT is null");
             }
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());

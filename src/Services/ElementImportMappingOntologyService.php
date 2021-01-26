@@ -41,7 +41,6 @@ class ElementImportMappingOntologyService
         $this->existingProps = array_merge(Element::CORE_FIELDS, $this->existingProps);
         $this->existingProps = array_map(function($e) { return strtolower($e); }, $this->existingProps);
         $this->collectedProps = [];
-
         foreach ($data as $row) {
             foreach ($row as $prop => $value) {
                 $this->collectProperty($prop, null, $import, $value);
@@ -65,10 +64,9 @@ class ElementImportMappingOntologyService
         $import->setOntologyMapping($this->ontologyMapping);
     }
 
-    private function slugProp($prop)
+    private function fixPropName($prop)
     {
-        $result = preg_replace('~(^bf_|_)~', '', $prop);
-        return str_replace('.', '', $result); // dots are not allawed in MongoDB hash keys
+        return str_replace('.', '', $prop); // dots are not allawed in MongoDB hash keys
     }
 
     // Collect an original property of the data imported
@@ -77,8 +75,8 @@ class ElementImportMappingOntologyService
         if (in_array($prop, ['__initializer__', '__cloner__', '__isInitialized__'])) {
             return;
         }
-        $prop = $this->slugProp($prop);
-        $parentProp = $this->slugProp($parentProp);
+        $prop = $this->fixPropName($prop);
+        $parentProp = $this->fixPropName($parentProp);
         $fullProp = $parentProp ? $parentProp.'/'.$prop : $prop;
 
         if (!is_string($value)) $value = "";
@@ -92,7 +90,9 @@ class ElementImportMappingOntologyService
         }
         if (!array_key_exists($fullProp, $this->ontologyMapping)) {
             // if prop with same name exist in the DB, map it directly to itself
-            $mappedProp = in_array(strtolower($prop), $this->existingProps) ? $prop : '';
+            $slugProp = strtolower(preg_replace('~(^bf_|_)~', '', $prop));
+            $mappedProp = in_array($slugProp, $this->existingProps) ? $slugProp : '';
+            
             // handle some special cases
             if ($import->getSourceType() == 'osm') {
                 switch ($prop) {
@@ -104,19 +104,16 @@ class ElementImportMappingOntologyService
                 }
             }
             // use alternative name, like lat instead of latitude
-            if (!$mappedProp && array_key_exists(strtolower($prop), $this->mappedCoreFields)) {
-                $mappedProp = $this->mappedCoreFields[strtolower($prop)];
+            if (!$mappedProp && array_key_exists($slugProp, $this->mappedCoreFields)) {
+                $mappedProp = $this->mappedCoreFields[$slugProp];
             }
             // Asign mapping
-            $alreadyMappedProperties = array_map(function($a) { return $a['mappedProperty']; }, $this->ontologyMapping);
-            if (!$mappedProp || !in_array($mappedProp, $alreadyMappedProperties)) {
-                $this->ontologyMapping[$fullProp] = [
-                    'mappedProperty' => $mappedProp,
-                    'collectedCount' => 1,
-                    'collectedValues' => [$value]
-                ];
-                $import->setNewOntologyToMap(true);
-            }
+            $this->ontologyMapping[$fullProp] = [
+                'mappedProperty' => $mappedProp,
+                'collectedCount' => 1,
+                'collectedValues' => [$value]
+            ];
+            $import->setNewOntologyToMap(true);
         } else {
             // update count and values
             $this->ontologyMapping[$fullProp]['collectedCount']++;
@@ -139,7 +136,7 @@ class ElementImportMappingOntologyService
             $newRow = [];
             // Fix bad prop names
             foreach($row as $prop => $value) {
-                $data[$key][$this->slugProp($prop)] = $value;
+                $row[$this->fixPropName($prop)] = $value;
             }
 
             foreach ($mapping as $prop => $mappedObject) {

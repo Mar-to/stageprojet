@@ -6,6 +6,7 @@ use App\Services\ValidationType;
 use App\Document\PostalAddress;
 use App\Document\Coordinates;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 // Split this big controller into two classes
 class ElementAdminController extends ElementAdminBulkController
@@ -166,7 +167,11 @@ class ElementAdminController extends ElementAdminBulkController
 
     private function handlesGoGoForm($element, $request)
     {
-        $element->setCustomData($request->get('data'));
+        $newData = [];
+        foreach($request->get('data') as $key => $value) {
+            $newData[slugify($key)] = $value;
+        }
+        $element->setCustomData($newData);
         $adr = $request->get('address');
         $address = new PostalAddress($adr['streetAddress'], $adr['addressLocality'], $adr['postalCode'], $adr['addressCountry'], $adr['customFormatedAddress']);
         $element->setAddress($address);

@@ -121,9 +121,10 @@ class ImportAdminController extends Controller
                 try {
                     $dm = $this->container->get('doctrine_mongodb')->getManager();
                     
-                    // Fix ontology mapping for elements fields with reverse value
+                    
                     $ontology = $request->get('ontology');
-                    if ($ontology) {                        
+                    // Fix ontology mapping for elements fields with reverse value      
+                    if ($ontology) {                                          
                         $config = $dm->get('Configuration')->findConfiguration();
                         foreach($config->getElementFormFields() as $field) {
                             if ($field->type === 'elements'
@@ -135,7 +136,7 @@ class ImportAdminController extends Controller
                                 $ontology[$key] = '/';
                             }
                         }
-                    }
+                    }                    
                     $object->setOntologyMapping($ontology);
                     $currentTaxonomyMapping = $object->getTaxonomyMapping();
 
