@@ -77,8 +77,8 @@ class ElementFormController extends GoGoController
 
         $userType = 'anonymous';
         $isEditingWithHash = $element->getRandomHash() && $element->getRandomHash() == $request->get('hash');
-        
-        if ($request->request->get('input-password')) {
+        $isLoggedIn = $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED');
+        if ($request->request->get('input-password') && !$isLoggedIn) {
             // Create our user and set details
             $user = $userManager->createUser();
             $user->setUserName($session->get('userEmail'));
@@ -94,6 +94,7 @@ class ElementFormController extends GoGoController
             $session->getFlashBag()->add('success', $text);
 
             $this->authenticateUser($user, $loginManager);
+            $isLoggedIn = true;
         }
         
         // is user not allowed, we show the contributor-login page
@@ -123,7 +124,7 @@ class ElementFormController extends GoGoController
         }
         // depending on authentification type (account or just giving email) we fill some variables
         else {
-            if ($this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            if ($isLoggedIn) {
                 $userType = 'loggued';
                 $user = $this->getUser();
                 $userRoles = $user->getRoles();
