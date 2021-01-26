@@ -59,7 +59,7 @@ class UrlService
 
     public function generateRootUrl($route = 'gogo_saas_home', $params = [])
     {
-        return $this->generateUrl(null, $route, $params);
+        return $this->generateUrlFor(null, $route, $params);
     }
 
     public function getAssetUrl($path)
