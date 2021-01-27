@@ -9,3 +9,4 @@ sentry:
             - MongoDB\Driver\Exception\ConnectionTimeoutException
             - MongoConnectionException
             - Symfony\Component\Console\Exception\CommandNotFoundException 
+            - Twig\Error\RuntimeError # When mongo is down this one is raised everytime 
