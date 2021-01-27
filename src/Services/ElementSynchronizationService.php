@@ -61,7 +61,7 @@ class ElementSynchronizationService
                     // Process contribution
                     // New feature
                     if($preparedData['action'] == 'add') {
-                        if($element->getProperty('osm:type') == 'node') {
+                        if($element->getProperty('osm/type') == 'node') {
                             $toAdd = $osm->createNode($osmFeature['center']['latitude'], $osmFeature['center']['longitude'], $osmFeature['tags']);
                         }
                     }
@@ -69,7 +69,7 @@ class ElementSynchronizationService
                     else if($preparedData['action'] == 'edit') {
                         $existingFeature = null;
 
-                        switch($element->getProperty('osm:type')) {
+                        switch($element->getProperty('osm/type')) {
                             case 'node':
                                 $existingFeature = $osm->getNode($osmFeature['osmId']);
                                 break;
@@ -95,7 +95,7 @@ class ElementSynchronizationService
                                 }
 
                                 // If node coordinates are edited, check if it is detached
-                                if($element->getProperty('osm:type') == 'node' && (!$existingFeature->getWays()->valid() || $existingFeature->getWays()->count() == 0)) {
+                                if($element->getProperty('osm/type') == 'node' && (!$existingFeature->getWays()->valid() || $existingFeature->getWays()->count() == 0)) {
                                     if($osmFeature['center']['latitude'] != $existingFeature->getLat()) {
                                         $existingFeature->setLat($osmFeature['center']['latitude']);
                                     }
@@ -144,7 +144,7 @@ class ElementSynchronizationService
                             // Update version in case of feature edit
                             if($preparedData['action'] == 'edit') {
                                 $toUpdateInDb = null;
-                                switch($element->getProperty('osm:type')) {
+                                switch($element->getProperty('osm/type')) {
                                     case 'node':
                                         $toUpdateInDb = $osm->getNode($osmFeature['osmId']);
                                         break;
@@ -157,8 +157,8 @@ class ElementSynchronizationService
                                 }
 
                                 if($toUpdateInDb) {
-                                    $element->setCustomProperty('osm:version', $toUpdateInDb->getVersion());
-                                    $element->setCustomProperty('osm:timestamp', strval($toUpdateInDb->getAttributes()->timestamp));
+                                    $element->setCustomProperty('osm/version', $toUpdateInDb->getVersion());
+                                    $element->setCustomProperty('osm/timestamp', strval($toUpdateInDb->getAttributes()->timestamp));
                                     $this->dm->persist($element);
                                     $this->dm->flush();
                                 }
@@ -282,7 +282,7 @@ class ElementSynchronizationService
     private function allowOsmUpload($contribution, $preparedData) {
         return $contribution->hasBeenAccepted()
             && $preparedData['action'] != 'delete'
-            && ($preparedData['action'] == 'edit' || ($preparedData['action'] == 'add' && $contribution->getElement()->getProperty('osm:type') == 'node'));
+            && ($preparedData['action'] == 'edit' || ($preparedData['action'] == 'add' && $contribution->getElement()->getProperty('osm/type') == 'node'));
     }
 
     /**

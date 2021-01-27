@@ -125,10 +125,10 @@
       specificData.push({id: 'source', text: "Origine de l'élément (source)"});    
     specificData.push({id: 'openHours', text: "Horaires d'ouverture (format GoGoCarto)"});
     if (importType == 'osm') {
-      specificData.push({id: 'osm:source', text: "Source de la donnée OpenStreetMap"});
-      specificData.push({id: 'osm:openning_hours', text: "Horaires d'ouverture (format OSM)"});
-      specificData.push({id: 'osm:version', text: "OSM Version (mappé automatiquement)"});
-      specificData.push({id: 'osm:timestamp', text: "OSM Timestamp (mappé automatiquement)"});
+      specificData.push({id: 'osm/source', text: "Source de la donnée OpenStreetMap"});
+      specificData.push({id: 'osm/opening_hours', text: "Horaires d'ouverture (format OSM)"});
+      specificData.push({id: 'osm/version', text: "OSM Version (mappé automatiquement)"});
+      specificData.push({id: 'osm/timestamp', text: "OSM Timestamp (mappé automatiquement)"});
     }    
 
     allProperties = $.map(coreData.concat(specificData), function(el) { return el.id });
