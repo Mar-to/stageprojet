@@ -121,7 +121,6 @@ class ImportAdminController extends Controller
                 try {
                     $dm = $this->container->get('doctrine_mongodb')->getManager();
                     
-                    
                     $ontology = $request->get('ontology');
                     // Fix ontology mapping for elements fields with reverse value      
                     if ($ontology) {                                          

@@ -17,6 +17,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.osmQueriesJson = JSON.parse(this.osmQueriesJson)
                 this.formName = formName
                 $(`#sonata-ba-field-container-${formName}_file`).appendTo('.file-container')
+            }, watch: {
+                sourceType(newVal) {
+                    $('.input-is-synched').closest('.checkbox').toggle(newVal == 'osm')
+                }
             }
         })
     }
