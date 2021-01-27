@@ -36,7 +36,6 @@ function slugify($text, $lowercase = true) {
     $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text); // transliterate
     $text = preg_replace('~[^-\w]+~', '', $text); // remove unwanted characters
     $text = trim($text, '_'); // trim
-    $text = rtrim($text, 's'); // remove final "s" for plural
     $text = preg_replace('~_+~', '_', $text); // remove duplicate -
 
     if (empty($text)) {
