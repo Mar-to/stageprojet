@@ -43,7 +43,6 @@ class UserNotificationService
     function notifyImportError($import)
     {
         if (!$import->isDynamicImport()) return;
-        $import->getUsersToNotify()->count();
         foreach($import->getUsersToNotify() as $user) {
             $config = $this->dm->get('Configuration')->findConfiguration();
             $importUrl = $this->urlService->generateUrlFor($config, 'admin_app_import_edit', ['id' => $import->getId()]);

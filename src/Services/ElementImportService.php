@@ -43,7 +43,7 @@ class ElementImportService
 
     public function startImport($import, $manuallyStarted = true)
     {
-        $this->manuallyStarted = $manuallyStarted;
+        $this->manuallyStarted = filter_var($manuallyStarted, FILTER_VALIDATE_BOOLEAN);
         $this->countElementCreated = 0;
         $this->countElementUpdated = 0;
         $this->countElementNothingToDo = 0;
