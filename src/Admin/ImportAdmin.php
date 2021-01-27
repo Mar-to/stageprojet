@@ -16,6 +16,8 @@ use App\Helper\GoGoHelper;
 
 class ImportAdmin extends AbstractAdmin
 {
+    public $config;
+    
     public function getTemplate($name)
     {
         $isDynamic = "App\Document\ImportDynamic" == $this->getClass();
@@ -35,7 +37,7 @@ class ImportAdmin extends AbstractAdmin
         $repo = $dm->get('Element');
         $formProperties = json_encode($repo->findFormProperties());
         $elementProperties = json_encode($repo->findDataCustomProperties());
-        $config = $dm->get('Configuration')->findConfiguration();
+        $this->config = $dm->get('Configuration')->findConfiguration();
         $taxonomy = $dm->get('Taxonomy')->findTaxonomy();
         $optionsList = $taxonomy->getTaxonomyJson();
 
@@ -58,8 +60,8 @@ class ImportAdmin extends AbstractAdmin
                     ->add('url', HiddenType::class)
                     ->add('sourceType', null, ['attr' => ['class' => 
                             'gogo-element-import',
-                            'data-title-layer' => $config->getDefaultTileLayer()->getUrl(),
-                            'data-default-bounds' => json_encode($config->getDefaultBounds()),
+                            'data-title-layer' => $this->config->getDefaultTileLayer()->getUrl(),
+                            'data-default-bounds' => json_encode($this->config->getDefaultBounds()),
                         ], 'required' => true, 'label' => 'Type de la source'])
                 ->end()
                 ->with('Paramètres', ['class' => 'col-md-12'])
@@ -71,7 +73,13 @@ class ImportAdmin extends AbstractAdmin
                         'query' => $usersQuery,
                         'btn_add' => false,
                         'label' => "Utilisateurs à notifier en cas d'erreur, ou lorsque de nouveaux champs/catégories sont à faire correspondre", ], ['admin_code' => 'admin.option_hidden'])
-                    
+                    ->add('isSynchronized', null, [
+                        'disabled' => !$this->config->getOsm()->isConfigured(),
+                        'required' => false,
+                        'attr' => ['class' => 'input-is-synched'],
+                        'label_attr' => ['title' => "Chaque modification sera envoyée à OpenStreetMap"],
+                        'label' => "Autoriser l'édition des données" . ($this->config->getOsm()->isConfigured() ? '' : ' (Vous devez préalablement renseigner des identifiants dans Autre configuration -> OpenStreetMap)')
+                    ])
                     ->add('moderateElements', null, [
                         'required' => false, 
                         'label' => 'Modérer les éléments importés',

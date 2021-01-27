@@ -28,6 +28,10 @@ class ConfigurationOsm
      */
     public $osmPassword;
 
+    public function isConfigured() {
+        return $this->osmHost && $this->osmUsername && $this->osmPassword;
+    }
+
     /**
      * Set osmHost.
      *
