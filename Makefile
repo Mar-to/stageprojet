@@ -139,3 +139,12 @@ gogo-update: ## Update a PROD server to the lastest version of gogocarto
 	$(SYMFONY) db:migrate	
 	make hide-deploy-message
 	service cron start
+
+gogo-update-simple:
+	service cron stop
+	$(GIT) reset --hard master
+	$(GIT) pull origin master
+	make show-deploy-message
+	make purge
+	make hide-deploy-message
+	service cron start
