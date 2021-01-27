@@ -48,7 +48,7 @@ class ConfigurationDuplicatesAdmin extends ConfigurationAbstractAdmin
                     'choices' => $propsChoices, 
                     'label' => "Liste des champs utilisés pour la détection de doublons", 
                     'required' => false, 'multiple' => true])
-                ->add('duplicates.rangeInMeters', null, ['label' => 'Distance maximale (en mètre) entre deux doublons'])
+                ->add('duplicates.rangeInMeters', null, ['label' => 'Distance maximale (en mètres) entre deux doublons'])
             ->end()
             ->with('Fusion automatique')
                 ->add('duplicates.automaticMergeIfPerfectMatch', CheckboxType::class, [

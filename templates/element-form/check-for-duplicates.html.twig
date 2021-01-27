@@ -35,7 +35,7 @@
 		  		<div class="address">{{ address ~ postalCode ~ city | capitalize }}</div>
 		  	</div>
 		  	<div class="col s3 m2 right-align">
-	  			<a href="{{ path('gogo_directory_showElement', {'id': element._id, 'name': element.name}) | replace({"%23":'#'}) }}"><button class="btn-gogo btn-secondary small waves-light waves-effect btn">c'est lui !</button></a>
+	  			<a href="{{ path('gogo_directory_showElement', {'id': element.id, 'name': element.name}) | replace({"%23":'#'}) }}"><button class="btn-gogo btn-secondary small waves-light waves-effect btn">c'est lui !</button></a>
 	  		</div>
 	  	</div>
 

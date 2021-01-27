@@ -45,7 +45,7 @@ class BulkActionsAbstractController extends Controller
                     $renderedViews[] = $view;
                 }
             } catch (\Exception $e) {
-                $renderedViews[] = "Erreur en traitant l'élement {$element->getId()} : {$e->getMessage()}";
+                $renderedViews[] = "Erreur en traitant l'élement {$element->getId()} : {$e->getMessage()} FILE {$e->getFile()} LINE {$e->getLine()}";
             }
 
             if (0 == (++$i % 100)) {

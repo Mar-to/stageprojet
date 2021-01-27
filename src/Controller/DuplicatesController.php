@@ -31,16 +31,6 @@ class DuplicatesController extends GoGoController
         $lockUntil = time() + 10 * 60; // lock for 10 minutes
         foreach ($duplicatesNode as $key => $element) {
             $element->setLockUntil($lockUntil);
-            // If one of the potential duplicate has been strong deleted, then fetching the pot duplicate give an error
-            // In this case we clear potential duplicates
-            try {
-                foreach ($element->getPotentialDuplicates() as $key => $value) {
-                    $value->getName();
-                }
-            } catch (\Exception $e) {
-                $element->clearPotentialDuplicates();
-                $element->setIsDuplicateNode(false);
-            }
         }
         $dm->flush();
 

@@ -21,72 +21,85 @@ class DuplicatesActionsController extends BulkActionsAbstractController
         $this->batchSize = 2000;
         $this->elementActionService = $elementActionService;
 
+        // reset previous detections
+        $dm->query('Element')->update()
+           ->field('isDuplicateNode')->unsetField()->exists(true)
+           ->field('potentialDuplicates')->unsetField()->exists(true)
+           ->execute();
+
         return $this->elementsBulkAction('detectDuplicates', $dm, $request, $session);
     }
 
     public function detectDuplicates($element, $dm)
-    {
+    {       
         if ($element->getStatus() >= ElementStatus::PendingModification
-          && !array_key_exists($element->getId(), $this->duplicatesFound)
-          && !$element->isPotentialDuplicate()) {
-
+        && !array_key_exists($element->getId(), $this->duplicatesFound)) {        
             $duplicates = $dm->get('Element')->findDuplicatesFor($element);
-            $duplicateIds = [];
-            foreach ($duplicates as $duplicate) {
-                if ($duplicate['score'] > 1.4) $duplicateIds[] = $duplicate['_id'];
-            }
-
-            if (count($duplicateIds) == 0) {
-                return null;
-            }
-            // first result was not hydrated, so we can access the search score. Now we can load
-            // properly the elements
-            $duplicates = $dm->query('Element')
-                             ->field('id')->in($duplicateIds)
-                             ->getArray();
-            $perfectMatches = array_filter($duplicates, function ($duplicate) use ($element) { return slugify($duplicate->getName()) == slugify($element->getName()); });
-            $otherDuplicates = array_diff($duplicates, $perfectMatches);
+            $config = $dm->get('Configuration')->findConfiguration();
+            if (count($duplicates) == 0) return null;
+            
             $duplicates[] = $element;
 
-            if (count($perfectMatches) > 0) {
-                $element = $this->automaticMerge($element, $perfectMatches);
+            // Remember them so we do not check duplicate on them again
+            foreach ($duplicates as $duplicate) {
+                $this->duplicatesFound[$duplicate->getId()] = true;
             }
 
-            if (count($otherDuplicates) > 0) {
-                $otherDuplicates[] = $element;
+            // sort duplicates
+            $sourcePriorities = $config->getDuplicates()->getSourcePriorityInAutomaticMerge();
+            usort($duplicates, function($a, $b) use ($sourcePriorities) {
+                $aPriority = array_search($a->getSourceKey(), $sourcePriorities);
+                $bPriority = array_search($b->getSourceKey(), $sourcePriorities);
+                if ($aPriority != $bPriority) {
+                    // order by source priority
+                    return $aPriority > $bPriority;
+                } else {
+                    // Or get the more recent
+                    $diffDays = (float) date_diff($a->getUpdatedAt(), $b->getUpdatedAt())->format('%d');
+                    return $diffDays;
+                };
+            });   
+            
+            $elementToKeep = array_shift($duplicates);
 
-                foreach ($otherDuplicates as $key => $duplicate) {
-                    if ($duplicate != $element) {
-                        $element->addPotentialDuplicate($duplicate);
-                    }
+            $perfectMatches = [];
+            if ($config->getDuplicates()->getAutomaticMergeIfPerfectMatch()) {
+                $perfectMatches = array_filter($duplicates, function ($duplicate) use ($elementToKeep) { 
+                    // null score means duplicate come from the query with field, which relies on perfect value
+                    return $duplicate->getScore() === null || slugify($duplicate->getName()) == slugify($elementToKeep->getName()); 
+                });
+            }
+              
+            $potentialDuplicates = array_diff($duplicates, $perfectMatches);                     
+
+            if (count($perfectMatches) > 0) {
+                $elementToKeep = $this->automaticMerge($elementToKeep, $perfectMatches);
+            }
+
+            if (count($potentialDuplicates) > 0) {
+                $elementToKeep->setIsDuplicateNode(true);
+                foreach ($potentialDuplicates as $duplicate) {
+                    $elementToKeep->addPotentialDuplicate($duplicate);
                     $duplicate->setModerationState(ModerationState::PotentialDuplicate);
-                    $this->duplicatesFound[$duplicate->getId()] = true;
-                }
-                $element->setIsDuplicateNode(true);
+                }                
             }
 
             return $this->render('admin/pages/bulks/bulk_duplicates.html.twig', [
-               'duplicates' => $duplicates,
+               'duplicates' => array_merge([$elementToKeep], $perfectMatches, $potentialDuplicates),
+               'config' => $config,
                'automaticMerge' => count($perfectMatches) > 0,
-               'needHumanMerge' => count($otherDuplicates) > 0,
-               'mergedId' => $element->getId(),
+               'needHumanMerge' => count($potentialDuplicates) > 0,
+               'mergedId' => $elementToKeep->getId(),
                'router' => $this->get('router'), ]);
         }
     }
 
-    public function automaticMerge($element, $duplicates)
+    public function automaticMerge($merged, $duplicates)
     {
-        $sortedDuplicates = $element->getSortedDuplicates($duplicates);
-
-        foreach ($sortedDuplicates as $duplicate) {
-            $this->duplicatesFound[$duplicate->getId()] = true;
-        }
-
-        $merged = array_shift($sortedDuplicates);
         $mergedData = $merged->getData();
         $mergedOptionIds = $merged->getOptionIds();
 
-        foreach ($sortedDuplicates as $duplicate) {
+        foreach ($duplicates as $duplicate) {
             // Auto merge option values
             foreach ($duplicate->getOptionValues() as $dupOptionValue) {
                 if (!in_array($dupOptionValue->getOptionId(), $mergedOptionIds)) {
@@ -96,8 +109,7 @@ class DuplicatesActionsController extends BulkActionsAbstractController
             }
             // Auto merge custom attributes
             foreach ($duplicate->getData() as $key => $value) {
-                if ($value && (!array_key_exists($key, $mergedData) || !$mergedData[$key]
-                           || ('description' == $key && strlen($value) > strlen($mergedData[$key])))) {
+                if ($value && (!array_key_exists($key, $mergedData) || !$mergedData[$key])) {
                     $mergedData[$key] = $value;
                 }
             }

@@ -317,6 +317,9 @@ class Element
      */
     private $lockUntil = 0;
 
+    /** @MongoDB\Field(notSaved=true) */
+    public $score;
+
     private $preventJsonUpdate = false;
 
     private $preventLinksUpdate = false;
@@ -485,15 +488,8 @@ class Element
     {
         $result = [];
         if ($this->nonDuplicates) {
-            try {
-                $result = array_map(function ($nonDuplicate) {
-                    return $nonDuplicate->getId();
-                }, $this->nonDuplicates->toArray());
-            } catch (\Exception $e) {
-                // fixs error when one of the non duplicates as been deleted and is not found
-                $result = [];
-                $this->nonDuplicates = [];
-            }
+            foreach($this->nonDuplicates as $nonDuplicate)
+                $result[] = $nonDuplicate->getId();
         }
         if ($this->getId()) {
             $result[] = $this->getId();
@@ -507,40 +503,12 @@ class Element
         return ModerationState::PotentialDuplicate == $this->moderationState;
     }
 
-    public function getSortedDuplicates($duplicates = null)
-    {
-        if (!$duplicates) {
-            $duplicates = $this->getPotentialDuplicates() ? $this->getPotentialDuplicates()->toArray() : null;
-        }
-        if (!$duplicates) {
-            return [];
-        }
-        $duplicates[] = $this;
-        usort($duplicates, function ($a, $b) {
-            // Keep in priority the one from our DB instead of the ones dynamically imported
-            $aIsDynamicImported = $a->isDynamicImported();
-            $bIsDynamicImported = $b->isDynamicImported();
-            if ($aIsDynamicImported != $bIsDynamicImported) {
-                return $aIsDynamicImported - $bIsDynamicImported;
-            }
-            // Or get the more recent
-            $diffDays = (float) date_diff($a->getUpdatedAt(), $b->getUpdatedAt())->format('%d');
-            if (0 != $diffDays) {
-                return $diffDays;
-            }
-            // Or the one with more categories
-            return $b->countOptionsValues() - $a->countOptionsValues();
-        });
-
-        return $duplicates;
-    }
-
     public function isDynamicImported()
     {
         return $this->isExternal;
     }
 
-    public function getJson($includeAdminJson)
+    public function getJson($includeAdminJson = false)
     {
         $result = '{' . $this->baseJson;
         if ($includeAdminJson && $this->adminJson && '' != $this->adminJson) {
@@ -1364,7 +1332,8 @@ class Element
      */
     public function addPotentialDuplicate(\App\Document\Element $potentialDuplicate)
     {
-        $this->potentialDuplicates[] = $potentialDuplicate;
+        if (!in_array($potentialDuplicate, $this->potentialDuplicates->toArray()))
+            $this->potentialDuplicates[] = $potentialDuplicate;
     }
 
     /**
@@ -1660,5 +1629,25 @@ class Element
         }
 
         return $result;
+    }
+
+    /**
+     * Get the value of score
+     */ 
+    public function getScore()
+    {
+        return $this->score;
+    }
+
+    /**
+     * Set the value of score
+     *
+     * @return  self
+     */ 
+    public function setScore($score)
+    {
+        $this->score = $score;
+
+        return $this;
     }
 }

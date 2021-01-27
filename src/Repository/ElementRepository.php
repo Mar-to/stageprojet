@@ -27,35 +27,41 @@ class ElementRepository extends DocumentRepository
         $forNewlyCreatedElement = $element->getId() == null;
         $forBulkDuplicateDetection = !$forNewlyCreatedElement;
 
+        $config = $this->getDocumentManager()->get('Configuration')->findConfiguration()->getDuplicates();
         $qb = $this->query('Element');
 
         // GEO SPATIAL QUERY
+        $distance = $config->getRangeInMeters();
         if ($forNewlyCreatedElement) {
-            $distance = 1;
+            $distance = 2 * $distance; // wider for manual check
         } else {
-            $distance = 0.4;
             $city = strtolower($element->getAddress()->getAddressLocality());
             if (in_array($element->getAddress()->getDepartmentCode(), ['75', '92', '93', '94'])
                 || in_array($city, ['marseille', 'lyon', 'bordeaux', 'lille', 'montpellier', 'strasbourg', 'nantes', 'nice'])) {
-                $distance = 0.1;
+                $distance = $distance / 2; // narrow down in big cities
             }
         }
-        $radius = $distance / 110; // convert kilometre in degrees
+        $radius = $distance / 110000; // convert meters in degrees
         $qb->field('geo')->withinCenter((float) $element->getGeo()->getLatitude(), (float) $element->getGeo()->getLongitude(), $radius);
 
         // REDUCE SCOPE FOR BULK DETECTION
         if ($forBulkDuplicateDetection) {
             $qb->field('status')->gt(ElementStatus::PendingModification);
-            $qb->field('moderationState')->notEqual(ModerationState::PotentialDuplicate);
+            // $qb->field('moderationState')->notEqual(ModerationState::PotentialDuplicate);
             $qb->field('id')->notIn($element->getNonDuplicatesIds());
         }
 
-        // FILTER BY TEXT SEARCH
-        $this->queryText($qb, $element->getName());
-
-        $qb->limit(6);
-
-        return $qb->hydrate(false)->getArray();
+        $qbText = clone $qb;
+        // Text Search
+        $result1 = $this->queryText($qbText, $element->getName())
+                        ->hydrate(true)->execute()->toArray();
+        // Field Search
+        foreach($config->getFieldsToBeUsedForComparaison() as $field) {
+            if ($element->getProperty($field))
+                $qb->addOr($qb->expr()->field("data.$field")->equals($element->getProperty($field)));
+        }
+        $result2 = $qb->hydrate(false)->getArray();
+        return $result1 + $result2; // + operator will make the array unique cause each key is an element id
     }
 
     public function findWhithinBoxes($bounds, $request, $getFullRepresentation, $isAdmin = false)

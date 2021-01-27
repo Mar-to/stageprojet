@@ -1,4 +1,4 @@
-{% set duplicates = duplicateNode.getSortedDuplicates %}
+{% set duplicates = [duplicateNode]|merge(duplicateNode.potentialDuplicates) %}
 {% if duplicates|length > 0 %}
 <table class="duplicate-node"><tbody><tr>
 
