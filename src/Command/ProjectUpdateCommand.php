@@ -99,7 +99,7 @@ class ProjectUpdateCommand extends Command
             }
 
             // ensure index are up to date
-            $dm->getSchemaManager()->updateIndexes();
+            // $dm->getSchemaManager()->updateIndexes();
             $this->confService->manuallyUpdateIndex($dm);
             
             $img = $config->getSocialShareImage() ? $config->getSocialShareImage() : $config->getLogo();
