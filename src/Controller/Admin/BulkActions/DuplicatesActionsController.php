@@ -21,11 +21,13 @@ class DuplicatesActionsController extends BulkActionsAbstractController
         $this->batchSize = 2000;
         $this->elementActionService = $elementActionService;
 
-        // reset previous detections
-        $dm->query('Element')->update()
-           ->field('isDuplicateNode')->unsetField()->exists(true)
-           ->field('potentialDuplicates')->unsetField()->exists(true)
-           ->execute();
+        if (!$request->get('batchFromStep')) {
+            // reset previous detections
+            $dm->query('Element')->update()
+            ->field('isDuplicateNode')->unsetField()->exists(true)
+            ->field('potentialDuplicates')->unsetField()->exists(true)
+            ->execute();
+        }
 
         return $this->elementsBulkAction('detectDuplicates', $dm, $request, $session);
     }
