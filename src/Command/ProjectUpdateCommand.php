@@ -101,6 +101,11 @@ class ProjectUpdateCommand extends Command
             // ensure index are up to date
             // $dm->getSchemaManager()->updateIndexes();
             $this->confService->manuallyUpdateIndex($dm);
+
+            foreach($dm->get('Import')->findAll() as $import) {
+                $import->fixOntologyMapping();
+            }
+            $dm->flush();
             
             $img = $config->getSocialShareImage() ? $config->getSocialShareImage() : $config->getLogo();
             $imageUrl = $img ? $img->getImageUrl() : null;

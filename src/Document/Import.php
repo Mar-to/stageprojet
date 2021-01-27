@@ -503,6 +503,14 @@ class Import extends AbstractFile
         return $this;
     }
 
+    public function fixOntologyMapping()
+    {
+        foreach($this->ontologyMapping as &$object) {
+            if ($object['mappedProperty'] == 'categorie')
+                $object['mappedProperty'] = 'categories';
+        }
+    }
+
     /**
      * Get ontologyMapping.
      * @return array ontologyMapping
