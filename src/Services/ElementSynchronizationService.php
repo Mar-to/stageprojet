@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Document\Configuration;
+use App\Document\Element;
+use App\Document\Import;
 use App\Document\UserInteractionContribution;
-use GuzzleHttp\Client;
 use GuzzleHttp\Promise\Promise;
 use Services_OpenStreetMap;
 use GuzzleHttp\Psr7\Response;
@@ -166,7 +166,7 @@ class ElementSynchronizationService
 
                             return $promise->resolve(new Response(200, [], null, '1.1', 'Success'));
                         }
-                        catch(Exception $e) {
+                        catch(\Exception $e) {
                             $message = 'Error when sending changeset';
                             $log = new GoGoLog(GoGoLogLevel::Error, 'Error during OSM sync : '.$message);
                             $this->dm->persist($log);
@@ -184,7 +184,7 @@ class ElementSynchronizationService
                     return $promise->resolve(new Response(200, [], null, '1.1', $message));
                 }
             }
-            catch(Exception $e) {
+            catch(\Exception $e) {
                 return $promise->resolve(new Response(500, [], null, '1.1', $e->getMessage()));
             }
         });
@@ -246,6 +246,97 @@ class ElementSynchronizationService
         $osmFeature['osmId'] = $element->getProperty('oldId');
 
         return $osmFeature;
+    }
+
+    /**
+     * When adding an element in GoGoCarto, we should consider if this element
+     * might be added to OSM as well. If it should, then we detect duplicate on OSM
+     * before adding it
+     *
+     * @param Element $element
+     * @return void
+     */
+    public function checkIfNewElementShouldBeAddedToOsm(Element $element)
+    {
+        if ($this->linkElementToExistingOsmImport($element)) {
+            // TODO check duplicates on OSM
+            // the duplicates object should be like following
+            $duplicates = [
+                [
+                    'name' => 'Duplicate 1', 
+                    'osmId' => 1234,
+                    'description' => "Si y'a des infos supplémentaires à afficher, ça sera visible par l'utilisateur",
+                    'address' => [
+                        'streetAddress' => '12 rue plessy',
+                        'postalCode' => '45252',
+                        'addressLocality' => 'Beauvot'
+                    ]
+                ],
+                [
+                    'name' => 'Duplicate 2', 
+                    'osmId' => 5678,
+                    'description' => "Si y'a des infos supplémentaires à afficher, ça sera visible par l'utilisateur",
+                    'address' => [
+                        'streetAddress' => '14 rue plessy',
+                        'postalCode' => '45252',
+                        'addressLocality' => 'Beauvot'
+                    ]
+                ],
+            ];
+            return ['result' => true, 'duplicates' => $duplicates];
+        } else {
+            return ['result' => false, 'duplicates' => []];
+        }       
+    }
+
+    /**
+     * When adding an element that should be linked to OSM, if we detect some
+     * duplicates on OSM we show them to the user. If the user click "yes this is a duplicate"
+     * of an OSM point, then instead of adding a new point to OSM, we should update the existing
+     * OSM point with the new data.
+     *
+     * @param Element $element The new element being added to GoGoCarto
+     * @param integer $odmId ID of the duplicate on OSM
+     * @return void
+     */
+    public function updateOsmDuplicateWithNewElementData($osmId, Element $element)
+    {
+        // TODO
+        // Update OSM point with element data
+        // Update element data with OSM tags (version, type, timestamp...)
+    }
+
+    /**
+     * Check if an element have at least one categorie which is used in an OSM import
+     * that is synchronized. In this case the new element will be linked to this import
+     *
+     * @param Element $element
+     * @return Import
+     */
+    private function linkElementToExistingOsmImport(Element $element)
+    {
+        $elementOptionsIds = $element->getOptionIds();
+        $osmImports = $this->dm->get('Import')->findBy(['sourceType' => 'osm', 'isSynchronized' => true]);
+        $linkedImport = null;
+
+        foreach($osmImports as $import) {
+            foreach($import->getOptionsToAddToEachElement() as $option) {
+                if (in_array($option->getId(), $elementOptionsIds)) {
+                    $linkedImport = $import;
+                    break;
+                }
+            }
+            foreach($import->getTaxonomyMapping() as $mappedObject) {
+                if (array_intersect($mappedObject['mappedCategoryIds'], $elementOptionsIds)) {
+                    $linkedImport = $import;
+                    break;
+                }
+            }
+        }
+        if ($linkedImport) {
+            $element->setSource($linkedImport);       
+        }
+        return $linkedImport;
     }
 
     /**

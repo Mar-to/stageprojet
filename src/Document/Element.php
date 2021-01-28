@@ -383,6 +383,11 @@ class Element
         return $this->getIsExternal() && $this->getSource()->getIsSynchronized();
     }
 
+    public function isFromOsm()
+    {
+        return $this->getIsExternal() && $this->getSource()->getSourceType() == 'osm';
+    }
+
     public function getShowUrlFromController($router)
     {
         $url = $router->generate('gogo_directory_showElement', ['id' => $this->getId()]);
@@ -1456,6 +1461,10 @@ class Element
     public function setSource(\App\Document\Import $source)
     {
         $this->source = $source;
+        if ($source->isDynamicImport()) {
+            $this->setIsExternal(true); // shortcut for easy querying           
+        }
+        $this->setSourceKey($source->getSourceName());
 
         return $this;
     }

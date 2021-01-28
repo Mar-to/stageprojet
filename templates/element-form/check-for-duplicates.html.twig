@@ -18,6 +18,8 @@
 {# BODY CONTENT #}
 {% block body_content %}
 
+  {{ form_start(duplicateForm) }}
+
   <h1>Recherche de doublons</h1>
 
   <h2>Des éléments similaires ont été détectés, vous vouliez peut être ajouter l'un d'eux?</h2>
@@ -27,22 +29,38 @@
 
 	  	<div class="element row">
 	  		<div class="col s9 m10">
+			  	{# Name #}
 		  		<div class="name">{{ element.name | capitalize }}</div>
-		  		{% if element.description is defined %}<div class="description">{{ element.description | capitalize }}</div>{% endif %}
-		  		{% set address = element.address.streetAddress is defined ? element.address.streetAddress ~ ', ' : '' %}
-		      {% set postalCode = element.address.postalCode is defined ? (element.address.postalCode ~ ' ') : '' %}
-		      {% set city = element.address.addressLocality is defined ? element.address.addressLocality : '' %}
-		  		<div class="address">{{ address ~ postalCode ~ city | capitalize }}</div>
-		  	</div>
-		  	<div class="col s3 m2 right-align">
-	  			<a href="{{ path('gogo_directory_showElement', {'id': element.id, 'name': element.name}) | replace({"%23":'#'}) }}"><button class="btn-gogo btn-secondary small waves-light waves-effect btn">c'est lui !</button></a>
-	  		</div>
+				{# Description #}
+				{% set description = element.description ?? element.data.description ?? null %}
+		  		{% if description %}
+				  <div class="description">{{ description | capitalize }}</div>
+				{% endif %}
+				{# Address #}
+		  		{% if element.address is defined %}
+					{% set address = element.address.streetAddress is defined ? element.address.streetAddress ~ ', ' : '' %}
+					{% set postalCode = element.address.postalCode is defined ? (element.address.postalCode ~ ' ') : '' %}
+					{% set city = element.address.addressLocality is defined ? element.address.addressLocality : '' %}
+					<div class="address">{{ address ~ postalCode ~ city | capitalize }}</div>
+		  		{% endif %}
+			</div>
+
+			<div class="col s3 m2 right-align">
+				{% if element.osmId is defined %}
+					<button type="submit" name="osm[{{ element.osmId }}]" class="btn-gogo btn-secondary small waves-light waves-effect btn">
+						C'est lui !
+					</button>
+				{% else %}
+					{% set url = path('gogo_directory_showElement', {'id': element.id }) | replace({"%23":'#'}) %}
+					<a href="{{ url }}"><button class="btn-gogo btn-secondary small waves-light waves-effect btn">
+						C'est lui !
+					</button></a>
+				{% endif %}					
+			</div>
 	  	</div>
 
 	  {% endfor %}
-  </div>
-
-	{{ form_start(duplicateForm) }}
+  	</div>	
 
 	<center>
 		<button type="submit" class="btn-gogo btn-primary waves-light waves-effect btn">Non, c'est un nouvel élément, je continue !</button>
