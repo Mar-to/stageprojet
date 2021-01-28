@@ -607,7 +607,7 @@ class Element
     public function setOptionIds($optionsIds)
     {
         foreach ($this->getOptionValues() as $optionValue) {
-            if (!in_array($optionValue->getOptionId(), $optionsIds)) 
+            if (!in_array($optionValue->getOptionId(), $optionsIds))
                 $this->removeOptionValue($optionValue);
         }
         $optionIdsToAdd = array_diff($optionsIds, $this->getOptionIds());
@@ -1323,8 +1323,10 @@ class Element
     public function getImagesUrls()
     {
         $result = [];
-        foreach ($this->images as $image) {
-            $result[] = $image->getImageUrl();
+        if($this->images != null) {
+            foreach ($this->images as $image) {
+                $result[] = $image->getImageUrl();
+            }
         }
 
         return $result;
@@ -1462,7 +1464,7 @@ class Element
     {
         $this->source = $source;
         if ($source->isDynamicImport()) {
-            $this->setIsExternal(true); // shortcut for easy querying           
+            $this->setIsExternal(true); // shortcut for easy querying
         }
         $this->setSourceKey($source->getSourceName());
 
@@ -1639,8 +1641,10 @@ class Element
     public function getFilesUrls()
     {
         $result = [];
-        foreach ($this->files as $file) {
-            $result[] = $file->getFileUrl();
+        if($this->files != null) {
+            foreach ($this->files as $file) {
+                $result[] = $file->getFileUrl();
+            }
         }
 
         return $result;
@@ -1648,7 +1652,7 @@ class Element
 
     /**
      * Get the value of score
-     */ 
+     */
     public function getScore()
     {
         return $this->score;
@@ -1658,7 +1662,7 @@ class Element
      * Set the value of score
      *
      * @return  self
-     */ 
+     */
     public function setScore($score)
     {
         $this->score = $score;
