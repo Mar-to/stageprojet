@@ -46,7 +46,7 @@ function createMarker(position)
 		$('#input-longitude').attr('value',marker.getLatLng().lng);
   });
 
-  marker.bindPopup("Déplacez moi pour préciser la position").openPopup();
+  marker.bindPopup("<center>Déplacez moi pour préciser la position</br>(au centre du bâtiment)</center>").openPopup();
 }
 
 function fitBounds(rawbounds)
