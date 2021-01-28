@@ -37,9 +37,12 @@ class ElementImportMappingOntologyService
         }
         unset($mappedObject); // prevent edge case https://www.php.net/manual/fr/control-structures.foreach.php
 
-        $this->existingProps = $this->dm->get('Element')->findAllCustomProperties();
-        $this->existingProps = array_merge(Element::CORE_FIELDS, $this->existingProps);
-        $this->existingProps = array_map(function($e) { return strtolower($e); }, $this->existingProps);
+        $props = $this->dm->get('Element')->findAllCustomProperties();
+        $props = array_merge(Element::CORE_FIELDS, $props);
+        $this->existingProps = [];
+        foreach($props as $prop) {
+            $this->existingProps[slugify($prop)] = $prop;
+        }
         $this->collectedProps = [];
         foreach ($data as $row) {
             foreach ($row as $prop => $value) {
@@ -91,7 +94,7 @@ class ElementImportMappingOntologyService
         if (!array_key_exists($fullProp, $this->ontologyMapping)) {
             // if prop with same name exist in the DB, map it directly to itself
             $slugProp = strtolower(preg_replace('~(^bf_|_)~', '', $prop));
-            $mappedProp = in_array($slugProp, $this->existingProps) ? $slugProp : '';
+            $mappedProp = $this->existingProps[$slugProp] ?? '';
             
             // handle some special cases
             if ($import->getSourceType() == 'osm') {
