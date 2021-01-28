@@ -14,7 +14,7 @@
                 <i class="fa fa-trash"></i>
             </button>
             <div v-for="(condition, conditionIndex) in query" class="condition-container" :key="conditionIndex">
-                <osm-condition :condition="condition" :key="'Query' + queryIndex + 'Condition' + 'Key' + condition.key"></osm-condition>
+                <osm-condition :condition="condition" :key="'Query' + queryIndex"></osm-condition>
                 <button type="button" @click="query.splice(conditionIndex,1)" class="btn btn-default btn-icon remove-condition">
                     <i class="fa fa-trash remove-condition"></i>
                 </button>

@@ -11,6 +11,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 osmQueriesJson: undefined,
                 formName: "",
             },
+            computed: {
+                osmQueryInputValue() {
+                    if (!this.osmQueriesJson) return ""
+                    let result = {}
+                    result.address = this.osmQueriesJson.address
+                    result.bounds = this.osmQueriesJson.bounds
+                    result.queries = []
+                    for(let query of this.osmQueriesJson.queries) {
+                        result.queries.push(query.filter(condition => condition.key))
+                    }
+                    return JSON.stringify(result)
+                }
+            },
             components: { OsmQueryBuilder },
             mounted() {
                 for(let key in importObject) this[key] = importObject[key]
