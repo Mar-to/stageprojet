@@ -196,7 +196,7 @@ class User extends BaseUser
 
     /**
      * @var Collection
-     * @MongoDB\ReferenceMany(targetDocument="App\Application\Sonata\UserBundle\Document\Group", cascade={"persist"})
+     * @MongoDB\ReferenceMany(targetDocument="App\Application\Sonata\UserBundle\Document\Group", cascade={"persist"}) @MongoDB\Index
      */
     protected $groups;
 
@@ -220,7 +220,7 @@ class User extends BaseUser
 
     /**
      * @var array
-     * @MongoDB\Field(type="hash")
+     * @MongoDB\Field(type="hash") @MongoDB\Index
      */
     protected $roles;
 
