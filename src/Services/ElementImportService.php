@@ -153,6 +153,9 @@ class ElementImportService
 
                 // before updating the source, we collect all elements ids
                 $previouslyImportedElementIds = $qb->field('source')->references($import)->getIds();
+                $previouslyImportedElementIds = array_map(function($id) {
+                    return strval($id); // fix some id are just numbers
+                }, $previouslyImportedElementIds);
             } else {
                 // before re importing a static source, we delete all previous items
                 $qb->field('source')->references($import)->batchRemove();
