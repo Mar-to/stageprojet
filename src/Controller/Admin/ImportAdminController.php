@@ -120,7 +120,7 @@ class ImportAdminController extends Controller
             if ($isFormValid) {
                 try {
                     $dm = $this->container->get('doctrine_mongodb')->getManager();
-                    
+                    $object->setSourceType($request->get('sourceType'));
                     
                     $ontology = $request->get('ontology');
                     // Fix ontology mapping for elements fields with reverse value      

@@ -1,7 +1,7 @@
 {% set formName = form.vars.full_name|split('[')|first %}
 
 <div id="element-import">  
-    <select class="source-type form-control" data-sonata-select2="false" v-model="sourceType" :name="`${formName}[sourceType]`">
+    <select class="source-type form-control" data-sonata-select2="false" v-model="sourceType" name="sourceType">
         <option></option>
         <option value="csv">Fichier CSV</option>
         <option value="json">API Json</option>
@@ -31,6 +31,7 @@
 
 <script>
     var importObject = {{ form.vars.sonata_admin.admin.subject|json_encode|raw }}
+    var sourceType = "{{ form.vars.sonata_admin.admin.subject.getSourceType() }}"
     var formName = {{ form.vars.full_name|split('[')|first|json_encode|raw }}
     // See element-import.js Vue Component
 </script>

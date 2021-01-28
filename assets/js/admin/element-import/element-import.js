@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
             mounted() {
                 for(let key in importObject) this[key] = importObject[key]
                 this.osmQueriesJson = JSON.parse(this.osmQueriesJson)
+                this.sourceType = sourceType;
                 this.formName = formName
                 $(`#sonata-ba-field-container-${formName}_file`).appendTo('.file-container')
             }
