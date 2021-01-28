@@ -15,7 +15,12 @@ use App\Document\GoGoLogLevel;
 class ElementSynchronizationService
 {
     protected $config;
-    
+
+    const MAIN_OSM_KEYS = ['highway', 'natural', 'landuse', 'power', 'waterway', 'amenity', 'barrier', 'place', 'leisure', 'railway', 'shop', 'man_made', 'public_transport', 'tourism', 'boundary', 'emergency', 'historic', 'type', 'traffic_sign', 'office', 'traffic_calming', 'aeroway', 'healthcare', 'aerialway', 'craft', 'geological', 'military', 'telecom'];
+    const MAIN_OSM_KEYS_FALLBACK = ['addr:housenumber', 'entrance', 'information', 'indoor', 'building']; // To check only if no main OSM tags has been found, as they can be used as descriptive tags and not only main tags
+    const EARTH_RADIUS = 6378;
+    const OSM_SEARCH_RADIUS_METERS = 20;
+
     public function __construct(DocumentManager $dm, UrlService $urlService)
     {
         $this->dm = $dm;
@@ -39,20 +44,10 @@ class ElementSynchronizationService
         $promise = new Promise(function () use (&$promise, &$contribution, &$preparedData) {
             try {
                 // Init OSM API handler
-                $configOsm = $this->getConfig()->getOsm();
-                $osm = new Services_OpenStreetMap([
-                    'server' => $this->getOsmServer(),
-                    'user' => $configOsm->getOsmUsername(),
-                    'password' => $configOsm->getOsmPassword(),
-                    'User-Agent' => $this->getConfig()->getAppName(),
-                    'verbose' => true
-                ]);
+                $osm = $this->getOsmApiHandler();
 
                 $element = $contribution->getElement();
                 $osmFeature = $this->elementToOsm($element);
-
-                // Get URL of current map
-                $url = $this->urlService->generateUrl();
 
                 // Check contribution validity according to OSM criterias
                 if($this->allowOsmUpload($contribution, $preparedData)) {
@@ -61,9 +56,7 @@ class ElementSynchronizationService
                     // Process contribution
                     // New feature
                     if($preparedData['action'] == 'add') {
-                        if($element->getProperty('osm/type') == 'node') {
-                            $toAdd = $osm->createNode($osmFeature['center']['latitude'], $osmFeature['center']['longitude'], $osmFeature['tags']);
-                        }
+                        $toAdd = $osm->createNode($osmFeature['center']['latitude'], $osmFeature['center']['longitude'], $osmFeature['tags']);
                     }
                     // Edit existing feature
                     else if($preparedData['action'] == 'edit') {
@@ -128,8 +121,7 @@ class ElementSynchronizationService
                     if(isset($toAdd)) {
                         $changeset = $osm->createChangeset();
                         $changeset->setId(-1); // To prevent bug with setTag
-                        $changeset->setTag('host', $url);
-                        $changeset->setTag('gogocarto:user', $contribution->getUserDisplayName());
+                        $changeset->setTag('host', $this->urlService->generateUrl());
                         $changeset->setTag('created_by:library', 'GoGoCarto');
                         $changeset->setTag('created_by', $this->getConfig()->getAppName());
                         $changeset->begin($this->getOsmComment($preparedData));
@@ -142,8 +134,12 @@ class ElementSynchronizationService
                             $changeset->commit();
 
                             // Update version in case of feature edit
-                            if($preparedData['action'] == 'edit') {
-                                $toUpdateInDb = null;
+                            $toUpdateInDb = null;
+
+                            if($preparedData['action'] == 'add') {
+                                $toUpdateInDb = $osm->getNode($toAdd->getId());
+                            }
+                            else if($preparedData['action'] == 'edit') {
                                 switch($element->getProperty('osm/type')) {
                                     case 'node':
                                         $toUpdateInDb = $osm->getNode($osmFeature['osmId']);
@@ -155,13 +151,17 @@ class ElementSynchronizationService
                                         $toUpdateInDb = $osm->getRelation($osmFeature['osmId']);
                                         break;
                                 }
+                            }
 
-                                if($toUpdateInDb) {
-                                    $element->setCustomProperty('osm/version', $toUpdateInDb->getVersion());
-                                    $element->setCustomProperty('osm/timestamp', strval($toUpdateInDb->getAttributes()->timestamp));
-                                    $this->dm->persist($element);
-                                    $this->dm->flush();
+                            if($toUpdateInDb) {
+                                if($preparedData['action'] == 'add') {
+                                    $element->setCustomProperty('osm/type', 'node');
+                                    $element->setOldId($toUpdateInDb->getId());
                                 }
+                                $element->setCustomProperty('osm/version', $toUpdateInDb->getVersion());
+                                $element->setCustomProperty('osm/timestamp', strval($toUpdateInDb->getAttributes()->timestamp));
+                                $this->dm->persist($element);
+                                $this->dm->flush();
                             }
 
                             return $promise->resolve(new Response(200, [], null, '1.1', 'Success'));
@@ -195,7 +195,7 @@ class ElementSynchronizationService
     /**
      * Convert an element into a JSON-like OSM feature
      */
-    public function elementToOsm($element)
+    public function elementToOsm(Element $element)
     {
         $osmFeature = [];
 
@@ -259,34 +259,72 @@ class ElementSynchronizationService
     public function checkIfNewElementShouldBeAddedToOsm(Element $element)
     {
         if ($this->linkElementToExistingOsmImport($element)) {
-            // TODO check duplicates on OSM
-            // the duplicates object should be like following
-            $duplicates = [
-                [
-                    'name' => 'Duplicate 1', 
-                    'osmId' => 1234,
-                    'description' => "Si y'a des infos supplémentaires à afficher, ça sera visible par l'utilisateur",
-                    'address' => [
-                        'streetAddress' => '12 rue plessy',
-                        'postalCode' => '45252',
-                        'addressLocality' => 'Beauvot'
-                    ]
-                ],
-                [
-                    'name' => 'Duplicate 2', 
-                    'osmId' => 5678,
-                    'description' => "Si y'a des infos supplémentaires à afficher, ça sera visible par l'utilisateur",
-                    'address' => [
-                        'streetAddress' => '14 rue plessy',
-                        'postalCode' => '45252',
-                        'addressLocality' => 'Beauvot'
-                    ]
-                ],
-            ];
-            return ['result' => true, 'duplicates' => $duplicates];
+            // Get element in OSM format
+            $osmFeature = $this->elementToOsm($element);
+
+            // List tags to use for potential duplicates search
+            $osmFeaturesMainTags = array_filter(
+                $osmFeature['tags'],
+                function($key) {
+                    return in_array($key, ElementSynchronizationService::MAIN_OSM_KEYS);
+                },
+                ARRAY_FILTER_USE_KEY
+            );
+
+            if(count($osmFeaturesMainTags) == 0) {
+                $osmFeaturesMainTags = array_filter(
+                    $osmFeature['tags'],
+                    function($key) {
+                        return in_array($key, ElementSynchronizationService::MAIN_OSM_KEYS_FALLBACK);
+                    },
+                    ARRAY_FILTER_USE_KEY
+                );
+            }
+
+            // If can't find main tags, do not send to OSM, feature might be broken
+            if(count($osmFeaturesMainTags) == 0) {
+                $log = new GoGoLog(GoGoLogLevel::Info, 'L\'objet n\'a pas de clé principale pour OSM');
+                $this->dm->persist($log);
+                $this->dm->flush();
+                return ['result' => false, 'duplicates' => []];
+            }
+            // Otherwise, start looking for duplicates
+            else {
+                $duplicates = [];
+
+                // Compute bounding box to retrieve
+                $radiusKm = ElementSynchronizationService::OSM_SEARCH_RADIUS_METERS / 1000;
+                $north = $osmFeature['center']['latitude'] + ($radiusKm / ElementSynchronizationService::EARTH_RADIUS) * (180 / M_PI);
+                $east = $osmFeature['center']['longitude'] + ($radiusKm / ElementSynchronizationService::EARTH_RADIUS) * (180 / M_PI) / cos($osmFeature['center']['latitude'] * M_PI / 180);
+                $south = $osmFeature['center']['latitude'] - ($radiusKm / ElementSynchronizationService::EARTH_RADIUS) * (180 / M_PI);
+                $west = $osmFeature['center']['longitude'] - ($radiusKm / ElementSynchronizationService::EARTH_RADIUS) * (180 / M_PI) / cos($osmFeature['center']['latitude'] * M_PI / 180);
+
+                // Load data from OSM editing API
+                $osm = $this->getOsmApiHandler();
+                $osm->get($west, $south, $east, $north);
+                $potentialDuplicates = $osm->search($osmFeaturesMainTags);
+
+                // Transform found potential duplicates into GogoCarto format$
+                foreach($potentialDuplicates as $dup) {
+                    $dupOsmId = $dup->getType().'/'.$dup->getId();
+                    array_push($duplicates, [
+                        'name' => $dup->getTag('name') ?? $dup->getTag('brand') ?? $dup->getTag('operator') ?? $dup->getTag('owner') ?? $dup->getTag('ref') ?? $dupOsmId,
+                        'osmId' => $dupOsmId,
+                        'description' => 'Attributs : '.$this->osmTagsToString($dup->getTags()),
+                        'address' => [
+                            'streetAddress' => implode(' ', array_filter([$dup->getTag('addr:housenumber'), $dup->getTag('addr:street')])),
+                            'postalCode' => $dup->getTag('addr:postcode'),
+                            'addressLocality' => $dup->getTag('addr:city')
+                        ]
+                    ]);
+                }
+
+                return ['result' => true, 'duplicates' => $duplicates];
+            }
+
         } else {
             return ['result' => false, 'duplicates' => []];
-        }       
+        }
     }
 
     /**
@@ -301,9 +339,97 @@ class ElementSynchronizationService
      */
     public function updateOsmDuplicateWithNewElementData($osmId, Element $element)
     {
-        // TODO
-        // Update OSM point with element data
-        // Update element data with OSM tags (version, type, timestamp...)
+        // Init OSM API handler
+        $osm = $this->getOsmApiHandler();
+        $osmFeature = $this->elementToOsm($element);
+        $existingFeature = null;
+        $osmIdParts = explode('/', $osmId);
+
+        switch($osmIdParts[0]) {
+            case 'node':
+                $existingFeature = $osm->getNode($osmIdParts[1]);
+                break;
+            case 'way':
+                $existingFeature = $osm->getWay($osmIdParts[1]);
+                break;
+            case 'relation':
+                $existingFeature = $osm->getRelation($osmIdParts[1]);
+                break;
+        }
+
+        if($existingFeature) {
+            // Edit tags
+            foreach($osmFeature['tags'] as $k => $v) {
+                if($v == null || $v == '') {
+                    $existingFeature->removeTag($k);
+                }
+                else {
+                    $existingFeature->setTag($k, $v);
+                }
+            }
+
+            // If node coordinates are edited, check if it is detached
+            if($osmIdParts[0] == 'node' && (!$existingFeature->getWays()->valid() || $existingFeature->getWays()->count() == 0)) {
+                if($osmFeature['center']['latitude'] != $existingFeature->getLat()) {
+                    $existingFeature->setLat($osmFeature['center']['latitude']);
+                }
+
+                if($osmFeature['center']['longitude'] != $existingFeature->getLon()) {
+                    $existingFeature->setLon($osmFeature['center']['longitude']);
+                }
+            }
+
+            // Create changeset
+            $changeset = $osm->createChangeset();
+            $changeset->setId(-1); // To prevent bug with setTag
+            $changeset->setTag('host', $this->urlService->generateUrl());
+            $changeset->setTag('created_by:library', 'GoGoCarto');
+            $changeset->setTag('created_by', $this->getConfig()->getAppName());
+            $changeset->begin('Mise à jour attributs '.($existingFeature->getTag('name') ?? $existingFeature->getTag('brand') ?? $existingFeature->getTag('operator') ?? $osmId));
+
+            // Add edited feature to changeset
+            $changeset->add($existingFeature);
+
+            // Close changeset
+            try {
+                $changeset->commit();
+
+                // Update version in case of feature edit
+                $toUpdateInDb = null;
+                switch($osmIdParts[0]) {
+                    case 'node':
+                        $toUpdateInDb = $osm->getNode($osmIdParts[1]);
+                        break;
+                    case 'way':
+                        $toUpdateInDb = $osm->getWay($osmIdParts[1]);
+                        break;
+                    case 'relation':
+                        $toUpdateInDb = $osm->getRelation($osmIdParts[1]);
+                        break;
+                }
+
+                if($toUpdateInDb) {
+                    $element->setCustomProperty('osm/version', $toUpdateInDb->getVersion());
+                    $element->setCustomProperty('osm/timestamp', strval($toUpdateInDb->getAttributes()->timestamp));
+                    $this->dm->persist($element);
+                    $this->dm->flush();
+                }
+            }
+            catch(\Exception $e) {
+                $message = 'Error when sending changeset';
+                $log = new GoGoLog(GoGoLogLevel::Error, 'Error during OSM sync : '.$message);
+                $this->dm->persist($log);
+                $this->dm->flush();
+                return $promise->resolve(new Response(500, [], null, '1.1', $message));
+            }
+        }
+        else {
+            $message = 'Feature does not exist on OSM';
+            $log = new GoGoLog(GoGoLogLevel::Error, 'Error during OSM sync : '.$message);
+            $this->dm->persist($log);
+            $this->dm->flush();
+            return $promise->resolve(new Response(500, [], null, '1.1', $message));
+        }
     }
 
     /**
@@ -334,9 +460,24 @@ class ElementSynchronizationService
             }
         }
         if ($linkedImport) {
-            $element->setSource($linkedImport);       
+            $element->setSource($linkedImport);
         }
         return $linkedImport;
+    }
+
+    /*
+     * Get a ready-to-use version of OSM API handler (with account/server defined)
+     */
+    private function getOsmApiHandler()
+    {
+        $configOsm = $this->getConfig()->getOsm();
+        return new Services_OpenStreetMap([
+            'server' => $this->getOsmServer(),
+            'user' => $configOsm->getOsmUsername(),
+            'password' => $configOsm->getOsmPassword(),
+            'User-Agent' => $this->getConfig()->getAppName(),
+            'verbose' => true
+        ]);
     }
 
     /**
@@ -368,12 +509,25 @@ class ElementSynchronizationService
     }
 
     /**
+     * Transform a list of OSM tags object into a human-readable string
+     */
+    private function osmTagsToString($tags) {
+        $str = '';
+
+        foreach($tags as $k => $v) {
+            if(strlen($str) > 0) { $str .= ', '; }
+            $str .= $k.' = '.$v;
+        }
+
+        return $str;
+    }
+
+    /**
      * Should this contribution be sent to OSM ?
      */
     private function allowOsmUpload($contribution, $preparedData) {
         return $contribution->hasBeenAccepted()
-            && $preparedData['action'] != 'delete'
-            && ($preparedData['action'] == 'edit' || ($preparedData['action'] == 'add' && $contribution->getElement()->getProperty('osm/type') == 'node'));
+            && ($preparedData['action'] == 'edit' || $preparedData['action'] == 'add');
     }
 
     /**
