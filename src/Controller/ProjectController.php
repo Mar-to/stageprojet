@@ -21,6 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\EventListener\ConfigurationListener;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Exception\AccountStatusException;
 
 class ProjectController extends Controller
 {

@@ -18,6 +18,7 @@ use App\Form\ElementType;
 use App\Services\ConfigurationService;
 use App\Services\ElementActionService;
 use App\Services\ElementFormService;
+use App\Services\ElementSynchronizationService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use FOS\UserBundle\Model\UserManagerInterface;
 use FOS\UserBundle\Security\LoginManagerInterface;
@@ -26,9 +27,15 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Core\Exception\AccountStatusException;
 
 class ElementFormController extends GoGoController
 {
+    public function __construct(ElementSynchronizationService $synchService)
+    {
+        $this->synchService = $synchService;
+    }
+    
     public function addAction(Request $request, SessionInterface $session, DocumentManager $dm,
                               ConfigurationService $configService,
                               ElementFormService $elementFormService, UserManagerInterface $userManager,
@@ -166,8 +173,8 @@ class ElementFormController extends GoGoController
         $originalElement = clone $element;
         $elementForm = $this->get('form.factory')->create(ElementType::class, $element);
 
-        // when we check for duplicates, we jump to an other action, and coem back to the add action
-        // with the "duplicate" GET param to true. We check that in this case an 'elementWaitingForDuplicateCheckForDuplicateCheck'
+        // when we check for duplicates, we jump to an other action, and come back to the add action
+        // with the "duplicate" GET param to true. We check that in this case an 'elementWaitingForDuplicateCheck'
         // is stored in the session
         $checkDuplicateOk = $request->query->get('checkDuplicate') && $session->has('elementWaitingForDuplicateCheck');
 
@@ -177,8 +184,16 @@ class ElementFormController extends GoGoController
             // if checkDuplicate process is done
             if ($checkDuplicateOk) {
                 $element = $session->get('elementWaitingForDuplicateCheck');
-                $element->resetImages(); // see comment in AbstractFile:59
+                $element->resetImages(); // see comment in AbstractFile:unserialize
                 $element->resetFiles();
+
+                // serialization/unserialization using session does not restore properly the source relation
+                if ($element->getSourceKey()) {
+                    $element->setSource($dm->get('Import')->findOneBy(['sourceName' => $element->getSourceKey()]));
+                }
+                if ($osmId = $request->get('matchElementWithOsmId')) {
+                    $this->synchService->updateOsmDuplicateWithNewElementData($osmId, $element);
+                }
 
                 // filling the form with the previous element created in case we want to recopy its informations (only for admins)
                 $elementForm = $this->get('form.factory')->create(ElementType::class, $element);
@@ -189,19 +204,32 @@ class ElementFormController extends GoGoController
             }
             // if we just submit the form
             else {
+                // custom handling form (creating OptionValues for example)
+                list($element, $isMinorModification) = $elementFormService->handleFormSubmission($element, $request, $editMode, $userEmail, $isAllowedDirectModeration, $originalElement, $dm);
+
                 // check for duplicates in Add action
                 if (!$editMode && !$editingOwnPendingContrib) {
                     $duplicates = $dm->get('Element')->findDuplicatesFor($element);
+                    $osmDuplicates = $this->synchService->checkIfNewElementShouldBeAddedToOsm($element)['duplicates'];
+                    if (count($osmDuplicates)) {
+                        // the duplicates returnes by OSM might already exist in gogocarto, so we
+                        // intersect osmduplicates with gogo duplicates
+                        $osmDuplicatesIdsInGoGoDatabase = [];
+                        foreach($duplicates as $duplicate) {
+                            if ($duplicate->isFromOsm()) $osmDuplicatesIdsInGoGoDatabase[] = $duplicate->getOldId();
+                        }
+                        foreach($osmDuplicates as $osmDuplicate) {
+                            if (!in_array($osmDuplicate['osmId'], $osmDuplicatesIdsInGoGoDatabase))
+                                $duplicates[] = $osmDuplicate;
+                        }
+                    }
                     $needToCheckDuplicates = count($duplicates) > 0;
                 } else {
                     $needToCheckDuplicates = false;
                 }
-
-                // custom handling form (creating OptionValues for example)
-                list($element, $isMinorModification) = $elementFormService->handleFormSubmission($element, $request, $editMode, $userEmail, $isAllowedDirectModeration, $originalElement, $dm);
-
+                
                 if ($needToCheckDuplicates) {
-                    // saving values in session instead of querying in the DB them again (don't know what's the best)
+                    // saving values in session
                     $session->set('elementWaitingForDuplicateCheck', $element);
                     $session->set('duplicatesElements', $duplicates);
                     $session->set('recopyInfo', $request->request->get('recopyInfo'));
@@ -322,21 +350,23 @@ class ElementFormController extends GoGoController
     {
         // a form with just a submit button
         $checkDuplicatesForm = $this->get('form.factory')->createNamedBuilder('duplicates', FormType::class)
-                                                                ->getForm();
-        if ('POST' == $request->getMethod()) {
+                                                         ->getForm();        
+    
+        // If Form is Submitted
+        if ($request->getMethod() == 'POST') {
             // if user say that it's not a duplicate, we go back to add action with checkDuplicate to true
-            return $this->redirectToRoute('gogo_element_add', ['checkDuplicate' => true]);
-        }
-        // check that duplicateselement are in session and are not empty
+            $osmId = $request->get('osm') ? array_keys($request->get('osm'))[0] : null;            
+            return $this->redirectToRoute('gogo_element_add', ['checkDuplicate' => true, 'matchElementWithOsmId' => $osmId]);
+        }        
         elseif ($session->has('duplicatesElements') && count($session->get('duplicatesElements')) > 0) {
+            // Display the check duplicates form
             $duplicates = $session->get('duplicatesElements');
             $config = $dm->get('Configuration')->findConfiguration();
             return $this->render('element-form/check-for-duplicates.html.twig', [
                 'duplicateForm' => $checkDuplicatesForm->createView(),
                 'duplicatesElements' => $duplicates,
                 'config' => $config ]);
-        }
-        // otherwise just redirect ot add action
+        }        
         else {
             return $this->redirectToRoute('gogo_element_add');
         }
