@@ -146,7 +146,7 @@ class ElementImportOneService
         if (is_object($lat) || is_array($lat) || 0 == strlen($lat) || is_object($lng) || 0 == strlen($lng) || 'null' == $lat || null == $lat) {
             $lat = 0;
             $lng = 0;
-            if ($import->getGeocodeIfNecessary()) {
+            if ($import->getGeocodeIfNecessary() && $address->getFormatedAddress() && strlen($address->getFormatedAddress()) > 0) {
                 $result = $this->geocoder->geocode($address->getFormatedAddress())->first()->getCoordinates();
                 $lat = $result->getLatitude();
                 $lng = $result->getLongitude();
