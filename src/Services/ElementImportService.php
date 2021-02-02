@@ -138,7 +138,7 @@ class ElementImportService
         }
         try {
             // Define the frequency for persisting the data and the current index of records
-            $batchSize = 100;
+            $batchSize = 25;
             $i = 0;
             $previouslyImportedElementIds = [];
             $newlyImportedElementIds = [];
@@ -157,9 +157,10 @@ class ElementImportService
                     return strval($id); // fix some id are just numbers
                 }, $previouslyImportedElementIds);
             } else {
+                $import->setCurrMessage("Suppression des données précédemment importées");
                 // before re importing a static source, we delete all previous items
                 $qb->field('source')->references($import)->batchRemove();
-                $this->dm->persist($import); // batch remove call a dm->clear so need to eprsist again
+                $this->dm->persist($import); // batch remove call a dm->clear so need to persist again
             }
 
             $this->importOneService->initialize($import);
@@ -199,21 +200,30 @@ class ElementImportService
                     $this->errorsMessages[$e->getMessage()] = $message;
                 }
 
-                if (1 === ($i % $batchSize)) {
-                    $this->dm->flush();
-                    $this->dm->clear();
-                    // After flush, we need to get again the import from the DB to avoid doctrine raising errors
-                    $import = $this->dm->get('Import')->find($import->getId());
-                    $this->dm->persist($import);
+                if (0 === ($i % $batchSize)) {
+                    $import = $this->batchFlush($import);
                 }
             }
-
-            $this->dm->flush();
-            $this->dm->clear();
-
-            $import = $this->dm->get('Import')->find($import->getId());
+            $import = $this->batchFlush($import);
             $import->setLastRefresh(time());
-            $this->dm->persist($import);
+
+            // Remove Elements no longer imported
+            $countElemenDeleted = 0;
+            if ($import->isDynamicImport()) {
+                $qb = $this->dm->query('Element');
+                $elementIdsToDelete = array_diff($previouslyImportedElementIds, $newlyImportedElementIds);
+                // first get proper count (without ElementPendingVersion which are misleading)
+                $countElemenDeleted = $qb->field('source')->references($import)
+                                         ->field('status')->notEqual(ElementStatus::ModifiedPendingVersion)
+                                         ->field('id')->in($elementIdsToDelete)
+                                         ->getCount();
+                // delete elements
+                $qb = $this->dm->query('Element');
+                $qb->field('source')->references($import)
+                   ->field('id')->in($elementIdsToDelete)
+                   ->batchRemove();
+                $this->dm->persist($import); // batch remove call a dm->clear so need to eprsist again
+            }
 
             // Link elements between each others
             $config = $this->dm->get('Configuration')->findConfiguration();
@@ -228,10 +238,11 @@ class ElementImportService
                         $qb->field('source')->references($import)
                            ->updateMany()
                            ->field("data.$field->reversedBy")->unsetField()
-                           ->execute();
+                           ->execute();                        
                     }
                 }
             }
+            $this->dm->flush(); // execute the unsetField queries
 
             if (count($elementsLinkedFields) > 0) {
                 // Go through each individual imported elements, and link elements from each other
@@ -258,38 +269,12 @@ class ElementImportService
                             }
                         }
                         ++$i;
-                        if (1 === ($i % $batchSize)) {
-                            $this->dm->flush();
-                            $this->dm->clear();
-                            // After flush, we need to get again the import from the DB to avoid doctrine raising errors
-                            $import = $this->dm->get('Import')->find($import->getId());
-                            $this->dm->persist($import);
+                        if (0 === ($i % $batchSize)) {
+                            $import = $this->batchFlush($import);
                         }
                     }
                 }
-                $this->dm->flush();
-                $this->dm->clear();
-
-                // After flush, we need to get again the import from the DB to avoid doctrine raising errors
-                $import = $this->dm->get('Import')->find($import->getId());
-                $this->dm->persist($import);
-            }
-
-            $countElemenDeleted = 0;
-            if ($import->isDynamicImport()) {
-                $qb = $this->dm->query('Element');
-                $elementIdsToDelete = array_diff($previouslyImportedElementIds, $newlyImportedElementIds);
-                // first get proper count (without ElementPendingVersion which are misleading)
-                $countElemenDeleted = $qb->field('source')->references($import)
-                                         ->field('status')->notEqual(ElementStatus::ModifiedPendingVersion)
-                                         ->field('id')->in($elementIdsToDelete)
-                                         ->getCount();
-                // delete elements
-                $qb = $this->dm->query('Element');
-                $qb->field('source')->references($import)
-                   ->field('id')->in($elementIdsToDelete)
-                   ->batchRemove();
-                $this->dm->persist($import); // batch remove call a dm->clear so need to eprsist again
+                $import = $this->batchFlush($import);
             }
 
             $qb = $this->dm->query('Element');
@@ -346,5 +331,14 @@ class ElementImportService
         }
 
         return $message;
+    }
+
+    private function batchFlush($import) {
+        $this->dm->flush();
+        $this->dm->clear();
+        // After dm->clear, we need to get again the import from the DB to avoid doctrine raising errors
+        $import = $this->dm->get('Import')->find($import->getId());
+        $this->dm->persist($import);
+        return $import;
     }
 }
