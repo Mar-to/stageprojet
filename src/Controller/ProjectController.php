@@ -120,7 +120,6 @@ class ProjectController extends Controller
         }
         $dm = $dmFactory->getCurrentManager();
         $repository = $dm->get('Project');
-
         $config = $dm->get('Configuration')->findConfiguration();
 
         $projects = $dm->query('Project')
