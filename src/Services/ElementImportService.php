@@ -105,7 +105,7 @@ class ElementImportService
 
     public function importJson($import, $onlyGetData = false)
     {
-        $json = file_get_contents($import->getUrl());
+        $json = file_get_contents(str_replace(' ', '%20', $import->getUrl()));
         $data = json_decode($json, true);
         if (null === $data) {
             return null;
