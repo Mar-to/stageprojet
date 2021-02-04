@@ -103,6 +103,94 @@ class OpenHours
         return $result;
     }
 
+    public function toOsm()
+    {
+        $output = null;
+        $commonDays = [];
+
+        // Group hours per day ranges
+        foreach($this->days as $dayKey => $dayStr) {
+            // If day is defined
+            if($this->$dayStr) {
+                // Check if its hours match with an existing range of days
+                $matchFound = false;
+                foreach($commonDays as $hours => $hoursDays) {
+                    if($hours == $this->$dayStr->toJson()) {
+                        $matchFound = true;
+                        array_push($commonDays[$hours], $dayKey);
+                    }
+                }
+
+                // If not, add as a new range
+                if(!$matchFound && $this->$dayStr->toJson() != '""') {
+                    $commonDays[$this->$dayStr->toJson()] = [$dayKey];
+                }
+            }
+        }
+
+        // Empty list
+        if(count(array_keys($commonDays)) == 0) {
+            $output = '';
+        }
+        // Same hours all week
+        else if(count(array_keys($commonDays)) == 1 && count(array_keys($commonDays[array_key_first($commonDays)])) == 7) {
+            $output = substr(array_key_first($commonDays), 1, -1);
+
+            // Special case when it's open everyday, all-day long
+            if($output == '00:00-00:00') { $output = '24/7'; }
+        }
+        // Other cases
+        else {
+            $output = '';
+
+            // For each range of days having same hours
+            foreach($commonDays as $hours => $daysList) {
+                // Add separator between each rule
+                if(strlen($output) > 0) {
+                    $output .= '; ';
+                }
+
+                // Compute day range string
+                // Single day
+                if(count($daysList) == 1) {
+                    $output .= $daysList[0];
+                }
+                // Several days
+                else {
+                    // Group following days
+                    $groupedDays = [ [ $daysList[0] ] ];
+                    for($i=1; $i < count($daysList); $i++) {
+                        $prevDayId = array_search($daysList[$i-1], array_keys($this->days));
+                        $currDayId = array_search($daysList[$i], array_keys($this->days));
+
+                        if($prevDayId == $currDayId - 1) {
+                            array_push($groupedDays[array_key_last($groupedDays)], $daysList[$i]);
+                        }
+                        else {
+                            array_push($groupedDays, [$daysList[$i]]);
+                        }
+                    }
+
+                    // Eventually merge first and last group if sunday -> monday
+                    if(count($groupedDays) > 1 && $groupedDays[0][0] == 'Mo' && $groupedDays[array_key_last($groupedDays)][array_key_last($groupedDays[array_key_last($groupedDays)])] == 'Su') {
+                        $lastRange = array_pop($groupedDays);
+                        $groupedDays[0] = array_merge($lastRange, $groupedDays[0]);
+                    }
+
+                    // Display list of days
+                    $output .= implode(',', array_map(
+                        function($gd) { return count($gd) <= 2 ? implode(',', $gd) : $gd[0].'-'.$gd[array_key_last($gd)]; },
+                        $groupedDays
+                    ));
+                }
+
+                $output .= ' '.($hours == '"00:00-00:00"' ? '00:00-24:00' : substr($hours, 1, -1));
+            }
+        }
+
+        return $output;
+    }
+
     public function getMonday()
     {
         return $this->Monday;
