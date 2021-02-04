@@ -1,7 +1,7 @@
 {% set formName = form.vars.full_name|split('[')|first %}
 
 <div id="element-import">  
-    <select class="source-type form-control" data-sonata-select2="false" v-model="sourceType" :name="`${formName}[sourceType]`">
+    <select class="source-type form-control" data-sonata-select2="false" v-model="sourceType" name="sourceType">
         <option></option>
         <option value="csv">Fichier CSV</option>
         <option value="json">API Json</option>
@@ -17,7 +17,7 @@
     </osm-query-builder>
 
     <!--Input to save OSM query as Json  -->
-    <input type="hidden" :name="formName + '[osmQueriesJson]'" :value="JSON.stringify(osmQueriesJson)"/>
+    <input type="hidden" :name="formName + '[osmQueriesJson]'" :value="osmQueryInputValue"/>
 
     <div v-show="sourceType == 'csv'" class="file-container">
         {# content is moved by javascript from another field into this div #}
@@ -31,6 +31,7 @@
 
 <script>
     var importObject = {{ form.vars.sonata_admin.admin.subject|json_encode|raw }}
+    var sourceType = "{{ form.vars.sonata_admin.admin.subject.getSourceType() }}"
     var formName = {{ form.vars.full_name|split('[')|first|json_encode|raw }}
     // See element-import.js Vue Component
 </script>

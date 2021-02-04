@@ -21,7 +21,6 @@
   'separator': 'separator',
   'header': 'header',
   'files': 'files',
-  'images': '',
   'elements': 'elements'
 }
 %}
@@ -35,7 +34,7 @@
   </tr>
 
   {% for field in fields %}
-    {% if field.type != 'images' %}
+    {% if field.type in filterFromType|keys %}
       {% set gogoFilter = filterFromType[field.type] %}
       {% if field.type == 'text' %}{% set gogoFilter = field.subtype %}{% endif %}
       {% if gogoFilter in ['text', 'email', 'textarea'] %}

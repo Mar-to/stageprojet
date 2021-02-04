@@ -286,7 +286,7 @@ class ElementRepository extends DocumentRepository
         if ($config->getSearchExcludingWords()) {
             $text = $text.' --'.str_replace(',', ' --', $config->getSearchExcludingWords());
         }
-        return $qb->text($text)->sortMeta('score', 'textScore');
+        return $qb->text($text)->sortMeta('score', 'textScore')->limit(30);
     }
 
     private function filterVisibles($qb, $status = ElementStatus::PendingModification)

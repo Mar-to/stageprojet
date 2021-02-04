@@ -72,7 +72,9 @@ class MigrationCommand extends Command
         "Nouveau moteur de recherche ! Sur la carte, lorsqu'on tape une recherche des suggestions apparaissent pour les éléments et les catégories (bientôt aussi pour les recherchent géographiques)",
         // v3.2
         "Vous pouvez maintenant configurer l'url de votre carte si vous possédez un nom de domaine (ou un sous domaine). Allez dans Personnalisation -> Configuration Générale et suivez les instructions !",
-        "La connexion via un compte tiers (Google, Facebook, LesCommuns.org) est maintenant possible ! Changez la configuration dans Utilisateurs -> Configuration"
+        "La connexion via un compte tiers (Google, Facebook, LesCommuns.org) est maintenant possible ! Changez la configuration dans Utilisateurs -> Configuration",
+        // 3.2.3
+        "Notifications : vous pouvez maintenant être alerté si un import a des problèmes (à configurer dans chaque Import) ou si des éléments sont à modérer (à configurer dans Utilisateurs)",
     ];
 
     public function __construct(DocumentManagerFactory $dmFactory, LoggerInterface $commandsLogger,

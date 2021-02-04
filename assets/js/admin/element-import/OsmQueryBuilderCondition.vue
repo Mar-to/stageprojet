@@ -33,13 +33,16 @@ export default {
     },
     computed: {
         operator() { return this.condition.operator },
+        isMultipleCondition() { return this.operator && this.operator.includes('~')}
     },
     mounted() {
         if (this.condition.key) {
             // get prevalentValues using first result, i.e. perfect match
             $.getJSON(this.keyInfoUrl(this.condition.key), (response) => {
-                this.prevalentValues = response.data[0].prevalent_values
-                this.initInputValue()
+                if (response.data.length > 0) {
+                    this.prevalentValues = response.data[0].prevalent_values
+                    this.initInputValue()
+                }
             })            
         } else {
             this.initSearchKeyInput()
@@ -86,7 +89,14 @@ export default {
         },
         initInputValue() {
             let data = this.prevalentValues
-            if (this.condition.value) data.unshift({value: this.condition.value})
+            if (this.condition.value) {
+                if (this.isMultipleCondition) {
+                    for (let value of this.condition.value.split(','))
+                        data.unshift({value: value})
+                } else {
+                    data.unshift({value: this.condition.value})
+                }
+            }
             // Format to select2 style
             data = data.map((v) => { return {id: v.value, text: v.value.charAt(0).toUpperCase() + v.value.slice(1)} })
             // Init Value Input from prevalent values
@@ -97,7 +107,7 @@ export default {
                     }).length===0)
                     {return {id:term, text:term};}
                 }, 
-                multiple: this.operator && this.operator.includes('~'),
+                multiple: this.isMultipleCondition,
                 data: data
             }).on('change', () => {
                 this.condition.value = $(this.$refs.inputValue).val()

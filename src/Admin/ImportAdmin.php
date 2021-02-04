@@ -45,6 +45,9 @@ class ImportAdmin extends AbstractAdmin
         $title = $isDynamic ? "Import Dynamique, pour afficher des données gérées par quelqu'un d'autre" : 'Importer des données en dur, depuis un fichier CSV ou une API Json';
         $isPersisted = $this->getSubject()->getId();
         
+        $usersQuery = $dm->query('User');
+        $usersQuery->addOr($usersQuery->expr()->field('roles')->exists(true))
+                   ->addOr($usersQuery->expr()->field('groups')->exists(true));
         $formMapper
             ->tab('Général')
                 ->with($title, ['class' => 'col-md-12'])
@@ -67,6 +70,7 @@ class ImportAdmin extends AbstractAdmin
                         'class' => 'App\Document\User',
                         'required' => false,
                         'multiple' => true,
+                        'query' => $usersQuery,
                         'btn_add' => false,
                         'label' => "Utilisateurs à notifier en cas d'erreur, ou lorsque de nouveaux champs/catégories sont à faire correspondre", ], ['admin_code' => 'admin.option_hidden'])
                     ->add('isSynchronized', null, [

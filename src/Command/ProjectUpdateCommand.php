@@ -100,18 +100,16 @@ class ProjectUpdateCommand extends Command
 
             // ensure index are up to date
             // $dm->getSchemaManager()->updateIndexes();
-            $this->confService->manuallyUpdateIndex($dm);
-
-            foreach($dm->get('Import')->findAll() as $import) {
-                $import->fixOntologyMapping();
-            }
-            $dm->flush();
+            // $this->confService->manuallyUpdateIndex($dm);
             
             $img = $config->getSocialShareImage() ? $config->getSocialShareImage() : $config->getLogo();
             $imageUrl = $img ? $img->getImageUrl() : null;
             $dataSize = $dm->get('Element')->findVisibles(true);
 
-            $users = $dm->get('User')->findAll();
+            $qb = $dm->query('User');
+            $users = $qb->addOr($qb->expr()->field('roles')->exists(true))
+                        ->addOr($qb->expr()->field('groups')->exists(true))
+                        ->getArray();
             $adminEmails = [];
             $lastLogin = null;
             foreach ($users as $key => $user) {
@@ -130,6 +128,7 @@ class ProjectUpdateCommand extends Command
             $project->setAdminEmails(implode(',', $adminEmails));
             $project->setPublished($config->getPublishOnSaasPage());
             if ($lastLogin) $project->setLastLogin($lastLogin);
+            else $project->setLastLogin($project->getCreatedAt());
             $project->setHaveWebhooks($haveWebhooks);
             $project->setHaveNewsletter($haveNewsletter);
             return true;

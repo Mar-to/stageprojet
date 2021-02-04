@@ -120,10 +120,11 @@ class ImportAdminController extends Controller
             if ($isFormValid) {
                 try {
                     $dm = $this->container->get('doctrine_mongodb')->getManager();
-                    
+                    $object->setSourceType($request->get('sourceType'));
+
                     $ontology = $request->get('ontology');
-                    // Fix ontology mapping for elements fields with reverse value      
-                    if ($ontology) {                                          
+                    // Fix ontology mapping for elements fields with reverse value
+                    if ($ontology) {
                         $config = $dm->get('Configuration')->findConfiguration();
                         foreach($config->getElementFormFields() as $field) {
                             if ($field->type === 'elements'
@@ -135,13 +136,13 @@ class ImportAdminController extends Controller
                                 $ontology[$key] = '/';
                             }
                         }
-                    }                    
+                    }
                     $object->setOntologyMapping($ontology);
                     $currentTaxonomyMapping = $object->getTaxonomyMapping();
 
                     // Taxonomy Mapping
-                    if ($request->get('taxonomy')) {   
-                        $createdParent = [];                     
+                    if ($request->get('taxonomy')) {
+                        $createdParent = [];
                         $newTaxonomyMapping = $request->get('taxonomy');
                         $categoriesCreated = [];
                         foreach($newTaxonomyMapping as $originName => &$mappedCategories) {
@@ -174,11 +175,11 @@ class ImportAdminController extends Controller
                                         $dm->persist($newCat);
                                         $categoriesCreated[$categoryId] = $newCat->getId();
                                         $mappedCategories[$key] = $newCat->getId();
-                                    }                                    
+                                    }
                                 }
                             }
-                        }  
-                        unset($mappedCategories);                      
+                        }
+                        unset($mappedCategories);
                     } else {
                         $newTaxonomyMapping = null;
                     }
@@ -194,13 +195,13 @@ class ImportAdminController extends Controller
                                 if (in_array($condition->operator, ['='])) {
                                     $option->setOsmTag($condition->key, $condition->value);
                                 }
-                            }                            
+                            }
                         }
                     }
 
                     $object->setNewOntologyToMap(false);
                     $object->setNewTaxonomyToMap(false);
-                    
+
                     // check manually for taxonomy change
                     if ($object->getTaxonomyMapping() != $currentTaxonomyMapping) {
                         $object->setMainConfigUpdatedAt(time());

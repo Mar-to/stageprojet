@@ -10,6 +10,7 @@ use App\Document\Project;
 use App\Document\Taxonomy;
 use App\Services\DocumentManagerFactory;
 use App\Services\UrlService;
+use App\EventListener\ConfigurationListener;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use FOS\UserBundle\Model\UserInterface;
 use FOS\UserBundle\Model\UserManagerInterface;
@@ -18,15 +19,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\EventListener\ConfigurationListener;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Exception\AccountStatusException;
 
 class ProjectController extends Controller
 {
-    public function createAction(Request $request, DocumentManagerFactory $dmFactory, UrlService $urlService,
-                                 ConfigurationListener $confService)
+    public function createAction(Request $request, DocumentManagerFactory $dmFactory, UrlService $urlService)
     {
         if (!$dmFactory->isRootProject()) {
             return $this->redirectToRoute('gogo_homepage');
@@ -102,9 +101,6 @@ class ProjectController extends Controller
             $projectDm->persist($taxonomy);
             $projectDm->flush();
 
-            $projectDm->getSchemaManager()->updateIndexes();
-            $confService->manuallyUpdateIndex($projectDm);
-
             // REDIRECT to new project
             $url = $urlService->generateUrlFor($project, 'gogo_saas_initialize_project');
             return $this->redirect($url);
@@ -125,7 +121,6 @@ class ProjectController extends Controller
         }
         $dm = $dmFactory->getCurrentManager();
         $repository = $dm->get('Project');
-
         $config = $dm->get('Configuration')->findConfiguration();
 
         $projects = $dm->query('Project')
@@ -151,7 +146,8 @@ class ProjectController extends Controller
     // This route is to create an Admin User when the project is just created
     public function initializeAction(Request $request, DocumentManager $dm,
                                      UserManagerInterface $userManager,
-                                     LoginManagerInterface $loginManager)
+                                     LoginManagerInterface $loginManager,
+                                     ConfigurationListener $confService)
     {
         // Return if already existing users
         $users = $dm->get('User')->findAll();
@@ -161,7 +157,11 @@ class ProjectController extends Controller
 
         $config = $dm->get('Configuration')->findConfiguration();
 
-        // CRATE ADMIN USER
+        // Init indexes
+        $dm->getSchemaManager()->updateIndexes();
+        $confService->manuallyUpdateIndex($dm);
+
+        // CREATE ADMIN USER
         $user = $userManager->createUser();
 
         $form = $this->get('form.factory')->create(RegistrationFormType::class, $user);

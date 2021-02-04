@@ -209,7 +209,7 @@ class Import extends AbstractFile
     }
     public function getSourceType()
     {
-        if ($this->sourceType) return $this->sourceType;
+        if (isset($this->sourceType)) return $this->sourceType;
         if (isset($this->osmQueriesJson)) return 'openstreetmap';
         if ($this->url) return 'json';
         if ($this->file) return 'csv';
@@ -501,14 +501,6 @@ class Import extends AbstractFile
         }
         $this->ontologyMapping = $ontologyMapping;
         return $this;
-    }
-
-    public function fixOntologyMapping()
-    {
-        foreach($this->ontologyMapping as &$object) {
-            if ($object['mappedProperty'] == 'categorie')
-                $object['mappedProperty'] = 'categories';
-        }
     }
 
     /**

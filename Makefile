@@ -132,15 +132,15 @@ gogo-update: ## Update a PROD server to the lastest version of gogocarto
 	make show-deploy-message
 	COMPOSER_MEMORY_LIMIT=-1 $(COMPOSER) install
 	$(YARN) install
-	$(GULP) build
-	$(GULP) production
 	$(YARN) encore production	
+	$(GULP) build
+	$(GULP) production	
 	make purge	
 	$(SYMFONY) db:migrate	
 	make hide-deploy-message
 	service cron start
 
-gogo-update-simple:
+gogo-quick-update:
 	service cron stop
 	$(GIT) reset --hard master
 	$(GIT) pull origin master

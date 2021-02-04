@@ -1505,6 +1505,12 @@ class Element
         return $this->data;
     }
 
+    public function getSortedData()
+    {
+        ksort($this->data);
+        return $this->data;
+    }
+
     /**
      * Set email.
      *

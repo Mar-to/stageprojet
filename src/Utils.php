@@ -31,9 +31,8 @@ function slugify($text, $lowercase = true) {
     $text = str_replace('à', 'a', $text);
     $text = str_replace('â', 'a', $text);
     $text = str_replace('î', 'i', $text);
-    $text = preg_replace('~[^\/\pL\d]+~u', '_', $text); // replace non letter by _
-
     $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text); // transliterate
+    $text = preg_replace('~[^\/\pL\d]+~u', '_', $text); // replace non letter by _
     $text = trim($text, '_'); // trim
     $text = preg_replace('~_+~', '_', $text); // remove duplicate -
 
