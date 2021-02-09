@@ -95,7 +95,7 @@ class ElementImportMappingOntologyService
             // if prop with same name exist in the DB, map it directly to itself
             $slugProp = strtolower(preg_replace('~(^bf_|_)~', '', $prop));
             $mappedProp = $this->existingProps[$slugProp] ?? '';
-            
+
             // handle some special cases
             if ($import->getSourceType() == 'osm') {
                 switch ($prop) {

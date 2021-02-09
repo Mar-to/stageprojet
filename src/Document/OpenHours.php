@@ -62,6 +62,110 @@ class OpenHours
         }
     }
 
+    /**
+     * Defines time slots from OpenStreetMap opening_hours=* syntax
+     * @throws Exception When OSM syntax is not supported
+     */
+    public function buildFromOsm($osmOh)
+    {
+        $osmOh = $osmOh.trim();
+
+        // Supported regex patterns
+        $daysRgx = '(Mo|Tu|We|Th|Fr|Sa|Su)';
+        $daysRangeRgx = '('.$daysRgx.'-'.$daysRgx.')';
+        $dayOrRangeRgx = '('.$daysRgx.'|'.$daysRangeRgx.')';
+        $daysListRgx = '('.$dayOrRangeRgx.'(,\s*'.$dayOrRangeRgx.')*)';
+        $hoursRgx = '\d{1,2}\:\d{2}';
+        $hoursRangeRgx = '('.$hoursRgx.'-'.$hoursRgx.')';
+        $hoursListRgx = '('.$hoursRangeRgx.'(,\s*'.$hoursRangeRgx.')?)';
+        $singleRuleRgx = '(('.$daysListRgx.'\s+)?'.$hoursListRgx.')';
+        $severalRulesRgx = '/^'.$singleRuleRgx.'(\s*;\s*'.$singleRuleRgx.')*$/i';
+
+        // 24/24, 7/7 case
+        if($osmOh = '24/7') {
+            $this->setMonday(new DailyTimeSlot('00:00', '00:00'));
+            $this->setTuesday(new DailyTimeSlot('00:00', '00:00'));
+            $this->setWednesday(new DailyTimeSlot('00:00', '00:00'));
+            $this->setThursday(new DailyTimeSlot('00:00', '00:00'));
+            $this->setFriday(new DailyTimeSlot('00:00', '00:00'));
+            $this->setSaturday(new DailyTimeSlot('00:00', '00:00'));
+            $this->setSunday(new DailyTimeSlot('00:00', '00:00'));
+        }
+        // Classic list of rules case
+        else if (preg_match($severalRulesRgx, $osmOh)) {
+            // Split each rules to parse them one by one
+            $rules = array_map(function($s) { return $s.trim(); }, explode(";", $osmOh));
+
+            foreach($rules as $rule) {
+                preg_match('/^'.$daysListRgx.'/i', $rule, $dp);
+                preg_match('/'.$hoursListRgx.'$/', $rule, $hp);
+
+                $ruleDays = [];
+                $ruleHours = [];
+
+                // Read list of days
+                if($dp[0]) {
+                    // Split by comma to have either single day or day range
+                    $dl = array_map(function($s) { return $s.trim(); }, explode($dp[0], ","));
+
+                    foreach($dl as $singleDay) {
+                        // Single day
+                        if(preg_match('/^'.$daysRgx.'$/i', $singleDay)) {
+                            array_push($ruleDays, strtoupper($singleDay[0]).strtolower($singleDay[1]));
+                        }
+                        // Days range
+                        else if(preg_match('/^'.$daysRangeRgx.'$/i', $singleDay)) {
+                            $ruleDaysParts = array_map(function($s) { return strtoupper($s[0]).strtolower($s[1]); }, explode("-", $singleDay));
+                            $startDayId = array_search($ruleDaysParts[0], array_keys($days));
+                            $endDayId = array_search($ruleDaysParts[1], array_keys($days));
+
+                            if($startDayId < $endDayId) {
+                                for($i = $startDayId; $i <= $endDayId; $i++) {
+                                    array_push($ruleDays, array_keys($days)[$i]);
+                                }
+                            }
+                            else if($startDayId > $endDayId) {
+                                for($i = $startDayId; $i < count($days); $i++) {
+                                    array_push($ruleDays, array_keys($days)[$i]);
+                                }
+                                for($i = 0; $i <= $endDayId; $i++) {
+                                    array_push($ruleDays, array_keys($days)[$i]);
+                                }
+                            }
+                            else {
+                                array_push($ruleDays, $ruleDaysParts[0]);
+                            }
+                        }
+                    }
+                }
+                else {
+                    $ruleDays = array_keys($days);
+                }
+
+                // Read list of hours
+                if($hp[0]) {
+                    // Split by comma to get each hours range
+                    $hl = array_map(function($s) { return $s.trim(); }, explode($hl[0], ","));
+
+                    foreach($hl as $singleHourRange) {
+                        // Merge this range with existing list
+                        $ruleHours = array_merge($ruleHours, explode("-", $singleHourRange));
+                    }
+
+                    // Apply hours ranges to each concerned day
+                    foreach($ruleDays as $rd) {
+                        $method = 'set'.$this->days[$rd];
+                        $this->$method(new DailyTimeSlot(...$ruleHours));
+                    }
+                }
+            }
+        }
+        // If no format recognized
+        else {
+            throw new \Exception('Syntaxe OSM pour les horaires d\'ouvertures non-reconnue : '.$osmOh);
+        }
+    }
+
     private function buildSlotsFrom($string)
     {
         $times = explode('-', $string);
