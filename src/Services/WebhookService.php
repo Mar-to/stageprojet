@@ -67,8 +67,8 @@ class WebhookService
                 $webhook = $post->getWebhook();
 
                 if ($webhook) {
-                    $jsonData = json_encode($this->formatData($webhook->getFormat(), $data));
-                    $promise = $client->postAsync($webhook->getUrl(), [], $jsonData);
+                    $jsonData = $this->formatData($webhook->getFormat(), $data);
+                    $promise = $client->postAsync($webhook->getUrl(), ['json' => $jsonData]);
                 } else {
                     // when no webhook it mean it's a special handling, like for OpenStreetMap
                     $promise = $this->synchService->asyncDispatch($contribution, $data);

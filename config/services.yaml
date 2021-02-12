@@ -44,7 +44,7 @@ services:
       arguments:
         $baseUrl: '%base_url%'
         $baseProtocol: '%base_protocol%'        
-        $useAsSaas: '%use_as_sass%'
+        $useAsSaas: '%use_as_saas%'
 
     App\Services\MailService:
       arguments:        
