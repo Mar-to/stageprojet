@@ -164,8 +164,8 @@ class ElementImportMappingOntologyService
 
             foreach ($mapping as $searchProp => $mappedObject) {
                 $mappedProp = $mappedObject['mappedProperty'];
-
             }
+
             // Add streetNumber into streetAddress
             if (isset($newRow['streetNumber']) && isset($newRow['streetAddress'])) {
                 $newRow['streetAddress'] = $newRow['streetNumber'].' '.$newRow['streetAddress'];

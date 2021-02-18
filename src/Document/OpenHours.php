@@ -68,12 +68,12 @@ class OpenHours
      */
     public function buildFromOsm($osmOh)
     {
-        $osmOh = $osmOh.trim();
+        $osmOh = trim($osmOh);
 
         // Supported regex patterns
         $daysRgx = '(Mo|Tu|We|Th|Fr|Sa|Su)';
         $daysRangeRgx = '('.$daysRgx.'-'.$daysRgx.')';
-        $dayOrRangeRgx = '('.$daysRgx.'|'.$daysRangeRgx.')';
+        $dayOrRangeRgx = '('.$daysRangeRgx.'|'.$daysRgx.')';
         $daysListRgx = '('.$dayOrRangeRgx.'(,\s*'.$dayOrRangeRgx.')*)';
         $hoursRgx = '\d{1,2}\:\d{2}';
         $hoursRangeRgx = '('.$hoursRgx.'-'.$hoursRgx.')';
@@ -82,19 +82,19 @@ class OpenHours
         $severalRulesRgx = '/^'.$singleRuleRgx.'(\s*;\s*'.$singleRuleRgx.')*$/i';
 
         // 24/24, 7/7 case
-        if($osmOh = '24/7') {
-            $this->setMonday(new DailyTimeSlot('00:00', '00:00'));
-            $this->setTuesday(new DailyTimeSlot('00:00', '00:00'));
-            $this->setWednesday(new DailyTimeSlot('00:00', '00:00'));
-            $this->setThursday(new DailyTimeSlot('00:00', '00:00'));
-            $this->setFriday(new DailyTimeSlot('00:00', '00:00'));
-            $this->setSaturday(new DailyTimeSlot('00:00', '00:00'));
-            $this->setSunday(new DailyTimeSlot('00:00', '00:00'));
+        if($osmOh == '24/7') {
+            $this->setMonday(new DailyTimeSlot(...$this->buildSlotsFrom('00:00-00:00')));
+            $this->setTuesday(new DailyTimeSlot(...$this->buildSlotsFrom('00:00-00:00')));
+            $this->setWednesday(new DailyTimeSlot(...$this->buildSlotsFrom('00:00-00:00')));
+            $this->setThursday(new DailyTimeSlot(...$this->buildSlotsFrom('00:00-00:00')));
+            $this->setFriday(new DailyTimeSlot(...$this->buildSlotsFrom('00:00-00:00')));
+            $this->setSaturday(new DailyTimeSlot(...$this->buildSlotsFrom('00:00-00:00')));
+            $this->setSunday(new DailyTimeSlot(...$this->buildSlotsFrom('00:00-00:00')));
         }
         // Classic list of rules case
         else if (preg_match($severalRulesRgx, $osmOh)) {
             // Split each rules to parse them one by one
-            $rules = array_map(function($s) { return $s.trim(); }, explode(";", $osmOh));
+            $rules = array_map(function($s) { return trim($s); }, explode(";", $osmOh));
 
             foreach($rules as $rule) {
                 preg_match('/^'.$daysListRgx.'/i', $rule, $dp);
@@ -104,9 +104,9 @@ class OpenHours
                 $ruleHours = [];
 
                 // Read list of days
-                if($dp[0]) {
+                if(isset($dp[0])) {
                     // Split by comma to have either single day or day range
-                    $dl = array_map(function($s) { return $s.trim(); }, explode($dp[0], ","));
+                    $dl = array_map(function($s) { return trim($s); }, explode(",", $dp[0]));
 
                     foreach($dl as $singleDay) {
                         // Single day
@@ -116,20 +116,20 @@ class OpenHours
                         // Days range
                         else if(preg_match('/^'.$daysRangeRgx.'$/i', $singleDay)) {
                             $ruleDaysParts = array_map(function($s) { return strtoupper($s[0]).strtolower($s[1]); }, explode("-", $singleDay));
-                            $startDayId = array_search($ruleDaysParts[0], array_keys($days));
-                            $endDayId = array_search($ruleDaysParts[1], array_keys($days));
+                            $startDayId = array_search($ruleDaysParts[0], array_keys($this->days));
+                            $endDayId = array_search($ruleDaysParts[1], array_keys($this->days));
 
                             if($startDayId < $endDayId) {
                                 for($i = $startDayId; $i <= $endDayId; $i++) {
-                                    array_push($ruleDays, array_keys($days)[$i]);
+                                    array_push($ruleDays, array_keys($this->days)[$i]);
                                 }
                             }
                             else if($startDayId > $endDayId) {
-                                for($i = $startDayId; $i < count($days); $i++) {
-                                    array_push($ruleDays, array_keys($days)[$i]);
+                                for($i = $startDayId; $i < count($this->days); $i++) {
+                                    array_push($ruleDays, array_keys($this->days)[$i]);
                                 }
                                 for($i = 0; $i <= $endDayId; $i++) {
-                                    array_push($ruleDays, array_keys($days)[$i]);
+                                    array_push($ruleDays, array_keys($this->days)[$i]);
                                 }
                             }
                             else {
@@ -139,17 +139,17 @@ class OpenHours
                     }
                 }
                 else {
-                    $ruleDays = array_keys($days);
+                    $ruleDays = array_keys($this->days);
                 }
 
                 // Read list of hours
-                if($hp[0]) {
+                if(isset($hp[0])) {
                     // Split by comma to get each hours range
-                    $hl = array_map(function($s) { return $s.trim(); }, explode($hl[0], ","));
+                    $hl = array_map(function($s) { return trim($s); }, explode(",", $hp[0]));
 
                     foreach($hl as $singleHourRange) {
                         // Merge this range with existing list
-                        $ruleHours = array_merge($ruleHours, explode("-", $singleHourRange));
+                        $ruleHours = array_merge($ruleHours, $this->buildSlotsFrom($singleHourRange));
                     }
 
                     // Apply hours ranges to each concerned day
