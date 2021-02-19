@@ -136,7 +136,7 @@ class ElementImportOneService
         // Override sourceKey for standard import
         if (!$import->isDynamicImport() && (strlen($row['source']) > 0 && 'Inconnu' != $row['source']))
             $element->setSourceKey($row['source']);
-        
+
 
         if (array_key_exists('owner', $row)) {
             $element->setUserOwnerEmail($row['owner']);
@@ -190,7 +190,7 @@ class ElementImportOneService
                 $this->interactionService->createContribution($element, null, 4, $element->getStatus(), null, null, true);
             }
         }
-        
+
         $element->updateTimestamp();
         $element->setPreventLinksUpdate(true); // Check the links between elements all at once at the end of the import
 
@@ -274,10 +274,18 @@ class ElementImportOneService
 
     private function createOpenHours($element, $row)
     {
-        if (!isset($row['openHours']) || !is_associative_array($row['openHours'])) {
-            return;
+        if(isset($row['tags/opening_hours'])) {
+            try {
+                $oh = new OpenHours();
+                $oh->buildFromOsm($row['tags/opening_hours']);
+                $element->setOpenHours($oh);
+                unset($row['tags/opening_hours']);
+            }
+            catch(\Exception $e) {;}
         }
-        $element->setOpenHours(new OpenHours($row['openHours']));
+        else if(isset($row['openHours']) && is_associative_array($row['openHours'])) {
+            $element->setOpenHours(new OpenHours($row['openHours']));
+        }
     }
 
     private function createOptionValues($element, $row, $import)
