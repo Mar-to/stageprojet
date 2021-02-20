@@ -189,15 +189,15 @@ class ElementImportService
                         $this->elementIdsErrors[] = ''.$row['id'];
                         $newlyImportedElementIds[] = ''.$row['id'];
                     }
-
-                    if (!array_key_exists($e->getMessage(), $this->errorsCount)) {
-                        $this->errorsCount[$e->getMessage()] = 1;
+                    $msgCode = $e->getMessage() && strlen($e->getMessage()) > 0 ? $e->getMessage() : 'error';
+                    if (!array_key_exists($msgCode, $this->errorsCount)) {
+                        $this->errorsCount[$msgCode] = 1;
                     } else {
-                        ++$this->errorsCount[$e->getMessage()];
+                        ++$this->errorsCount[$msgCode];
                     }
-                    $message = '<u>'.$e->getMessage().'</u> <b>(x'.$this->errorsCount[$e->getMessage()].')</b></br>'.$e->getFile().' LINE '.$e->getLine().'</br>';
+                    $message = '<u>'.$e->getMessage().'</u> <b>(x'.$this->errorsCount[$msgCode].')</b></br>'.$e->getFile().' LINE '.$e->getLine().'</br>';
                     $message .= 'CONTEXT : <pre>'.print_r($row, true).'</pre>';
-                    $this->errorsMessages[$e->getMessage()] = $message;
+                    $this->errorsMessages[$msgCode] = $message;
                 }
 
                 if (0 === ($i % $batchSize)) {
@@ -309,6 +309,8 @@ class ElementImportService
             }
 
             $log = new GoGoLogImport($logLevel, $message, $logData);
+            $this->dm->persist($log);
+            $this->dm->flush();
             $import->addLog($log);
 
             $import->setCurrState($totalErrors > 0 ? ($totalErrors == $size ? ImportState::Failed : ImportState::Errors) : ImportState::Completed);

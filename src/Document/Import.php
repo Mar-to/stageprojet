@@ -493,10 +493,12 @@ class Import extends AbstractFile
     {
         if ($ontologyMapping == null) return;
         foreach($ontologyMapping as $key => $mappedObject) { 
-            if (is_string($mappedObject)) {
-                $ontologyMapping[$key] = array_merge($this->ontologyMapping[$key], ['mappedProperty' => $mappedObject]);
-            } else {
-                $ontologyMapping[$key]['mappedProperty'] = slugify($mappedObject['mappedProperty'], false);
+            if ($key && strlen($key) > 0) { // Mongo does not authorize saving empty key
+                if (is_string($mappedObject)) {
+                    $ontologyMapping[$key] = array_merge($this->ontologyMapping[$key], ['mappedProperty' => $mappedObject]);
+                } else {
+                    $ontologyMapping[$key]['mappedProperty'] = slugify($mappedObject['mappedProperty'], false);
+                }
             }
         }
         $this->ontologyMapping = $ontologyMapping;
@@ -545,12 +547,17 @@ class Import extends AbstractFile
     public function setTaxonomyMapping($taxonomyMapping)
     {
         if ($taxonomyMapping == null) return;
+        $newMapping = [];
         foreach($taxonomyMapping as $key => $mappedObject) { 
-            if (!is_associative_array($mappedObject)) {
-                $taxonomyMapping[$key] = array_merge($this->taxonomyMapping[$key], ['mappedCategoryIds' => $mappedObject]);
-            }
+            if ($key && strlen($key) > 0) {
+                if (!is_associative_array($mappedObject)) {
+                    $newMapping[$key] = array_merge($this->taxonomyMapping[$key], ['mappedCategoryIds' => $mappedObject]);
+                } else {
+                    $newMapping[$key] = $mappedObject;
+                }
+            }            
         }
-        $this->taxonomyMapping = $taxonomyMapping;
+        $this->taxonomyMapping = $newMapping;
 
         return $this;
     }

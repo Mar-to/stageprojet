@@ -58,9 +58,10 @@ class ImportSourceCommand extends GoGoAbstractCommand
             $import->setCurrState(ImportState::Failed);
             $message = $e->getMessage().'</br>'.$e->getFile().' LINE '.$e->getLine();
             $import->setCurrMessage($message);
-            $log = new GoGoLogImport(GoGoLogLevel::Error, $message, []);
-            $import->addLog($log);
+            $log = new GoGoLogImport(GoGoLogLevel::Error, $message, []);            
             $this->dm->persist($log);
+            $this->dm->flush();
+            $import->addLog($log);
             $this->error("Source: {$import->getSourceName()} - $message");
             $this->notifService->notifyImportError($import);
         }
