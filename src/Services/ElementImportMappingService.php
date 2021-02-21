@@ -21,7 +21,11 @@ class ElementImportMappingService
     public function transform($data, $import)
     {
         // Execute custom code (the <?php is used to have proper code highliting in text editor, we remove it before executing)
-        eval(str_replace('<?php', '', $import->getCustomCode()));
+        try {
+            eval(str_replace('<?php', '', $import->getCustomCode()));
+        } catch (\Exception $e) {
+            return null;
+        }
         if (null == $data || !is_array($data)) {
             return [];
         }
