@@ -56,7 +56,6 @@ install-assets: ## Install the assets
 
 purge: ## Purge cache
 	rm -rf var/cache/* 
-	make fix-perms
 
 ## —— Yarn —————————————————
 yarn-install: yarn.lock ## Install npm vendors according to the current yarn.lock file
@@ -90,7 +89,7 @@ shell: ## Start shell inside Docker
 commands: ## Display all commands in the project namespace
 	$(SYMFONY) list $(PROJECT)
 
-init: install assets load-fixtures fix-perms ## Initialize the project
+init: install assets load-fixtures ## Initialize the project
 
 install: composer-install yarn-install ## Install vendors
 
