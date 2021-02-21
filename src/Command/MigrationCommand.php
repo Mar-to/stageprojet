@@ -89,6 +89,9 @@ class MigrationCommand extends Command
         parent::__construct();
     }
 
+    protected $count = 1;
+    protected $current = 0;
+
     protected function configure(): void
     {
         $this->setName('db:migrate')
@@ -110,14 +113,16 @@ class MigrationCommand extends Command
             $dbs = [$_ENV['DATABASE_NAME']]; // default DB
             $dbNames = $dm->query('Project')->select('domainName')->getArray();
             foreach ($dbNames as $dbName) $dbs[] = $dbName;
-
+            $this->count = count($dbs);
             if (count(self::$migrations) > $migrationState->getMigrationIndex()) {
                 $migrationsToRun = array_slice(self::$migrations, $migrationState->getMigrationIndex());
                 $migrationsToRun = array_unique($migrationsToRun);
+                $this->current = 0;
                 foreach ($dbs as $db) {
                     foreach ($migrationsToRun as $migration) {
                         $this->log('run migration '.$migration, $db);
                         $this->runMongoCommand($dm, $db, $migration);
+                        $this->current++;
                     }
                 }
             } else {
@@ -129,10 +134,12 @@ class MigrationCommand extends Command
             if (count(self::$commands) > $migrationState->getCommandsIndex()) {
                 $commandsToRun = array_slice(self::$commands, $migrationState->getCommandsIndex());
                 $commandsToRun = array_unique($commandsToRun);
+                $this->current = 0;
                 foreach ($dbs as $db) {
                     foreach ($commandsToRun as $command) {
                         $this->log('call command '.$command, $db);
                         $this->asyncService->callCommand($command, [], $db);
+                        $this->current++;
                     }
                 }
             } else {
@@ -141,12 +148,14 @@ class MigrationCommand extends Command
 
             if (count(self::$messages) > $migrationState->getMessagesIndex()) {
                 $messagesToAdd = array_slice(self::$messages, $migrationState->getMessagesIndex());
+                $this->current = 0;
                 foreach ($dbs as $db) {
                     $this->log(count($messagesToAdd).' messages to add', $db);
                     foreach ($messagesToAdd as $message) {
                         // create a GoGoLogUpdate
                         $this->asyncService->callCommand('gogolog:add:message', ['"'.$message.'"'], $db);
                     }
+                    $this->current++;
                 }
             } else {
                 $this->log('No Messages to add to dashboard');
@@ -171,14 +180,14 @@ class MigrationCommand extends Command
 
     protected function log($message, $db = null)
     {
-        if ($db) $message = "DB {$db} : $message";
+        if ($db) $message = "DB {$db} ($this->current/$this->count) : $message";
         $this->logger->info($message);
         $this->output->writeln($message);
     }
 
     protected function error($message, $db = null)
     {
-        if ($db) $message = "DB {$this->db} : $message";
+        if ($db) $message = "DB {$this->db} ($this->current/$this->count) : $message";
         $this->logger->error($message);
         $this->output->writeln('ERROR '.$message);        
     }
