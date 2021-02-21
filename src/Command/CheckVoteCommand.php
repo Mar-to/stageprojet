@@ -33,15 +33,22 @@ class CheckVoteCommand extends GoGoAbstractCommand
 
     protected function gogoExecute(DocumentManager $dm, InputInterface $input, OutputInterface $output): void
     {
-        $elements = $dm->get('Element')->findPendings();
+        $config = $dm->get('Configuration')->findConfiguration();
+        if (!$config || !$config->getCollaborativeModerationFeature()->getActive()) return;
 
+        $elements = $dm->get('Element')->findPendings();
         if (count($elements)) {
+            $this->log('Checking Vote for '.count($elements) . ' elements');
+            $i = 0;
             foreach ($elements as $element) {
-                $this->voteService->checkVotes($element);
+                $this->voteService->checkVotes($element, $dm);
                 $dm->persist($element);
+                if (0 == (++$i % 20)) {
+                    $dm->flush();
+                    $dm->clear();
+                }
             }
-            $dm->flush();            
-            $this->log('Check Vote, nombre elements checkés : '.count($elements));
+            $dm->flush();           
         }
     }
 }

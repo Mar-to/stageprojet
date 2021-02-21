@@ -90,11 +90,12 @@ class ElementVoteService
     *
     * This action is called when user vote, and with a CRON job every days
     */
-    public function checkVotes($element)
+    public function checkVotes($element, $dm = null)
     {
         if (!$element->getCurrContribution()) {
             return;
         }
+        if ($dm) $this->dm = $dm;
 
         $currentVotes = $element->getVotes();
         $nbrePositiveVote = 0;
@@ -106,11 +107,11 @@ class ElementVoteService
         foreach ($currentVotes as $key => $vote) {
             $vote->getValue() >= 0 ? $nbrePositiveVote++ : $nbreNegativeVote++;
         }
-
-        $enoughDays = $daysFromContribution >= $this->confService->getConfig()->getMinDayBetweenContributionAndCollaborativeValidation();
-        $maxOppositeVoteTolerated = $this->confService->getConfig()->getMaxOppositeVoteTolerated();
-        $minVotesToChangeStatus = $this->confService->getConfig()->getMinVoteToChangeStatus();
-        $minVotesToForceChangeStatus = $this->confService->getConfig()->getMinVoteToForceChangeStatus();
+        $config = $this->dm->get('Configuration')->findConfiguration();
+        $enoughDays = $daysFromContribution >= $config->getMinDayBetweenContributionAndCollaborativeValidation();
+        $maxOppositeVoteTolerated = $config->getMaxOppositeVoteTolerated();
+        $minVotesToChangeStatus = $config->getMinVoteToChangeStatus();
+        $minVotesToForceChangeStatus = $config->getMinVoteToForceChangeStatus();
 
         if ($nbrePositiveVote >= $minVotesToChangeStatus) {
             if ($nbreNegativeVote <= $maxOppositeVoteTolerated) {
@@ -128,7 +129,7 @@ class ElementVoteService
             } else {
                 $element->setModerationState(ModerationState::VotesConflicts);
             }
-        } elseif ($daysFromContribution > $this->confService->getConfig()->getMaxDaysLeavingAnElementPending()) {
+        } elseif ($daysFromContribution > $config->getMaxDaysLeavingAnElementPending()) {
             $element->setModerationState(ModerationState::PendingForTooLong);
         }
     }
@@ -137,7 +138,8 @@ class ElementVoteService
     {
         // in case of procedure complete directly after a userInteraction, we send a message back to the user
         $flashMessage = '';
-        $elDisplayName = $this->confService->getConfig()->getElementDisplayNameDefinite();
+        $config = $this->dm->get('Configuration')->findConfiguration();
+        $elDisplayName = $config->getElementDisplayNameDefinite();
 
         if (ElementStatus::PendingAdd == $element->getStatus()) {
             if (ValidationType::Collaborative == $voteType) {
