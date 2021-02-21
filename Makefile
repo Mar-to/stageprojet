@@ -39,10 +39,10 @@ warmup: ## Warmump the cache
 	$(SYMFONY) cache:warmup
 
 fix-perms: ## Fix permissions of all var files
-	chown -R www-data var/cache
-	chown -R www-data var/log
-	chown -R www-data var/sessions
-	chown -R www-data web/uploads
+	chown -R gogocarto var/cache
+	chown -R gogocarto var/log
+	chown -R gogocarto var/sessions
+	chown -R gogocarto web/uploads
 	chmod 777 -R var/
 	sleep 10 && chmod 777 -R var/ &
 	sleep 60 && chmod 777 -R var/ &
@@ -126,7 +126,7 @@ log-commands-error:
 
 ## —— Deploy & Prod ———————
 gogo-update: ## Update a PROD server to the lastest version of gogocarto
-	service cron stop
+	sudo /usr/bin/systemctl stop cron
 	$(GIT) reset --hard master
 	$(GIT) pull origin master
 	make show-deploy-message
@@ -138,13 +138,13 @@ gogo-update: ## Update a PROD server to the lastest version of gogocarto
 	make purge	
 	$(SYMFONY) db:migrate	
 	make hide-deploy-message
-	service cron start
+	sudo /usr/bin/systemctl start cron
 
 gogo-quick-update:
-	service cron stop
+	sudo /usr/bin/systemctl stop cron
 	$(GIT) reset --hard master
 	$(GIT) pull origin master
 	make show-deploy-message
 	make purge
 	make hide-deploy-message
-	service cron start
+	sudo /usr/bin/systemctl start cron
