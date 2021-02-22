@@ -244,11 +244,11 @@ class ElementSynchronizationService
         }
 
         // Other data
-        $osmFeature['osmId'] = $element->getProperty('oldId');
+        $osmFeature['osmId'] = intval($element->getProperty('oldId'));
         if($element->getOpenHours()) {
             $h = $element->getOpenHours()->toOsm();
             if(strlen($h) > 0) {
-                $osmFeatures['tags']['opening_hours'] = $h;
+                $osmFeature['tags']['opening_hours'] = $h;
             }
         }
 

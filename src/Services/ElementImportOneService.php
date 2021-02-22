@@ -160,6 +160,7 @@ class ElementImportOneService
         $this->createImages($element, $row);
         $this->createFiles($element, $row);
         $this->createOpenHours($element, $row);
+        unset($row['osm/opening_hours']);
         $this->saveCustomFields($element, $row);
 
         if ($updateExisting) {
@@ -274,12 +275,11 @@ class ElementImportOneService
 
     private function createOpenHours($element, $row)
     {
-        if(isset($row['tags/opening_hours'])) {
+        if(isset($row['osm/opening_hours'])) {
             try {
                 $oh = new OpenHours();
-                $oh->buildFromOsm($row['tags/opening_hours']);
-                $element->setOpenHours($oh);
-                unset($row['tags/opening_hours']);
+                $oh->buildFromOsm($row['osm/opening_hours']);
+                $element->setOpenHours($oh);                
             }
             catch(\Exception $e) {;}
         }
