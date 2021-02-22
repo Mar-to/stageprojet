@@ -29,7 +29,7 @@ class ConfigurationMenuAdmin extends ConfigurationAbstractAdmin
             ->tab('Général')
                 ->with('Menu (contient les filtre et la barre de recherche)')
                     ->add('menu.width', IntegerType::class, ['label' => 'Largeur du menu', 'required' => false, 'attr' => ['placeholder' => '290']])
-                    ->add('menu.smallWidthStyle', CheckboxType::class, ['label' => 'Utiliser un style compréssé', 'label_attr' => ['title' => "Diminue un peu la taille de la police et les marges. Pratique lorsque le nom des catégories sont longues que l'on veut gagner en largeur"], 'required' => false])
+                    ->add('menu.smallWidthStyle', CheckboxType::class, ['label' => 'Utiliser un style compressé', 'label_attr' => ['title' => "Diminue un peu la taille de la police et les marges. Pratique lorsque le nom des catégories sont longues que l'on veut gagner en largeur"], 'required' => false])
                     ->add('menu.showOnePanePerMainOption', CheckboxType::class, ['label' => 'Afficher un sous menu pour chaque catégorie principale', 'required' => false])
                     ->add('menu.showCheckboxForMainFilterPane', CheckboxType::class, ['label' => 'Afficher les checkbox dans la panneau principal', 'required' => false])
                     ->add('menu.showCheckboxForSubFilterPane', CheckboxType::class, ['label' => 'Afficher les checkbox dans les sous panneaux',  'label_attr' => ['title' => 'Valable uniquement si "afficher un sous menu pour chaque catégorie principale" est coché'], 'required' => false])

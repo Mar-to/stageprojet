@@ -56,7 +56,7 @@ class ConfigurationInfoBarAdmin extends ConfigurationAbstractAdmin
                     ->add('elementFormFieldsJson', HiddenType::class, ['attr' => ['class' => 'gogo-form-fields', 'dataproperties' => $propertiesText]])
                 ->end()
             ->end()
-            ->tab('Liste des fitlres disponibles (aide)')
+            ->tab('Liste des filtres disponibles (aide)')
                 ->with('Informations concernant les mails automatiques', ['box_class' => 'box box-default', 'description' => "
                         <p><b>Les filtres permettent d'appliquer des transformations sur un variable / un champ</b></p>
                         <h3>Les filtres du language nunjucks</h3>
