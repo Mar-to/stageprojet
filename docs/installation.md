@@ -36,6 +36,8 @@ Main requirements are :
 
 Please refer to the dockerfile to know all dependencies : [DockerFile](../docker/server/Dockerfile)
 
+You can also check [the Debian Buster Installation Guide](./installation_debian.md)
+
 ### Cloning Repository
 
 ```shell
@@ -111,6 +113,7 @@ Here are the following cron tab you need to configure
 Each time you want to update GoGoCarto, run:
 
 ```shell
+# With gogocarto user
 make gogo-update
 ```
 
