@@ -150,7 +150,7 @@ class ImportDynamic extends Import
      */ 
     public function getIsSynchronized()
     {
-        return $this->isSynchronized && $this->sourceType == 'osm';
+        return $this->isSynchronized;
     }
 
     /**

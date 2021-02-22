@@ -31,7 +31,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.sourceType = sourceType;
                 this.formName = formName
                 $(`#sonata-ba-field-container-${formName}_file`).appendTo('.file-container')
-            }, watch: {
+            }, 
+            watch: {
                 sourceType(newVal) {
                     $('.input-is-synched').closest('.checkbox').toggle(newVal == 'osm')
                 }

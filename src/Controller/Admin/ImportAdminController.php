@@ -285,6 +285,7 @@ class ImportAdminController extends Controller
             // persist if the form was valid and if in preview mode the preview was approved
             if ($isFormValid && (!$this->isInPreviewMode($request) || $this->isPreviewApproved($request))) {
                 try {
+                    $object->setSourceType($request->get('sourceType')); // CUSTOM                   
                     $object = $this->admin->create($object);
                     // CUSTOM
                     $url = $this->admin->generateUrl('collect', ['id' => $object->getId()]);

@@ -380,7 +380,7 @@ class Element
 
     public function isSynchedWithExternalDatabase()
     {
-        return $this->getIsExternal() && $this->getSource()->getIsSynchronized();
+        return $this->isFromOsm() && $this->getSource()->getIsSynchronized();
     }
 
     public function isFromOsm()

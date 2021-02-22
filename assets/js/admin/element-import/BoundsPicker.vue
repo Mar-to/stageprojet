@@ -47,8 +47,8 @@ export default {
     },
     computed: {
         bounds() {
-            if (this.addressPresent) return null
-            return this.queryType == 'bounds' ? this.drawnBounds : this.mapBounds
+            // if (this.addressPresent) return null
+            return this.queryType == 'bounds' && this.drawnBounds ? this.drawnBounds : this.mapBounds
         },
         address() {
             if (this.queryType == 'address' && this.geocodedAddress && this.geocodedAddress.osm_id)
@@ -94,7 +94,7 @@ export default {
         this.mapBounds = this.map.getBounds()
     },
     watch: {
-        // When switching query stype with need to tunor on/off leaflet shades plugin
+        // When switching query type we need to turn on/off leaflet shades plugin
         queryType() {
             if (this.mapShades) {
                 this.mapShades.onRemove(this.map) // See https://github.com/mkong0216/leaflet-shades/issues/3
