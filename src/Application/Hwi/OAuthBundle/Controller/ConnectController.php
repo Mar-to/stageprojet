@@ -37,7 +37,7 @@ class ConnectController extends BaseController
         if ($this->container->getParameter('use_as_saas') == "true") {
             // redirect to root project
             $url = $request->getUri();
-            preg_match_all('/^https?:\/\/(\w+)\./', $url, $result);
+            preg_match_all('/^https?:\/\/([\w-]+)\./', $url, $result);
             $domainName = $result[1][0];
             $url = GoGoHelper::getRootProjectUrlFromInstanceUrl($url, "/root/$domainName");
             $this->saveRefererIntoSession($request);
