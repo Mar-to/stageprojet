@@ -209,7 +209,9 @@ class ElementAdminBulkController extends Controller
             ->getArray();
         $elementsIdsGroupedBySource = [];
         foreach($elements as $element) {
-            $elementsIdsGroupedBySource[$element['source']['$id']][] = $element['oldId'];
+            if (isset($element['source'])) {
+                $elementsIdsGroupedBySource[$element['source']['$id']][] = $element['oldId'];
+            }
         }
         foreach ($elementsIdsGroupedBySource as $sourceId => $elementIds) {
             $qb = $this->dm->query('Import');
