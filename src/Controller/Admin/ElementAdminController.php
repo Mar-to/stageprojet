@@ -168,9 +168,10 @@ class ElementAdminController extends ElementAdminBulkController
     private function handlesGoGoForm($element, $request)
     {
         $newData = [];
-        foreach($request->get('data') as $key => $value) {
-            $newData[slugify($key, false)] = $value;
-        }
+        if ($request->get('data'))
+            foreach($request->get('data') as $key => $value) {
+                $newData[slugify($key, false)] = $value;
+            }
         $element->setCustomData($newData);
         $adr = $request->get('address');
         $address = new PostalAddress($adr['streetAddress'], $adr['addressLocality'], $adr['postalCode'], $adr['addressCountry'], $adr['customFormatedAddress']);
