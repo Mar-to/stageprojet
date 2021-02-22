@@ -9,8 +9,6 @@ use GuzzleHttp\Promise\Promise;
 use Services_OpenStreetMap;
 use GuzzleHttp\Psr7\Response;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use App\Document\GoGoLog;
-use App\Document\GoGoLogLevel;
 
 class ElementSynchronizationService
 {
@@ -45,9 +43,9 @@ class ElementSynchronizationService
             try {
                 // Init OSM API handler
                 $osm = $this->getOsmApiHandler();
-
                 $element = $contribution->getElement();
                 $osmFeature = $this->elementToOsm($element);
+                
 
                 // Check contribution validity according to OSM criterias
                 if($this->allowOsmUpload($contribution, $preparedData)) {
@@ -102,18 +100,12 @@ class ElementSynchronizationService
                             }
                             else {
                                 $message = 'Feature versions mismatch: '.$osmFeature['version'].' on our side, '.$existingFeature->getVersion().' on OSM';
-                                $log = new GoGoLog(GoGoLogLevel::Error, 'Error during OSM sync : '.$message);
-                                $this->dm->persist($log);
-                                $this->dm->flush();
                                 return $promise->resolve(new Response(500, [], null, '1.1', $message));
                             }
                         }
                         else {
                             $message = 'Feature does not exist on OSM';
-                            $log = new GoGoLog(GoGoLogLevel::Error, 'Error during OSM sync : '.$message);
-                            $this->dm->persist($log);
-                            $this->dm->flush();
-                            return $promise->resolve(new Response(500, [], null, '1.1', $message));
+                            return $promise->resolve(new Response(404, [], null, '1.1', $message));
                         }
                     }
 
@@ -168,24 +160,17 @@ class ElementSynchronizationService
                         }
                         catch(\Exception $e) {
                             $message = 'Error when sending changeset';
-                            $log = new GoGoLog(GoGoLogLevel::Error, 'Error during OSM sync : '.$message);
-                            $this->dm->persist($log);
-                            $this->dm->flush();
-                            return $promise->resolve(new Response(500, [], null, '1.1', $message));
+                            return $promise->resolve(new Response($e->getCode(), [], null, '1.1', $message));
                         }
                     }
                 }
                 // If we don't send edit to OSM, just resolve promise
                 else {
-                    $message = 'Skipped sending OSM feature';
-                    $log = new GoGoLog(GoGoLogLevel::Info, $message);
-                    $this->dm->persist($log);
-                    $this->dm->flush();
-                    return $promise->resolve(new Response(200, [], null, '1.1', $message));
+                    return $promise->resolve(new Response(200, [], null, '1.1', ''));
                 }
             }
             catch(\Exception $e) {
-                return $promise->resolve(new Response(500, [], null, '1.1', $e->getMessage()));
+                return $promise->resolve(new Response($e->getCode(), [], null, '1.1', $e->getMessage()));
             }
         });
 
@@ -290,9 +275,6 @@ class ElementSynchronizationService
 
             // If can't find main tags, do not send to OSM, feature might be broken
             if(count($osmFeaturesMainTags) == 0) {
-                $log = new GoGoLog(GoGoLogLevel::Info, 'L\'objet n\'a pas de clé principale pour OSM');
-                $this->dm->persist($log);
-                $this->dm->flush();
                 return ['result' => false, 'duplicates' => []];
             }
             // Otherwise, start looking for duplicates
@@ -423,19 +405,11 @@ class ElementSynchronizationService
                 }
             }
             catch(\Exception $e) {
-                $message = 'Error when sending changeset';
-                $log = new GoGoLog(GoGoLogLevel::Error, 'Error during OSM sync : '.$message);
-                $this->dm->persist($log);
-                $this->dm->flush();
-                return $promise->resolve(new Response(500, [], null, '1.1', $message));
+                // Error when sending changeset
             }
         }
         else {
-            $message = 'Feature does not exist on OSM';
-            $log = new GoGoLog(GoGoLogLevel::Error, 'Error during OSM sync : '.$message);
-            $this->dm->persist($log);
-            $this->dm->flush();
-            return $promise->resolve(new Response(500, [], null, '1.1', $message));
+            // Feature does not exist on OSM
         }
     }
 

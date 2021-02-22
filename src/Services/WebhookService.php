@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Document\Configuration;
 use App\Document\ConfImage;
 use App\Document\InteractionType;
 use App\Document\UserInteractionContribution;
@@ -17,12 +16,16 @@ use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Psr\Log\LoggerInterface;
+use App\Document\GoGoLog;
+use App\Document\GoGoLogLevel;
 
 class WebhookService
 {
     protected $dm;
     protected $config;
     protected $router;
+
+    const MAX_ATTEMPTS = 7; // number of attempte for posting webhook
 
     public function __construct(DocumentManager $dm, RouterInterface $router,
                                 TokenStorageInterface $securityContext,
@@ -48,7 +51,7 @@ class WebhookService
     {
         $contributions = $this->dm->createQueryBuilder(UserInteractionContribution::class)
             ->field('status')->exists(true) // null status are pending contributions, so ignore
-            ->field('webhookPosts.numAttempts')->lte(6) // ignore posts with 6 failures
+            ->field('webhookPosts.numAttempts')->lt(self::MAX_ATTEMPTS) // ignore posts with 6 failures
             ->field('webhookPosts.nextAttemptAt')->lte(new \DateTime())
             ->limit($limit)
             ->execute();
@@ -80,7 +83,7 @@ class WebhookService
                         if ($res->getStatusCode() == 200)
                             $this->handlePostSuccess($post, $contribution);
                         else
-                            $this->handlePostFailure($res->getReasonPhrase(), $post, $contribution);
+                            $this->handlePostFailure($res->getReasonPhrase(), $post, $contribution, $res->getStatusCode());
                     },
                     function (RequestException $e) use($post, $contribution) {
                         $this->handlePostFailure($e->getMessage(), $post, $contribution);
@@ -103,12 +106,23 @@ class WebhookService
         $contribution->removeWebhookPost($post);
     }
 
-    private function handlePostFailure($errorMessage, $post, $contribution)
+    private function handlePostFailure($errorMessage, $post, $contribution, $code = 500)
     {
         $attemps = $post->incrementNumAttempts();
         $this->logger->error("Webhook for contribution {$contribution->getId()} : $errorMessage");
         // After first try, wait 5m, 25m, 2h, 10h, 2d
         $intervalInMinutes = pow(5, $attemps);
+        $elName = "\"{$contribution->getElement()->getName()}\" ({$contribution->getElement()->getId()})";
+        if ($post->getWebhook()) {
+            $message = "Erreur lors de l'envoi du webhook {$post->getWebhook()->getUrl()} pour l'élement $elName";
+        } else {
+            $message = "Erreur lors de la synchronisation de l'élement $elName.";
+            if ($code == 401) $message .= " Les identifiants de votre compte OSM sont probablement incorrect.";
+        }
+        $message .= " (Essai n°$attemps). L'erreur est : $errorMessage";
+        $log = new GoGoLog(GoGoLogLevel::Error, $message);
+        $this->dm->persist($log);
+        $this->dm->flush();
         $interval = new \DateInterval("PT{$intervalInMinutes}M");
         $now = new \DateTime();
         $post->setNextAttemptAt($now->add($interval));
