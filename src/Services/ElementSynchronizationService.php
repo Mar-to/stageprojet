@@ -45,7 +45,10 @@ class ElementSynchronizationService
                 $osm = $this->getOsmApiHandler();
                 $element = $contribution->getElement();
                 $osmFeature = $this->elementToOsm($element);
-                
+                $osmFeaturesMainTags = $this->getOsmFeatureMainTags($osmFeature);
+                if (count($osmFeaturesMainTags) == 0) {
+                    return $promise->resolve(new Response(500, [], null, '1.1', "Cet élément n'a aucun des clés principales d'OpenStreetMap (amenity, shop...)"));
+                }
 
                 // Check contribution validity according to OSM criterias
                 if($this->allowOsmUpload($contribution, $preparedData)) {
@@ -237,6 +240,16 @@ class ElementSynchronizationService
             }
         }
 
+        // Tags from the import query
+        $queries = $element->getSource()->getOsmQueries();
+        if (count($queries) == 1) {
+            $query = $queries[0];
+            foreach($query as $condition) {
+                if ($condition->operator == "=" && !isset($osmFeature['tags'][$condition->key]))
+                    $osmFeature['tags'][$condition->key] = $condition->value;
+            }
+        }
+
         return $osmFeature;
     }
 
@@ -253,25 +266,7 @@ class ElementSynchronizationService
         if ($this->linkElementToExistingOsmImport($element)) {
             // Get element in OSM format
             $osmFeature = $this->elementToOsm($element);
-
-            // List tags to use for potential duplicates search
-            $osmFeaturesMainTags = array_filter(
-                $osmFeature['tags'],
-                function($key) {
-                    return in_array($key, ElementSynchronizationService::MAIN_OSM_KEYS);
-                },
-                ARRAY_FILTER_USE_KEY
-            );
-
-            if(count($osmFeaturesMainTags) == 0) {
-                $osmFeaturesMainTags = array_filter(
-                    $osmFeature['tags'],
-                    function($key) {
-                        return in_array($key, ElementSynchronizationService::MAIN_OSM_KEYS_FALLBACK);
-                    },
-                    ARRAY_FILTER_USE_KEY
-                );
-            }
+            $osmFeaturesMainTags = $this->getOsmFeatureMainTags($osmFeature);
 
             // If can't find main tags, do not send to OSM, feature might be broken
             if(count($osmFeaturesMainTags) == 0) {
@@ -282,11 +277,11 @@ class ElementSynchronizationService
                 $duplicates = [];
 
                 // Compute bounding box to retrieve
-                $radiusKm = ElementSynchronizationService::OSM_SEARCH_RADIUS_METERS / 1000;
-                $north = $osmFeature['center']['latitude'] + ($radiusKm / ElementSynchronizationService::EARTH_RADIUS) * (180 / M_PI);
-                $east = $osmFeature['center']['longitude'] + ($radiusKm / ElementSynchronizationService::EARTH_RADIUS) * (180 / M_PI) / cos($osmFeature['center']['latitude'] * M_PI / 180);
-                $south = $osmFeature['center']['latitude'] - ($radiusKm / ElementSynchronizationService::EARTH_RADIUS) * (180 / M_PI);
-                $west = $osmFeature['center']['longitude'] - ($radiusKm / ElementSynchronizationService::EARTH_RADIUS) * (180 / M_PI) / cos($osmFeature['center']['latitude'] * M_PI / 180);
+                $radiusKm = self::OSM_SEARCH_RADIUS_METERS / 1000;
+                $north = $osmFeature['center']['latitude'] + ($radiusKm / self::EARTH_RADIUS) * (180 / M_PI);
+                $east = $osmFeature['center']['longitude'] + ($radiusKm / self::EARTH_RADIUS) * (180 / M_PI) / cos($osmFeature['center']['latitude'] * M_PI / 180);
+                $south = $osmFeature['center']['latitude'] - ($radiusKm / self::EARTH_RADIUS) * (180 / M_PI);
+                $west = $osmFeature['center']['longitude'] - ($radiusKm / self::EARTH_RADIUS) * (180 / M_PI) / cos($osmFeature['center']['latitude'] * M_PI / 180);
 
                 // Load data from OSM editing API
                 $osm = $this->getOsmApiHandler();
@@ -314,6 +309,33 @@ class ElementSynchronizationService
         } else {
             return ['result' => false, 'duplicates' => []];
         }
+    }
+
+    /**
+     * Extract the mains tags from the osm feature
+     */
+    public function getOsmFeatureMainTags($osmFeature)
+    {
+        // List tags to use for potential duplicates search
+        $osmFeaturesMainTags = array_filter(
+            $osmFeature['tags'],
+            function($key) {
+                return in_array($key, self::MAIN_OSM_KEYS);
+            },
+            ARRAY_FILTER_USE_KEY
+        );
+
+        if(count($osmFeaturesMainTags) == 0) {
+            $osmFeaturesMainTags = array_filter(
+                $osmFeature['tags'],
+                function($key) {
+                    return in_array($key, self::MAIN_OSM_KEYS_FALLBACK);
+                },
+                ARRAY_FILTER_USE_KEY
+            );
+        }
+
+        return $osmFeaturesMainTags;
     }
 
     /**
