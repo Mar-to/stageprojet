@@ -375,7 +375,7 @@ class Element
     public function isEditable()
     {
         if (!$this->getSource()) return true;
-        return $this->isSynchedWithExternalDatabase();
+        return !$this->getIsExternal() || $this->isSynchedWithExternalDatabase();
     }
 
     public function isSynchedWithExternalDatabase()
