@@ -13,13 +13,12 @@
 
             <div class="sonata-blog-element-container list-group">
                 {% for element in results %}
-
-                        <a class="list-group-item" href="{{ admin_pool.getAdminByAdminCode('admin.element').generateUrl('showEdit', { 'id': element.id }) }}">
-                            <span>{{ element.name|capitalize }}</span>
-                            <span style="position: absolute;right: 1.5rem;z-index: 5;background-color: white;padding-left: 10px;">
-                                {{ element.updatedAt|date("d/m/Y à H:i") }}
-                            </span>
-                        </a>
+                    <a class="list-group-item" href="{{ path('admin_app_element_showEdit', { 'id': element.id }) }}">
+                        <span>{{ element.name|capitalize }}</span>
+                        <span style="position: absolute;right: 1.5rem;z-index: 5;background-color: white;padding-left: 10px;">
+                            {{ element.updatedAt|date("d/m/Y à H:i") }}
+                        </span>
+                    </a>
                 {% else %}
                     <a class="list-group-item" href="#">Aucun élement trouvé</a>
                 {% endfor %}
