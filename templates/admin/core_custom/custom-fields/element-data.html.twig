@@ -1,4 +1,8 @@
 {% set element = form.vars.sonata_admin.admin.subject %}
+{% set config = form.vars.sonata_admin.admin.config %}
+{% if element.isFromOsm %}
+  	<a href={{ element.getOsmUrl(config)  }} target="_blank">Voir cet élément sur OpenStreetMap</a>
+{% endif %}
 
 <h4 style="margin-top: 25px;">Champs Personnalisés</h4>
 <div class="table-responsive no-padding element-data-fields">

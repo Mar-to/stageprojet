@@ -388,6 +388,12 @@ class Element
         return $this->getIsExternal() && $this->getSource()->getSourceType() == 'osm';
     }
 
+    public function getOsmUrl($config)
+    {
+        if (!$this->isFromOsm()) return '';
+        return $config->getOsm()->getFormattedOsmHost() . $this->getProperty('osm/type') . '/' . $this->getOldId();
+    }
+
     public function getShowUrlFromController($router)
     {
         $url = $router->generate('gogo_directory_showElement', ['id' => $this->getId()]);
