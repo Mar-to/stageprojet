@@ -56,6 +56,21 @@ class ConfigurationOsm
         return $this->osmHost;
     }
 
+    public function getFormattedOsmHost()
+    {
+        $url = $this->getOsmHost();
+        if(isset($url)) {
+            if(!str_starts_with($url, "http://") && !str_starts_with($url, "https://")) {
+                $url = "https://" + $url;
+            }
+
+            if(!str_ends_with($url, "/")) {
+                $url .= "/";
+            }
+        }
+        return $url;
+    }
+
     /**
      * Set osmUsername.
      *

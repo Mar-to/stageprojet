@@ -17,7 +17,7 @@ class ElementSynchronizationService
     const MAIN_OSM_KEYS = ['highway', 'natural', 'landuse', 'power', 'waterway', 'amenity', 'barrier', 'place', 'leisure', 'railway', 'shop', 'man_made', 'public_transport', 'tourism', 'boundary', 'emergency', 'historic', 'type', 'traffic_sign', 'office', 'traffic_calming', 'aeroway', 'healthcare', 'aerialway', 'craft', 'geological', 'military', 'telecom'];
     const MAIN_OSM_KEYS_FALLBACK = ['addr:housenumber', 'entrance', 'information', 'indoor', 'building']; // To check only if no main OSM tags has been found, as they can be used as descriptive tags and not only main tags
     const EARTH_RADIUS = 6378;
-    const OSM_SEARCH_RADIUS_METERS = 20;
+    const OSM_SEARCH_RADIUS_METERS = 50;
 
     public function __construct(DocumentManager $dm, UrlService $urlService)
     {
@@ -420,6 +420,8 @@ class ElementSynchronizationService
                 }
 
                 if($toUpdateInDb) {
+                    $element->setOldId($osmIdParts[1]);
+                    $element->setCustomProperty('osm/type', $toUpdateInDb->getType());
                     $element->setCustomProperty('osm/version', $toUpdateInDb->getVersion());
                     $element->setCustomProperty('osm/timestamp', strval($toUpdateInDb->getAttributes()->timestamp));
                     $this->dm->persist($element);
@@ -475,29 +477,12 @@ class ElementSynchronizationService
     {
         $configOsm = $this->getConfig()->getOsm();
         return new Services_OpenStreetMap([
-            'server' => $this->getOsmServer(),
+            'server' => $configOsm->getFormattedOsmHost(),
             'user' => $configOsm->getOsmUsername(),
             'password' => $configOsm->getOsmPassword(),
             'User-Agent' => $this->getConfig()->getAppName(),
             'verbose' => true
         ]);
-    }
-
-    /**
-     * Get OSM server URL, cleaned
-     */
-    private function getOsmServer() {
-        $url = $this->getConfig()->getOsm()->getOsmHost();
-        if(isset($url)) {
-            if(!str_starts_with($url, "http://") && !str_starts_with($url, "https://")) {
-                $url = "https://" + $url;
-            }
-
-            if(!str_ends_with($url, "/")) {
-                $url .= "/";
-            }
-        }
-        return $url;
     }
 
     /**
@@ -530,7 +515,8 @@ class ElementSynchronizationService
      */
     private function allowOsmUpload($contribution, $preparedData) {
         return $contribution->hasBeenAccepted()
-            && ($preparedData['action'] == 'edit' || $preparedData['action'] == 'add');
+            && ($preparedData['action'] == 'edit' 
+            || $preparedData['action'] == 'add' && !$contribution->getElement()->getProperty('osm/version')); // when adding an element, if we find a duplicate on OSM and we say "that's the same", then the gogocarto element is merged with the OSM feature. But an Add contribution is still created, and we should ignore it
     }
 
     /**

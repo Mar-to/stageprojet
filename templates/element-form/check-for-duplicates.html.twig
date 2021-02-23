@@ -30,7 +30,12 @@
 	  	<div class="element row">
 	  		<div class="col s9 m10">
 			  	{# Name #}
-		  		<div class="name">{{ element.name | capitalize }}</div>
+		  		<div class="name">
+				  {{ element.name | capitalize }} 
+				  {% if element.osmId is defined %}
+				  	<a href={{ config.osm.getFormattedOsmHost ~ element.osmId }} target="_blank">(Voir sur OpenStreetMap)</a>
+				  {% endif %}
+				</div>
 				{# Description #}
 				{% set description = element.description ?? element.data.description ?? null %}
 		  		{% if description %}
@@ -38,7 +43,7 @@
 				{% endif %}
 				{# Address #}
 		  		{% if element.address is defined %}
-					{% set address = element.address.streetAddress is defined ? element.address.streetAddress ~ ', ' : '' %}
+					{% set address = element.address.streetAddress is defined and element.address.streetAddress ? element.address.streetAddress ~ ', ' : '' %}
 					{% set postalCode = element.address.postalCode is defined ? (element.address.postalCode ~ ' ') : '' %}
 					{% set city = element.address.addressLocality is defined ? element.address.addressLocality : '' %}
 					<div class="address">{{ address ~ postalCode ~ city | capitalize }}</div>
@@ -52,7 +57,7 @@
 					</button>
 				{% else %}
 					{% set url = path('gogo_directory_showElement', {'id': element.id }) | replace({"%23":'#'}) %}
-					<a href="{{ url }}"><button class="btn-gogo btn-secondary small waves-light waves-effect btn">
+					<a href="{{ url }}"><button type="button" class="btn-gogo btn-secondary small waves-light waves-effect btn">
 						C'est lui !
 					</button></a>
 				{% endif %}					

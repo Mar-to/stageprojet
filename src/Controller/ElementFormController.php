@@ -219,7 +219,8 @@ class ElementFormController extends GoGoController
                             if ($duplicate->isFromOsm()) $osmDuplicatesIdsInGoGoDatabase[] = $duplicate->getOldId();
                         }
                         foreach($osmDuplicates as $osmDuplicate) {
-                            if (!in_array($osmDuplicate['osmId'], $osmDuplicatesIdsInGoGoDatabase))
+                            $id = explode('/', $osmDuplicate['osmId'])[1]; // osmId is something like node/12345
+                            if (!in_array($id, $osmDuplicatesIdsInGoGoDatabase))
                                 $duplicates[] = $osmDuplicate;
                         }
                     }
