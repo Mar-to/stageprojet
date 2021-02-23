@@ -46,7 +46,7 @@ function geocodeAddress(address) {
 		if (results !== null && results.length > 0)
 		{
 			firstGeocodeDone = true;
-			map.setView(results[0].getCoordinates(), 15);
+			map.setView(results[0].getCoordinates(), 18);
 			createMarker(results[0].getCoordinates());
 
 			console.log("Geocode result :", results[0]);
