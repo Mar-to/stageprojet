@@ -23,7 +23,7 @@ class DuplicatesActionsController extends BulkActionsAbstractController
 
         if (!$request->get('batchFromStep')) {
             // reset previous detections
-            $dm->query('Element')->update()
+            $dm->query('Element')->updateMany()
             ->field('isDuplicateNode')->unsetField()->exists(true)
             ->field('potentialDuplicates')->unsetField()->exists(true)
             ->execute();
@@ -57,7 +57,8 @@ class DuplicatesActionsController extends BulkActionsAbstractController
                     return $aPriority > $bPriority;
                 } else {
                     // Or get the more recent
-                    $diffDays = (float) date_diff($a->getUpdatedAt(), $b->getUpdatedAt())->format('%d');
+                    try { $diffDays = (float) date_diff($a->getUpdatedAt(), $b->getUpdatedAt())->format('%d'); }
+                    catch (\Exception $e) { return 0; }                    
                     return $diffDays;
                 };
             });   
