@@ -89,25 +89,6 @@ class ElementRepository extends DocumentRepository
         return $results;
     }
 
-    // When user want to proceed already detected duplicates by the bulk action
-    // We use the field "duplicate node" to find them
-    public function findDuplicatesNodes($limit = null, $getCount = null)
-    {
-        $qb = $this->query('Element');
-        $qb->field('isDuplicateNode')->equals(true);
-        if ($getCount) {
-            $qb->count();
-        } else {
-            $qb->field('lockUntil')->lte(time());
-            if ($limit) {
-                $qb->limit($limit);
-            }
-        }
-
-        return $qb->execute();
-    }
-
-
     public function findElementsWithText($text, $fullRepresentation = true, $isAdmin = false)
     {
         $qb = $this->query('Element');

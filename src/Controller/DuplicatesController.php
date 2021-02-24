@@ -1,12 +1,5 @@
 <?php
 
-/**
- * @Author: Sebastian Castro
- * @Date:   2018-06-16 11:15:08
- * @Last Modified by:   Sebastian Castro
- * @Last Modified time: 2018-06-17 16:46:54
- */
-
 namespace App\Controller;
 
 use App\Document\Element;
@@ -14,23 +7,31 @@ use App\Services\ElementActionService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class DuplicatesController extends GoGoController
 {
     const DUPLICATE_BATH_SIZE = 15;
 
-    public function indexAction(DocumentManager $dm)
+    public function indexAction(DocumentManager $dm, TokenStorageInterface $securityContext)
     {
         $optionsNames = $dm->query('Option')->select('name')->getArray();
 
-        $duplicatesNodeCount = $dm->get('Element')->findDuplicatesNodes(null, true);
-        $duplicatesNode = $dm->get('Element')->findDuplicatesNodes(DuplicatesController::DUPLICATE_BATH_SIZE)->toArray();
+        $userEmail = $securityContext->getToken()->getUser()->getEmail() ?? '';
 
-        $leftDuplicatesToProceedCount = max($duplicatesNodeCount - DuplicatesController::DUPLICATE_BATH_SIZE, 0);
+        $qb = $dm->query('Element')->field('isDuplicateNode')->equals(true);
+        $qb->addOr($qb->expr()->field('lockUntil')->lte(time()),                    
+                   $qb->expr()->field('lockedByUserEmail')->equals($userEmail));                    
+        $duplicatesNode = $qb->limit(DuplicatesController::DUPLICATE_BATH_SIZE)->getCursor();
+
+        if ($duplicatesNode->count() == 0) {
+            $leftDuplicatesToProceedCount = $dm->query('Element')->field('isDuplicateNode')->equals(true)->getCount();
+        }
 
         $lockUntil = time() + 10 * 60; // lock for 10 minutes
         foreach ($duplicatesNode as $key => $element) {
             $element->setLockUntil($lockUntil);
+            $element->setLockedByUserEmail($userEmail);
         }
         $dm->flush();
 

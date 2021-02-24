@@ -21,15 +21,21 @@
 
 {% block page_content_after %}
 
+  <a class="btn btn-primary" href={{ path('gogo_duplicates_index') }}>Gérer les doublons détectés</a>
+  <a class="btn btn-default" href={{ path('gogo_core_bundle_config_duplicates_admin_classname_list') }}>Retour à la gestion des doublons</a>
+
   {% for partialView in renderedViews %}
     {{ partialView.content | raw }}
   {% endfor %}
 
+  <a class="btn btn-primary" href={{ path('gogo_duplicates_index') }}>Gérer les doublons détectés</a>
+  <a class="btn btn-default" href={{ path('gogo_core_bundle_config_duplicates_admin_classname_list') }}>Retour à la gestion des doublons</a>
+
   <style>
-  .bulk-duplicate h4 { margin-bottom:15px; }
-  .bulk-duplicate li { margin-bottom: 20px; }
-  .bulk-duplicate .duplicate-name { margin-right: 10px; }
-  .bulk-duplicate .element-description { margin-left: 28px; margin-top: 5px; }
+    .bulk-duplicate h4 { margin-bottom:15px; }
+    .bulk-duplicate li { margin-bottom: 20px; }
+    .bulk-duplicate .duplicate-name { margin-right: 10px; }
+    .bulk-duplicate .element-description { margin-left: 28px; margin-top: 5px; }
   </style>
 
 {% endblock %}

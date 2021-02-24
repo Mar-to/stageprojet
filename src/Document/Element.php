@@ -317,6 +317,9 @@ class Element
      */
     private $lockUntil = 0;
 
+    /** @MongoDB\Field(type="string") @MongoDB\Index */
+    private $lockedByUserEmail = '';
+
     /** @MongoDB\Field(notSaved=true) */
     public $score;
 
@@ -1672,6 +1675,26 @@ class Element
     public function setScore($score)
     {
         $this->score = $score;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of lockedByUserEmail
+     */ 
+    public function getLockedByUserEmail()
+    {
+        return $this->lockedByUserEmail;
+    }
+
+    /**
+     * Set the value of lockedByUserEmail
+     *
+     * @return  self
+     */ 
+    public function setLockedByUserEmail($lockedByUserEmail)
+    {
+        $this->lockedByUserEmail = $lockedByUserEmail;
 
         return $this;
     }

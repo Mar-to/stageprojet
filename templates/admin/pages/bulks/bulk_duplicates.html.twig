@@ -4,7 +4,7 @@
 
     {% for duplicate in duplicates %}
         <li>
-            <a class="duplicate-name" href="{{ duplicate.showUrlFromController(router)}}" target="_blank"><b>
+            <a class="duplicate-name" href="{{ path('admin_app_element_showEdit', { 'id': duplicate.id }) }}" target="_blank"><b>
               {{ duplicate.name }}
               {% if duplicate.sourceKey %}<i> ({{ duplicate.sourceKey }})</i>{% endif %}
             </b></a>

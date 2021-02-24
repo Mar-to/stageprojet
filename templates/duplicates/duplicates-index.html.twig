@@ -15,11 +15,13 @@
 {# BODY CONTENT #}
 {% block body_content %}
   <section>
+    
+    <center style="margin-bottom: 2rem"><a href="{{ path('gogo_core_bundle_config_duplicates_admin_classname_list')}}"><button class="btn btn-secondary">Retour à la gestion des doublons</button></a></center>
 
     {% if duplicatesNode|length == 0 %}
       <h1>Aucun doublon à traiter !</h1>
       {% if leftDuplicatesToProceedCount > 0 %}
-        <center><p>Les doublons restant sont déjà en traitement par quelqu'un d'autre ({{ leftDuplicatesToProceedCount }})</p>  </center>
+        <center><p>{{ leftDuplicatesToProceedCount }} doublons sont en fait encore à traiter, mais ont été bloqués par un autre utilisateur. Attendez 10 minutes pour qu'ils se débloquent</p>  </center>
       {% endif %}
     {% else %}
       <h1>Gérez les doublons détectés</h1>
@@ -36,7 +38,9 @@
         {% include 'duplicates/duplicate-node.html.twig' with { 'duplicateNode' : duplicateNode, 'optionsNames' : optionsNames } %}
       {% endfor %}
 
-      <center><button class="btn btn-primary" onclick="window.location.reload()">J'en veux encore ! (plus que {{ leftDuplicatesToProceedCount }} doublons à traiter)</button></center>
+      <center>        
+        <button class="btn btn-primary" onclick="window.location.reload()">J'en veux encore ! (plus que {{ leftDuplicatesToProceedCount }} doublons à traiter)</button>
+      </center>
     {% endif %}
 
   </section>
