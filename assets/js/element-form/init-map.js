@@ -10,7 +10,7 @@ function initMap()
 	{
 		markerPosition = new L.LatLng($('#input-latitude').val(), $('#input-longitude').val());
 		mapCenter = markerPosition;
-		mapZoom = 16;
+		mapZoom = 18;
 		firstGeocodeDone = true;
 	}
 	else
