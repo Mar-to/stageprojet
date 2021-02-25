@@ -225,11 +225,13 @@ class ElementAdminController extends ElementAdminBulkController
                 $this->admin->setSubject($submittedObject);
                 $this->admin->checkAccess('create', $submittedObject);
                 $this->handlesGoGoForm($submittedObject, $request);
-                $this->elementActionService->add($submittedObject, true, "");
                 
                 try {
                     $newObject = $this->admin->create($submittedObject);
-
+                    // send mail after element has been persisted (we need it's ID to generate the url)
+                    $this->elementActionService->add($newObject, true, "");
+                    $this->admin->update($newObject); // status has been modified by the elementActionService
+                    
                     if ($this->isXmlHttpRequest()) {
                         return $this->handleXmlHttpRequestSuccessResponse($request, $newObject);
                     }
