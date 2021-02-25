@@ -1,6 +1,6 @@
-<div class="bs-callout {{ needHumanMerge ? 'bs-callout-warning' : 'bs-callout-success' }} bulk-duplicate">
+<div class="bs-callout {{ automaticMerge ? 'bs-callout-success' : 'bs-callout-warning' }} bulk-duplicate">
 
-    <h4>{{ automaticMerge ? (needHumanMerge ? "Fusion auto + doublons potentiels" : "Fusion automatique") : "Doublons potentiels détectés" }}</h4>
+    <h4>{{ automaticMerge ? "Fusion automatique" : "Doublons potentiels détectés" }}</h4>
 
     {% for duplicate in duplicates %}
         <li>
@@ -10,14 +10,11 @@
             </b></a>
 
             {% if automaticMerge %}
-              {% if duplicate.status == '-6' %}
-                <span class="label label-default">Doublon Supprimé</span>
-              {% elseif duplicate.id == mergedId %}
+              {% if loop.first %}
                 <span class="label label-success">Doublon Conservé</span>
+              {% else %}
+                <span class="label label-default">Doublon Supprimé</span>
               {% endif %}
-            {% endif %}
-            {% if duplicate.moderationState == 4 %}
-              <span class="label label-warning">Doublon potentiel</span>
             {% endif %}
 
             {% for prop in config.duplicates.fieldsToBeUsedForComparaison %}

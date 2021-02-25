@@ -44,18 +44,24 @@ class ConfigurationDuplicatesAdmin extends ConfigurationAbstractAdmin
 
         $formMapper
             ->with('Configuration')
+                ->add('duplicates.useGlobalSearch', CheckboxType::class, [
+                    'label' => "Utiliser la recherche générale pour chercher les doublons (recherche souple)", 
+                    'label_attr' => ['title' => "La recherche générale est configurée dans la personalisation du formulaire (choisissez quels champs seront recherchés, de base cela recherche uniquement dans le titre de la fiche). Elle est souple, c'est à dire qu'elle détectera des valeurs similaires (\"test\" trouvera \"Un TésT\"). Un correspondence parfaite sera détectée uniquement si les titres de fiche sont quasiment similaire : \"test\" et \"Un TésT\" ne sera pas une correspondance parfait, alors que \"test\" et \"TésT\" le sera"],
+                    'required' => false
+                ])
                 ->add('duplicates.fieldsToBeUsedForComparaison', ChoiceType::class, [
                     'choices' => $propsChoices, 
-                    'label' => "Liste des champs utilisés pour la détection de doublons", 
+                    'label' => "Autres champs utilisés pour la détection de doublons (recherche stricte)", 
+                    'label_attr' => ['title' => "Seuls les valeurs exactement identiques seront détectés. Une correspondance d'un seul de ces champ sera interprété comme une correspondance parfaite entre les deux éléments"],
                     'required' => false, 'multiple' => true])
                 ->add('duplicates.rangeInMeters', null, ['label' => 'Distance maximale (en mètres) entre deux doublons'])
             ->end()
-            ->with('Fusion automatique')
+            ->with('Fusion des doublons')
                 ->add('duplicates.automaticMergeIfPerfectMatch', CheckboxType::class, [
                     'label' => "Fusionner automatiquement lors d'une correspondance parfaite", 
                     'required' => false])
                 ->add('duplicates.sourcePriorityInAutomaticMerge', null, [
-                    'label' => "Lors d'une fusion automatique, quelle source voulez vous conserver en priorité?", 
+                    'label' => "Lors d'une fusion, quelle source voulez vous conserver en priorité?", 
                     'attr' => [
                         'class' => 'gogo-source-priority',
                         'data-source-list' => $sourceList]])

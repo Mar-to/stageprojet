@@ -1,8 +1,15 @@
 {% set duplicates = [duplicateNode]|merge(duplicateNode.potentialDuplicates) %}
-{% if duplicates|length > 0 %}
+{% if duplicates|length > 1 %}
 <table class="duplicate-node"><tbody><tr>
 
-  <td class="duplicates"><ul class="collapsible" data-collapsible="false">
+  <td class="duplicates">
+    <div class="merge-btn-container">
+      <button class="btn-merge btn btn-success waves-effect waves-light" data-id="{{ duplicateNode.id }}"
+              title="Seul le premier élément sera conservé, et les attributs seront fusionnés">
+        Fusionner
+      </button>
+    </div>
+    <ul class="collapsible" data-collapsible="false">
     {% for duplicate in duplicates %}
       <li class="collection-item">
         <div class="collapsible-header">
@@ -12,8 +19,7 @@
             <span class="updated-at"> - Maj {{ duplicate.updatedAt|date("d/m/Y") }}</span>
           </span>
           <div class="actions">
-            <a href="{{ duplicate.showUrlFromController(router)}}" target="_blank" class="btn-edit icon gogo-icon-eye"></a>
-            <a href={{ path('gogo_element_edit', { id: duplicate.id}) }} target="_blank" class="btn-edit icon gogo-icon-edit"></a>
+            <a href={{ path('admin_app_element_showEdit', { id: duplicate.id}) }} target="_blank" class="btn-edit icon gogo-icon-eye"></a>
             <button class="btn-resolve btn btn-success waves-effect waves-light" data-id="{{ duplicate.id }}">Conserver</button>
             <button class="btn-delete btn btn-danger waves-effect waves-light" data-id="{{ duplicate.id }}">Supprimer</button>
           </div>
@@ -47,7 +53,7 @@
       </li>
     {% endfor %}
   </ul></td>
-
+  
   <td class="non-duplicates">
     <a class="icon gogo-icon-close" data-id="{{ duplicateNode.id }}"></a>
   </td>

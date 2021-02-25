@@ -11,6 +11,9 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class DuplicatesActionsController extends BulkActionsAbstractController
 {
+    // To know if an element have already been processed, we use the moderationstate : PotentialDuplicate
+    // but as we are processing element in batch, during the same batch data is not persisted and so instead
+    // we use this array or element Id that we exclude from the detection
     protected $duplicatesFound = [];
 
     public function detectDuplicatesAction(Request $request, SessionInterface $session, DocumentManager $dm,
@@ -24,9 +27,13 @@ class DuplicatesActionsController extends BulkActionsAbstractController
         if (!$request->get('batchFromStep')) {
             // reset previous detections
             $dm->query('Element')->updateMany()
-            ->field('isDuplicateNode')->unsetField()->exists(true)
-            ->field('potentialDuplicates')->unsetField()->exists(true)
-            ->execute();
+                ->field('isDuplicateNode')->unsetField()
+                ->field('potentialDuplicates')->unsetField()
+                ->execute();
+            $dm->query('Element')->updateMany()
+                ->field('moderationState')->equals(ModerationState::PotentialDuplicate)
+                ->field('moderationState')->set(ModerationState::NotNeeded)
+                ->execute();
         }
 
         return $this->elementsBulkAction('detectDuplicates', $dm, $request, $session);
@@ -35,21 +42,25 @@ class DuplicatesActionsController extends BulkActionsAbstractController
     public function detectDuplicates($element, $dm)
     {       
         if ($element->getStatus() >= ElementStatus::PendingModification
-        && !array_key_exists($element->getId(), $this->duplicatesFound)) {        
-            $duplicates = $dm->get('Element')->findDuplicatesFor($element);
-            $config = $dm->get('Configuration')->findConfiguration();
+        && !in_array($element->getId(), $this->duplicatesFound)) {    
+            $duplicates = $dm->get('Element')->findDuplicatesFor($element, $this->duplicatesFound);
             if (count($duplicates) == 0) return null;
             
-            $duplicates[] = $element;
-
-            // Remember them so we do not check duplicate on them again
-            foreach ($duplicates as $duplicate) {
-                $this->duplicatesFound[$duplicate->getId()] = true;
-            }
-
-            // sort duplicates
+            // only keep two duplicates, so get easier to manage for the users (less complicated cases)
+            // so we sort duplicates and keep first (best choice)
+            usort($duplicates, function($a, $b) use ($element) {
+                if ($this->isPerfectMatch($element, $a)) return true; 
+                if ($this->isPerfectMatch($element, $b)) return false; 
+                if ($a->getScore() != null && $b->getScore() != null) return $a->getScore() > $b->getScore();
+            }); 
+            $bestDuplicate = array_shift($duplicates);
+            $isPerfectMatch = $this->isPerfectMatch($element, $bestDuplicate);
+            $duplicatesToProceed = [$element, $bestDuplicate];
+            
+            // Choose which duplicate to keep
+            $config = $dm->get('Configuration')->findConfiguration();
             $sourcePriorities = $config->getDuplicates()->getSourcePriorityInAutomaticMerge();
-            usort($duplicates, function($a, $b) use ($sourcePriorities) {
+            usort($duplicatesToProceed, function($a, $b) use ($sourcePriorities) {
                 $aPriority = array_search($a->getSourceKey(), $sourcePriorities);
                 $bPriority = array_search($b->getSourceKey(), $sourcePriorities);
                 if ($aPriority != $bPriority) {
@@ -62,39 +73,37 @@ class DuplicatesActionsController extends BulkActionsAbstractController
                     return $diffDays;
                 };
             });   
+
+            // Remember them so we do not check duplicate on them again
+            foreach ($duplicatesToProceed as $duplicate) {
+                $this->duplicatesFound[] = $duplicate->getId();
+                $duplicate->setModerationState(ModerationState::PotentialDuplicate);
+            }
             
-            $elementToKeep = array_shift($duplicates);
-
-            $perfectMatches = [];
-            if ($config->getDuplicates()->getAutomaticMergeIfPerfectMatch()) {
-                $perfectMatches = array_filter($duplicates, function ($duplicate) use ($elementToKeep) { 
-                    // null score means duplicate come from the query with field, which relies on perfect value
-                    return $duplicate->getScore() === null || slugify($duplicate->getName()) == slugify($elementToKeep->getName()); 
-                });
-            }
-              
-            $potentialDuplicates = array_diff($duplicates, $perfectMatches);                     
-
-            if (count($perfectMatches) > 0) {
-                $elementToKeep = $this->automaticMerge($elementToKeep, $perfectMatches);
-            }
-
-            if (count($potentialDuplicates) > 0) {
+            $elementToKeep = array_shift($duplicatesToProceed);
+            $duplicate = array_pop($duplicatesToProceed);
+            $autoMerge = $isPerfectMatch && $config->getDuplicates()->getAutomaticMergeIfPerfectMatch();
+            if ($autoMerge) {
+                $elementToKeep = $this->automaticMerge($elementToKeep, [$duplicate]);
+            } else {
                 $elementToKeep->setIsDuplicateNode(true);
-                foreach ($potentialDuplicates as $duplicate) {
-                    $elementToKeep->addPotentialDuplicate($duplicate);
-                    $duplicate->setModerationState(ModerationState::PotentialDuplicate);
-                }                
+                $elementToKeep->addPotentialDuplicate($duplicate);
+                $duplicate->setModerationState(ModerationState::PotentialDuplicate);
             }
 
             return $this->render('admin/pages/bulks/bulk_duplicates.html.twig', [
-               'duplicates' => array_merge([$elementToKeep], $perfectMatches, $potentialDuplicates),
+               'duplicates' => [$elementToKeep, $duplicate],
                'config' => $config,
-               'automaticMerge' => count($perfectMatches) > 0,
-               'needHumanMerge' => count($potentialDuplicates) > 0,
-               'mergedId' => $elementToKeep->getId(),
-               'router' => $this->get('router'), ]);
+               'automaticMerge' => $autoMerge,
+               'router' => $this->get('router')
+            ]);
         }
+    }
+
+    private function isPerfectMatch($element, $duplicate)
+    {
+        // null score means duplicate come from the query with field, which relies on perfect value
+        return $duplicate->getScore() === null || slugify($duplicate->getName()) == slugify($element->getName());
     }
 
     public function automaticMerge($merged, $duplicates)
@@ -116,6 +125,8 @@ class DuplicatesActionsController extends BulkActionsAbstractController
                     $mergedData[$key] = $value;
                 }
             }
+            // merge non duplicates
+            foreach ($duplicate->getNonDuplicates() as $nonDup) $merged->addNonDuplicate($nonDup);
             // Auto merge special attributes
             $merged->setImages(array_merge($merged->getImagesArray(), $duplicate->getImagesArray()));
             $merged->setFiles(array_merge($merged->getFilesArray(), $duplicate->getFilesArray()));
@@ -143,8 +154,6 @@ class DuplicatesActionsController extends BulkActionsAbstractController
                 $merged->setAddress($address);
             }
             if ($duplicate->getStatus() > $merged->getStatus()) $merged->setStatus($duplicate->getStatus());
-            // setting this moderation so when deleted it becomes "deleted duplicate" instead of just "deleted"
-            $duplicate->setModerationState(ModerationState::PotentialDuplicate);
             $this->elementActionService->delete($duplicate, false);
         }
         $merged->setModerationState(ModerationState::NotNeeded);

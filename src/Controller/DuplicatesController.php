@@ -22,12 +22,10 @@ class DuplicatesController extends GoGoController
         $qb = $dm->query('Element')->field('isDuplicateNode')->equals(true);
         $qb->addOr($qb->expr()->field('lockUntil')->lte(time()),                    
                    $qb->expr()->field('lockedByUserEmail')->equals($userEmail));                    
-        $duplicatesNode = $qb->limit(DuplicatesController::DUPLICATE_BATH_SIZE)->getCursor();
-
-        if ($duplicatesNode->count() == 0) {
-            $leftDuplicatesToProceedCount = $dm->query('Element')->field('isDuplicateNode')->equals(true)->getCount();
-        }
-
+        $duplicatesNode = $qb->limit(self::DUPLICATE_BATH_SIZE)->getCursor();
+        $duplicatesTotalCount = $dm->query('Element')->field('isDuplicateNode')->equals(true)->getCount();
+        $leftDuplicatesToProceedCount = $duplicatesTotalCount - min($duplicatesNode->count(), self::DUPLICATE_BATH_SIZE);
+        
         $lockUntil = time() + 10 * 60; // lock for 10 minutes
         foreach ($duplicatesNode as $key => $element) {
             $element->setLockUntil($lockUntil);

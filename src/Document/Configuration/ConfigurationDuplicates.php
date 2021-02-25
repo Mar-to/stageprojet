@@ -7,11 +7,14 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 /** @MongoDB\EmbeddedDocument */
 class ConfigurationDuplicates
 {
+    /** @MongoDB\Field(type="bool") */
+    private $useGlobalSearch = true;    
+    
     /**  @MongoDB\Field(type="collection") */
-    private $fieldsToBeUsedForComparaison = ['name'];
+    private $fieldsToBeUsedForComparaison = [];
 
     /** @MongoDB\Field(type="int") */
-    private $rangeInMeters = 400;
+    private $rangeInMeters = 200;
 
     /** @MongoDB\Field(type="bool") */
     private $automaticMergeIfPerfectMatch = true;    
@@ -122,6 +125,26 @@ class ConfigurationDuplicates
     public function setRangeInMeters($rangeInMeters)
     {
         $this->rangeInMeters = $rangeInMeters;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of useGlobalSearch
+     */ 
+    public function getUseGlobalSearch()
+    {
+        return $this->useGlobalSearch;
+    }
+
+    /**
+     * Set the value of useGlobalSearch
+     *
+     * @return  self
+     */ 
+    public function setUseGlobalSearch($useGlobalSearch)
+    {
+        $this->useGlobalSearch = $useGlobalSearch;
 
         return $this;
     }

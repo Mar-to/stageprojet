@@ -15,7 +15,7 @@ use App\Helper\GoGoHelper;
  */
 class ElementRepository extends DocumentRepository
 {
-    public function findDuplicatesFor($element)
+    public function findDuplicatesFor($element, $elementIdsToIgnore = [])
     {
         // Duplicates search is used in two places :
         // 1- When we create a new element, we check that it's not always existing
@@ -47,20 +47,35 @@ class ElementRepository extends DocumentRepository
         // REDUCE SCOPE FOR BULK DETECTION
         if ($forBulkDuplicateDetection) {
             $qb->field('status')->gt(ElementStatus::PendingModification);
-            // $qb->field('moderationState')->notEqual(ModerationState::PotentialDuplicate);
-            $qb->field('id')->notIn($element->getNonDuplicatesIds());
+            $qb->field('moderationState')->notEqual(ModerationState::PotentialDuplicate);
+            $qb->field('isDuplicateNode')->notEqual(true);
+            $qb->field('id')->notIn(array_merge($element->getNonDuplicatesIds(), $elementIdsToIgnore));
         }
 
-        $qbText = clone $qb;
+        
         // Text Search
-        $result1 = $this->queryText($qbText, $element->getName())
-                        ->hydrate(true)->execute()->toArray();
-        // Field Search
-        foreach($config->getFieldsToBeUsedForComparaison() as $field) {
-            if ($element->getProperty($field))
-                $qb->addOr($qb->expr()->field("data.$field")->equals($element->getProperty($field)));
+        $result1 = [];
+        if ($config->getUseGlobalSearch()) {
+            $qbText = clone $qb;
+            $result1 = $this->queryText($qbText, $element->getName())
+                            ->hydrate(true)->execute()->toArray();
         }
-        $result2 = $qb->hydrate(false)->getArray();
+        // Field Search
+        $result2 = [];
+        if (count($config->getFieldsToBeUsedForComparaison())) {
+            $subQueriesCount = 0;
+            foreach($config->getFieldsToBeUsedForComparaison() as $field) {
+                if ($element->getProperty($field)) {
+                    $subQueriesCount++;
+                    $qb->addOr($qb->expr()->field("data.$field")->equals($element->getProperty($field)));
+                    if ($field == 'email') {
+                        $qb->addOr($qb->expr()->field("$field")->equals($element->getProperty($field)));
+                    }
+                }                    
+            }
+            if ($subQueriesCount > 0) $result2 = $qb->hydrate(false)->getArray();
+        }
+        dump($result1, $result2);
         return $result1 + $result2; // + operator will make the array unique cause each key is an element id
     }
 

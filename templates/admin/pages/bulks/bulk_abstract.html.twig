@@ -9,27 +9,34 @@
 
 {% block page_content %}
 
-  <h3 style="margin-top: 0;margin-bottom: 20px;">Analyse des éléments de {{ firstId }} à {{ lastId }}</h3>
-
-  {% if isStillElementsToProceed %}
-    <a class="btn btn-primary" href='{{ redirectionRoute }}'>Continuer à traiter les éléments suivants (encore {{ elementsToProcceedCount }} à traiter)</a>
-  {% else %}
-    <div class="alert alert-success">Tous les éléments ont été traités avec succès</div>
-  {% endif %}
+  <div style="margin-bottom: 1rem; text-align: center">
+    <h2 style="margin-top: 0;margin-bottom: 20px;">Analyse des éléments de {{ firstId }} à {{ lastId }}</h2>
+    
+    {% if isStillElementsToProceed %}
+      <a class="btn btn-success" href='{{ redirectionRoute }}'>Continuer à traiter les éléments suivants (encore {{ elementsToProcceedCount }} à traiter)</a>
+    {% else %}
+      <div class="alert alert-success">Tous les éléments ont été traités avec succès</div>
+    {% endif %}
+  </div>
 
 {% endblock %}
 
 {% block page_content_after %}
-
-  <a class="btn btn-primary" href={{ path('gogo_duplicates_index') }}>Gérer les doublons détectés</a>
-  <a class="btn btn-default" href={{ path('gogo_core_bundle_config_duplicates_admin_classname_list') }}>Retour à la gestion des doublons</a>
-
+  <h3 style="margin-bottom: 20px">Résultats</h3>
+  {% set isDuplicateAction = (title == "Détection des doublons") %}
+  {% if isDuplicateAction %}
+    <a class="btn btn-primary" href={{ path('gogo_duplicates_index') }}>Gérer les doublons détectés</a>
+    <a class="btn btn-default" href={{ path('gogo_core_bundle_config_duplicates_admin_classname_list') }}>Retour à la gestion des doublons</a>
+  {% endif %}
+  
   {% for partialView in renderedViews %}
     {{ partialView.content | raw }}
   {% endfor %}
 
-  <a class="btn btn-primary" href={{ path('gogo_duplicates_index') }}>Gérer les doublons détectés</a>
-  <a class="btn btn-default" href={{ path('gogo_core_bundle_config_duplicates_admin_classname_list') }}>Retour à la gestion des doublons</a>
+  {% if isDuplicateAction and renderedViews|length %}
+    <a class="btn btn-primary" href={{ path('gogo_duplicates_index') }}>Gérer les doublons détectés</a>
+    <a class="btn btn-default" href={{ path('gogo_core_bundle_config_duplicates_admin_classname_list') }}>Retour à la gestion des doublons</a>
+  {% endif %}
 
   <style>
     .bulk-duplicate h4 { margin-bottom:15px; }
