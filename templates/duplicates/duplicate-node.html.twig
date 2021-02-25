@@ -1,14 +1,17 @@
 {% set duplicates = [duplicateNode]|merge(duplicateNode.potentialDuplicates) %}
 {% if duplicates|length > 1 %}
-<table class="duplicate-node"><tbody><tr>
-
-  <td class="duplicates">
-    <div class="merge-btn-container">
-      <button class="btn-merge btn btn-success waves-effect waves-light" data-id="{{ duplicateNode.id }}"
-              title="Seul le premier élément sera conservé, et les attributs seront fusionnés">
-        Fusionner
+<div class="duplicate-node">
+  <div class="group-actions">
+    <button class="btn-merge btn btn-success waves-effect waves-light" data-id="{{ duplicateNode.id }}"
+            title="Les éléments vont être fusionnés. Seul le premier élément sera conservé, et les attributs du second seront fusionnés">
+        Doublons !
       </button>
-    </div>
+      <button class="btn-non-duplicates btn btn-default waves-effect waves-light" data-id="{{ duplicateNode.id }}"
+              title="Rien ne se passe, GoGoCarto se souviendra que ces deux éléments ne sont pas des doublons et ils ne seront plus détectés comme tel">
+        Pas doublons
+      </button>
+  </div>
+  <div class="duplicates">
     <ul class="collapsible" data-collapsible="false">
     {% for duplicate in duplicates %}
       <li class="collection-item">
@@ -20,21 +23,28 @@
           </span>
           <div class="actions">
             <a href={{ path('admin_app_element_showEdit', { id: duplicate.id}) }} target="_blank" class="btn-edit icon gogo-icon-eye"></a>
-            <button class="btn-resolve btn btn-success waves-effect waves-light" data-id="{{ duplicate.id }}">Conserver</button>
-            <button class="btn-delete btn btn-danger waves-effect waves-light" data-id="{{ duplicate.id }}">Supprimer</button>
           </div>
-          {% if duplicate.email %}<div class="link">{{ duplicate.email }}</div>{% endif %}
-          <div class="address">{{ duplicate.address.getFormatedAddress }}</div>
-
-          <div class="options">
-            {% for optionValue in duplicate.optionValues %}
-              <span class="option">{{ optionsNames[optionValue.optionId] }} {% if not loop.last %}, {% endif %}</span>
-            {% endfor %}
-          </div>
+          {% for prop in config.duplicates.fieldsInvolvedInDetection %}
+            {% if prop != 'name' %}
+              {% set value = duplicate.getProperty(prop) %}
+              {% if value %}
+                <div><u>{{ prop|capitalize }}</u> : {{ value }}</div>
+              {% endif %}
+            {% endif %}
+          {% endfor %}        
+          <div class="options">{{duplicate.optionsString }}</div>
         </div>
         <div class="collapsible-body">
+          {# Address #}
+          {% if duplicate.address.getFormatedAddress %}
+            <div class="key-value">
+              <span class="key">Adresse</span>
+              <span class="value">{{ duplicate.address.getFormatedAddress }}</span>
+            </div>
+          {% endif %}
+          {# Other Attributes #}
           {% for key, data in duplicate.data %}
-            {% if data %}
+            {% if data and key not in config.duplicates.fieldsInvolvedInDetection %}
             <div class="key-value">
               <span class="key">{{ key }}</span>
               <span class="value">
@@ -52,10 +62,7 @@
         </div>
       </li>
     {% endfor %}
-  </ul></td>
-  
-  <td class="non-duplicates">
-    <a class="icon gogo-icon-close" data-id="{{ duplicateNode.id }}"></a>
-  </td>
-</tr></tbody></table>
+    </ul>
+  </div>  
+</div>
 {% endif %}

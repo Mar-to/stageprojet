@@ -18,10 +18,13 @@ use OzdemirBurak\Iris\Color\Rgba;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use App\Helper\GoGoHelper;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\PostLoad;
 
 /**
  * Main Configuration.
- *
+ * 
+ * @HasLifecycleCallbacks
  * @MongoDB\Document(repositoryClass="App\Repository\ConfigurationRepository")
  */
 class Configuration implements \JsonSerializable
@@ -507,6 +510,12 @@ class Configuration implements \JsonSerializable
         $this->home = new ConfigurationHome();
         $this->marker = new ConfigurationMarker();
     }
+
+    /** @PostLoad */
+    public function postLoad()
+    {
+        $this->duplicates->setFormFields($this->getElementFormFields());
+    } 
 
     public function jsonSerialize()
     {

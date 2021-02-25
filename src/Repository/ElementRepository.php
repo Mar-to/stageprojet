@@ -341,14 +341,6 @@ class ElementRepository extends DocumentRepository
             ->getIds();
     }
 
-    public function findPotentialDuplicateOwner($element)
-    {
-        $qb = $this->query('Element');
-        $qb->field('potentialDuplicates')->includesReferenceTo($element);
-
-        return $qb->execute();
-    }
-
     public function findOriginalElementOfModifiedPendingVersion($element)
     {
         $qb = $this->query('Element');

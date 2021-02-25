@@ -17,12 +17,12 @@
               {% endif %}
             {% endif %}
 
-            {% for prop in config.duplicates.fieldsToBeUsedForComparaison %}
+            {% for prop in config.duplicates.fieldsInvolvedInDetection %}
               {% if prop != 'name' %}
                 {% set value = duplicate.getProperty(prop) %}
                 {% if value %}
-                  <span class="field-name">{{ prop }} : </span>
-                  <span class="field-value">{{ value }}</span>
+                  <span class="field-name">{{ prop }}</span>
+                  <span class="field-value"> : {{ value }}</span>
                 {% endif %}
               {% endif %}
             {% endfor %}
@@ -34,10 +34,9 @@
 
 <style>
   .field-name {
+    text-decoration: underline;
     margin-left: 10px;
-  }
-  .field-value { 
-    font-weight: bold;    
+    margin-right: 0;
   }
 </style>
 

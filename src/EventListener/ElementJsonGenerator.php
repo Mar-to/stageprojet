@@ -108,7 +108,7 @@ class ElementJsonGenerator
             }
         }
         $baseJson .= ',"categories": ' . json_encode($elementOptions) . ',';
-        $element->setOptionsString(implode(',', $elementOptions)); // we also update optionsString attribute which is used in exporting from element admin list
+        $element->setOptionsString(implode(', ', $elementOptions)); // we also update optionsString attribute which is used in exporting from element admin list
         // Options values with description
         if (count($optionsFullJson)) {
             $baseJson .= '"categoriesFull": ['.implode(',', $optionsFullJson).'],';

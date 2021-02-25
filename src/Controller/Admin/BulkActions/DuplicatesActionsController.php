@@ -17,7 +17,7 @@ class DuplicatesActionsController extends BulkActionsAbstractController
     protected $duplicatesFound = [];
 
     public function detectDuplicatesAction(Request $request, SessionInterface $session, DocumentManager $dm,
-                                          ElementActionService $elementActionService)
+                                           ElementActionService $elementActionService)
     {
         $this->title = 'Détection des doublons';
         $this->automaticRedirection = false;
@@ -106,8 +106,9 @@ class DuplicatesActionsController extends BulkActionsAbstractController
         return $duplicate->getScore() === null || slugify($duplicate->getName()) == slugify($element->getName());
     }
 
-    public function automaticMerge($merged, $duplicates)
+    public function automaticMerge($merged, $duplicates, $elementActionService = null)
     {
+        if ($elementActionService) $this->elementActionService = $elementActionService;
         $mergedData = $merged->getData();
         $mergedOptionIds = $merged->getOptionIds();
 

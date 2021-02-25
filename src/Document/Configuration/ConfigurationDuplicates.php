@@ -3,6 +3,7 @@
 namespace App\Document\Configuration;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ODM\MongoDB\UnitOfWork;
 
 /** @MongoDB\EmbeddedDocument */
 class ConfigurationDuplicates
@@ -27,6 +28,25 @@ class ConfigurationDuplicates
      * @MongoDB\Field(type="string")
      */
     private $currentProcessState;
+
+    private $formFields = [];
+    private $fieldsInvolvded = null;
+
+    public function setFormFields($formFields) {
+        $this->formFields = $formFields;
+    }
+
+    public function getFieldsInvolvedInDetection() {
+        if ($this->fieldsInvolvded) return $this->fieldsInvolvded;
+        $result = $this->fieldsToBeUsedForComparaison;
+        if ($this->useGlobalSearch) {
+            foreach($this->formFields as $field) {
+                if (isset($field->search)) $result[] = $field->name;
+            }
+        }
+        $this->fieldsInvolvded = $result;
+        return $result;
+    }
 
     /**
      * Get the value of automaticMergeIfPerfectMatch

@@ -32,6 +32,12 @@ gogo_duplicates_index:
     path: /duplicates
     defaults: { _controller: App\Controller\DuplicatesController::indexAction }
 
+gogo_merge_element:
+    path: /duplicates/merge
+    defaults: { _controller: App\Controller\DuplicatesController::mergeDuplicateAction }
+    requirements:
+        methods: POST
+        
 gogo_mark_as_non_duplicate:
     path: /duplicates/mark-as-non-duplicate
     defaults: { _controller: App\Controller\DuplicatesController::markAsNonDuplicateAction }

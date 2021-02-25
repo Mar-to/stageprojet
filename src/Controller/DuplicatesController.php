@@ -2,12 +2,13 @@
 
 namespace App\Controller;
 
-use App\Document\Element;
 use App\Services\ElementActionService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use App\Controller\Admin\BulkActions\DuplicatesActionsController;
+use App\Document\ModerationState;
 
 class DuplicatesController extends GoGoController
 {
@@ -15,8 +16,6 @@ class DuplicatesController extends GoGoController
 
     public function indexAction(DocumentManager $dm, TokenStorageInterface $securityContext)
     {
-        $optionsNames = $dm->query('Option')->select('name')->getArray();
-
         $userEmail = $securityContext->getToken()->getUser()->getEmail() ?? '';
 
         $qb = $dm->query('Element')->field('isDuplicateNode')->equals(true);
@@ -33,7 +32,35 @@ class DuplicatesController extends GoGoController
         }
         $dm->flush();
 
-        return $this->render('duplicates/duplicates-index.html.twig', ['duplicatesNode' => $duplicatesNode, 'router' => $this->get('router'), 'optionsNames' => $optionsNames, 'leftDuplicatesToProceedCount' => $leftDuplicatesToProceedCount]);
+        return $this->render('duplicates/duplicates-index.html.twig', [
+            'duplicatesNode' => $duplicatesNode, 
+            'config' => $dm->get('Configuration')->findConfiguration(), 
+            'leftDuplicatesToProceedCount' => $leftDuplicatesToProceedCount
+        ]);
+    }
+
+    public function mergeDuplicateAction(Request $request, DuplicatesActionsController $duplicateService,
+                                         DocumentManager $dm, ElementActionService $elementActionService)
+    {
+        if ($request->isXmlHttpRequest()) {
+            if (!$request->get('elementId')) {
+                return new Response('Missing elementId param');
+            }
+            $element = $dm->get('Element')->find($request->get('elementId'));
+            $duplicates = array_merge([$element], $element->getPotentialDuplicates()->toArray());
+            $duplicateService->automaticMerge($element, $element->getPotentialDuplicates(), $elementActionService);
+            foreach($duplicates as $duplicate) {
+                $duplicate->setIsDuplicateNode(false);
+                $duplicate->clearPotentialDuplicates();
+                $elementActionService->resolveReports($duplicate, 'Fusioné', true);
+                $duplicate->setModerationState(ModerationState::NotNeeded);
+            }            
+            $dm->flush();
+            
+            return new Response('Les éléments ont bien été fusionés');
+        } else {
+            return new Response('Not valid ajax request');
+        }
     }
 
     // Will mark all the
@@ -41,7 +68,7 @@ class DuplicatesController extends GoGoController
     {
         if ($request->isXmlHttpRequest()) {
             if (!$request->get('elementId')) {
-                return $this->returnResponse(false, 'Les paramètres sont incomplets');
+                return new Response('Missing elementId param');
             }
 
             $element = $dm->get('Element')->find($request->get('elementId'));
