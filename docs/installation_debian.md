@@ -402,6 +402,8 @@ memory_limit = 512M
 
 `service php7.3-fpm restart`
 
+`sudo chown gogocarto:gogocarto -R /var/lib/php/sessions/`
+
 ## Install GoGoCarto
 
 Follow instructions of the [Installation Guide](./installation.md)
