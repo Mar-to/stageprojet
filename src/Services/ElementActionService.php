@@ -124,20 +124,6 @@ class ElementActionService
             $this->addContribution($element, $message, InteractType::ModerationResolved, $element->getStatus());
         }
 
-        // Dealing with potential duplicates
-        if (ModerationState::PotentialDuplicate == $element->getModerationState()) {
-            if ($element->getIsDuplicateNode()) {
-                $element->setIsDuplicateNode(false);
-                $element->clearPotentialDuplicates();
-            } else {
-                $potentialOwners = $this->dm->get('Element')->findPotentialDuplicateOwner($element);
-                foreach ($potentialOwners as $key => $owner) {
-                    $this->dm->persist($owner);
-                    $owner->removePotentialDuplicate($element);
-                }
-            }
-        }
-
         $element->updateTimestamp();
         $element->setModerationState(ModerationState::NotNeeded);
     }
