@@ -3,6 +3,7 @@
 namespace App\Controller\Admin\BulkActions;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
+use App\Document\ElementStatus;
 
 class BulkActionsAbstractController extends Controller
 {
@@ -16,15 +17,16 @@ class BulkActionsAbstractController extends Controller
     {
         $isStillElementsToProceed = false;
 
-        $elementRepo = $dm->get('Element');
-        
         if (!$this->fromBeginning && $request->get('batchFromStep')) {
             $batchFromStep = $request->get('batchFromStep');
         } else {
             $batchFromStep = 0;
         }
 
-        $count = $elementRepo->findVisibles(true, false, null, $batchFromStep);
+        $qb = $dm->query('Element')
+            ->field('status')->gte(ElementStatus::PendingModification)
+            ->skip($batchFromStep);
+        $count = (clone $qb)->getCount();
         $elementsToProcceedCount = 0;
         if ($count > $this->batchSize) {
             $batchLastStep = $batchFromStep + $this->batchSize;
@@ -34,7 +36,7 @@ class BulkActionsAbstractController extends Controller
             $batchLastStep = $batchFromStep + $count;
         }
 
-        $elements = $elementRepo->findVisibles(false, false, $this->batchSize, $batchFromStep);
+        $elements = $qb->limit($this->batchSize)->getCursor(); 
 
         $i = 0;
         $renderedViews = [];
