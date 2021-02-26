@@ -26,6 +26,11 @@ class Coordinates
         $this->setLongitude((float) $lng);
     }
 
+    public function toJson()
+    {
+        return '{"latitude":'.$this->latitude.',"longitude":'.$this->longitude.'}';
+    }
+
     /**
      * Set latitude.
      *

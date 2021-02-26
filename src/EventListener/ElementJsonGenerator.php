@@ -64,15 +64,19 @@ class ElementJsonGenerator
         // -------------------- FULL JSON ----------------
 
         // BASIC FIELDS
-        $baseJson = json_encode($element);
-        $baseJson = ltrim($baseJson, '{'); // remove first '{'
-        $baseJson = rtrim($baseJson, '}'); // remove last '}'
-        if ($element->getAddress()) {
-            $baseJson .= ',"address":'.$element->getAddress()->toJson();
+        $baseProps = ['id', 'name', 'geo', 'sourceKey', 'address', 'openHours'];
+        $baseJson = "";
+        foreach($baseProps as $key) {
+            $method = 'get'.ucfirst($key);
+            $value = $element->$method();
+            if ($value) {
+                if (is_object($value)) $value = $value->toJson();
+                else $value = json_encode($value);
+                if (is_string($value) && strlen($value) > 0 && $value != "null") 
+                    $baseJson .= ",\"$key\":$value";
+            }            
         }
-        if ($element->getOpenHours()) {
-            $baseJson .= ',"openHours": '.$element->getOpenHours()->toJson();
-        }
+        $baseJson = ltrim($baseJson, ','); // remove first ','
 
         // CREATED AT, UPDATED AT
         $baseJson .= ',"createdAt":"'.date_format($element->getCreatedAt(), 'd/m/Y à H:i').'"';
