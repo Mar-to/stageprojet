@@ -458,7 +458,7 @@ class Element
         $reports = $this->getArrayFromCollection($this->getReports());
         $contributions = $this->getArrayFromCollection($this->getContributions());
         $resolvedReports = array_filter($reports, function ($e) { return $e->getIsResolved(); });
-        $contributions = array_filter($contributions, function ($e) { return $e->getStatus() ? $e->getStatus() > ElementStatus::ModifiedPendingVersion : false; });
+        $contributions = array_filter($contributions, function ($e) { return $e->getStatus() != ElementStatus::ModifiedPendingVersion; });
         $result = array_merge($resolvedReports, $contributions);
         usort($result, function ($a, $b) { return $b->getTimestamp() - $a->getTimestamp(); });
 
@@ -548,12 +548,17 @@ class Element
 
     public function isVisible()
     {
-        return $this->status >= -1;
+        return $this->status >= ElementStatus::PendingModification;
+    }
+
+    public function isDeleted()
+    {
+        return $this->status <= ElementStatus::AdminRefused;
     }
 
     public function isValid()
     {
-        return $this->status > 0;
+        return $this->status >= ElementStatus::AdminValidate;
     }
 
     public function havePendingReports()

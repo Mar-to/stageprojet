@@ -20,6 +20,11 @@
             <span class="name">{{ duplicate.name }}</span>
             {% if duplicate.sourceKey %} ({{ duplicate.sourceKey }}){% endif %}
             <span class="updated-at"> - Maj {{ duplicate.updatedAt|date("d/m/Y") }}</span>
+            {% if duplicate.isDeleted %}
+              <span style="color: #9c3f3a;margin-left: 5px;">
+                Cet élément a été supprimé. L'élément fusionné restera en status supprimé
+              </span>
+            {% endif %}
           </span>
           <div class="actions">
             <a href={{ path('admin_app_element_showEdit', { id: duplicate.id}) }} target="_blank" class="btn-edit icon gogo-icon-eye"></a>

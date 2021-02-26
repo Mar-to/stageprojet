@@ -17,15 +17,7 @@ class ElementRepository extends DocumentRepository
 {
     public function findDuplicatesFor($element, $elementIdsToIgnore = [])
     {
-        // Duplicates search is used in two places :
-        // 1- When we create a new element, we check that it's not always existing
-        // 2- From the bulk action detect duplicates. It goes through all the database to find duplicates
-        // For newly created element the search is wider, because we look also on deleted element, and
-        // it's okay for the user to just say "no this is new element"
-        // For the bulk detection, we cannot make a wider query otherwise it could result in thousands of
-        // duplicates to proceed
         $forNewlyCreatedElement = $element->getId() == null;
-        $forBulkDuplicateDetection = !$forNewlyCreatedElement;
 
         $config = $this->getDocumentManager()->get('Configuration')->findConfiguration()->getDuplicates();
         $qb = $this->query('Element');
@@ -43,15 +35,12 @@ class ElementRepository extends DocumentRepository
         }
         $radius = $distance / 110000; // convert meters in degrees
         $qb->field('geo')->withinCenter((float) $element->getGeo()->getLatitude(), (float) $element->getGeo()->getLongitude(), $radius);
+        
+        $qb->field('status')->gt(ElementStatus::ModifiedPendingVersion);
+        // We only want to have pairs of duplicates, so restrict to non potential duplicates
+        $qb->field('moderationState')->notEqual(ModerationState::PotentialDuplicate);
 
-        // REDUCE SCOPE FOR BULK DETECTION
-        if ($forBulkDuplicateDetection) {
-            $qb->field('status')->gt(ElementStatus::PendingModification);
-            $qb->field('moderationState')->notEqual(ModerationState::PotentialDuplicate);
-            $qb->field('isDuplicateNode')->notEqual(true);
-            $qb->field('id')->notIn(array_merge($element->getNonDuplicatesIds(), $elementIdsToIgnore));
-        }
-
+        $qb->field('id')->notIn(array_merge([$element->getId()], $element->getNonDuplicatesIds(), $elementIdsToIgnore));
         
         // Text Search
         $result1 = [];

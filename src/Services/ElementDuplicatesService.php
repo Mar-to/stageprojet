@@ -25,16 +25,18 @@ class ElementDuplicatesService
         if ($element->getStatus() >= ElementStatus::PendingModification
         && !in_array($element->getId(), $this->duplicatesFound)
         && !$element->isPotentialDuplicate()) {
-            dump("detect duplicate for {$element->getName()}");    
             $duplicates = $this->dm->get('Element')->findDuplicatesFor($element, $this->duplicatesFound);
             if (count($duplicates) == 0) return null;
-            
             // only keep two duplicates, so get easier to manage for the users (less complicated cases)
             // so we sort duplicates and keep first (best choice)
             usort($duplicates, function($a, $b) use ($element) {
-                if ($this->isPerfectMatch($element, $a)) return true; 
-                if ($this->isPerfectMatch($element, $b)) return false; 
-                if ($a->getScore() != null && $b->getScore() != null) return $a->getScore() > $b->getScore();
+                $aIsValid = $a->isValid();
+                $bIsValid = $b->isValid();
+                if ($aIsValid != $bIsValid) return $bIsValid;    
+                $aIsPerfectMatch = $this->isPerfectMatch($element, $a);
+                $bIsPerfectMatch = $this->isPerfectMatch($element, $b);
+                if ($aIsPerfectMatch != $bIsPerfectMatch) return $bIsPerfectMatch;                            
+                if ($a->getScore() != null && $b->getScore() != null) return $a->getScore() < $b->getScore();
             }); 
             $bestDuplicate = array_shift($duplicates);
             $isPerfectMatch = $this->isPerfectMatch($element, $bestDuplicate);
@@ -134,7 +136,10 @@ class ElementDuplicatesService
                 }
                 $merged->setAddress($address);
             }
-            if ($duplicate->getStatus() > $merged->getStatus()) $merged->setStatus($duplicate->getStatus());
+            // Merge status. If one of the duplicate is deleted, then the merged one will be deleted as well
+            // If merged one is pending, and duplicate is validated, then merged will be validated
+            if (!$merged->isDeleted() && ($duplicate->getStatus() > $merged->getStatus() || $duplicate->isDeleted())) 
+                $merged->setStatus($duplicate->getStatus());
             $this->elementActionService->delete($duplicate, false);
         }
         $merged->setModerationState(ModerationState::NotNeeded);
