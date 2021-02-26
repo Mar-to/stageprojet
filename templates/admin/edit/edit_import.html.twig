@@ -29,10 +29,11 @@
     <button type="submit" class="btn btn-default" name="collect" value="collect" title="Met à jour les tables de correspondance sans réellement importer les données">
       <i class="fa fa-eye" aria-hidden="true"></i>Lire les données
     </button>
-  {% endif %}
-  {% if object.id != "" %}
+    <button type="submit" class="btn btn-default" name="clear-elements" value="clear-elements" title="Efface toutes les données précedemment importées. Il vous suffira de relancer l'import pour les recréer">
+      <i class="fa fa-eraser" aria-hidden="true"></i>Effacer tous les éléments
+    </button>
     <a href="{{ admin.generateObjectUrl('delete', object) }}" class="btn btn-danger view_link">
-      <i class="fa fa-trash" aria-hidden="true"></i>Supprimer (ainsi que tous les éléments importés)
+      <i class="fa fa-trash" aria-hidden="true"></i>Supprimer l'import (ainsi que tous les éléments importés)
     </a>
   {% endif %}
 

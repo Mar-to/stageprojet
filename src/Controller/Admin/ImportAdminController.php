@@ -211,6 +211,10 @@ class ImportAdminController extends Controller
                     // auto collect data if the import config have changed
                     if ($request->get('import')) {
                         $url = $this->admin->generateUrl('refresh', ['id' => $object->getId()]);
+                    } elseif ($request->get('clear-elements')) {
+                        $url = $this->admin->generateUrl('edit', ['id' => $object->getId()]);
+                        $dm->query('Element')->field('source')->references($object)->batchRemove();
+                        $this->addFlash('sonata_flash_success', "Les éléments liés à cet import ont été effacés");
                     } elseif ($request->get('collect') || $oldUpdatedAt != $object->getMainConfigUpdatedAt()) {
                         $url = $this->admin->generateUrl('collect', ['id' => $object->getId()]);
                     } else {
@@ -221,7 +225,6 @@ class ImportAdminController extends Controller
                             'SonataAdminBundle' )
                         );
                     }
-
                     return $this->redirect($url);
                 } catch (\Sonata\AdminBundle\Exception\ModelManagerException $e) {
                     $this->handleModelManagerException($e);
