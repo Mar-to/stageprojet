@@ -8,16 +8,21 @@
 {# BODY CONTENT #}
 {% block body_content %}
   <section>
-  	<h1>Oops! Une erreur s'est produite</h1>
+  	<h1 style="font-size: 2.5rem;">Oops! Une erreur s'est produite</h1>
 
     <div>
       <img src="https://media.giphy.com/media/P8WZZ0NYdbXAA/giphy.gif" width="200" height="200" /></br></br>
 
-      Si le problème persiste, merci de nous en informer </br>
-      <a href="https://chat.lescommuns.org/channel/gogocarto" target="blank">Tchat GoGoCarto</a>
-      {{ contact_email }}
-
-      <!-- Le serveur à répondu "{{ status_code }} {{ status_text }}".</br> -->
+      Si le problème persiste, merci de nous en informer de préférence sur le</br>
+      <a href="https://chat.lescommuns.org/channel/gogocarto" target="blank">Tchat GoGoCarto</a> ou par mail à {{ contact_email }}
+      en copiant le message d'erreur ci-dessous
+      
+      <pre class="gogo-bg-background" style="padding: 1rem 1rem 0 1rem;border-radius: 5px;">
+{{ app.request.uri }}
+{{ status_code }} {{ status_text }}
+{{ exception.message }}
+{{ exception.file }} at Line {{ exception.line }}
+      </pre>
     </div>
   </section>
 {% endblock %}
