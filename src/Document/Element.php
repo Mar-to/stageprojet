@@ -966,6 +966,10 @@ class Element
      */
     public function setModerationState($moderationState)
     {
+        // Do not overide a potential duplicate state with other moderation types
+        if ($this->moderationState == ModerationState::PotentialDuplicate 
+        && !$moderationState == ModerationState::NotNeeded)
+            return;
         $this->moderationState = $moderationState;
 
         return $this;

@@ -18,7 +18,10 @@ class ConfigurationDuplicates
     private $rangeInMeters = 200;
 
     /** @MongoDB\Field(type="bool") */
-    private $automaticMergeIfPerfectMatch = true;    
+    private $automaticMergeIfPerfectMatch = false;  
+    
+    /** @MongoDB\Field(type="bool") */
+    private $detectAfterImport = false;    
 
     /**  @MongoDB\Field(type="collection") */
     private $sourcePriorityInAutomaticMerge = [];
@@ -38,13 +41,19 @@ class ConfigurationDuplicates
 
     public function getFieldsInvolvedInDetection() {
         if ($this->fieldsInvolvded) return $this->fieldsInvolvded;
-        $result = $this->fieldsToBeUsedForComparaison;
+        $this->fieldsInvolvded = array_merge(
+            $this->getFieldsInvolvedInGlobalSearch(), 
+            $this->fieldsToBeUsedForComparaison);
+        return $this->fieldsInvolvded;
+    }
+
+    public function getFieldsInvolvedInGlobalSearch() {
+        $result = [];
         if ($this->useGlobalSearch) {
             foreach($this->formFields as $field) {
                 if (isset($field->search)) $result[] = $field->name;
             }
         }
-        $this->fieldsInvolvded = $result;
         return $result;
     }
 
@@ -165,6 +174,26 @@ class ConfigurationDuplicates
     public function setUseGlobalSearch($useGlobalSearch)
     {
         $this->useGlobalSearch = $useGlobalSearch;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of detectAfterImport
+     */ 
+    public function getDetectAfterImport()
+    {
+        return $this->detectAfterImport;
+    }
+
+    /**
+     * Set the value of detectAfterImport
+     *
+     * @return  self
+     */ 
+    public function setDetectAfterImport($detectAfterImport)
+    {
+        $this->detectAfterImport = $detectAfterImport;
 
         return $this;
     }

@@ -39,6 +39,12 @@ class GoGoLogImport extends GoGoLog
         if ($this->getDataProp('elementsErrorsCount') > 0) {
             $result .= ' - '.$this->getDataProp('elementsErrorsCount')." erreur.s pendant l'import";
         }
+        if ($this->getDataProp('automaticMergesCount') > 0) {
+            $result .= ' - '.$this->getDataProp('automaticMergesCount')." fusionnés avec un élément déjà existant";
+        }
+        if ($this->getDataProp('potentialDuplicatesCount') > 0) {
+            $result .= ' - '.$this->getDataProp('potentialDuplicatesCount')." doublons potentiels détectés";
+        }
 
         if ($this->getDataProp('errorMessages')) {
             $result .= '</br></br>'.implode('</br>', $this->getDataProp('errorMessages'));

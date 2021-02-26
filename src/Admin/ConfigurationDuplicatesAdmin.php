@@ -41,12 +41,12 @@ class ConfigurationDuplicatesAdmin extends ConfigurationAbstractAdmin
             if (!in_array($source, $priorityList)) $priorityList[] = $source;
         }
         $this->getSubject()->getDuplicates()->setSourcePriorityInAutomaticMerge($priorityList);
-
+        $searchFields = implode(', ', $this->getSubject()->getDuplicates()->getFieldsInvolvedInGlobalSearch());
         $formMapper
             ->with('Configuration')
                 ->add('duplicates.useGlobalSearch', CheckboxType::class, [
-                    'label' => "Utiliser la recherche générale pour chercher les doublons (recherche souple)", 
-                    'label_attr' => ['title' => "La recherche générale est configurée dans la personalisation du formulaire (choisissez quels champs seront recherchés, de base cela recherche uniquement dans le titre de la fiche). Elle est souple, c'est à dire qu'elle détectera des valeurs similaires (\"test\" trouvera \"Un TésT\"). Un correspondence parfaite sera détectée uniquement si les titres de fiche sont quasiment similaire : \"test\" et \"Un TésT\" ne sera pas une correspondance parfait, alors que \"test\" et \"TésT\" le sera"],
+                    'label' => "Utiliser la recherche générale pour chercher les doublons (recherche souple dans $searchFields)", 
+                    'label_attr' => ['title' => "La recherche générale est configurée dans la personalisation du formulaire (choisissez quels champs seront recherchés, de base cela recherche uniquement dans le titre de la fiche). Elle est souple, c'est à dire qu'elle détectera des valeurs similaires (\"test\" trouvera \"Un TésT\"). Un correspondance parfaite sera détectée uniquement si les titres de fiche sont quasiment similaire : \"test\" et \"Un TésT\" ne sera pas une correspondance parfaite, alors que \"test\" et \"TésT\" le sera"],
                     'required' => false
                 ])
                 ->add('duplicates.fieldsToBeUsedForComparaison', ChoiceType::class, [
@@ -55,7 +55,13 @@ class ConfigurationDuplicatesAdmin extends ConfigurationAbstractAdmin
                     'label_attr' => ['title' => "Seuls les valeurs exactement identiques seront détectés. Une correspondance d'un seul de ces champ sera interprété comme une correspondance parfaite entre les deux éléments"],
                     'required' => false, 'multiple' => true])
                 ->add('duplicates.rangeInMeters', null, ['label' => 'Distance maximale (en mètres) entre deux doublons'])
+                ->add('duplicates.detectAfterImport', CheckboxType::class, [
+                    'label' => "Détecter les doublons après chaque Import", 
+                    'label_attr' => ['title' => "Pour chaque nouvel élément ajouté lors de l'import, une recherche sera effectuée sur l'ensemble de la base de donnée pour trouver d'éventuels doublons"],
+                    'required' => false
+                ])
             ->end()
+            
             ->with('Fusion des doublons')
                 ->add('duplicates.automaticMergeIfPerfectMatch', CheckboxType::class, [
                     'label' => "Fusionner automatiquement lors d'une correspondance parfaite", 

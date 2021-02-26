@@ -134,17 +134,24 @@ Transformer un attribut
             $formMapper
                 ->tab($title)                    
                     ->with('Transformer les données à importer')
-                        ->add('ontologyMapping', null, ['label_attr' => ['style' => 'display:none'], 'attr' => ['class' => 'gogo-mapping-ontology', 'data-form-props' => $formProperties, 'data-props' => $elementProperties]])
+                        ->add('ontologyMapping', null, [
+                            'label_attr' => ['style' => 'display:none'], 
+                            'attr' => ['class' => 'gogo-mapping-ontology', 
+                            'data-form-props' => $formProperties, 
+                            'data-props' => $elementProperties]])
                     ->end();
                 
                 if ($this->getSubject()->getSourceType() != 'osm') {
-                        $formMapper->with('Autres Options', ['box_class' => 'box box-default'])
-                        ->add('geocodeIfNecessary', null, ['required' => false, 'label' => 'Géocoder les élements sans latitude ni longitude à partir de leur adresse']);
-                        if ($isDynamic) {
-                            $formMapper
-                                    ->add('fieldToCheckElementHaveBeenUpdated', null, ['required' => false, 'label' => "Nom de l'attribut à comparer pour la mise à jour", 'label_attr' => ['title' => "Lorsqu'on met à jour une source, certains des éléments à importer existent déjà dans notre base de donnée. Vous pouvez renseigner ici un champs qui permettra de comparer si l'élément à été mis à jour au sein de la source depuis le dernier import. Exple de champ: updatedAt, date_maj etc... (laisser vide pour mettre à jour les éléments à chaque fois)"]]);
-                        }
-                    $formMapper->end();
+                    $formMapper
+                    ->with('Autres Options', ['box_class' => 'box box-default'])
+                        ->add('geocodeIfNecessary', null, [
+                            'required' => false, 
+                            'label' => 'Géocoder les élements sans latitude ni longitude à partir de leur adresse'])
+                        ->add('fieldToCheckElementHaveBeenUpdated', null, [
+                            'required' => false, 
+                            'label' => "Nom de l'attribut à comparer pour la mise à jour", 
+                            'label_attr' => ['title' => "Lorsqu'on met à jour une source, certains des éléments à importer existent déjà dans notre base de donnée. Vous pouvez renseigner ici un champs qui permettra de comparer si l'élément à été mis à jour au sein de la source depuis le dernier import. Exple de champ: updatedAt, date_maj etc... (laisser vide pour mettre à jour les éléments à chaque fois)"]])
+                    ->end();
                 }
                 $formMapper->end();
 
@@ -165,9 +172,16 @@ Transformer un attribut
                             'required' => false,
                             'multiple' => true,
                             'btn_add' => false,
-                            'label' => 'Catégories à ajouter à chaque élément importé', ], ['admin_code' => 'admin.option_hidden'])
-                        ->add('needToHaveOptionsOtherThanTheOnesAddedToEachElements', null, ['required' => false, 'label' => 'Les éléments importés sans catégorie (en dehors de celles ajoutées manuellement ci-dessus) seront marqués comme "à modérer"', 'label_attr' => ['title' => "Sans prendre en compte les catégories ajoutés via le champs \"Catégories à ajouter à chaque élément importé\", si les éléments importés n'ont pas de catégories, ils seront marqués comme \"Modération aucune catégorie renseignée\""]])
-                        ->add('preventImportIfNoCategories', null, ['required' => false, 'label' => "Ne pas importer les éléments qui n'ont aucune catégories", 'label_attr' => ['title' => "Lorsqu'on veut importer seulement une partie des éléments d'une base de donnée, il peut être pratique de mapper uniquement les catégories que l'on veut importer. Mais tous les autres élément seront aussi importés mais sans catégories. En cochant cette option, uniquement les éléments avec une catégorie mappée seront importés"]])
+                            'label' => 'Catégories à ajouter à chaque élément importé', ], 
+                            ['admin_code' => 'admin.option_hidden'])
+                        ->add('needToHaveOptionsOtherThanTheOnesAddedToEachElements', null, [
+                            'required' => false, 
+                            'label' => 'Les éléments importés sans catégorie (en dehors de celles ajoutées manuellement ci-dessus) seront marqués comme "à modérer"', 
+                            'label_attr' => ['title' => "Sans prendre en compte les catégories ajoutés via le champs \"Catégories à ajouter à chaque élément importé\", si les éléments importés n'ont pas de catégories, ils seront marqués comme \"Modération aucune catégorie renseignée\""]])
+                        ->add('preventImportIfNoCategories', null, [
+                            'required' => false, 
+                            'label' => "Ne pas importer les éléments qui n'ont aucune catégories", 
+                            'label_attr' => ['title' => "Lorsqu'on veut importer seulement une partie des éléments d'une base de donnée, il peut être pratique de mapper uniquement les catégories que l'on veut importer. Mais tous les autres élément seront aussi importés mais sans catégories. En cochant cette option, uniquement les éléments avec une catégorie mappée seront importés"]])
                     ->end()
                 ->end();
             }

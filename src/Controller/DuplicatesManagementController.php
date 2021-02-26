@@ -7,10 +7,10 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use App\Controller\Admin\BulkActions\DuplicatesActionsController;
 use App\Document\ModerationState;
+use App\Services\ElementDuplicatesService;
 
-class DuplicatesController extends GoGoController
+class DuplicatesManagementController extends GoGoController
 {
     const DUPLICATE_BATH_SIZE = 15;
 
@@ -39,7 +39,7 @@ class DuplicatesController extends GoGoController
         ]);
     }
 
-    public function mergeDuplicateAction(Request $request, DuplicatesActionsController $duplicateService,
+    public function mergeDuplicateAction(Request $request, ElementDuplicatesService $duplicateService,
                                          DocumentManager $dm, ElementActionService $elementActionService)
     {
         if ($request->isXmlHttpRequest()) {
@@ -48,7 +48,7 @@ class DuplicatesController extends GoGoController
             }
             $element = $dm->get('Element')->find($request->get('elementId'));
             $duplicates = array_merge([$element], $element->getPotentialDuplicates()->toArray());
-            $duplicateService->automaticMerge($element, $element->getPotentialDuplicates(), $elementActionService);
+            $duplicateService->automaticMerge($element, $element->getPotentialDuplicates());
             foreach($duplicates as $duplicate) {
                 $duplicate->setIsDuplicateNode(false);
                 $duplicate->clearPotentialDuplicates();

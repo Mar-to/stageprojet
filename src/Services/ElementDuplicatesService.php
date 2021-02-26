@@ -1,49 +1,32 @@
 <?php
 
-namespace App\Controller\Admin\BulkActions;
+namespace App\Services;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use App\Services\ElementActionService;
 use App\Document\ElementStatus;
 use App\Document\ModerationState;
-use App\Services\ElementActionService;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
-class DuplicatesActionsController extends BulkActionsAbstractController
+class ElementDuplicatesService
 {
     // To know if an element have already been processed, we use the moderationstate : PotentialDuplicate
     // but as we are processing element in batch, during the same batch data is not persisted and so instead
     // we use this array or element Id that we exclude from the detection
     protected $duplicatesFound = [];
 
-    public function detectDuplicatesAction(Request $request, SessionInterface $session, DocumentManager $dm,
-                                           ElementActionService $elementActionService)
+    public function __construct(DocumentManager $dm, ElementActionService $elementActionService)
     {
-        $this->title = 'Détection des doublons';
-        $this->automaticRedirection = false;
-        $this->batchSize = 2000;
+        $this->dm = $dm;
         $this->elementActionService = $elementActionService;
-
-        if (!$request->get('batchFromStep')) {
-            // reset previous detections
-            $dm->query('Element')->updateMany()
-                ->field('isDuplicateNode')->unsetField()
-                ->field('potentialDuplicates')->unsetField()
-                ->execute();
-            $dm->query('Element')->updateMany()
-                ->field('moderationState')->equals(ModerationState::PotentialDuplicate)
-                ->field('moderationState')->set(ModerationState::NotNeeded)
-                ->execute();
-        }
-
-        return $this->elementsBulkAction('detectDuplicates', $dm, $request, $session);
     }
 
-    public function detectDuplicates($element, $dm)
+    public function detectDuplicatesFor($element)
     {       
         if ($element->getStatus() >= ElementStatus::PendingModification
-        && !in_array($element->getId(), $this->duplicatesFound)) {    
-            $duplicates = $dm->get('Element')->findDuplicatesFor($element, $this->duplicatesFound);
+        && !in_array($element->getId(), $this->duplicatesFound)
+        && !$element->isPotentialDuplicate()) {
+            dump("detect duplicate for {$element->getName()}");    
+            $duplicates = $this->dm->get('Element')->findDuplicatesFor($element, $this->duplicatesFound);
             if (count($duplicates) == 0) return null;
             
             // only keep two duplicates, so get easier to manage for the users (less complicated cases)
@@ -58,7 +41,7 @@ class DuplicatesActionsController extends BulkActionsAbstractController
             $duplicatesToProceed = [$element, $bestDuplicate];
             
             // Choose which duplicate to keep
-            $config = $dm->get('Configuration')->findConfiguration();
+            $config = $this->dm->get('Configuration')->findConfiguration();
             $sourcePriorities = $config->getDuplicates()->getSourcePriorityInAutomaticMerge();
             usort($duplicatesToProceed, function($a, $b) use ($sourcePriorities) {
                 $aPriority = array_search($a->getSourceKey(), $sourcePriorities);
@@ -90,13 +73,11 @@ class DuplicatesActionsController extends BulkActionsAbstractController
                 $elementToKeep->addPotentialDuplicate($duplicate);
                 $duplicate->setModerationState(ModerationState::PotentialDuplicate);
             }
-
-            return $this->render('admin/pages/bulks/bulk_duplicates.html.twig', [
-               'duplicates' => [$elementToKeep, $duplicate],
-               'config' => $config,
-               'automaticMerge' => $autoMerge,
-               'router' => $this->get('router')
-            ]);
+            return [
+                'automaticMerge' => $autoMerge,
+                'elementToKeep' => $elementToKeep,
+                'duplicate' => $duplicate
+            ];
         }
     }
 
@@ -106,9 +87,8 @@ class DuplicatesActionsController extends BulkActionsAbstractController
         return $duplicate->getScore() === null || slugify($duplicate->getName()) == slugify($element->getName());
     }
 
-    public function automaticMerge($merged, $duplicates, $elementActionService = null)
+    public function automaticMerge($merged, $duplicates)
     {
-        if ($elementActionService) $this->elementActionService = $elementActionService;
         $mergedData = $merged->getData();
         $mergedOptionIds = $merged->getOptionIds();
 
