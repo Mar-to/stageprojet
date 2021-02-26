@@ -13,6 +13,7 @@ use App\Document\Element;
 use App\Document\TileLayer;
 use App\Document\Import;
 use App\Document\ImportDynamic;
+use App\Document\ModerationState;
 use App\Document\Option;
 use App\Document\Webhook;
 use App\Services\AsyncService;
@@ -67,13 +68,17 @@ class DatabaseIntegrityWatcher
         } elseif ($document instanceof Element) {
             // remove dependance from nonDuplicates and potentialDuplicates
             $qb = $dm->query('Element');
-            $qb->addOr($qb->expr()->field('nonDuplicates.$id')->equals($document->getId()));
-            $qb->addOr($qb->expr()->field('potentialDuplicates.$id')->equals($document->getId()));
-            $dependantElements = $qb->execute();
+            $dependantElements = $qb
+                ->addOr($qb->expr()->field('nonDuplicates.$id')->equals($document->getId()))
+                ->addOr($qb->expr()->field('potentialDuplicates.$id')->equals($document->getId()))
+                ->execute();             
             foreach ($dependantElements as $element) {
                 $element->removeNonDuplicate($document);
                 $element->removePotentialDuplicate($document);
             }
+            foreach ($document->getPotentialDuplicates() as $element) {
+                $element->setModerationState(ModerationState::NotNeeded);
+            }                
 
             // remove depency for elements fields
             $elementsFields = [];

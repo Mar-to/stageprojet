@@ -1371,9 +1371,16 @@ class Element
         if (is_array($this->potentialDuplicates)) {
             $key = array_search($potentialDuplicate, $this->$this->potentialDuplicates);
             unset($this->potentialDuplicates[$key]);
+            $potDupsCount = count($this->potentialDuplicates);
         } else {
             $this->potentialDuplicates->removeElement($potentialDuplicate);
+            $potDupsCount = $this->potentialDuplicates->count();
         }
+        if ($potDupsCount == 0) {
+            $this->setIsDuplicateNode(false);
+            $this->setModerationState(ModerationState::NotNeeded);
+        }
+        return $this;
     }
 
     /**
