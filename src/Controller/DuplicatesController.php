@@ -52,12 +52,12 @@ class DuplicatesController extends GoGoController
             foreach($duplicates as $duplicate) {
                 $duplicate->setIsDuplicateNode(false);
                 $duplicate->clearPotentialDuplicates();
-                $elementActionService->resolveReports($duplicate, 'Fusioné', true);
+                $elementActionService->resolveReports($duplicate, 'Cet élément a été fusionné avec un doublon potentiel', true);
                 $duplicate->setModerationState(ModerationState::NotNeeded);
             }            
             $dm->flush();
             
-            return new Response('Les éléments ont bien été fusionés');
+            return new Response('Elements successfully merged');
         } else {
             return new Response('Not valid ajax request');
         }

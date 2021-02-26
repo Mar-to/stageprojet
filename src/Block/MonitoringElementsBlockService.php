@@ -44,7 +44,7 @@ class MonitoringElementsBlockService extends AbstractBlockService
     {
         $pendings = $this->dm->get('Element')->findPendings(true);
         $moderationNeeded = $this->dm->get('Element')->findModerationNeeded(true);
-        $validateElements = $this->dm->get('Element')->findValidated(true);
+        $duplicatesCount = $this->dm->query('Element')->field('isDuplicateNode')->equals(true)->getCount();
         $allVisibleElements = $this->dm->get('Element')->findVisibles(true, false);
         $visibleNonImportedElements = $this->dm->get('Element')->findVisibles(true, true);
         $activeUsersCount = $this->dm->query('User')->field('enabled')->equals(true)->count()->execute();
@@ -65,7 +65,7 @@ class MonitoringElementsBlockService extends AbstractBlockService
             'settings' => $settings,
             'pendingCount' => $pendings,
             'moderationNeededCount' => $moderationNeeded,
-            'validatesCount' => $validateElements,
+            'duplicatesCount' => $duplicatesCount,
             'allVisibleCount' => $allVisibleElements,
             'visibleNonImportedCount' => $visibleNonImportedElements,
             'activeUsersCount' => $activeUsersCount,

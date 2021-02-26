@@ -64,7 +64,7 @@ class ElementAdminFilters extends ElementAdminAbstract
                     if (!$value || !$value['value']) {
                         return;
                     }
-                    $queryBuilder->field('moderationState')->notIn([ModerationState::NotNeeded]);
+                    $queryBuilder->field('moderationState')->notIn([ModerationState::NotNeeded, ModerationState::PotentialDuplicate]);
                     $queryBuilder->field('status')->gte(ElementStatus::PendingModification);
 
                     return true;

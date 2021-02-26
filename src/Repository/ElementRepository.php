@@ -75,7 +75,6 @@ class ElementRepository extends DocumentRepository
             }
             if ($subQueriesCount > 0) $result2 = $qb->hydrate(false)->getArray();
         }
-        dump($result1, $result2);
         return $result1 + $result2; // + operator will make the array unique cause each key is an element id
     }
 
@@ -147,7 +146,7 @@ class ElementRepository extends DocumentRepository
         if (null != $moderationState) {
             $qb->field('moderationState')->equals($moderationState);
         } else {
-            $qb->field('moderationState')->notIn([ModerationState::NotNeeded]);
+            $qb->field('moderationState')->notIn([ModerationState::NotNeeded, ModerationState::PotentialDuplicate]);
         }
         $qb->field('status')->gte(ElementStatus::PendingModification);
 

@@ -177,7 +177,6 @@ class ElementAdminBulkController extends Controller
                 $this->dm->clear();
             }
         } catch (\Exception $e) {
-            dump($e);
             $this->addFlash('sonata_flash_error', 'Une erreur est survenue :'.$e->getMessage());
 
             return new RedirectResponse($this->admin->generateUrl('list', ['filter' => $this->admin->getFilterParameters()]));
