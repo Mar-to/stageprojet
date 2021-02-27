@@ -129,8 +129,9 @@ class ElementImportOneService
 
         $element->setOldId($row['id']);
         $element->setName($row['name']);
-        $address = new PostalAddress($row['streetAddress'], $row['addressLocality'], $row['postalCode'], $row['addressCountry'], $row['customFormatedAddress']);
-        $element->setAddress($address);
+        $oldFormatedAdress = $element->getFormatedAddress();
+        $newAddress = new PostalAddress($row['streetAddress'], $row['addressLocality'], $row['postalCode'], $row['addressCountry'], $row['customFormatedAddress']);
+        $element->setAddress($newAddress);
 
         $element->setSource($import);
         // Override sourceKey for standard import
@@ -145,10 +146,15 @@ class ElementImportOneService
         $lat = $row['latitude'];
         $lng = $row['longitude'];
         if (is_object($lat) || is_array($lat) || 0 == strlen($lat) || is_object($lng) || 0 == strlen($lng) || 'null' == $lat || null == $lat) {
-            $lat = 0;
-            $lng = 0;
-            if ($import->getGeocodeIfNecessary() && $address->getFormatedAddress() && strlen($address->getFormatedAddress()) > 0) {
-                $result = $this->geocoder->geocode($address->getFormatedAddress())->first()->getCoordinates();
+            $lat = 0; $lng = 0;  
+            $newFormatedAddress = $newAddress->getFormatedAddress();   
+            // Geocode if necessary  
+            if ($newFormatedAddress == $oldFormatedAdress) {
+                $lat = $element->getGeo()->getLatitude();
+                $lng = $element->getGeo()->getLongitude();
+            } 
+            if ($lat == 0 && $lng == 0 && $import->getGeocodeIfNecessary() && $newFormatedAddress && strlen($newFormatedAddress) > 0) {
+                $result = $this->geocoder->geocode($newFormatedAddress)->first()->getCoordinates();
                 $lat = $result->getLatitude();
                 $lng = $result->getLongitude();
             }
