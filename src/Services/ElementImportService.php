@@ -136,6 +136,7 @@ class ElementImportService
             // --------------
             // Prepare Import
             // --------------            
+            $startImportTimestamp = time();
             $previouslyImportedElementIds = [];
             $newlyImportedElementIds = [];
             $createdElementIds = []; // the element ids created during this import
@@ -263,12 +264,10 @@ class ElementImportService
             $automaticMergesCount = 0;
             $potentialDuplicatesCount = 0;
             if ($config->getDuplicates()->getDetectAfterImport() && $createdElementIds > 0) {
-                $elements = $this->dm->query('Element')->field('source')->references($import);
-                // If we have created a lot of elements, then run detection for the full set
-                // to avoid a big query like "elementId in [.., 30000 ids, ..]
-                if ($createdElementIds < 3000)
-                    $elements->field('id')->in($createdElementIds);
-                $elements = $elements->getCursor();
+                $elements = $this->dm->query('Element')
+                    ->field('source')->references($import)
+                    ->field('createdAt')->gt(new \MongoDate($startImportTimestamp))
+                    ->getCursor();
                 $i = 0; $size = $elements->count();
                 foreach($elements as $element) {
                     $import->setCurrMessage("Détection des doublons : $i/$size éléments traitées");
