@@ -514,7 +514,7 @@ class Configuration implements \JsonSerializable
     /** @PostLoad */
     public function postLoad()
     {
-        $this->duplicates->setFormFields($this->getElementFormFields());
+        $this->getDuplicates()->setFormFields($this->getElementFormFields());
     } 
 
     public function jsonSerialize()
