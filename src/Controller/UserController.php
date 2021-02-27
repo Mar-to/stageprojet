@@ -130,7 +130,7 @@ class UserController extends GoGoController
 
             if ($user->getLocation()) {
                 try {
-                    $geocoded = $geocoder->using('google_maps')->geocode($user->getLocation())
+                    $geocoded = $geocoder->using('mapbox')->geocode($user->getLocation())
                              ->first()->getCoordinates();
                     $user->setGeo(new Coordinates($geocoded->getLatitude(), $geocoded->getLongitude()));
                 } catch (\Exception $error) {

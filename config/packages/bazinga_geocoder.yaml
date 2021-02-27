@@ -12,13 +12,15 @@ bazinga_geocoder:
                 # httplug_client: '@httplug.client' # When using HTTPlugBundle
                 # region: 'Sweden'
                 api_key: 'AIzaSyBgah9u8A21CdN6O_fN80Op-4zcLJ0EwXk'
-        # mapbox:
-        #     locale: '%locale%'
-        #     factory: Bazinga\GeocoderBundle\ProviderFactory\MapboxFactory
-        #     options:
-        #         api_key: ''
-        # openstreetmap:
-        #     locale: '%locale%'
-        #     factory: Bazinga\GeocoderBundle\ProviderFactory\NominatimFactory
-        #     options:
-        #         root_url: ''
+        mapbox:
+            locale: '%locale%'
+            factory: Bazinga\GeocoderBundle\ProviderFactory\MapboxFactory
+            options:
+                # httplug_client: '@httplug.client' # When using HTTPlugBundle
+                # country: 'France'
+                api_key: 'pk.eyJ1IjoiZ29nb2NhcnRvIiwiYSI6ImNqYnhxeHUxZzJ3cG4zMnIyNmZiajF6dmwifQ.2G5IM4roIgpU_fvPBOpssw'
+        nominatim:
+            locale: '%locale%'
+            factory: Bazinga\GeocoderBundle\ProviderFactory\NominatimFactory
+            options:
+                root_url: 'https://nominatim.openstreetmap.org'

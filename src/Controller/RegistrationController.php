@@ -39,7 +39,7 @@ class RegistrationController extends FosController
         $this->tokenStorage = $tokenStorage;
         $this->mailer = $mailer;
         $this->dm = $dm;
-        $this->geocoder = $geocoder->using('google_maps');
+        $this->geocoder = $geocoder->using('nominatim');
     }
 
     /**

@@ -9,7 +9,6 @@ use App\Document\ElementImage;
 use App\Document\ElementStatus;
 use App\Document\ModerationState;
 use App\Document\OpenHours;
-use App\Document\Option;
 use App\Document\OptionValue;
 use App\Document\PostalAddress;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -32,7 +31,7 @@ class ElementImportOneService
                                 ElementPendingService $elementService)
     {
         $this->dm = $dm;
-        $this->geocoder = $geocoder->using('google_maps');
+        $this->geocoder = $geocoder->using('mapbox');
         $this->interactionService = $interactionService;
         $this->elementService = $elementService;
         $this->currentRow = [];
