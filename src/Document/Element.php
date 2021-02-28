@@ -1206,6 +1206,17 @@ class Element
         return $this->optionsString;
     }
 
+    // in the UI, a Category correspond to an Option in the code...
+    public function getCategoriesIds()
+    {
+        return $this->getOptionIds();
+    }
+
+    public function getCategoriesNames()
+    {
+        return explode(',', str_replace(' ', '', $this->optionsString));
+    }
+
     /**
      * Set randomHash.
      *

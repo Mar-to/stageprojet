@@ -142,6 +142,15 @@ class Import extends AbstractFile
     private $customCode = '<?php';
 
     /**
+     * Custom code made by the user to be run on each $element when exporting.
+     * This Is used in the cas of an OSM export for example, when we convert back
+     * The gogocarto data into an osm feature
+     *
+     * @MongoDB\Field(type="string")
+     */
+    private $customCodeForExport = '<?php';
+
+    /**
      * @var date
      *
      * @MongoDB\Field(type="date")
@@ -195,11 +204,15 @@ class Import extends AbstractFile
      */
     public function validate(ExecutionContextInterface $context)
     {
-        if (preg_match('/new |process|mongo|this|symfony|exec|passthru|shell_exec|system|proc_open|popen|curl_exec|curl_multi_exec|parse_ini_file|show_source|var_dump|print_r/i', $this->customCode)) {
-            $context->buildViolation("Il est interdit d'utiliser les mots suivants: new , process, mongo, this, symfony, exec, passthru, shell_exec, system, proc_open, popen, curl_exec, curl_multi_exec, parse_ini_file, show_source, var_dump, print_r... Merci de ne pas faire de betises !")
-                ->atPath('customCode')
-                ->addViolation();
+        $codeFields = ['customCode' => $this->customCode, 'customCodeForExport' => $this->customCodeForExport];
+        foreach($codeFields as $field => $value) {
+            if (preg_match('/new |process|mongo|this|symfony|exec|passthru|shell_exec|system|proc_open|popen|curl_exec|curl_multi_exec|parse_ini_file|show_source|var_dump|print_r/i', $value)) {
+                $context->buildViolation("Il est interdit d'utiliser les mots suivants: new , process, mongo, this, symfony, exec, passthru, shell_exec, system, proc_open, popen, curl_exec, curl_multi_exec, parse_ini_file, show_source, var_dump, print_r... Merci de ne pas faire de betises !")
+                    ->atPath($field)
+                    ->addViolation();
+            }
         }
+        
     }
 
     public function setSourceType($sourceType)
@@ -610,6 +623,30 @@ class Import extends AbstractFile
     public function getCustomCode()
     {
         return $this->customCode;
+    }
+
+    /**
+     * Set customCodeForExport.
+     *
+     * @param string $customCodeForExport
+     *
+     * @return $this
+     */
+    public function setCustomCodeForExport($customCodeForExport)
+    {
+        $this->customCodeForExport = $customCodeForExport;
+
+        return $this;
+    }
+
+    /**
+     * Get customCodeForExport.
+     *
+     * @return string $customCodeForExport
+     */
+    public function getCustomCodeForExport()
+    {
+        return $this->customCodeForExport;
     }
 
     /**

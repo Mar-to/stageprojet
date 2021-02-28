@@ -185,6 +185,41 @@ Transformer un attribut
                     ->end()
                 ->end();
             }
+
+            if ($this->getSubject()->isDynamicImport() && $this->getSubject()->getIsSynchronized()) {
+                // TAB - Custom Code For Export
+                $formMapper->tab("Convertir les données pour l'export")
+                    ->with("Entrez du code qui sera exécuté lors de l'export, avant leur envoi pour synchronisation", 
+                        ['description' => "La variable <b>\$element</b> représente l'élément dans GoGoCarto, la variable <b>\$osmFeature</b> représente la donnée OSM reconstruite à partir de l'élement GoGoCarto</br>
+<pre>Quelques examples de transformations simple:</pre>
+Si l'élement contient la catégorie \"Vrac\", on rajoute un tag OSM
+<pre>&lt;?php
+if (in_array('Vrac', \$element->getCategoriesNames())) {
+    \$osmFeature['tags']['bulk_purchase'] = 'yes';
+}</pre>
+Si l'élement contient la catégorie numéro 12, on rajoute un tag OSM
+Cette méthode est à préférer car si on change le nom de la catégorie le code fonctionnera toujours
+L'ID d'une catégorie est noté entre parenthèse après son nom dans Personnalisation / Catégories
+<pre>&lt;?php
+if (in_array(12, \$element->getCategoriesIds())) {
+    \$osmFeature['tags']['bulk_purchase'] = 'yes';
+}</pre>
+Si l'élement a une valeur spécifique pour un champ définit dans le formulaire
+<pre>&lt;?php
+if (\$element->getProperty('vrac') == 'oui') {
+    \$osmFeature['tags']['bulk_purchase'] = 'yes';
+}</pre>
+On ajoute un tag pour tous les éléments
+<pre>&lt;?php
+\$osmFeature['tags']['bulk_purchase'] = 'yes';
+</pre>"])
+                        ->add('customCodeForExport', null, [
+                            'label' => 'Code PHP qui sera exécuté', 
+                            'attr' => ['class' => 'gogo-code-editor', 'format' => 'php', 'height' => '500'], 
+                            'required' => false])
+                    ->end()
+                ->end();
+            }
         }
     }
 

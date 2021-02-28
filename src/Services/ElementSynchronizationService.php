@@ -185,6 +185,7 @@ class ElementSynchronizationService
      */
     public function elementToOsm(Element $element)
     {
+        if (!$element->isSynchedWithExternalDatabase()) return null;
         $osmFeature = [];
 
         // Get original mappings
@@ -249,6 +250,11 @@ class ElementSynchronizationService
                     $osmFeature['tags'][$condition->key] = $condition->value;
             }
         }
+        
+        // execute custom code
+        try {
+            eval(str_replace('<?php', '', $element->getSource()->getCustomCodeForExport()));
+        } catch (\Exception $e) {}
 
         return $osmFeature;
     }
