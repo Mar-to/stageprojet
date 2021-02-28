@@ -110,6 +110,7 @@ services:
 
     App\EventListener\DatabaseIntegrityWatcher:
       tags:
+          - { name: doctrine_mongodb.odm.event_listener, event: postPersist }
           - { name: doctrine_mongodb.odm.event_listener, event: preRemove }
           - { name: doctrine_mongodb.odm.event_listener, event: postRemove }
           - { name: doctrine_mongodb.odm.event_listener, event: preFlush }

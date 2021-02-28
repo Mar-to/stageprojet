@@ -17,6 +17,7 @@ use App\Document\ModerationState;
 use App\Document\Option;
 use App\Document\Webhook;
 use App\Services\AsyncService;
+use App\Services\DocumentManagerFactory;
 use Sonata\DoctrineMongoDBAdminBundle\Model\ModelManager;
 /* check database integrity : for example when removing an option, need to remove all references to this options */
 class DatabaseIntegrityWatcher
@@ -24,9 +25,10 @@ class DatabaseIntegrityWatcher
     protected $asyncService;
     protected $config;
 
-    public function __construct(AsyncService $asyncService)
+    public function __construct(AsyncService $asyncService, DocumentManagerFactory $dmFactory)
     {
         $this->asyncService = $asyncService;
+        $this->dmFactory = $dmFactory;
     }
 
     public function getConfig($dm)
@@ -35,6 +37,18 @@ class DatabaseIntegrityWatcher
             $this->config = $dm->get('Configuration')->findConfiguration();
         }
         return $this->config;
+    }
+
+    public function postPersist(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs): void
+    {
+        $document = $eventArgs->getDocument();
+        if ($document instanceof Webhook) {
+            $rootDm = $this->dmFactory->getRootManager();
+            $rootDm->query('Project')->updateOne()
+                ->field('domainName')->equals($this->dmFactory->getCurrentDbName())
+                ->field('haveWebhooks')->set(true)
+                ->execute();
+        }
     }
 
     // use post remove instead?
@@ -149,6 +163,13 @@ class DatabaseIntegrityWatcher
                     $elementIdsString = '"'.implode(',', $elementIds).'"';
                     $this->asyncService->callCommand('app:elements:updateJson', ['ids' => $elementIdsString]);
                 }
+            }
+            if (array_key_exists('isSynchronized', $changeset)) {
+                $rootDm = $this->dmFactory->getRootManager();
+                $rootDm->query('Project')->updateOne()
+                    ->field('domainName')->equals($this->dmFactory->getCurrentDbName())
+                    ->field('haveWebhooks')->set($document->getIsSynchronized())
+                    ->execute();
             }
         }
     }
