@@ -163,6 +163,7 @@ class ImportAdminController extends Controller
                                         if (!$parent) {
                                             $parent = new Category();
                                             $parent->setCustomId($fieldName);
+                                            $parent->setPickingOptionText("une catégorie");
                                             $parent->setName($fieldName);
                                             $createdParent[$fieldName] = $parent;
                                         }
