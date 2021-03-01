@@ -55,4 +55,30 @@ class CoreController extends GoGoController
     {
         return $this->render('admin/pages/help.html.twig');
     }
+
+    const ELEMENTS_PER_SITEMAP = 5000;
+
+    public function siteMapAction(DocumentManager $dm)
+    {
+        $elementsCount = $dm->get('Element')->findVisibles(true);
+        $elementsPagesCount = round($elementsCount / self::ELEMENTS_PER_SITEMAP);
+        return $this->render('sitemap/sitemap.xml.twig', [
+            'elementsPagesCount' => $elementsPagesCount
+        ]);
+    }
+
+    public function siteMapCoreAction(DocumentManager $dm)
+    {
+        $config = $dm->get('Configuration')->findConfiguration();
+        return $this->render('sitemap/sitemap_core.xml.twig', [
+            'config' => $config
+        ]);
+    }
+    public function siteMapElementsAction($skip, DocumentManager $dm)
+    {
+        $elements = $dm->get('Element')->findVisibles(false, false, self::ELEMENTS_PER_SITEMAP, $skip * self::ELEMENTS_PER_SITEMAP, true);
+        return $this->render('sitemap/sitemap_elements.xml.twig', [
+            'elements' => $elements
+        ]);
+    }
 }

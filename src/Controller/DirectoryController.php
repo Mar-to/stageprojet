@@ -8,9 +8,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 class DirectoryController extends GoGoController
 {
-    public function renderAction(Request $request, GoGoCartoJsService $gogoJsService)
+    public function renderAction(Request $request, GoGoCartoJsService $gogoJsService, $elementId = null)
     {
-        $gogoConfig = $gogoJsService->getConfig();
+        $gogoConfig = $gogoJsService->getConfig($elementId);
 
         return $this->render('directory/directory.html.twig', ['gogoConfig' => $gogoConfig]);
     }

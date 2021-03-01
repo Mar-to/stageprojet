@@ -19,7 +19,13 @@ class GoGoCartoJsService
         $this->session = $session;
     }
 
-    public function getConfig()
+    /**
+     * Undocumented function
+     *
+     * @param string $elementId Include this element in the config so it's loaded directly
+     * @return void
+     */
+    public function getConfig($elementId = null)
     {
         $taxonomyRep = $this->dm->get('Taxonomy');
         $elementsRep = $this->dm->get('Element');
@@ -187,10 +193,15 @@ class GoGoCartoJsService
             ],
             'data' => [
                 'taxonomy' => json_decode($taxonomyJson),
-                'elements' => $this->getAbsolutePath('gogo_api_elements_index'),
+                'elementsApiUrl' => $this->getAbsolutePath('gogo_api_elements_index'),
                 'requestByBounds' => true,
             ],
         ];
+
+        if ($elementId) {
+            $elementJson = $this->dm->get('Element')->find($elementId)->getJson();
+            $result['data']['elements'] = [json_decode($elementJson)];
+        }
 
         if ('transiscope' == $config->getTheme()) {
             $result['images'] = [

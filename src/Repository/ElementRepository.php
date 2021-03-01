@@ -158,7 +158,7 @@ class ElementRepository extends DocumentRepository
         return $qb->execute();
     }
 
-    public function findVisibles($getCount = false, $excludeImported = false, $limit = null, $skip = null)
+    public function findVisibles($getCount = false, $excludeImported = false, $limit = null, $skip = null, $forSeo = false)
     {
         $qb = $this->query('Element');
 
@@ -175,8 +175,11 @@ class ElementRepository extends DocumentRepository
         if ($getCount) {
             $qb->count();
         }
-
-        return $qb->execute();
+        if ($forSeo) {
+            return $qb->select('id', 'updatedAt')->getArray();
+        } else {
+            return $qb->execute();
+        }        
     }
 
     public function findAllPublics($getFullRepresentation, $isAdmin, $request = null)

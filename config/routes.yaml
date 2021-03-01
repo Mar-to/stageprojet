@@ -11,12 +11,28 @@ gogo_homepage_force:
     defaults:
         force: true
 
+gogo_sitemap:
+    path: /sitemap.{_format}
+    defaults: { _controller: App\Controller\CoreController::siteMapAction, _format: 'xml' }
+
+gogo_sitemap_core:
+    path: /sitemap_core.{_format}
+    defaults: { _controller: App\Controller\CoreController::siteMapCoreAction, _format: 'xml' }
+
+gogo_sitemap_elements:
+    path: /sitemap_elements_{skip}.{_format}
+    defaults: { _controller: App\Controller\CoreController::siteMapElementsAction, _format: 'xml' }
+
 gogo_directory:
     path:     /annuaire
-    defaults: { _controller: App\Controller\DirectoryController::renderAction }
+    defaults: { _controller: App\Controller\DirectoryController::renderAction, elementId: null }
 
 gogo_directory_showElement:
     path:     /annuaire#/fiche/element/{id}
+    defaults: { _controller: App\Controller\DirectoryController::renderAction }
+
+gogo_directory_show_element_for_sitemap:
+    path:     /map/{elementId}
     defaults: { _controller: App\Controller\DirectoryController::renderAction }
 
 gogo_app_shell:
