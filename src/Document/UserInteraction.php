@@ -198,11 +198,10 @@ class UserInteraction
 
     protected function formatDate($date)
     {
-        if (!$this->getCreatedAt()) {
+        if (!$date) {
             return '';
         }
-
-        return date_format($this->getCreatedAt(), 'd/m/Y à H:i');
+        return $date->format(\DateTime::ATOM);
     }
 
     // ------------------------ GETTER AND SETTERS ----------------------------

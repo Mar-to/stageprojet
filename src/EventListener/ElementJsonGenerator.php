@@ -79,9 +79,9 @@ class ElementJsonGenerator
         $baseJson = ltrim($baseJson, ','); // remove first ','
 
         // CREATED AT, UPDATED AT
-        $baseJson .= ',"createdAt":"'.date_format($element->getCreatedAt(), 'd/m/Y à H:i').'"';
+        $baseJson .= ',"createdAt":"'. $element->getCreatedAt()->format(\DateTime::ATOM) .'"';
         $updatedAt = $element->getUpdatedAt() ? $element->getUpdatedAt() : $element->getCreatedAt();
-        $updatedAtFormated = 'integer' == gettype($updatedAt) ? date('d/m/Y à H:i', $updatedAt) : date_format($updatedAt, 'd/m/Y à H:i');
+        $updatedAtFormated = 'integer' == gettype($updatedAt) ? date(\DateTime::ATOM, $updatedAt) : $updatedAt->format(\DateTime::ATOM);
         $baseJson .= ',"updatedAt":"'.$updatedAtFormated.'"';
 
         // STATUS
