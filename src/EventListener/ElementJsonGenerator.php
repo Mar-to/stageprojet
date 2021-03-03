@@ -170,8 +170,11 @@ class ElementJsonGenerator
         // [id, customData, latitude, longitude, status, moderationState]
         $compactFields = $config->getCompactFields();
         $compactData = [];
-        foreach ($compactFields as $field) {
-            $compactData[] = $element->getProperty($field);
+        foreach ($compactFields as $field => $type) {
+            $value = $element->getProperty($field);
+            if ($type == 'gogo_date' && count(explode('T', $value)) == 2)
+                $value = explode('T', $value)[0]; // remove the time part of iso dates (save space), cause we don't need it in gogocartoJs for the filter
+            $compactData[] = $value;
         }
 
         $compactJson = '["'.$element->id.'",'.json_encode($compactData).',';

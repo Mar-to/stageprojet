@@ -10,7 +10,7 @@
 <script>
   var formBuilder;
   var allFields = "{{ form.vars.attr.dataproperties|raw }}".split(',');
-  var fieldsChoices = {}
+  var fieldsChoices = { "": ""}
   for (var i = 0; i < allFields.length; i++) {
     fieldsChoices[allFields[i]] = allFields[i];
   }
@@ -40,6 +40,7 @@
         taxonomy: {},
         gogo_date: {
           field: fieldAttr,
+          fieldEnd: { label: "Champ pour la Date de fin (optionel)", options: fieldsChoices},
           contracted: contractedAttr,
           multiday: { label: "Plusieurs jours selectionnable", type: 'checkbox' },
           views: { label: "Hidden Views" },
@@ -132,5 +133,9 @@
 
   select[name=select_views] {
     height: 110px !important;
+  }
+
+  .cke { /* hide auto wysiwyg */
+    display: none !important;
   }
 </style>

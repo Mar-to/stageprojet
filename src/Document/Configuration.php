@@ -522,13 +522,25 @@ class Configuration implements \JsonSerializable
         return get_object_vars($this);
     }
 
+    /**
+     * List of the fields needed in the gogo compact API : all basic field
+     * for the marker to be rendered. I.e lat/lng, infos for filtering, and infos for the markerPopup
+     */
     public function getCompactFields()
     {
-        $compactFields = $this->getMarker()->getFieldsUsedByTemplate();
+        $compactFields = [];
         foreach ($this->getMenu()->getFilters() as $filter) {
-            if (isset($filter->field)) $compactFields[] = $filter->field;
+            if (isset($filter->field)) {
+                $compactFields[$filter->field] = $filter->type;
+            }
+            if (isset($filter->fieldEnd)) {
+                $compactFields[$filter->fieldEnd] = $filter->type;
+            }
         }
-        return array_unique($compactFields);
+        foreach($this->getMarker()->getFieldsUsedByTemplate() as $field) {
+            $compactFields[$field] = 'markerTemplate';
+        }
+        return $compactFields; 
     }
 
     /**

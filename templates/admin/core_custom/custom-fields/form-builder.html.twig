@@ -114,7 +114,9 @@
           separator: { label: '' }, // separate important attrs from others
         },
         date: {
-          icon: iconAttr
+          icon: iconAttr,
+          timepicker: { label: "Timepicker", type: 'checkbox'},
+          range: { label: "Intervale de dates", type: 'checkbox' },
         },
         elements: {
           icon: iconAttr,
@@ -241,7 +243,8 @@
   .title-field .name-wrap, .title-field .access-wrap, .title-field .required-wrap,
   .checkbox-field .field-options, .checkbox-field .required-wrap,
   .paragraph-field .subtype-wrap, .header-field .subtype-wrap,
-  .email-field .name-wrap, .image-field .name-wrap, .images-field .name-wrap, .images-field .placeholder-wrap, .images-field .value-wrap, .images-field .required-wrap, .files-field .name-wrap, .files-field .placeholder-wrap, .files-field .value-wrap, .files-field .required-wrap, .elements-field .value-wrap
+  .email-field .name-wrap, .image-field .name-wrap, .images-field .name-wrap, .images-field .placeholder-wrap, .images-field .value-wrap, .images-field .required-wrap, .files-field .name-wrap, .files-field .placeholder-wrap, .files-field .value-wrap, .files-field .required-wrap, .elements-field .value-wrap,
+  .date-field .value-wrap
   { display: none !important; }
 
   /* specific fields styling */
@@ -263,6 +266,8 @@
     border-top: 1px dashed grey;
     padding-top: 10px;
   }
+  .date-field .timepicker-wrap { order: 2 !important; }
+  .date-field .range-wrap { order: 2 !important; }
   .access-wrap { order: 110 !important; }
 
   /* Styling */
@@ -283,6 +288,13 @@
     content: attr(title);
     position: absolute;
     padding-left: 2rem;
+  }
+
+  .form-wrap.form-builder .frmb .form-elements label:first-child {
+    width: 35%;
+  }
+  .form-wrap.form-builder .frmb .form-elements .input-wrap {
+    width: 59%;
   }
 
   /* Make select2 looks like other inputs */
