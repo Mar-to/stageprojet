@@ -6,6 +6,7 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\AdminType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use App\Helper\GoGoHelper;
 
 class ConfigurationMenuAdmin extends ConfigurationAbstractAdmin
@@ -36,9 +37,9 @@ class ConfigurationMenuAdmin extends ConfigurationAbstractAdmin
                     ->add('menu.displayNumberOfElementForEachCategory', CheckboxType::class, ['label' => "Pour chaque catégorie, afficher le nombre d'élément ayant cette catégorie", 'required' => false])
                     ->add('menu.displayNumberOfElementRoundResults', CheckboxType::class, ['label' => 'Arrondir les résultat (afficher 300+ au lieu de 326)',  'label_attr' => ['title' => "Valable uniquement si \"afficher le nombre d'éléments par catégorie\" est coché"], 'required' => false])
                 ->end()
-                // ->with('Personnalisez les filtres dans le menu', ['description' => ""])
-                //     ->add('menu.filtersJson', HiddenType::class, ['attr' => ['class' => 'gogo-filters-builder', 'dataproperties' => $propertiesText]])
-                // ->end()
+                ->with('Personnalisez les filtres dans le menu', ['description' => ""])
+                    ->add('menu.filtersJson', HiddenType::class, ['attr' => ['class' => 'gogo-filters-builder', 'dataproperties' => $propertiesText]])
+                ->end()
             ->end()
             ->tab('Recherche')
                 ->with("Recherche d'un lieu", $featureStyle)
