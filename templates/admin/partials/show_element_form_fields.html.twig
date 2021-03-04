@@ -11,10 +11,12 @@
   'checkbox-group': 'tags',
   'radio-group': 'text',
   'select': 'text',
-  'date': 'text',
+  'date': 'date',
   'number': 'text',
   'title': 'text',
   'text': 'text',
+  'url': 'url',
+  'tel': 'tel',
   'textarea': 'textarea',
   'address': 'text',
   'openhours': 'openhours',
@@ -37,7 +39,7 @@
     {% if field.type in filterFromType|keys %}
       {% set gogoFilter = filterFromType[field.type] %}
       {% if field.type == 'text' %}{% set gogoFilter = field.subtype %}{% endif %}
-      {% if gogoFilter in ['text', 'email', 'textarea'] %}
+      {% if gogoFilter in ['text', 'email', 'textarea', 'date', 'tel', 'url'] %}
         {% set gogoFilter = gogoFilter ~ '(label = "' ~ field.label|striptags ~ '")' %}
       {% endif %}
       {% set gogoFilter = gogoFilter ? ('|gogo_' ~ gogoFilter) : '' %}

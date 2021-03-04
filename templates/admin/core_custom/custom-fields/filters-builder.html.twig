@@ -66,8 +66,8 @@
         //   locale: 'fr-FR',
         //   location: '{{ asset("assets/js/") }}'
         // },
-        disableFields: ['hidden', 'file', 'button', 'autocomplete', 'checkbox', 'header', 'paragraph', 'select', 'checkbox-group', 'radio-group', 'text', 'textarea', 'date', 'number'],
-        controlOrder: ['taxonomy'],
+        disableFields: ['hidden', 'file', 'button', 'autocomplete', 'checkbox', 'text', 'select', 'checkbox-group', 'radio-group', 'textarea', 'date', 'number'],
+        controlOrder: ['taxonomy', 'gogo_date', 'gogo_number', 'header', 'paragraph'],
         disabledAttrs: ['required', 'name', 'access', 'placeholder', 'value', 'className', 'inline', 'toggle', 'description', 'other', 'multiple'],
         formData: {{ filtersData|json_encode|raw }},
         roles: { 1: "Administrateur" },
@@ -133,9 +133,5 @@
 
   select[name=select_views] {
     height: 110px !important;
-  }
-
-  .cke { /* hide auto wysiwyg */
-    display: none !important;
   }
 </style>
