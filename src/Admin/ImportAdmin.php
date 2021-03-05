@@ -44,7 +44,11 @@ class ImportAdmin extends AbstractAdmin
         $isDynamic = $this->getSubject()->isDynamicImport();
         $title = $isDynamic ? "Import Dynamique, pour afficher des données gérées par quelqu'un d'autre" : 'Importer des données en dur, depuis un fichier CSV ou une API Json';
         $isPersisted = $this->getSubject()->getId();
-        
+        $moderateElementconfig = [
+            'required' => false, 
+            'label' => 'Modérer les éléments importés',
+            'label_attr' => ['title' => 'Les éléments importés auront le status "en attente de validation" et devront être manuellement validés. Idem pour des mise à jour d\'éléments existant (modification)']];
+
         $usersQuery = $dm->query('User');
         $usersQuery->addOr($usersQuery->expr()->field('roles')->exists(true))
                    ->addOr($usersQuery->expr()->field('groups')->exists(true));
@@ -80,10 +84,7 @@ class ImportAdmin extends AbstractAdmin
                         'label_attr' => ['title' => "Chaque modification sera envoyée à OpenStreetMap"],
                         'label' => "Autoriser l'édition des données" . ($this->config->getOsm()->isConfigured() ? '' : ' (Vous devez préalablement renseigner des identifiants dans Autre configuration -> OpenStreetMap)')
                     ])
-                    ->add('moderateElements', null, [
-                        'required' => false, 
-                        'label' => 'Modérer les éléments importés',
-                        'label_attr' => ['title' => 'Les éléments importés auront le status "en attente de validation" et devront être manuellement validés. Idem pour des mise à jour d\'éléments existant (modification)']])
+                    ->add('moderateElements', null, $moderateElementconfig)
                     ->add('idsToIgnore', TextType::class, ['mapped' => false, 'required' => false, 
                         'attr' => ['class' => 'gogo-display-array', 
                         'value' => $this->getSubject()->getIdsToIgnore()], 
@@ -91,7 +92,8 @@ class ImportAdmin extends AbstractAdmin
                         'label_attr' => ['title' => "Pour ignorer un élément, supprimer le (définitivement) et il ne sera plus jamais importé. Si vous supprimez un élément dynamiquement importé juste en changeant son status (soft delete), l'élément sera quand meme importé mais conservera son status supprimé. Vous pourrez donc à tout moment restaurer cet élement pour le voir apparaitre de nouveau"]]);
         } else {
             $formMapper                    
-                    ->add('url', UrlType::class, ['label' => 'Ou URL vers un API Json', 'required' => false]);
+                    ->add('url', UrlType::class, ['label' => 'Ou URL vers un API Json', 'required' => false])
+                    ->add('moderateElements', null, $moderateElementconfig);
         }
         $formMapper->end();                
         if ($isPersisted) {
