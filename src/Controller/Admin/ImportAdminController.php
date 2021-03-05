@@ -100,6 +100,12 @@ class ImportAdminController extends Controller
         if (!$object) {
             throw $this->createNotFoundException(sprintf('unable to find the object with id : %s', $id));
         }
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+        $config = $dm->get('Configuration')->findConfiguration();
+        if ($config->getDuplicates()->getDetectAfterImport() && 
+            $config->getDuplicates()->getAutomaticMergeIfPerfectMatch())
+            $object->warnUserThatDuplicatesWillBeDetectedAndAutoMerged = true;
+
         $this->admin->checkAccess('edit', $object);
         $this->admin->setSubject($object);
 
@@ -118,14 +124,13 @@ class ImportAdminController extends Controller
 
             // persist if the form was valid and if in preview mode the preview was approved
             if ($isFormValid) {
-                try {
-                    $dm = $this->container->get('doctrine_mongodb')->getManager();
+                try {                    
                     $object->setSourceType($request->get('sourceType'));
                     
                     $ontology = $request->get('ontology');
                     // Fix ontology mapping for elements fields with reverse value      
-                    if ($ontology) {                                          
-                        $config = $dm->get('Configuration')->findConfiguration();
+                    if ($ontology) {                                         
+                        
                         foreach($config->getElementFormFields() as $field) {
                             if ($field->type === 'elements'
                                && in_array($field->name, array_values($ontology))

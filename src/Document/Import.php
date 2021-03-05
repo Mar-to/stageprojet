@@ -174,6 +174,8 @@ class Import extends AbstractFile
      */
     private $moderateElements = false;
 
+    public $warnUserThatDuplicatesWillBeDetectedAndAutoMerged = false;
+
     public function __construct()
     {
         $this->logs = new \Doctrine\Common\Collections\ArrayCollection();
