@@ -69,7 +69,7 @@ class ConfigurationInfoBarAdmin extends ConfigurationAbstractAdmin
 
                         <h4>gogo_date</h4>
                         <li>Formater une date {{ event_date | date }} ou {{ event_date | gogo_date(label='Date') }}</li>
-                        <li>Ou si vous voulez utiliser un format particulier {{ event_date|date('DD/MM/YYYY') }} ou {{ event_date | gogo_date(label='Date', format='DD/MM/YYYY') }}</li>
+                        <li>Ou si vous voulez utiliser un format particulier {{ event_date|date('DD/MM/YYYY') }} ou {{ event_date | gogo_date(label='Date', format='DD/MM/YYYY') }}. <a href='https://momentjs.com/docs/#/displaying/format/'>Voir les choix possibles</a></li>
                         
                         <h4>gogo_tags</h4>
                         Affiche un tableau sous forme de tags {{ ['Service', 'Blanc'] | gogo_tags }}
