@@ -144,20 +144,23 @@ class ElementImportOneService
 
         $lat = $row['latitude'];
         $lng = $row['longitude'];
-        if (is_object($lat) || is_array($lat) || 0 == strlen($lat) || is_object($lng) || 0 == strlen($lng) || 'null' == $lat || null == $lat) {
-            $lat = 0; $lng = 0;  
-            $newFormatedAddress = $newAddress->getFormatedAddress();   
-            // Geocode if necessary  
-            if ($newFormatedAddress == $oldFormatedAdress) {
-                $lat = $element->getGeo()->getLatitude();
-                $lng = $element->getGeo()->getLongitude();
-            } 
-            if ($lat == 0 && $lng == 0 && $import->getGeocodeIfNecessary() && $newFormatedAddress && strlen($newFormatedAddress) > 0) {
-                $result = $this->geocoder->geocode($newFormatedAddress)->first()->getCoordinates();
-                $lat = $result->getLatitude();
-                $lng = $result->getLongitude();
+        try {
+            if (is_object($lat) || is_array($lat) || 0 == strlen($lat) || is_object($lng) || 0 == strlen($lng) || 'null' == $lat || null == $lat) {
+                $lat = 0; $lng = 0;  
+                $newFormatedAddress = $newAddress->getFormatedAddress();   
+                // Geocode if necessary  
+                if ($newFormatedAddress == $oldFormatedAdress) {
+                    $lat = $element->getGeo()->getLatitude();
+                    $lng = $element->getGeo()->getLongitude();
+                } 
+                if ($lat == 0 && $lng == 0 && $import->getGeocodeIfNecessary() && $newFormatedAddress && strlen($newFormatedAddress) > 0) {
+                    $result = $this->geocoder->geocode($newFormatedAddress)->first()->getCoordinates();
+                    $lat = $result->getLatitude();
+                    $lng = $result->getLongitude();
+                }
             }
-        }
+        } catch (\Exception $e) {}
+        
         if (0 == $lat || 0 == $lng) {
             $element->setModerationState(ModerationState::GeolocError);
         }
