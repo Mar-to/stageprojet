@@ -124,7 +124,6 @@ class UserAdmin extends AbstractAdmin
                     return true;
                 }, ])
             ->add('email')
-            ->add('groups')
         ;
     }
 
