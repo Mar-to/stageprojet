@@ -42,7 +42,7 @@
 {% endblock %}
 
 {% block page_javascripts %}
-  <script src="{{ asset('js/external-pages.js') }}"></script>
+  <script src="{{ asset('js/external-pages.js?ver=' ~ version) }}"></script>
   <script>
     var apiMerge = "{{ path('gogo_merge_element') }}";
     var apiMarkAsNonDuplicate = "{{ path('gogo_mark_as_non_duplicate') }}";
