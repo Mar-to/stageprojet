@@ -34,13 +34,19 @@ class ConfigurationDuplicatesAdmin extends ConfigurationAbstractAdmin
             $propsChoices[$value] = $value;
         }
 
-        $sourceList = $dm->query('Element')->distinct('sourceKey')->execute();
-        // Adds missing source to the priority list
+        $sourceList = $dm->query('Element')->distinct('sourceKey')->getArray();
+        $sourceList = array_merge($sourceList, $dm->query('Import')->distinct('sourceName')->getArray());
+        // Remove no more used sources
         $priorityList = $this->getSubject()->getDuplicates()->getSourcePriorityInAutomaticMerge();
-        foreach($sourceList as $source) {
-            if (!in_array($source, $priorityList)) $priorityList[] = $source;
+        $newPriorityList = [];
+        foreach($priorityList as $source) {
+            if (in_array($source, $sourceList)) $newPriorityList[] = $source;
         }
-        $this->getSubject()->getDuplicates()->setSourcePriorityInAutomaticMerge($priorityList);
+        // Adds new source to the end
+        foreach($sourceList as $source) {
+            if (!in_array($source, $newPriorityList)) $newPriorityList[] = $source;
+        }
+        $this->getSubject()->getDuplicates()->setSourcePriorityInAutomaticMerge($newPriorityList);
         $searchFields = implode(', ', $this->getSubject()->getDuplicates()->getFieldsInvolvedInGlobalSearch());
         $formMapper
             ->with('Configuration')
