@@ -58,6 +58,7 @@ class ElementJsonGenerator
             return;
         }
         $config = $this->getConfig($this->dm);
+        if (!$config) return;
         $options = $this->getOptions($this->dm);
         $privateProps = $config->getApi()->getPublicApiPrivateProperties();
 
