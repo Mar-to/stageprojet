@@ -24,23 +24,24 @@ sonata_admin:
             - { position: top, class: col-md-12, type: gogo.block.service.monitoring}
             - { position: top, class: col-md-12, type: gogo.block.service.charts}
         groups:
-            Contenus:
+            contents:
+                label: menu.contents
                 icon: <i class='fa fa-file-text'></i>
             data:
-                label: "Données / Import"
+                label: menu.data
                 icon: <i class='fa fa-database'></i>
             custom:
-                label: Personnalisation
+                label: menu.custom
                 icon: <i class='fa fa-paint-brush'></i>
             emailing:
-                label: Mails / Newsletter
+                label: menu.emailing
                 icon: <i class='fa fa-envelope'></i>
             other_config:
-                label: Autre Configuration
+                label: menu.other_config
                 icon: <i class='fa fa-cogs'></i>
             sonata_user:
-                label: Utilisateurs
+                label: menu.users
                 icon: <i class='fa fa-users'></i>
             saas:
-                label: Ferme de Carto
+                label: menu.saas
                 icon: <i class='fa fa-cogs saas-menu'></i>

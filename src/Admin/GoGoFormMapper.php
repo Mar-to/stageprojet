@@ -13,123 +13,98 @@ class GoGoFormMapper extends FormMapper
     // Adds it to the config
     public function add($name, $type = null, array $options = [], array $fieldDescriptionOptions = [])
     {
-        if (!$this->shouldApply()) {
-            return $this;
+        if (!isset($options['required'])) {
+            $options['required'] = false;
         }
-
-        if ($name instanceof FormBuilderInterface) {
-            $fieldName = $name->getName();
-        } else {
-            $fieldName = $name;
+        
+        if (!isset($options['label'])) {
+            $options['label'] = $this->admin->getLabelTranslatorStrategy()->getLabel($name, 'form', 'label');
         }
-
-        // "Dot" notation is not allowed as form name, but can be used as property path to access nested data.
-        if (!$name instanceof FormBuilderInterface && !isset($options['property_path'])) {
-            $options['property_path'] = $fieldName;
-
-            // fix the form name
-            $fieldName = $this->sanitizeFieldName($fieldName);
-        }
-
-        // change `collection` to `sonata_type_native_collection` form type to
-        // avoid BC break problems
-        if ('collection' === $type || SymfonyCollectionType::class === $type) {
-            $type = CollectionType::class;
-        }
-
-        $label = $fieldName;
-
-        $group = $this->addFieldToCurrentGroup($label);
-
         if (isset($options['label_trans_params'])) {
-            $fieldDescriptionOptions['label_translation_parameters'] = $options['label_trans_params'];
+            $options['label'] = $this->admin->t($options['label'], $options['label_trans_params'] ?? []); 
+            unset($options['label_trans_params']);
         }
 
-        // Try to autodetect type
-        if ($name instanceof FormBuilderInterface && null === $type) {
-            $fieldDescriptionOptions['type'] = \get_class($name->getType()->getInnerType());
+        // Handles shortcuts like "_help"
+        foreach(['help', 'hint', 'placeholder'] as $key) {
+            $labelKey = $this->admin->getLabelTranslatorStrategy()->getLabel($name, 'form', $key);
+            if ($this->admin->t_exists($labelKey)) {
+                $options[$key] = $this->admin->t($labelKey, $options["{$key}_trans_params"] ?? []); 
+                unset($options["{$key}_trans_params"]);
+            }  
         }
 
-        if (!isset($fieldDescriptionOptions['type']) && \is_string($type)) {
-            $fieldDescriptionOptions['type'] = $type;
+        if (isset($options['placeholder']) && $type !== ModelType::class) {
+            $options['attr']['placeholder'] = $options['placeholder'];
+            unset($options['placeholder']);
         }
 
-        if ($group['translation_domain'] && !isset($fieldDescriptionOptions['translation_domain'])) {
-            $fieldDescriptionOptions['translation_domain'] = $group['translation_domain'];
+        if (isset($options['help'])) {
+            $options['label_attr']['title'] = $options['help'];
+            unset($options['help']);
+        }               
+        if (isset($options['hint'])) {
+            $options['help'] = $options['hint'];
+            unset($options['hint']);                
         }
 
-        $fieldDescription = $this->admin->getModelManager()->getNewFieldDescriptionInstance(
-            $this->admin->getClass(),
-            $name instanceof FormBuilderInterface ? $name->getName() : $name,
-            $fieldDescriptionOptions
-        );
-
-        // Note that the builder var is actually the formContractor:
-        $this->builder->fixFieldDescription($this->admin, $fieldDescription, $fieldDescriptionOptions);
-
-        if ($fieldName !== $name) {
-            $fieldDescription->setName($fieldName);
-        }
-
-        $this->admin->addFormFieldDescription($fieldName, $fieldDescription);
-
-        if ($name instanceof FormBuilderInterface) {
-            $type = null;
-            $options = [];
-        } else {
-            $name = $fieldDescription->getName();
-
-            // -----------------------------------
-            // GoGo Custom Code
-
-            // Note that the builder var is actually the formContractor:
-            $defaultOptions = $this->builder->getDefaultOptions($type, $fieldDescription) ?? [];
-            $defaultOptions['required'] = false;
-            $options = array_replace_recursive($defaultOptions, $options);
-
-            // be compatible with mopa if not installed, avoid generating an exception for invalid option
-            // force the default to false ...
-            if (!isset($options['label_render'])) {
-                $options['label_render'] = false;
-            }      
-
-            if (!isset($options['label'])) {
-                $options['label'] = $this->admin->getLabelTranslatorStrategy()->getLabel($name, 'form', 'label');
-            }
-            if (isset($options['label_trans_params'])) {
-                $options['label'] = $this->admin->t($options['label'], $options['label_trans_params'] ?? []); 
-                unset($options['label_trans_params']);
-            }
-
-            // Handles shortcuts like "auto_help" or "placeholder_trans_params"
-            foreach(['help', 'hint', 'placeholder'] as $key) {
-                if (isset($options["auto_$key"]) || isset($options["{$key}_trans_params"])) {
-                    $helpKey = $this->admin->getLabelTranslatorStrategy()->getLabel($name, 'form', 'help');
-                    $options[$key] = $this->admin->t($helpKey, $options["{$key}_trans_params"] ?? []); 
-                    unset($options["auto_$key"]);
-                    unset($options["{$key}_trans_params"]);
-                }  
-            } 
-
-            if (isset($options['help'])) {
-                $options['label_attr']['title'] = $options['help'];
-                unset($options['help']);
-            }               
-            if (isset($options['hint'])) {
-                if ($options['hint'] != null) $this->admin->getFormFieldDescription($name)->setHelp($options['hint']);
-                unset($options['hint']);                
-            }
-
-            // End of GoGo Custom Code
-            // ---------------------------------
-        }
-
-        if (!isset($fieldDescriptionOptions['role']) || $this->admin->isGranted($fieldDescriptionOptions['role'])) {
-            $this->formBuilder->add($name, $type, $options);
-        }
-
-        return $this;
+        return parent::add($name, $type, $options, $fieldDescriptionOptions);
     }
 
+    // Override to add custom translation
+    public function with($name, array $options = [])
+    {
+        // Handles shortcuts like "_help"
+        foreach(['description'] as $key) {
+            $labelKey = $this->admin->getLabelTranslatorStrategy()->getLabel($name, 'form.groups', $key);
+            if ($this->admin->t_exists($labelKey)) {
+                $options[$key] = $this->admin->t($labelKey, $options["{$key}_trans_params"] ?? []); 
+                unset($options["{$key}_trans_params"]);
+            }  
+        }
 
+        if ($name != 'default') {
+            if ($this->admin->t_exists($name))
+                $name = $this->admin->t($name, $options["label_trans_params"] ?? []);
+            else
+                $name = $this->admin->t_label($name, 'form.groups', '', $options["label_trans_params"] ?? []);
+        }
+        return parent::with($name, $options);        
+    }
+
+    // Adds some shortcuts
+    public function panel($name, array $options = [])
+    {
+        return $this->with($name, $options);
+    }
+
+    public function panelDefault($name, array $options = [])
+    {
+        $options['box_class'] = 'box box-default';
+        return $this->with($name, $options);
+    }
+
+    public function panelDanger($name, array $options = [])
+    {
+        $options['box_class'] = 'box box-danger';
+        return $this->with($name, $options);
+    }
+
+    public function halfPanel($name, array $options = [])
+    {
+        $options['class'] = ($options['class'] ?? '') . ' col-md-6';
+        return $this->with($name, $options);
+    }
+
+    public function halfPanelDefault($name, array $options = [])
+    {
+        $options['class'] = ($options['class'] ?? '') . ' col-md-6';
+        return $this->panelDefault($name, $options);
+    }
+
+    public function halfPanelDanger($name, array $options = [])
+    {
+        $options['class'] = ($options['class'] ?? '') . ' col-md-6';
+        return $this->panelDanger($name, $options);
+    }
 }

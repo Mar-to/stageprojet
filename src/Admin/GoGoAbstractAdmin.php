@@ -22,11 +22,22 @@ class GoGoAbstractAdmin extends SonataAbstractAdmin
         $this->gogoTranslator = $translator;
     }
 
+    public function t_exists($id, $domain = null)
+    {
+        return $this->t($id, [], $domain) != $id;
+    }
+
     public function t($id, array $parameters = [], $domain = null, $locale = null)
     {
         $domain = $domain ?: $this->getTranslationDomain();
 
         return $this->gogoTranslator->trans($id, $parameters, $domain, $locale);
+    }
+
+    public function t_label($label, $context = '', $type = '', $parameters = [], $domain = null, $locale = null)
+    {
+        $label = $this->getLabelTranslatorStrategy()->getLabel($label, $context, $type);
+        return $this->t($label, $parameters, $domain, $locale);
     }
 
     // Overide to use GoGoFormMapper
@@ -45,7 +56,7 @@ class GoGoAbstractAdmin extends SonataAbstractAdmin
     // overide to use GoGoLabelStrategy
     public function setLabelTranslatorStrategy(LabelTranslatorStrategyInterface $labelTranslatorStrategy)
     {
-        $this->labelTranslatorStrategy = new GoGoLabelStrategy($this->code);
+        $this->labelTranslatorStrategy = new GoGoLabelStrategy($this->code, $this);
     }
 
     
