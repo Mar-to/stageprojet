@@ -50,6 +50,8 @@ class MigrationCommand extends Command
       'app:elements:updateJson all',
       // v3.2.0
       'app:elements:updateJson all',
+      // v3.2.5
+      'app:elements:updateJson all',
     ];
 
     public static $messages = [
