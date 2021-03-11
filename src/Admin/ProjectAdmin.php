@@ -2,13 +2,12 @@
 
 namespace App\Admin;
 
-use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
-class ProjectAdmin extends AbstractAdmin
+class ProjectAdmin extends GoGoAbstractAdmin
 {
     protected $datagridValues = [
         '_page' => 1,

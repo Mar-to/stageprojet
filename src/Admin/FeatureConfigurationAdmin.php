@@ -8,11 +8,10 @@
 
 namespace App\Admin;
 
-use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Form\FormMapper;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
-class FeatureConfigurationAdmin extends AbstractAdmin
+class FeatureConfigurationAdmin extends GoGoAbstractAdmin
 {
     protected function configureFormFields(FormMapper $formMapper)
     {

@@ -12,7 +12,6 @@
 namespace App\Admin;
 
 use FOS\UserBundle\Model\UserManagerInterface;
-use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
@@ -22,7 +21,7 @@ use Sonata\UserBundle\Form\Type\SecurityRolesType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 
-class UserAdmin extends AbstractAdmin
+class UserAdmin extends GoGoAbstractAdmin
 {
     /**
      * @var UserManagerInterface

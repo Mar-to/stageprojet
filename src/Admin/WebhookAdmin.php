@@ -3,14 +3,13 @@
 namespace App\Admin;
 
 use App\Document\WebhookFormat;
-use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 
-class WebhookAdmin extends AbstractAdmin
+class WebhookAdmin extends GoGoAbstractAdmin
 {
     protected $datagridValues = [
         '_page' => 1,

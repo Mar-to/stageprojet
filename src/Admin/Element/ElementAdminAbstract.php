@@ -8,10 +8,10 @@
 
 namespace App\Admin\Element;
 
-use Sonata\AdminBundle\Admin\AbstractAdmin;
 use App\Helper\GoGoHelper;
+use App\Admin\GoGoAbstractAdmin;
 
-class ElementAdminAbstract extends AbstractAdmin
+class ElementAdminAbstract extends GoGoAbstractAdmin
 {
     protected $statusChoices = [
       '' => 'Inconnu',

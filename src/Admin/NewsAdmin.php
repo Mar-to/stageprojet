@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Admin;
 
 use App\Enum\NewsStatus;
-use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
@@ -15,7 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
-final class NewsAdmin extends AbstractAdmin
+final class NewsAdmin extends GoGoAbstractAdmin
 {
     protected function configureFormFields(FormMapper $form): void
     {

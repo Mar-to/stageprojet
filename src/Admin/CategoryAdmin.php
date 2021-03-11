@@ -8,7 +8,6 @@
 
 namespace App\Admin;
 
-use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\CollectionType;
@@ -18,7 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use App\Form\OptionLiteType;
 use App\Helper\GoGoHelper;
 
-class CategoryAdmin extends AbstractAdmin
+class CategoryAdmin extends GoGoAbstractAdmin
 {
     protected $baseRouteName = 'admin_app_category';
     protected $baseRoutePattern = 'admin_app_category';

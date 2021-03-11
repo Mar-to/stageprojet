@@ -8,14 +8,13 @@
 
 namespace App\Admin;
 
-use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\FormatterBundle\Form\Type\SimpleFormatterType;
 
-class AboutAdmin extends AbstractAdmin
+class AboutAdmin extends GoGoAbstractAdmin
 {
     protected $datagridValues = [
         '_page' => 1,

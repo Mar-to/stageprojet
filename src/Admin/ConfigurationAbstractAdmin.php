@@ -2,9 +2,7 @@
 
 namespace App\Admin;
 
-use Sonata\AdminBundle\Admin\AbstractAdmin;
-
-class ConfigurationAbstractAdmin extends AbstractAdmin
+class ConfigurationAbstractAdmin extends GoGoAbstractAdmin
 {
     public function getTemplate($name)
     {

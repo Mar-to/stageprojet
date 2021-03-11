@@ -8,11 +8,10 @@
 
 namespace App\Admin;
 
-use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\FormatterBundle\Form\Type\SimpleFormatterType;
 
-class AutomatedMailConfigurationAdmin extends AbstractAdmin
+class AutomatedMailConfigurationAdmin extends GoGoAbstractAdmin
 {
     protected function configureFormFields(FormMapper $formMapper)
     {
