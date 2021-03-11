@@ -42,7 +42,7 @@
 
   body, html { background-color: {{ background }}; color: {{ text }}; font-family: {{ config.mainFont }}; }
 
-  .gogo-load-css h1, .gogo-load-css h2 { font-family: {{ config.titleFont }}; }
+  .gogo-load-css h1:not(.element-title), .gogo-load-css h2 { font-family: {{ config.titleFont }}; }
 
   #page-content.with-section section { background-color: {{ contentBgd }}; }
 
