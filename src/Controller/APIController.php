@@ -207,13 +207,13 @@ class APIController extends GoGoController
     public function getGoGoCartoJsConfigurationAction(DocumentManager $dm, GoGoCartoJsService $gogoJsService)
     {
         $config = $dm->get('Configuration')->findConfiguration();
-
+        $gogoJsService->setUrlType(UrlGeneratorInterface::ABSOLUTE_URL);
         $gogocartoConf = $gogoJsService->getConfig();
 
         return $this->createResponse(json_encode($gogocartoConf), $config);
     }
 
-    public function apiUiAction(SessionInterface $session, DocumentManager $dm)
+    public function apiUiAction(DocumentManager $dm)
     {
         $config = $dm->get('Configuration')->findConfiguration();
         $options = $dm->get('Option')->findAll();

@@ -17,6 +17,12 @@ class GoGoCartoJsService
         $this->securityContext = $securityContext;
         $this->router = $router;
         $this->session = $session;
+        $this->urlType = UrlGeneratorInterface::ABSOLUTE_PATH;
+    }
+
+    public function setUrlType($type) {
+        $this->urlType = $type;
+        return $this;
     }
 
     /**
@@ -240,6 +246,6 @@ class GoGoCartoJsService
 
     private function getAbsolutePath($route, $params = [])
     {
-        return $this->router->generate($route, $params, UrlGeneratorInterface::ABSOLUTE_URL);
+        return $this->router->generate($route, $params, $this->urlType);
     }
 }
