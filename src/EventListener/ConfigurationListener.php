@@ -8,17 +8,27 @@ use App\Document\Configuration\ConfigurationMarker;
 use App\Document\Configuration\ConfigurationMenu;
 use App\Services\AsyncService;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 class ConfigurationListener
 {
     protected $asyncService;
 
-    public function __construct(AsyncService $asyncService, $baseUrl, $contactEmail, $projectDir)
+    public function __construct(AsyncService $asyncService, DocumentManager $dm, $baseUrl, $contactEmail, $projectDir)
     {
         $this->asyncService = $asyncService;
         $this->baseUrl = $baseUrl;
         $this->contactEmail = $contactEmail;
         $this->projectDir = $projectDir;
+        $this->dm = $dm;
+    }
+
+    public function onKernelRequest(RequestEvent $event)
+    {
+        $request = $event->getRequest();
+        // some logic to determine the $locale
+        $request->setLocale($this->dm->get('Configuration')->findConfiguration()->getLocale());
     }
 
     public function preUpdate(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $args)

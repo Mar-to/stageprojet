@@ -95,7 +95,7 @@ services:
         $projectDir: '%kernel.project_dir%'
       tags:
           - { name: doctrine_mongodb.odm.event_listener, event: preUpdate }
-
+          - { name: kernel.event_listener, event: kernel.request, priority: 200 }
     App\EventListener\ElementJsonGenerator:
       tags:
           - { name: doctrine_mongodb.odm.event_listener, event: preFlush }

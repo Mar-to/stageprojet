@@ -38,6 +38,9 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\Field(type="string") */
     protected $customDomain = null;
 
+    /** @MongoDB\Field(type="string") */
+    protected $locale = "fr";
+
     // ----------------------------
     // --------- BASICS -----------
     // ----------------------------
@@ -3582,6 +3585,26 @@ class Configuration implements \JsonSerializable
     public function setDuplicates($duplicates)
     {
         $this->duplicates = $duplicates;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of locale
+     */ 
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
+    /**
+     * Set the value of locale
+     *
+     * @return  self
+     */ 
+    public function setLocale($locale)
+    {
+        $this->locale = $locale;
 
         return $this;
     }

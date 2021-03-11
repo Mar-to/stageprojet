@@ -74,7 +74,7 @@ class GoGoCartoJsService
                 'userEmail' => $userEmail,
                 'loginAction' => '$("#popup-login").openModal();',
             ],
-            'language' => 'fr',
+            'language' => $config->getLocale(),
             'translations' => [
                 'element' => $config->getElementDisplayName(),
                 'element.definite' => $config->getElementDisplayNameDefinite(),
