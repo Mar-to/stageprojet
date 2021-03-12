@@ -80,18 +80,19 @@ class ElementSourceIterator implements SourceIteratorInterface
     public function current()
     {
         $element = $this->iterator->current();
-
         $data = [];
-        foreach ($this->propertyPaths as $name => $propertyPath) {
-            if (strpos($propertyPath, 'gogo-custom') !== false) {
-                $rawValue = $element->getProperty($name);
-            } else {
-                $rawValue = $this->propertyAccessor->getValue($element, $propertyPath);
-            }
-            $data[$name] = $this->getValue($rawValue);
-            // for elements type fields, we export two fields : one with the ids, on with the names.
-            if ($propertyPath == 'gogo-custom-elements' && is_array($rawValue)) {
-                $data[$name . '_ids'] = implode(',', array_keys($rawValue));
+        if ($element->getGeo()) { // Fix strange bug elements without geo object
+            foreach ($this->propertyPaths as $name => $propertyPath) {
+                if (strpos($propertyPath, 'gogo-custom') !== false) {
+                    $rawValue = $element->getProperty($name);
+                } else {
+                    $rawValue = $this->propertyAccessor->getValue($element, $propertyPath);
+                }
+                $data[$name] = $this->getValue($rawValue);
+                // for elements type fields, we export two fields : one with the ids, on with the names.
+                if ($propertyPath == 'gogo-custom-elements' && is_array($rawValue)) {
+                    $data[$name . '_ids'] = implode(',', array_keys($rawValue));
+                }
             }
         }
 
