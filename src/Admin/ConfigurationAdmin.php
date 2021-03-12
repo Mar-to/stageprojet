@@ -13,49 +13,47 @@ class ConfigurationAdmin extends ConfigurationAbstractAdmin
     {
         $imagesOptions = [
             'class' => 'App\Document\ConfImage',
-            'placeholder' => 'Séléctionnez une image déjà importée, ou ajoutez en une !',
-            'required' => false,
-            'label' => 'Logo',
+            'placeholder' => 'commons.fields.image_placeholder',
             'mapped' => true,
         ];
 
         $container = $this->getConfigurationPool()->getContainer();
 
         $formMapper
-            ->with('Le site', ['class' => 'col-md-6', 'description' => '<div class="iframe-container"><iframe height="110" sandbox="allow-same-origin allow-scripts" src="https://video.colibris-outilslibres.org/videos/embed/fc7d3784-7bd1-4f3a-b915-ab6daefdd52d" frameborder="0" allowfullscreen></iframe></div>']);
+            ->halfPanel('main');
         if ($container->getParameter('use_as_saas')) {
             $formMapper
-                ->add('publishOnSaasPage', null, ['label' => 'Rendre ce projet visible sur ' . $container->getParameter('base_url'), 'required' => false]);
+                ->add('publishOnSaasPage', null, ['label_trans_params' => ['url' => $container->getParameter('base_url')]]);
         }
         $formMapper
-                ->add('appName', null, ['label' => 'Nom du site'])
-                ->add('appBaseline', null, ['label' => 'Description du site (baseline)', 'required' => false])
-                ->add('appTags', null, ['label' => 'Mot clés pour le référencement (séparés par une virgule)', 'required' => false])
-                ->add('locale', ChoiceType::class, ['label' => 'Langue', 'choices' => [
+                ->add('appName')
+                ->add('appBaseline')
+                ->add('appTags')
+                ->add('locale', ChoiceType::class, ['choices' => [
                     'Français' => 'fr',
                     'English' => 'en'
                 ]])
-                ->add('customDomain', UrlType::class, ['label' => "Utiliser un nom de domaine personnalisé (exple macarte.org au lieu de macarte.gogocarto.fr). Après avoir acheté le nom de domaine macarte.org, vous devez d'abords le rediriger sur l'adresse IP du serveur GoGoCarto (" . $_SERVER['SERVER_ADDR'] ."). Ensuite renseignez ici le nom de votre domaine, et attendez le temps que cela soit configuré par GoGoCarto (une tentative est effectuée toute les heures). GoGoCarto abandonne au bout de 4 tentatives", 'label_attr' => ['title' => 'Si au bout de plusieurs heures rien ne se passe, vous devrez remettre vide la configuration du sous domaine, sauvegarder, puis la reremplir pour créer un nouvel essai'], 'required' => false])
-                ->add('dataLicenseUrl', null, ['label' => 'Url de la licence qui protège vos données', 'required' => false])
+                ->add('customDomain', UrlType::class, ['help_trans_params' => ['ip' => $_SERVER['SERVER_ADDR']]])
+                ->add('dataLicenseUrl')
             ->end()
-            ->with('Images générales', ['class' => 'col-md-6'])
+            ->halfPanel('images')
                 ->add('logo', ModelType::class, $imagesOptions)
-                ->add('logoInline', ModelType::class, array_replace($imagesOptions, ['label' => 'Logo pour la barre de menu']))
-                ->add('socialShareImage', ModelType::class, array_replace($imagesOptions, ['label' => "Image à afficher lors d'un partage sur les réseaux sociaux"]))
-                ->add('favicon', ModelType::class, array_replace($imagesOptions, ['label' => 'Favicon']))
+                ->add('logoInline', ModelType::class, $imagesOptions)
+                ->add('socialShareImage', ModelType::class, $imagesOptions)
+                ->add('favicon', ModelType::class, $imagesOptions)
             ->end()
-            ->with('Fonctions principales', ['class' => 'col-md-6'])
-                ->add('activateHomePage', null, ['label' => "Activer la page d'accueil", 'required' => false])
-                ->add('activatePartnersPage', null, ['label' => 'Activer la page type "Partenaires"', 'required' => false])
-                ->add('partnerPageTitle', null, ['label' => 'Titre de la page "Partenaires"', 'required' => false])
-                ->add('activateAbouts', null, ['label' => 'Activer les popups type "A propos"', 'required' => false])
-                ->add('aboutHeaderTitle', null, ['label' => 'Titre de la section "A propos"', 'required' => false])
+            ->halfPanel('pages')
+                ->add('activateHomePage')
+                ->add('activatePartnersPage')
+                ->add('partnerPageTitle')
+                ->add('activateAbouts')
+                ->add('aboutHeaderTitle')
             ->end()
-            ->with('Nom des entités référencées sur l\'annuaire', ['class' => 'col-md-6'])
-                ->add('elementDisplayName', null, ['label' => 'Nom'])
-                ->add('elementDisplayNameDefinite', null, ['label' => 'Nom avec article défini'])
-                ->add('elementDisplayNameIndefinite', null, ['label' => 'Nom avec article indéfini'])
-                ->add('elementDisplayNamePlural', null, ['label' => 'Nom pluriel '])
+            ->halfPanel('text')
+                ->add('elementDisplayName')
+                ->add('elementDisplayNameDefinite')
+                ->add('elementDisplayNameIndefinite')
+                ->add('elementDisplayNamePlural')
             ->end()
         ;
     }

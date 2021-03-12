@@ -1,0 +1,50 @@
+abouts:
+  _label: Popups type "A propos"
+  fields:
+    content: Contenu
+    name: Nom
+
+commons:
+  fields:
+    image_placeholder: Séléctionnez une image déjà importée, ou ajoutez en une !
+
+config_general:
+  _label: Configuration Générale
+  fields:
+    aboutHeaderTitle: Titre de la section "A propos"
+    activateAbouts: Activer les popups type "A propos"
+    activateHomePage: Activer la page d'accueil
+    activatePartnersPage: Activer la page type "Partenaires"
+    appBaseline: Description du site (baseline)
+    appName: Nom du site
+    appTags: Mot clés pour le référencement (séparés par une virgule)
+    customDomain: Utiliser un nom de domaine personnalisé (exple macarte.org au lieu de macarte.gogocarto.fr)
+    customDomain_help: >-
+      Après avoir acheté le nom de domaine macarte.org, vous devez d'abords le rediriger sur
+      l'adresse IP du serveur GoGoCarto ({ip}).  Ensuite renseignez ici le nom de votre domaine, et
+      attendez le temps que cela soit configuré par GoGoCarto  (une tentative est effectuée toute
+      les heures). GoGoCarto abandonne au bout de 4 tentatives.  Si au bout de plusieurs heures rien
+      ne se passe, vous devrez remettre vide la configuration du sous domaine,  sauvegarder, puis la
+      reremplir pour créer un nouvel essai
+    dataLicenseUrl: Url de la licence qui protège vos données
+    elementDisplayName: Nom
+    elementDisplayNameDefinite: Nom avec article défini
+    elementDisplayNameIndefinite: Nom avec article indéfini
+    elementDisplayNamePlural: Nom pluriel
+    favicon: Favicon
+    locale: Langue
+    logo: Logo
+    logoInline: Logo pour la barre de menu
+    partnerPageTitle: Titre de la page "Partenaires"
+    publishOnSaasPage: Rendre ce projet visible sur {url}
+    socialShareImage: Image à afficher lors d'un partage sur les réseaux sociaux
+  form:
+    groups:
+      images: Images générales
+      main: Le Site
+      main_description: >-
+        <div class="iframe-container"><iframe height="110" sandbox="allow-same-origin allow-scripts"
+        src="https://video.colibris-outilslibres.org/videos/embed/fc7d3784-7bd1-4f3a-b915-ab6daefdd52d"
+        frameborder="0" allowfullscreen></iframe></div>
+      pages: Fonctions principales
+      text: Nom des entités référencées sur l'annuaire

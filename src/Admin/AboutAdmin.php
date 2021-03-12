@@ -24,8 +24,9 @@ class AboutAdmin extends GoGoAbstractAdmin
 
     protected function configureFormFields(FormMapper $formMapper)
     {
-        $formMapper->add('name');
-        $formMapper->add('content', SimpleFormatterType::class, [
+        $formMapper
+            ->add('name')
+            ->add('content', SimpleFormatterType::class, [
                 'format' => 'richhtml', 'ckeditor_context' => 'full',
             ]);
     }
