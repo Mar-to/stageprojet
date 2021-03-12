@@ -49,7 +49,7 @@ class ConfigurationDuplicatesAdmin extends ConfigurationAbstractAdmin
         $this->getSubject()->getDuplicates()->setSourcePriorityInAutomaticMerge($newPriorityList);
         $searchFields = implode(', ', $this->getSubject()->getDuplicates()->getFieldsInvolvedInGlobalSearch());
         $formMapper
-            ->with('Configuration')
+            ->panel('Configuration')
                 ->add('duplicates.useGlobalSearch', CheckboxType::class, [
                     'label' => "Utiliser la recherche générale pour chercher les doublons (recherche souple dans $searchFields)", 
                     'label_attr' => ['title' => "La recherche générale est configurée dans la personalisation du formulaire (choisissez quels champs seront recherchés, de base cela recherche uniquement dans le titre de la fiche). Elle est souple, c'est à dire qu'elle détectera des valeurs similaires (\"test\" trouvera \"Un TésT\"). Un correspondance parfaite sera détectée uniquement si les titres de fiche sont quasiment similaire : \"test\" et \"Un TésT\" ne sera pas une correspondance parfaite, alors que \"test\" et \"TésT\" le sera"],
@@ -68,7 +68,7 @@ class ConfigurationDuplicatesAdmin extends ConfigurationAbstractAdmin
                 ])
             ->end()
             
-            ->with('Fusion des doublons')
+            ->panel('Fusion des doublons')
                 ->add('duplicates.automaticMergeIfPerfectMatch', CheckboxType::class, [
                     'label' => "Fusionner automatiquement lors d'une correspondance parfaite", 
                     'required' => false])

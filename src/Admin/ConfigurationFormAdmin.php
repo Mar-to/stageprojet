@@ -27,7 +27,7 @@ class ConfigurationFormAdmin extends ConfigurationAbstractAdmin
 
         $formMapper
             ->tab('Formulaire')
-                ->with('Configuration du formulaire', ['description' => "
+                ->panel('Configuration du formulaire', ['description' => "
                     <div class='text-and-iframe-container'><div class='iframe-container-aside'><iframe height='200' sandbox='allow-same-origin allow-scripts' src='https://video.colibris-outilslibres.org/videos/embed/2dd4dad3-63fa-4bb4-b48c-e518f8e56d36' frameborder='0' allowfullscreen></iframe></div>
                     <b>Le formulaire permet d'ajouter/éditer des données depuis l'interface publique</b></br>
                     Si vous avez importé des données, vous pouvez ajouter un champ au formulaire et le lier au champ importé grâce à l'attribut \"Nom du champ\"</div>"])
@@ -35,7 +35,7 @@ class ConfigurationFormAdmin extends ConfigurationAbstractAdmin
                 ->end()
             ->end()
             ->tab('Autres textes et options')
-                ->with('Autres textes et options', ['class' => 'col-md-12'])
+                ->panel('Autres textes et options', ['class' => 'col-md-12'])
                     ->add('elementFormIntroText', TextareaType::class,
                         ['required' => false, 'attr' => ['placeholder' => 'Exemple: Attention nous ne référencons pas tel et tel type d\'élements'],
                               'label' => "Texte d'introduction qui apparait en haut du formulaire", ])

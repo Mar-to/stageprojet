@@ -132,14 +132,14 @@ class UserAdmin extends GoGoAbstractAdmin
     protected function configureShowFields(ShowMapper $showMapper)
     {
         $showMapper
-            ->with('General')
+            ->panel('General')
                 ->add('username')
                 ->add('email')
             ->end()
-            ->with('Groups')
+            ->panel('Groups')
                 ->add('groups')
             ->end()
-            ->with('Profile')
+            ->panel('Profile')
                 ->add('dateOfBirth')
                 ->add('firstname')
                 ->add('lastname')
@@ -150,7 +150,7 @@ class UserAdmin extends GoGoAbstractAdmin
                 ->add('timezone')
                 ->add('phone')
             ->end()
-            ->with('Social')
+            ->panel('Social')
                 ->add('facebookUid')
                 ->add('facebookName')
                 ->add('communsUid')
@@ -158,7 +158,7 @@ class UserAdmin extends GoGoAbstractAdmin
                 ->add('gplusUid')
                 ->add('gplusName')
             ->end()
-            ->with('Security')
+            ->panel('Security')
                 ->add('token')
             ->end()
         ;
@@ -172,10 +172,10 @@ class UserAdmin extends GoGoAbstractAdmin
         // define group zoning
         $formMapper
             ->tab('User')
-                ->with('General', ['class' => 'col-md-6'])->end()
-                ->with('Status', ['class' => 'col-md-6'])->end()
-                ->with('Groups', ['class' => 'col-md-6'])->end()
-                ->with('Notifications', ['class' => 'col-md-12'])
+                ->panel('General', ['class' => 'col-md-6'])->end()
+                ->panel('Status', ['class' => 'col-md-6'])->end()
+                ->panel('Groups', ['class' => 'col-md-6'])->end()
+                ->panel('Notifications', ['class' => 'col-md-12'])
                     ->add('watchModeration', null, ['label' => "Etre notifié par email lorsque des éléments sont à modérer", 'required' => false])
                     ->add('watchModerationOnlyWithOptions', ModelType::class, [
                         'class' => 'App\Document\Option',
@@ -191,7 +191,7 @@ class UserAdmin extends GoGoAbstractAdmin
                 ->end()
             ->end()
             ->tab('Security')
-                ->with('Roles', ['class' => 'col-md-12'])->end()
+                ->panel('Roles', ['class' => 'col-md-12'])->end()
             ->end()
         ;
 
@@ -201,7 +201,7 @@ class UserAdmin extends GoGoAbstractAdmin
 
         $formMapper
             ->tab('User')
-                ->with('General')
+                ->panel('General')
                     ->add('username')
                     ->add('email')
                     ->add('plainPassword', PasswordType::class, [
@@ -213,13 +213,13 @@ class UserAdmin extends GoGoAbstractAdmin
                         'multiple' => true,
                     ])
                 ->end()
-                ->with('Status')
+                ->panel('Status')
                     ->add('locked', CheckboxType::class, ['required' => false])
                     ->add('expired', CheckboxType::class, ['required' => false])
                     ->add('enabled', CheckboxType::class, ['required' => false])
                     ->add('credentialsExpired', CheckboxType::class, ['required' => false])
                 ->end()
-                ->with('Groups')
+                ->panel('Groups')
                     ->add('groups', $modelType, [
                         'required' => false,
                         'expanded' => true,
@@ -228,7 +228,7 @@ class UserAdmin extends GoGoAbstractAdmin
                 ->end()
             ->end()
             ->tab('Security')
-                ->with('Roles')
+                ->panel('Roles')
                     ->add('realRoles', SecurityRolesType::class, [
                         'label' => false,
                         'expanded' => true,

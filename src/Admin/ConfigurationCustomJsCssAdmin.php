@@ -14,12 +14,12 @@ class ConfigurationCustomJsCssAdmin extends ConfigurationAbstractAdmin
     {
         $formMapper
             ->tab('Custom Style')
-                ->with('Entrez du code CSS qui sera chargé sur toutes les pages publiques')
+                ->panel('Entrez du code CSS qui sera chargé sur toutes les pages publiques')
                     ->add('customCSS', null, ['label' => 'Custom CSS', 'attr' => ['class' => 'gogo-code-editor', 'format' => 'css', 'height' => '500'], 'required' => false])
                 ->end()
             ->end()
             ->tab('Custom Javascript')
-                ->with('Entrez du code Javascript qui sera chargé sur toutes les pages publiques')
+                ->panel('Entrez du code Javascript qui sera chargé sur toutes les pages publiques')
                     ->add('customJavascript', null, ['label' => 'Custom Javascript', 'attr' => ['class' => 'gogo-code-editor', 'format' => 'javascript', 'height' => '500'], 'required' => false])
                 ->end()
             ->end()

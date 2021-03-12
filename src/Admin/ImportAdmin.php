@@ -53,7 +53,7 @@ class ImportAdmin extends GoGoAbstractAdmin
                    ->addOr($usersQuery->expr()->field('groups')->exists(true));
         $formMapper
             ->tab('Général')
-                ->with($title, ['class' => 'col-md-12'])
+                ->panel($title, ['class' => 'col-md-12'])
                     ->add('sourceName', null, ['required' => true, 'label' => 'Nom de la source '])
                     ->add('file', FileType::class, ['label' => 'Fichier CSV à importer (séparation par virgules, encodage en UTF8)', 'required' => false]);
         if ($isDynamic) {
@@ -67,7 +67,7 @@ class ImportAdmin extends GoGoAbstractAdmin
                             'data-default-bounds' => json_encode($this->config->getDefaultBounds()),
                         ], 'required' => true, 'label' => 'Type de la source'])
                 ->end()
-                ->with('Paramètres', ['class' => 'col-md-12'])
+                ->panel('Paramètres', ['class' => 'col-md-12'])
                     ->add('refreshFrequencyInDays', null, ['required' => false, 'label' => 'Fréquence de mise à jours des données en jours (laisser vide pour ne jamais mettre à jour automatiquement'])
                     ->add('usersToNotify', ModelType::class, [
                         'class' => 'App\Document\User',
@@ -96,7 +96,7 @@ class ImportAdmin extends GoGoAbstractAdmin
         }
         $formMapper->end();                
         if ($isPersisted) {
-            $formMapper->with('Historique', ['class' => 'col-sm-12'])
+            $formMapper->panel('Historique', ['class' => 'col-sm-12'])
                         ->add('currState', null, ['attr' => ['class' => 'gogo-display-logs'], 'label_attr' => ['style' => 'display: none'], 'mapped' => false])
                     ->end();
         }
@@ -104,7 +104,7 @@ class ImportAdmin extends GoGoAbstractAdmin
 
         // TAB - Custom Code
         $formMapper->tab('Modifier les données en exécutant du code')
-            ->with('Entrez du code qui sera exécuté à la reception des données, avant leur traitement par GoGoCarto', ['description' => "La variable <b>\$data</b> représente le tableau PHP créé à partir des données Csv ou Json. </br>
+            ->panel('Entrez du code qui sera exécuté à la reception des données, avant leur traitement par GoGoCarto', ['description' => "La variable <b>\$data</b> représente le tableau PHP créé à partir des données Csv ou Json. </br>
 <pre>Quelques examples de transformations simple:</pre>
 Si les éléments à importer sont dans une sous propriété appelée 'elements'
 <pre>&lt;?php</br>\$data = \$data['elements'];</pre>
@@ -134,7 +134,7 @@ Transformer un attribut
             }
             $formMapper
                 ->tab($title)                    
-                    ->with('Transformer les données à importer')
+                    ->panel('Transformer les données à importer')
                         ->add('ontologyMapping', null, [
                             'label_attr' => ['style' => 'display:none'], 
                             'attr' => ['class' => 'gogo-mapping-ontology', 
@@ -144,7 +144,7 @@ Transformer un attribut
                 
                 if ($this->getSubject()->getSourceType() != 'osm') {
                     $formMapper
-                    ->with('Autres Options', ['box_class' => 'box box-default'])
+                    ->panel('Autres Options', ['box_class' => 'box box-default'])
                         ->add('geocodeIfNecessary', null, [
                             'required' => false, 
                             'label' => 'Géocoder les élements sans latitude ni longitude à partir de leur adresse'])
@@ -163,11 +163,11 @@ Transformer un attribut
                     $title .= ' <label class="label label-info">Nouvelles catégories</label>';
                 }
                 $formMapper->tab($title)          
-                    ->with('Faites correspondre les catégories')
+                    ->panel('Faites correspondre les catégories')
                         ->add('taxonomyMapping', null, ['label_attr' => ['style' => 'display:none'], 'attr' => ['class' => 'gogo-mapping-taxonomy', 'data-options' => $optionsList]])
                     ->end()
 
-                    ->with('Autres Options', ['box_class' => 'box box-default'])
+                    ->panel('Autres Options', ['box_class' => 'box box-default'])
                         ->add('optionsToAddToEachElement', ModelType::class, [
                             'class' => 'App\Document\Option',
                             'required' => false,
@@ -190,7 +190,7 @@ Transformer un attribut
             if ($this->getSubject()->isDynamicImport() && $this->getSubject()->getIsSynchronized()) {
                 // TAB - Custom Code For Export
                 $formMapper->tab("Convertir les données pour l'export")
-                    ->with("Entrez du code qui sera exécuté lors de l'export, avant leur envoi pour synchronisation", 
+                    ->panel("Entrez du code qui sera exécuté lors de l'export, avant leur envoi pour synchronisation", 
                         ['description' => "La variable <b>\$element</b> représente l'élément dans GoGoCarto, la variable <b>\$osmFeature</b> représente la donnée OSM reconstruite à partir de l'élement GoGoCarto</br>
 <pre>Quelques examples de transformations simple:</pre>
 Si l'élement contient la catégorie \"Vrac\", on rajoute un tag OSM

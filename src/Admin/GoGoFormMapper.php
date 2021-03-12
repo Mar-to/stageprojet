@@ -2,10 +2,7 @@
 
 namespace App\Admin;
 
-use Sonata\AdminBundle\Form\Type\CollectionType;
 use Sonata\AdminBundle\Form\FormMapper;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType as SymfonyCollectionType;
-use Symfony\Component\Form\FormBuilderInterface;
 
 class GoGoFormMapper extends FormMapper
 {   

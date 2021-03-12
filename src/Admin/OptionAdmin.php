@@ -52,7 +52,7 @@ class OptionAdmin extends GoGoAbstractAdmin
 
         $formMapper
        ->tab('Principal')
-         ->with('Paramètres principaux', ['class' => 'col-xs-12 col-md-6'])
+         ->panel('Paramètres principaux', ['class' => 'col-xs-12 col-md-6'])
             ->add('name', null, ['required' => true, 'label' => 'Nom'])
             ->add('color', null, ['required' => false, 'label' => 'Couleur', 'attr' => ['class' => 'gogo-color-picker']])
             ->add('icon', null, ['required' => false, 'label' => 'Icone', 'attr' => ['class' => 'gogo-icon-picker']])
@@ -63,16 +63,16 @@ class OptionAdmin extends GoGoAbstractAdmin
               'label' => 'Groupe de Catégorie parent',
               'mapped' => true, ], [])
          ->end()
-         ->with('Paramètres secondaires', ['class' => 'col-xs-12 col-md-6', 'box_class' => 'box'])
+         ->panel('Paramètres secondaires', ['class' => 'col-xs-12 col-md-6', 'box_class' => 'box'])
             ->add('useIconForMarker', null, ['required' => false, 'label' => "Utiliser l'icone de cette catégorie pour le marqueur", 'label_attr' => ['title' => 'Le marqueur affichera toutes icones de chaque catégorie ayant cette option activée. Les icones seront classées par ordre de selection des catégories dans le formulaire']])
             ->add('useColorForMarker', null, ['required' => false, 'label' => 'Utiliser la couleur de cette catégorie pour le marqueur', 'label_attr' => ['title' => 'Si un élément a plusieurs catégories qui donnent la couleur, on utilise la catégorie de plus bas niveau']])
          ->end()
-         ->with('Afficher la catégorie', ['class' => 'col-xs-12 col-md-6', 'box_class' => 'box'])
+         ->panel('Afficher la catégorie', ['class' => 'col-xs-12 col-md-6', 'box_class' => 'box'])
             ->add('displayInMenu', null, ['required' => false, 'label' => 'Dans le menu'])
             ->add('displayInInfoBar', null, ['required' => false, 'label' => 'Dans la fiche détail'])
             ->add('displayInForm', null, ['required' => false, 'label' => 'Dans le formulaire'])
          ->end()
-         ->with('Sous groupes', array('class' => 'col-xs-12 sub-categories-container'))
+         ->panel('Sous groupes', array('class' => 'col-xs-12 sub-categories-container'))
             ->add('subcategories', CollectionType::class, array(
               'by_reference' => false,
               'entry_type' => CategoryLiteType::class,
@@ -81,7 +81,7 @@ class OptionAdmin extends GoGoAbstractAdmin
          ->end()
         ->end()
       ->tab('Configuration avancée')
-         ->with('Paramètres secondaires', ['class' => 'col-xs-12 col-md-6', 'box_class' => 'box'])
+         ->panel('Paramètres secondaires', ['class' => 'col-xs-12 col-md-6', 'box_class' => 'box'])
             ->add('nameShort', null, ['required' => false, 'label' => 'Nom (version courte)', 'label_attr' => ['title' => 'La version courte est utilisée dans le menu, car souvent on manque de place']])
             ->add('customId', null, ['required' => false, 'label' => 'Id personnalisée', 'label_attr' => ['title' => "Lors de l'import d'éléments, on va comparer le nom des catégories de l'élément importé avec le nom des catégorie de votre carte. On va aussi comparer avec les Ids personnalisés"]])
             ->add('softColor', null, ['required' => false, 'label' => 'Couleur adoucie', 'attr' => ['class' => 'gogo-color-picker'], 'label_attr' => ['title' => 'Certaines couleurs convienent bien pour le marqueur (un peu flashy), mais pas trop pour les aplat comme pour le header de la fiche détail. Dans ce cas là, la version "adoucie" est utilisée si ellle a été renseignée']])
@@ -92,13 +92,13 @@ class OptionAdmin extends GoGoAbstractAdmin
             ->add('unexpandable', null, ['required' => false, 'label' => 'Ne pas pouvoir reduire cette catégorie', 'label_attr' => ['title' => 'Les sous groupes et sous catégories seront toujours affichés']])
          ->end()
 
-         ->with('Afficher les sous groupes et les sous catégories', ['class' => 'col-xs-12 col-md-6', 'box_class' => 'box'])
+         ->panel('Afficher les sous groupes et les sous catégories', ['class' => 'col-xs-12 col-md-6', 'box_class' => 'box'])
             ->add('displayChildrenInMenu', null, ['required' => false, 'label' => 'Dans le menu'])
             ->add('displayChildrenInInfoBar', null, ['required' => false, 'label' => 'Dans la fiche détail'])
             ->add('displayChildrenInForm', null, ['required' => false, 'label' => 'Dans le formulaire'])
          ->end()
 
-         ->with('Lien avec OpenStreetMap', ['class' => 'col-xs-12 col-md-6', 'box_class' => 'box'])
+         ->panel('Lien avec OpenStreetMap', ['class' => 'col-xs-12 col-md-6', 'box_class' => 'box'])
             ->add('osmTags', TextType::class, ['required' => false, 'label' => 'Liste de tags OSM', 'attr' => ['class' => 'gogo-osm-tags'], 'label_attr' => ['title' => "Lors d'un export OSM, chaque élément qui aura cette catégorie se verra attribué le tag OSM correspondant"]])
          ->end()
       ->end()

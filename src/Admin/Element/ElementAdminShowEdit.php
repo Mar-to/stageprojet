@@ -32,7 +32,7 @@ class ElementAdminShowEdit extends ElementAdminList
         $elementProperties = array_values(array_diff($elementProperties, array_keys($this->getSubject()->getData())));
 
         $formMapper
-          ->with('Informations générales', ['class' => 'col-md-6'])
+          ->panel('Informations générales', ['class' => 'col-md-6'])
             ->add('name', null, ['required' => true, 'label' => "Nom / Titre"])
             ->add('optionIds', ChoiceType::class, [
               'required' => false,
@@ -63,7 +63,7 @@ class ElementAdminShowEdit extends ElementAdminList
             ])
             // ->add('openHours', OpenHoursType::class, ['required' => false])
           ->end()
-          ->with('Localisation', ['class' => 'col-md-6'])
+          ->panel('Localisation', ['class' => 'col-md-6'])
             ->add('address.streetAddress', TextType::class, ['label_attr' => ['style' => 'display:none;'], 'attr' => ['class' => 'gogo-element-address']])
           ->end()
         ;

@@ -21,7 +21,7 @@ class ConfigurationSaasAdmin extends ConfigurationAbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->with('Configuration')
+            ->panel('Configuration')
                 ->add('saas.donationUrl', UrlType::class, [
                     'label' => "Url pour faire un don (un boutton sera ajouté sur la page d'accueil)",
                     'required' => false
