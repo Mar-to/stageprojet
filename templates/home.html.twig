@@ -74,7 +74,7 @@
 
 			<span class="category-field-select input-field">
 		    <select  class="category-select" id="category-select">
-		   	  <option disabled selected value="all">Choisissez une catégorie (par défaut : toutes)</option>
+		   	  <option disabled selected value="all">{{ 'home.pick_category'|trans }}</option>
 
 		     {% for option in mainOptions %}
 		      	<option value="{{ option.nameShort ? option.nameShort : option.name }}">{{ option.name }}</option>

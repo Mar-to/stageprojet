@@ -1,0 +1,13 @@
+home:
+  pick_category: "Choisissez une catégorie (par défaut : toutes)"
+
+commons:
+  # If some messages are reused over diffeents pages
+  actions:
+    search: Rechercher # just an example, can be deleted
+
+directory: # just an example, can be deleted
+
+partners: # just an example, can be deleted
+
+  
