@@ -28,7 +28,9 @@ class ConfigurationListener
     {
         $request = $event->getRequest();
         // some logic to determine the $locale
-        $request->setLocale($this->dm->get('Configuration')->findConfiguration()->getLocale());
+        $config = $this->dm->get('Configuration')->findConfiguration();
+        $locale = $config ? $config->getLocale() : 'en';
+        $request->setLocale($locale);
     }
 
     public function preUpdate(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $args)

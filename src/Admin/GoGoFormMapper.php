@@ -27,8 +27,8 @@ class GoGoFormMapper extends FormMapper
             $labelKey = $this->admin->getLabelTranslatorStrategy()->getLabel($name, 'form', $key);
             if ($this->admin->t_exists($labelKey)) {
                 $options[$key] = $this->admin->t($labelKey, $options["{$key}_trans_params"] ?? []); 
-                unset($options["{$key}_trans_params"]);
-            }  
+            } 
+            unset($options["{$key}_trans_params"]); 
         }
 
         if (isset($options['placeholder']) && $type !== ModelType::class) {
