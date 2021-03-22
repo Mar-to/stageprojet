@@ -176,6 +176,8 @@ pecl install mongodb
 
 Add to `/etc/php/7.3/cli/php.ini` **AND** `/etc/php/7.3/fpm/php.ini`
 extension=mongodb.so
+Also adjust the following options if you plan to request large imports
+`default_socket_timeout`, `max_execution_time`
 
 Restart php service
 `service php7.3-fpm restart`
