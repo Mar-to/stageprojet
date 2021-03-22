@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Document\Element;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use App\Services\Utf8Encoder;
 
 class ElementImportMappingOntologyService
 {
@@ -114,7 +115,7 @@ class ElementImportMappingOntologyService
             $this->ontologyMapping[$fullProp] = [
                 'mappedProperty' => $mappedProp,
                 'collectedCount' => 1,
-                'collectedValues' => [ substr($value, 0, 100) ]
+                'collectedValues' => [ $this->shortenValue($value) ]
             ];
             $import->setNewOntologyToMap(true);
         } else {
@@ -124,12 +125,17 @@ class ElementImportMappingOntologyService
             $valuesCount = count($this->ontologyMapping[$fullProp]['collectedValues']);
             $numberValuesSaved = 10;
             if ($valuesCount < $numberValuesSaved) {
-                $this->ontologyMapping[$fullProp]['collectedValues'][] = substr($value, 0, 100);
+                $this->ontologyMapping[$fullProp]['collectedValues'][] = $this->shortenValue($value);
                 $this->ontologyMapping[$fullProp]['collectedValues'] = array_filter(array_unique($this->ontologyMapping[$fullProp]['collectedValues']),'strlen');
             } else if ($valuesCount == $numberValuesSaved) {
                 $this->ontologyMapping[$fullProp]['collectedValues'][] = '...';
             }
         }
+    }
+
+    private function shortenValue($value) 
+    {
+        return Utf8Encoder::toUTF8(substr($value, 0, 100));
     }
 
     public function mapOntology($data, $import)
