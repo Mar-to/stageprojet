@@ -97,8 +97,8 @@ RUN npm install -g gulp
 RUN npm install -g yarn
 
 # Config files
-COPY custom-php-conf.ini /usr/local/etc/php/conf.d/
-COPY apache.conf /etc/apache2/sites-available/000-default.conf
+COPY docker/custom-php-conf.ini /usr/local/etc/php/conf.d/
+COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
 
 # We don't need this directory
 RUN rm -R /var/www/html
