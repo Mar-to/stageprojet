@@ -1,21 +1,25 @@
 version: '3'
 
 services:
-
   gogocarto:
-    build: server
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    depends_on:
+      - mongo
     container_name: gogocarto
-    volumes:
-      - ..:/var/www
+    volumes:      
+      - .:/var/www:cached
       - /var/www/var/cache
       - /var/www/var/log
       - /var/www/var/sessions
       - /var/www/web/uploads
+      - /var/www/vendor
+      - /var/www/node_modules
     ports:
       - "3008:80"
     links:
       - mongo:mongo
-    tty: true
 
   mongo:
     image: shikhir/alpine-mongodb
@@ -24,7 +28,6 @@ services:
       - mongo:/data/mongodb
     ports:
       - "27017:27017"
-    tty: true
 
 volumes:
   mongo: {}

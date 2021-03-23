@@ -8,10 +8,10 @@ GIT           = git
 GULP          = gulp
 YARN          = yarn
 DOCKER        = docker-compose
-DOCKER_COMPOSE= $$( if [ -f docker/docker-compose.local.yml ]; then \
-		echo docker/docker-compose.local.yml; \
+DOCKER_COMPOSE= $$( if [ -f docker-compose.local.yml ]; then \
+		echo docker-compose.local.yml; \
 	else \
-		echo docker/docker-compose.yml; \
+		echo docker-compose.yml; \
 	fi )
 .DEFAULT_GOAL = help
 
@@ -39,17 +39,7 @@ warmup: ## Warmump the cache
 	$(SYMFONY) cache:warmup
 
 fix-perms: ## Fix permissions of all var files
-	chown -R gogocarto var/cache
-	chown -R gogocarto var/log
-	chown -R gogocarto var/sessions
-	chown -R gogocarto web/uploads
 	chmod 777 -R var/
-	sleep 10 && chmod 777 -R var/ &
-	sleep 60 && chmod 777 -R var/ &
-	sleep 120 && chmod 777 -R var/ &
-	sleep 300 && chmod 777 -R var/ &
-	sleep 600 && chmod 777 -R var/ &
-	sleep 2000 && chmod 777 -R var/ &
 
 install-assets: ## Install the assets
 	$(SYMFONY) assets:install web/ --symlink
@@ -89,7 +79,7 @@ shell: ## Start shell inside Docker
 commands: ## Display all commands in the project namespace
 	$(SYMFONY) list $(PROJECT)
 
-init: install assets load-fixtures ## Initialize the project
+init: install assets load-fixtures purge fix-perms ## Initialize the project
 
 install: composer-install yarn-install ## Install vendors
 
