@@ -1,3 +1,7 @@
+v3.2.7
+======
+* BREAKING CHANGE: the docker-composer.yml has been moved to the root of the project. If you have any docker-compose.local.yml, please move it also to the root
+
 v3.2.1
 ======
 * MAJOR: The way of managing SAAS instance cron jobs have changed. In your main database run `db.Project.updateMany({}, {$currentDate: {nextUpdateAt: true}})` and check `docs/installation.md` for new cron jobs configuration

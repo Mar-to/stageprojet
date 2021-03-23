@@ -20,7 +20,7 @@ With the Docker installation, you have all the required softwares installed in t
 
 ### Local docker-compose
 
-If you have a specific environment, need for custom env vars, want to avoid exposing ports, etc, you can create a copy of `docker/docker-compose.yml` named `docker/docker-compose.local.yml` (it will be gitignored).
+If you have a specific environment, need for custom env vars, want to avoid exposing ports, etc, you can create a copy of `docker-compose.yml` named `docker-compose.local.yml` (it will be gitignored).
 
 
 Manual Install
@@ -34,7 +34,7 @@ Main requirements are :
 4. [MongoDB](http://php.net/manual/fr/mongodb.installation.php)
 5. Web Server (Apache, Nginx)
 
-Please refer to the dockerfile to know all dependencies : [DockerFile](../docker/server/Dockerfile)
+Please refer to the dockerfile to know all dependencies : [DockerFile](../docker/Dockerfile)
 
 You can also check [the Debian Buster Installation Guide](./installation_debian.md)
 
