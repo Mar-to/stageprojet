@@ -14,10 +14,19 @@ class ElementDuplicatesService
     // we use this array or element Id that we exclude from the detection
     protected $duplicatesFound = [];
 
+    protected $dupConfig = null;
+
     public function __construct(DocumentManager $dm, ElementActionService $elementActionService)
     {
         $this->dm = $dm;
         $this->elementActionService = $elementActionService;
+    }
+
+    private function getDupConfig()
+    {
+        if ($this->dupConfig === null)
+            $this->dupConfig = $this->dm->get('Configuration')->findConfiguration()->getDuplicates();
+        return $this->dupConfig;
     }
 
     public function detectDuplicatesFor($element)
@@ -43,8 +52,7 @@ class ElementDuplicatesService
             $duplicatesToProceed = [$element, $bestDuplicate];
             
             // Choose which duplicate to keep
-            $config = $this->dm->get('Configuration')->findConfiguration();
-            $sourcePriorities = $config->getDuplicates()->getSourcePriorityInAutomaticMerge();
+            $sourcePriorities = $this->getDupConfig()->getSourcePriorityInAutomaticMerge();
             usort($duplicatesToProceed, function($a, $b) use ($sourcePriorities) {
                 $aPriority = array_search($a->getSourceKey(), $sourcePriorities);
                 $bPriority = array_search($b->getSourceKey(), $sourcePriorities);
@@ -67,7 +75,7 @@ class ElementDuplicatesService
             
             $elementToKeep = array_shift($duplicatesToProceed);
             $duplicate = array_pop($duplicatesToProceed);
-            $autoMerge = $isPerfectMatch && $config->getDuplicates()->getAutomaticMergeIfPerfectMatch();
+            $autoMerge = $isPerfectMatch && $this->getDupConfig()->getAutomaticMergeIfPerfectMatch();
             if ($autoMerge) {
                 $elementToKeep = $this->automaticMerge($elementToKeep, [$duplicate]);
             } else {
@@ -85,8 +93,16 @@ class ElementDuplicatesService
 
     private function isPerfectMatch($element, $duplicate)
     {
-        // null score means duplicate come from the query with field, which relies on perfect value
-        return $duplicate->getScore() === null || slugify($duplicate->getName()) == slugify($element->getName());
+        if ($this->getDupConfig()->getUseGlobalSearch()
+            && slugify($duplicate->getName()) == slugify($element->getName()))
+            return true;
+
+        foreach($this->getDupConfig()->getFieldsToBeUsedForComparaison() as $field) {
+            if ($element->getProperty($field) && $duplicate->getProperty($field) == $element->getProperty($field))
+                return true;
+        }
+
+        return false;
     }
 
     public function automaticMerge($merged, $duplicates)
