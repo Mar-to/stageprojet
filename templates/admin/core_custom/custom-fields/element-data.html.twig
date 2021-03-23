@@ -1,7 +1,15 @@
 {% set element = form.vars.sonata_admin.admin.subject %}
 {% set config = form.vars.sonata_admin.admin.config %}
+
 {% if element.isFromOsm %}
   	<a href={{ element.getOsmUrl(config)  }} target="_blank">Voir cet élément sur OpenStreetMap</a>
+{% endif %}
+
+{% if element.duplicateOf %}
+  	Cet élément a été fusionné avec un autre : 
+    <a href={{ path('admin_app_element_showEdit', {'id': element.duplicateOf})  }} target="_blank">
+      voir l'élément fusionné
+    </a>
 {% endif %}
 
 <h4 style="margin-top: 25px;">Champs Personnalisés</h4>

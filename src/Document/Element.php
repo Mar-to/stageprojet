@@ -247,6 +247,10 @@ class Element
      */
     private $nonDuplicates;
 
+
+    /** @MongoDB\Field(type="string") @MongoDB\Index */
+    private $duplicateOf;
+    
     /**
      * @var string
      *
@@ -1722,6 +1726,26 @@ class Element
     public function setLockedByUserEmail($lockedByUserEmail)
     {
         $this->lockedByUserEmail = $lockedByUserEmail;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of duplicateOf
+     */ 
+    public function getDuplicateOf()
+    {
+        return $this->duplicateOf;
+    }
+
+    /**
+     * Set the value of duplicateOf
+     *
+     * @return  self
+     */ 
+    public function setDuplicateOf($duplicateOf)
+    {
+        $this->duplicateOf = $duplicateOf;
 
         return $this;
     }

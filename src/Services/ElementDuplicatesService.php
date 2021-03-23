@@ -152,6 +152,7 @@ class ElementDuplicatesService
                 }
                 $merged->setAddress($address);
             }
+            $duplicate->setDuplicateOf($merged->getId());
             // Merge status. If one of the duplicate is deleted, then the merged one will be deleted as well
             // If merged one is pending, and duplicate is validated, then merged will be validated
             if (!$merged->isDeleted() && ($duplicate->getStatus() > $merged->getStatus() || $duplicate->isDeleted())) 

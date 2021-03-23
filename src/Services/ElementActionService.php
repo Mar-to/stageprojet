@@ -107,6 +107,7 @@ class ElementActionService
         if ($sendMail) {
             $this->mailService->sendAutomatedMail('add', $element, $message);
         }
+        $element->setDuplicateOf(null); // reset this field
         $element->updateTimestamp();
     }
 
