@@ -15,7 +15,7 @@ class DuplicatesDetectionController extends BulkActionsAbstractController
     {
         $this->title = 'Détection des doublons';
         $this->automaticRedirection = false;
-        $this->batchSize = 2000;
+        $this->batchSize = 1000;
         $this->duplicateService = $duplicateService;
         $this->config = $dm->get('Configuration')->findConfiguration();
 

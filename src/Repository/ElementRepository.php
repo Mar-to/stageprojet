@@ -15,11 +15,19 @@ use App\Helper\GoGoHelper;
  */
 class ElementRepository extends DocumentRepository
 {
+    protected $config = null;
+    
+    private function getConfig()
+    {
+        if (!$this->config) $this->config = $this->getDocumentManager()->get('Configuration')->findConfiguration();
+        return $this->config;
+    }
+    
     public function findDuplicatesFor($element, $elementIdsToIgnore = [])
     {
         $forNewlyCreatedElement = $element->getId() == null;
 
-        $config = $this->getDocumentManager()->get('Configuration')->findConfiguration()->getDuplicates();
+        $config = $this->getConfig()->getDuplicates();
         $qb = $this->query('Element');
 
         // GEO SPATIAL QUERY
