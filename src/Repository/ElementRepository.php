@@ -23,7 +23,7 @@ class ElementRepository extends DocumentRepository
         return $this->config;
     }
     
-    public function findDuplicatesFor($element, $elementIdsToIgnore = [])
+    public function findDuplicatesFor($element, $elementIdsToIgnore = [], $sourceToDetectWith = [])
     {
         $forNewlyCreatedElement = $element->getId() == null;
 
@@ -49,6 +49,10 @@ class ElementRepository extends DocumentRepository
         $qb->field('moderationState')->notEqual(ModerationState::PotentialDuplicate);
 
         $qb->field('id')->notIn(array_merge([$element->getId()], $element->getNonDuplicatesIds(), $elementIdsToIgnore));
+        
+        if (count($sourceToDetectWith)) {
+            $qb->field('sourceKey')->in($sourceToDetectWith);
+        }
         
         // Text Search
         $result1 = [];

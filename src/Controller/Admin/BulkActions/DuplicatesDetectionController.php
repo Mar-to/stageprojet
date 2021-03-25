@@ -34,9 +34,16 @@ class DuplicatesDetectionController extends BulkActionsAbstractController
         return $this->elementsBulkAction('detectDuplicates', $dm, $request, $session);
     }
 
+    protected function filterElements($qb)
+    {
+        if (count($this->config->getDuplicates()->getSourcesToDetectFrom()) > 0)
+            $qb->field('sourceKey')->in($this->config->getDuplicates()->getSourcesToDetectFrom());
+        return $qb;
+    }
+
     public function detectDuplicates($element, $dm)
     {
-        $result = $this->duplicateService->detectDuplicatesFor($element);
+        $result = $this->duplicateService->detectDuplicatesFor($element, $this->config->getDuplicates()->getSourcesToDetectWith());
         if ($result === null) return "";
         return $this->render('admin/pages/bulks/bulk_duplicates.html.twig', [
             'duplicates' => [$result['elementToKeep'], $result['duplicate']],

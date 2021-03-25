@@ -26,6 +26,7 @@ class BulkActionsAbstractController extends Controller
         $qb = $dm->query('Element')
             ->field('status')->gte(ElementStatus::PendingModification)
             ->skip($batchFromStep);
+        $qb = $this->filterElements($qb);
         $count = (clone $qb)->getCount();
         $elementsToProcceedCount = 0;
         if ($count > $this->batchSize) {
@@ -78,6 +79,11 @@ class BulkActionsAbstractController extends Controller
             'elementsToProcceedCount' => $elementsToProcceedCount,
             'redirectionRoute' => $redirectionRoute,
             'title' => $this->title ? $this->title : $functionToExecute, ]);
+    }
+
+    protected function filterElements($qb)
+    {
+        return $qb;
     }
 
     protected function redirectToIndex()

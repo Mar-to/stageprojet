@@ -32,6 +32,12 @@ class ConfigurationDuplicates
      */
     private $currentProcessState;
 
+    /**  @MongoDB\Field(type="collection") */
+    private $sourcesToDetectFrom = [];
+
+    /**  @MongoDB\Field(type="collection") */
+    private $sourcesToDetectWith = [];
+
     private $formFields = [];
     private $fieldsInvolvded = null;
 
@@ -194,6 +200,46 @@ class ConfigurationDuplicates
     public function setDetectAfterImport($detectAfterImport)
     {
         $this->detectAfterImport = $detectAfterImport;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of sourcesToDetectFrom
+     */ 
+    public function getSourcesToDetectFrom()
+    {
+        return $this->sourcesToDetectFrom;
+    }
+
+    /**
+     * Set the value of sourcesToDetectFrom
+     *
+     * @return  self
+     */ 
+    public function setSourcesToDetectFrom($sourcesToDetectFrom)
+    {
+        $this->sourcesToDetectFrom = $sourcesToDetectFrom;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of sourcesToDetectWith
+     */ 
+    public function getSourcesToDetectWith()
+    {
+        return $this->sourcesToDetectWith;
+    }
+
+    /**
+     * Set the value of sourcesToDetectWith
+     *
+     * @return  self
+     */ 
+    public function setSourcesToDetectWith($sourcesToDetectWith)
+    {
+        $this->sourcesToDetectWith = $sourcesToDetectWith;
 
         return $this;
     }

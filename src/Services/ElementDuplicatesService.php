@@ -29,12 +29,12 @@ class ElementDuplicatesService
         return $this->dupConfig;
     }
 
-    public function detectDuplicatesFor($element)
+    public function detectDuplicatesFor($element, $restrictToSources = [])
     {       
         if ($element->getStatus() >= ElementStatus::PendingModification
         && !in_array($element->getId(), $this->duplicatesFound)
         && !$element->isPotentialDuplicate()) {
-            $duplicates = $this->dm->get('Element')->findDuplicatesFor($element, $this->duplicatesFound);
+            $duplicates = $this->dm->get('Element')->findDuplicatesFor($element, $this->duplicatesFound, $restrictToSources);
             if (count($duplicates) == 0) return null;
             // only keep two duplicates, so get easier to manage for the users (less complicated cases)
             // so we sort duplicates and keep first (best choice)

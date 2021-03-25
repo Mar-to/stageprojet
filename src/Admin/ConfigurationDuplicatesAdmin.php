@@ -78,6 +78,25 @@ class ConfigurationDuplicatesAdmin extends ConfigurationAbstractAdmin
                         'class' => 'gogo-source-priority',
                         'data-source-list' => $sourceList]])
             ->end()
+
+            ->with('Restreindre la détection manuelle (optionel)', ['box_class' => 'box box-default'])
+                ->add('duplicates.sourcesToDetectFrom', ChoiceType::class, [
+                    'label' => "Chercher les doublons entre les sources (laisser vide pour chercher dans toute la base de donnée)",
+                    'choice_label' => function ($choice, $key, $value) {
+                        if ('' === $value) return 'Cette carte';              
+                        return $value;
+                    },
+                    'choices' => $sourceList,
+                    'multiple' => true, 'required' => false])
+                ->add('duplicates.sourcesToDetectWith', ChoiceType::class, [
+                    'label' => "Et les sources (laisser vide pour chercher dans toute la base de donnée)",
+                    'choices' => $sourceList,
+                    'choice_label' => function ($choice, $key, $value) {
+                        if ('' === $value) return 'Cette carte';              
+                        return $value;
+                    },
+                    'multiple' => true, 'required' => false])
+            ->end()
         ;
     }
 }
