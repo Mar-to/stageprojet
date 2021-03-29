@@ -36,6 +36,7 @@ class ConfigurationDuplicatesAdmin extends ConfigurationAbstractAdmin
 
         $sourceList = $dm->query('Element')->distinct('sourceKey')->getArray();
         $sourceList = array_merge($sourceList, $dm->query('Import')->distinct('sourceName')->getArray());
+        $sourceList = array_unique($sourceList);
         // Remove no more used sources
         $priorityList = $this->getSubject()->getDuplicates()->getSourcePriorityInAutomaticMerge();
         $newPriorityList = [];
