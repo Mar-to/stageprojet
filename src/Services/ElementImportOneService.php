@@ -164,11 +164,12 @@ class ElementImportOneService
         if (0 == $lat || 0 == $lng) {
             $element->setModerationState(ModerationState::GeolocError);
         }
+        
         $element->setGeo(new Coordinates($lat, $lng));
         $this->createImages($element, $row);
         $this->createFiles($element, $row);
         $this->createOpenHours($element, $row);
-        unset($row['osm/opening_hours']);
+        unset($row['osm_opening_hours']);
         $this->saveCustomFields($element, $row);
 
         if ($updateExisting) {
@@ -283,10 +284,10 @@ class ElementImportOneService
 
     private function createOpenHours($element, $row)
     {
-        if(isset($row['osm/opening_hours'])) {
+        if(isset($row['osm_opening_hours'])) {
             try {
                 $oh = new OpenHours();
-                $oh->buildFromOsm($row['osm/opening_hours']);
+                $oh->buildFromOsm($row['osm_opening_hours']);
                 $element->setOpenHours($oh);                
             }
             catch(\Exception $e) {;}

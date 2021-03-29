@@ -26,7 +26,7 @@
             {% set readonly = true %}
             {% set value = value|json_encode %}
           {% endif %}
-          {% if key matches '/^osm\\//' %}
+          {% if key matches '/^osm_/' %}
             {% set readonly = true %}
           {% endif %}
           <input type="{{ type }}" class="form-control" {{ readonly ? 'readonly="readonly"' : '' }}

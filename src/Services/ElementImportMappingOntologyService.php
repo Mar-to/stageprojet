@@ -100,11 +100,12 @@ class ElementImportMappingOntologyService
             // handle some special cases
             if ($import->getSourceType() == 'osm') {
                 switch ($prop) {
-                    case 'source': $mappedProp = 'osm/source'; break; // we don't want to overide GoGoCarto source field with Osm field
-                    case 'opening_hours': $mappedProp = 'osm/opening_hours'; break;
-                    case 'version': $mappedProp = 'osm/version'; break;
-                    case 'timestamp': $mappedProp = 'osm/timestamp'; break;
-                    case 'type': $mappedProp = 'osm/type'; break;
+                    case 'source': $mappedProp = 'osm_source'; break; // we don't want to overide GoGoCarto source field with Osm field
+                    case 'opening_hours': $mappedProp = 'osm_opening_hours'; break;
+                    case 'version': $mappedProp = 'osm_version'; break;
+                    case 'timestamp': $mappedProp = 'osm_timestamp'; break;
+                    case 'type': $mappedProp = 'osm_type'; break;
+                    case 'osmUrl': $mappedProp = 'osm_url'; break;
                 }
             }
             // use alternative name, like lat instead of latitude

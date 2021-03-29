@@ -125,10 +125,11 @@
       specificData.push({id: 'source', text: "Origine de l'élément (source)"});    
     specificData.push({id: 'openHours', text: "Horaires d'ouverture (format GoGoCarto)"});
     if (importType == 'osm') {
-      specificData.push({id: 'osm/source', text: "Source de la donnée OpenStreetMap"});
-      specificData.push({id: 'osm/opening_hours', text: "Horaires d'ouverture (format OSM)"});
-      specificData.push({id: 'osm/version', text: "OSM Version (mappé automatiquement)"});
-      specificData.push({id: 'osm/timestamp', text: "OSM Timestamp (mappé automatiquement)"});
+      specificData.push({id: 'osm_source', text: "Source de la donnée OpenStreetMap"});
+      specificData.push({id: 'osm_opening_hours', text: "Horaires d'ouverture (format OSM)"});
+      specificData.push({id: 'osm_version', text: "OSM Version (mappé automatiquement)"});
+      specificData.push({id: 'osm_timestamp', text: "OSM Timestamp (mappé automatiquement)"});
+      specificData.push({id: 'osm_url', text: "OSM Url (mappé automatiquement)"});
     }    
 
     allProperties = $.map(coreData.concat(specificData), function(el) { return el.id });
@@ -153,6 +154,7 @@
       var originName = '{{ originName }}';
       if (originName && allProperties.indexOf(originName) == -1 && coreFields.indexOf(originName) == -1 && originName != '/')
       {
+        originName = originName.split('/')[originName.split('/').length - 1]
         importedData.push({id: originName, text:  originName});
         allProperties.push(originName);
       }
@@ -201,7 +203,9 @@
 
     // on arrow click, use the original name
     $('.mapping-ontology-table .arrow-icon').click(function() {
-      $(this).parent().parent().find('.property-selector:not(.select2-container)').val($(this).parent().siblings('.original').text()).trigger('change');
+      let valueTocopy = $(this).parent().siblings('.original').text().split('/')
+      valueTocopy = valueTocopy[valueTocopy.length - 1] // get last
+      $(this).parent().parent().find('.property-selector:not(.select2-container)').val(valueTocopy).trigger('change');
     });
 
     $('.mapping-ontology-table .clear-icon').click(function() {

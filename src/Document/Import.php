@@ -493,7 +493,7 @@ class Import extends AbstractFile
      */
     public function getFieldToCheckElementHaveBeenUpdated()
     {
-        if ($this->getSourceType() == 'osm') return 'osm/version';
+        if ($this->getSourceType() == 'osm') return 'osm_version';
         return $this->fieldToCheckElementHaveBeenUpdated ?? 'updateAt';
     }
 

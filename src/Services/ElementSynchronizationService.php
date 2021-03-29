@@ -44,65 +44,35 @@ class ElementSynchronizationService
                 // Init OSM API handler
                 $osm = $this->getOsmApiHandler();
                 $element = $contribution->getElement();
-                $osmFeature = $this->elementToOsm($element);
-                $osmFeaturesMainTags = $this->getOsmFeatureMainTags($osmFeature);
-                if (count($osmFeaturesMainTags) == 0) {
+                $gogoFeature = $this->elementToOsm($element);
+                $gogoFeaturesMainTags = $this->getMainTags($gogoFeature);
+                if (count($gogoFeaturesMainTags) == 0) {
                     return $promise->resolve(new Response(500, [], null, '1.1', "Cet élément n'a aucun des clés principales d'OpenStreetMap (amenity, shop...)"));
                 }
 
                 // Check contribution validity according to OSM criterias
-                if($this->allowOsmUpload($contribution, $preparedData)) {
+                if ($this->allowOsmUpload($contribution, $preparedData)) {
                     $toAdd = null;
 
                     // Process contribution
                     // New feature
-                    if($preparedData['action'] == 'add') {
-                        $toAdd = $osm->createNode($osmFeature['center']['latitude'], $osmFeature['center']['longitude'], $osmFeature['tags']);
+                    if ($preparedData['action'] == 'add') {
+                        $toAdd = $osm->createNode($gogoFeature['center']['latitude'], $gogoFeature['center']['longitude'], $gogoFeature['tags']);
                     }
                     // Edit existing feature
-                    else if($preparedData['action'] == 'edit') {
-                        $existingFeature = null;
+                    else if ($preparedData['action'] == 'edit') {
+                        $osmFeature = null;
+                        $getType = "get".ucfirst($gogoFeature['type']);
+                        $osmFeature = $osm->$getType($gogoFeature['osmId']);
 
-                        switch($element->getProperty('osm/type')) {
-                            case 'node':
-                                $existingFeature = $osm->getNode($osmFeature['osmId']);
-                                break;
-                            case 'way':
-                                $existingFeature = $osm->getWay($osmFeature['osmId']);
-                                break;
-                            case 'relation':
-                                $existingFeature = $osm->getRelation($osmFeature['osmId']);
-                                break;
-                        }
-
-                        if($existingFeature) {
+                        if ($osmFeature) {
                             // Check version number (to make sure Gogocarto version is the latest)
-                            if($existingFeature->getVersion() == intval($osmFeature['version'])) {
-                                // Edit tags
-                                foreach($osmFeature['tags'] as $k => $v) {
-                                    if($v == null || $v == '') {
-                                        $existingFeature->removeTag($k);
-                                    }
-                                    else {
-                                        $existingFeature->setTag($k, $v);
-                                    }
-                                }
-
-                                // If node coordinates are edited, check if it is detached
-                                if($element->getProperty('osm/type') == 'node' && (!$existingFeature->getWays()->valid() || $existingFeature->getWays()->count() == 0)) {
-                                    if($osmFeature['center']['latitude'] != $existingFeature->getLat()) {
-                                        $existingFeature->setLat($osmFeature['center']['latitude']);
-                                    }
-
-                                    if($osmFeature['center']['longitude'] != $existingFeature->getLon()) {
-                                        $existingFeature->setLon($osmFeature['center']['longitude']);
-                                    }
-                                }
-
-                                $toAdd = $existingFeature;
+                            if ($osmFeature->getVersion() == intval($gogoFeature['version'])) {
+                                if ($this->editOsmFeatureWithGoGoFeature($osmFeature, $gogoFeature))
+                                    $toAdd = $osmFeature;
                             }
                             else {
-                                $message = 'Feature versions mismatch: '.$osmFeature['version'].' on our side, '.$existingFeature->getVersion().' on OSM';
+                                $message = 'Feature versions mismatch: '.$gogoFeature['version'].' on our side, '.$osmFeature->getVersion().' on OSM';
                                 return $promise->resolve(new Response(500, [], null, '1.1', $message));
                             }
                         }
@@ -113,16 +83,8 @@ class ElementSynchronizationService
                     }
 
                     // Create changeset and upload changes
-                    if(isset($toAdd)) {
-                        $changeset = $osm->createChangeset();
-                        $changeset->setId(-1); // To prevent bug with setTag
-                        $changeset->setTag('host', $this->urlService->generateUrl());
-                        $changeset->setTag('created_by:library', 'GoGoCarto');
-                        $changeset->setTag('created_by', $this->getConfig()->getAppName());
-                        $changeset->begin($this->getOsmComment($preparedData));
-
-                        // Add edited feature to changeset
-                        $changeset->add($toAdd);
+                    if (isset($toAdd)) {
+                        $changeset = $this->createsChangeSet($osm, $toAdd, $this->getOsmComment($preparedData));
 
                         // Close changeset
                         try {
@@ -131,30 +93,21 @@ class ElementSynchronizationService
                             // Update version in case of feature edit
                             $toUpdateInDb = null;
 
-                            if($preparedData['action'] == 'add') {
+                            if ($preparedData['action'] == 'add') {
                                 $toUpdateInDb = $osm->getNode($toAdd->getId());
                             }
-                            else if($preparedData['action'] == 'edit') {
-                                switch($element->getProperty('osm/type')) {
-                                    case 'node':
-                                        $toUpdateInDb = $osm->getNode($osmFeature['osmId']);
-                                        break;
-                                    case 'way':
-                                        $toUpdateInDb = $osm->getWay($osmFeature['osmId']);
-                                        break;
-                                    case 'relation':
-                                        $toUpdateInDb = $osm->getRelation($osmFeature['osmId']);
-                                        break;
-                                }
+                            else if ($preparedData['action'] == 'edit') {
+                                $toUpdateInDb = $osm->$getType($gogoFeature['osmId']);
                             }
 
-                            if($toUpdateInDb) {
-                                if($preparedData['action'] == 'add') {
-                                    $element->setCustomProperty('osm/type', 'node');
+                            if ($toUpdateInDb) {
+                                if ($preparedData['action'] == 'add') {
+                                    $element->setCustomProperty('osm_type', 'node');
                                     $element->setOldId($toUpdateInDb->getId());
                                 }
-                                $element->setCustomProperty('osm/version', $toUpdateInDb->getVersion());
-                                $element->setCustomProperty('osm/timestamp', strval($toUpdateInDb->getAttributes()->timestamp));
+                                $element->setCustomProperty('osm_url', $element->getOsmUrl($this->config));
+                                $element->setCustomProperty('osm_version', $toUpdateInDb->getVersion());
+                                $element->setCustomProperty('osm_timestamp', strval($toUpdateInDb->getAttributes()->timestamp));
                                 $this->dm->persist($element);
                                 $this->dm->flush();
                             }
@@ -180,29 +133,82 @@ class ElementSynchronizationService
         return $promise;
     }
 
+    private function editOsmFeatureWithGoGoFeature($osmFeature, $gogoFeature)
+    {
+        // Avoid empty commit : in gogocarto the update might be on field that are not sent to OSM
+        $isNewFeatureDifferentFromOldOne = false;
+
+        // Edit tags
+        $osmTags = $osmFeature->getTags();
+        foreach($gogoFeature['tags']  as $tagKey => $gogoTagValue) {
+            if (isset($osmTags[$tagKey]) && $osmTags[$tagKey] != $gogoTagValue) $isNewFeatureDifferentFromOldOne = true;
+        }
+
+        foreach($gogoFeature['tags'] as $k => $v) {
+            if ($v == null || $v == '') {
+                $osmFeature->removeTag($k);
+            }
+            else {
+                $osmFeature->setTag($k, $v);
+            }
+        }
+
+        // If node coordinates are edited, check if it is detached
+        if ($gogoFeature['type'] == 'node' && (!$osmFeature->getWays()->valid() || $osmFeature->getWays()->count() == 0)) {
+            if ($gogoFeature['center']['latitude'] != $osmFeature->getLat()) {
+                $osmFeature->setLat($gogoFeature['center']['latitude']);
+                $isNewFeatureDifferentFromOldOne = true;
+            }
+            if ($gogoFeature['center']['longitude'] != $osmFeature->getLon()) {
+                $osmFeature->setLon($gogoFeature['center']['longitude']);
+                $isNewFeatureDifferentFromOldOne = true;
+            }
+        }
+        
+        return $isNewFeatureDifferentFromOldOne;
+    }
+
+    private function createsChangeSet($osm, $feature, $comment)
+    {
+        $changeset = $osm->createChangeset();
+        $changeset->setId(-1); // To prevent bug with setTag
+        $changeset->setTag('host', $this->urlService->generateUrl());
+        $changeset->setTag('created_by:library', 'GoGoCarto');
+        $changeset->setTag('created_by', $this->getConfig()->getAppName());
+        $changeset->begin($comment);
+
+        // Add edited feature to changeset
+        $changeset->add($feature);
+
+        return $changeset;
+    }
+
     /**
      * Convert an element into a JSON-like OSM feature
      */
     public function elementToOsm(Element $element)
     {
         if (!$element->isSynchedWithExternalDatabase()) return null;
-        $osmFeature = [];
+        $gogoFeature = [];
 
         // Get original mappings
         $ontology = $element->getSource()->getOntologyMapping();
         $taxonomy = $element->getSource()->getTaxonomyMapping();
 
+        // Type
+        $gogoFeature['type'] = $element->getProperty('osm_type');
+
         // Coordinates
-        $osmFeature['center']['latitude'] = $element->getGeo()->getLatitude();
-        $osmFeature['center']['longitude'] = $element->getGeo()->getLongitude();
+        $gogoFeature['center']['latitude'] = $element->getGeo()->getLatitude();
+        $gogoFeature['center']['longitude'] = $element->getGeo()->getLongitude();
 
         // Categories
         foreach($taxonomy as $taxonomyKey => $taxonomyValue) {
             foreach($ontology as $ontologyKey => $ontologyValue) {
                 $ontologySubkeys = explode("/", $ontologyKey);
                 $ontologyTrueKey = array_pop($ontologySubkeys);
-                if($ontologyTrueKey == $taxonomyValue['fieldName']) {
-                    $this->setNestedArrayValue($osmFeature, $ontologyKey, $taxonomyKey, "/");
+                if ($ontologyTrueKey == $taxonomyValue['fieldName']) {
+                    $this->setNestedArrayValue($gogoFeature, $ontologyKey, $taxonomyKey, "/");
                 }
             }
         }
@@ -211,11 +217,11 @@ class ElementSynchronizationService
         $myCoreFields = array_diff($element::CORE_FIELDS, ['latitude', 'longitude', 'categories']);
         foreach($myCoreFields as $field) {
             $elemValue = $element->getProperty($field);
-            if(isset($elemValue)) {
+            if (isset($elemValue)) {
                 // Ontology
                 foreach($ontology as $ontologyKey => $ontologyValue) {
-                    if($ontologyValue['mappedProperty'] == $field) {
-                        $this->setNestedArrayValue($osmFeature, $ontologyKey, $elemValue, "/");
+                    if ($ontologyValue['mappedProperty'] == $field) {
+                        $this->setNestedArrayValue($gogoFeature, $ontologyKey, $elemValue, "/");
                         break;
                     }
                 }
@@ -225,19 +231,19 @@ class ElementSynchronizationService
         // Custom data
         foreach($element->getData() as $elemKey => $elemValue) {
             foreach($ontology as $ontologyKey => $ontologyValue) {
-                if($ontologyValue['mappedProperty'] == $elemKey) {
-                    $this->setNestedArrayValue($osmFeature, $ontologyKey, $elemValue, "/");
+                if ($ontologyValue['mappedProperty'] == $elemKey) {
+                    $this->setNestedArrayValue($gogoFeature, $ontologyKey, $elemValue, "/");
                     break;
                 }
             }
         }
 
         // Other data
-        $osmFeature['osmId'] = intval($element->getProperty('oldId'));
-        if($element->getOpenHours()) {
+        $gogoFeature['osmId'] = intval($element->getProperty('oldId'));
+        if ($element->getOpenHours()) {
             $h = $element->getOpenHours()->toOsm();
-            if(strlen($h) > 0) {
-                $osmFeature['tags']['opening_hours'] = $h;
+            if (strlen($h) > 0) {
+                $gogoFeature['tags']['opening_hours'] = $h;
             }
         }
 
@@ -246,8 +252,8 @@ class ElementSynchronizationService
         if (count($queries) == 1) {
             $query = $queries[0];
             foreach($query as $condition) {
-                if ($condition->operator == "=" && !isset($osmFeature['tags'][$condition->key]))
-                    $osmFeature['tags'][$condition->key] = $condition->value;
+                if ($condition->operator == "=" && !isset($gogoFeature['tags'][$condition->key]))
+                    $gogoFeature['tags'][$condition->key] = $condition->value;
             }
         }
         
@@ -256,7 +262,7 @@ class ElementSynchronizationService
             eval(str_replace('<?php', '', $element->getSource()->getCustomCodeForExport()));
         } catch (\Exception $e) {}
 
-        return $osmFeature;
+        return $gogoFeature;
     }
 
     /**
@@ -271,11 +277,11 @@ class ElementSynchronizationService
     {
         if ($this->linkElementToExistingOsmImport($element)) {
             // Get element in OSM format
-            $osmFeature = $this->elementToOsm($element);
-            $osmFeaturesMainTags = $this->getOsmFeatureMainTags($osmFeature);
+            $gogoFeature = $this->elementToOsm($element);
+            $gogoFeaturesMainTags = $this->getMainTags($gogoFeature);
 
             // If can't find main tags, do not send to OSM, feature might be broken
-            if(count($osmFeaturesMainTags) == 0) {
+            if (count($gogoFeaturesMainTags) == 0) {
                 return ['result' => false, 'duplicates' => []];
             }
             // Otherwise, start looking for duplicates
@@ -284,15 +290,15 @@ class ElementSynchronizationService
 
                 // Compute bounding box to retrieve
                 $radiusKm = self::OSM_SEARCH_RADIUS_METERS / 1000;
-                $north = $osmFeature['center']['latitude'] + ($radiusKm / self::EARTH_RADIUS) * (180 / M_PI);
-                $east = $osmFeature['center']['longitude'] + ($radiusKm / self::EARTH_RADIUS) * (180 / M_PI) / cos($osmFeature['center']['latitude'] * M_PI / 180);
-                $south = $osmFeature['center']['latitude'] - ($radiusKm / self::EARTH_RADIUS) * (180 / M_PI);
-                $west = $osmFeature['center']['longitude'] - ($radiusKm / self::EARTH_RADIUS) * (180 / M_PI) / cos($osmFeature['center']['latitude'] * M_PI / 180);
+                $north = $gogoFeature['center']['latitude'] + ($radiusKm / self::EARTH_RADIUS) * (180 / M_PI);
+                $east = $gogoFeature['center']['longitude'] + ($radiusKm / self::EARTH_RADIUS) * (180 / M_PI) / cos($gogoFeature['center']['latitude'] * M_PI / 180);
+                $south = $gogoFeature['center']['latitude'] - ($radiusKm / self::EARTH_RADIUS) * (180 / M_PI);
+                $west = $gogoFeature['center']['longitude'] - ($radiusKm / self::EARTH_RADIUS) * (180 / M_PI) / cos($gogoFeature['center']['latitude'] * M_PI / 180);
 
                 // Load data from OSM editing API
                 $osm = $this->getOsmApiHandler();
                 $osm->get($west, $south, $east, $north);
-                $potentialDuplicates = $osm->search($osmFeaturesMainTags);
+                $potentialDuplicates = $osm->search($gogoFeaturesMainTags);
 
                 // Transform found potential duplicates into GogoCarto format$
                 foreach($potentialDuplicates as $dup) {
@@ -320,7 +326,7 @@ class ElementSynchronizationService
     /**
      * Extract the mains tags from the osm feature
      */
-    public function getOsmFeatureMainTags($osmFeature)
+    public function getMainTags($osmFeature)
     {
         // List tags to use for potential duplicates search
         $osmFeaturesMainTags = array_filter(
@@ -331,7 +337,7 @@ class ElementSynchronizationService
             ARRAY_FILTER_USE_KEY
         );
 
-        if(count($osmFeaturesMainTags) == 0) {
+        if (count($osmFeaturesMainTags) == 0) {
             $osmFeaturesMainTags = array_filter(
                 $osmFeature['tags'],
                 function($key) {
@@ -358,88 +364,38 @@ class ElementSynchronizationService
     {
         // Init OSM API handler
         $osm = $this->getOsmApiHandler();
-        $osmFeature = $this->elementToOsm($element);
-        $existingFeature = null;
-        $osmIdParts = explode('/', $osmId);
+        $gogoFeature = $this->elementToOsm($element);
+        $osmFeature = null;
+        $osmIdParts = explode('/', $osmId); // OSM id is as follow : type/ID <=> node/145236545
+        $gogoFeature['type'] = $osmIdParts[0];
+        $getType = 'get'.ucfirst($osmIdParts[0]);
+        $osmFeature = $osm->$getType($osmIdParts[1]);
 
-        switch($osmIdParts[0]) {
-            case 'node':
-                $existingFeature = $osm->getNode($osmIdParts[1]);
-                break;
-            case 'way':
-                $existingFeature = $osm->getWay($osmIdParts[1]);
-                break;
-            case 'relation':
-                $existingFeature = $osm->getRelation($osmIdParts[1]);
-                break;
-        }
+        if (!$osmFeature) return;
 
-        if($existingFeature) {
-            // Edit tags
-            foreach($osmFeature['tags'] as $k => $v) {
-                if($v == null || $v == '') {
-                    $existingFeature->removeTag($k);
-                }
-                else {
-                    $existingFeature->setTag($k, $v);
-                }
-            }
+        $somethingChanged = $this->editOsmFeatureWithGoGoFeature($osmFeature, $gogoFeature);
+        if (!$somethingChanged) return;
 
-            // If node coordinates are edited, check if it is detached
-            if($osmIdParts[0] == 'node' && (!$existingFeature->getWays()->valid() || $existingFeature->getWays()->count() == 0)) {
-                if($osmFeature['center']['latitude'] != $existingFeature->getLat()) {
-                    $existingFeature->setLat($osmFeature['center']['latitude']);
-                }
+        $comment = 'Mise à jour attributs '.($osmFeature->getTag('name') ?? $osmFeature->getTag('brand') ?? $osmFeature->getTag('operator') ?? $osmId);
+        $changeset = $this->createsChangeSet($osm, $osmFeature, $comment);
 
-                if($osmFeature['center']['longitude'] != $existingFeature->getLon()) {
-                    $existingFeature->setLon($osmFeature['center']['longitude']);
-                }
-            }
+        // Close changeset
+        try {
+            $changeset->commit();
 
-            // Create changeset
-            $changeset = $osm->createChangeset();
-            $changeset->setId(-1); // To prevent bug with setTag
-            $changeset->setTag('host', $this->urlService->generateUrl());
-            $changeset->setTag('created_by:library', 'GoGoCarto');
-            $changeset->setTag('created_by', $this->getConfig()->getAppName());
-            $changeset->begin('Mise à jour attributs '.($existingFeature->getTag('name') ?? $existingFeature->getTag('brand') ?? $existingFeature->getTag('operator') ?? $osmId));
-
-            // Add edited feature to changeset
-            $changeset->add($existingFeature);
-
-            // Close changeset
-            try {
-                $changeset->commit();
-
-                // Update version in case of feature edit
-                $toUpdateInDb = null;
-                switch($osmIdParts[0]) {
-                    case 'node':
-                        $toUpdateInDb = $osm->getNode($osmIdParts[1]);
-                        break;
-                    case 'way':
-                        $toUpdateInDb = $osm->getWay($osmIdParts[1]);
-                        break;
-                    case 'relation':
-                        $toUpdateInDb = $osm->getRelation($osmIdParts[1]);
-                        break;
-                }
-
-                if($toUpdateInDb) {
-                    $element->setOldId($osmIdParts[1]);
-                    $element->setCustomProperty('osm/type', $toUpdateInDb->getType());
-                    $element->setCustomProperty('osm/version', $toUpdateInDb->getVersion());
-                    $element->setCustomProperty('osm/timestamp', strval($toUpdateInDb->getAttributes()->timestamp));
-                    $this->dm->persist($element);
-                    $this->dm->flush();
-                }
-            }
-            catch(\Exception $e) {
-                // Error when sending changeset
+            // Update version in case of feature edit
+            if ($toUpdateInDb = $osm->$getType($osmIdParts[1])) {
+                $element->setOldId($osmIdParts[1]);
+                $element->setCustomProperty('osm_type', $toUpdateInDb->getType());
+                $element->setCustomProperty('osm_version', $toUpdateInDb->getVersion());
+                $element->setCustomProperty('osm_timestamp', strval($toUpdateInDb->getAttributes()->timestamp));
+                $element->setCustomProperty('osm_url', $element->getOsmUrl($this->config));
+                $this->dm->persist($element);
+                $this->dm->flush();
             }
         }
-        else {
-            // Feature does not exist on OSM
+        catch(\Exception $e) {
+            // Error when sending changeset
         }
     }
 
@@ -509,7 +465,7 @@ class ElementSynchronizationService
         $str = '';
 
         foreach($tags as $k => $v) {
-            if(strlen($str) > 0) { $str .= ', '; }
+            if (strlen($str) > 0) { $str .= ', '; }
             $str .= $k.' = '.$v;
         }
 
@@ -522,7 +478,7 @@ class ElementSynchronizationService
     private function allowOsmUpload($contribution, $preparedData) {
         return $contribution->hasBeenAccepted()
             && ($preparedData['action'] == 'edit' 
-            || $preparedData['action'] == 'add' && !$contribution->getElement()->getProperty('osm/version')); // when adding an element, if we find a duplicate on OSM and we say "that's the same", then the gogocarto element is merged with the OSM feature. But an Add contribution is still created, and we should ignore it
+            || $preparedData['action'] == 'add' && !$contribution->getElement()->getProperty('osm_version')); // when adding an element, if we find a duplicate on OSM and we say "that's the same", then the gogocarto element is merged with the OSM feature. But an Add contribution is still created, and we should ignore it
     }
 
     /**
