@@ -83,8 +83,8 @@ class ConfigurationDuplicatesAdmin extends ConfigurationAbstractAdmin
                 ->add('duplicates.sourcesToDetectFrom', ChoiceType::class, [
                     'label' => "Chercher les doublons entre les sources (laisser vide pour chercher dans toute la base de donnée)",
                     'choice_label' => function ($choice, $key, $value) {
-                        if ('' === $value) return 'Cette carte';              
-                        return $value;
+                        if ('' === $choice) return 'Cette carte';  
+                        return $choice;
                     },
                     'choices' => $sourceList,
                     'multiple' => true, 'required' => false])
@@ -92,8 +92,8 @@ class ConfigurationDuplicatesAdmin extends ConfigurationAbstractAdmin
                     'label' => "Et les sources (laisser vide pour chercher dans toute la base de donnée)",
                     'choices' => $sourceList,
                     'choice_label' => function ($choice, $key, $value) {
-                        if ('' === $value) return 'Cette carte';              
-                        return $value;
+                        if ('' === $choice) return 'Cette carte';              
+                        return $choice;
                     },
                     'multiple' => true, 'required' => false])
             ->end()
