@@ -101,7 +101,7 @@ class ElementImportService
      */
     public function importJson($import, $onlyGetData = false)
     {
-        $json = file_get_contents(str_replace(' ', '%20', $import->getUrl()));
+        $json = file_get_contents(str_replace(' ', '%20', $import->getUrl()), 0, stream_context_create(["http"=>["timeout"=>300]]));
         $data = json_decode($json, true);
         if (null === $data) return null;
         if ($onlyGetData) return $data;        
