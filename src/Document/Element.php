@@ -398,7 +398,7 @@ class Element
     public function getOsmUrl($config)
     {
         if (!$this->isFromOsm()) return '';
-        return $config->getOsm()->getFormattedOsmHost() . $this->getProperty('osm/type') . '/' . $this->getOldId();
+        return $config->getOsm()->getFormattedOsmHost() . $this->getProperty('osm_type') . '/' . $this->getOldId();
     }
 
     public function getShowUrlFromController($router)
