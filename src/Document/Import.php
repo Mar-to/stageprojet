@@ -230,6 +230,11 @@ class Import extends AbstractFile
         if ($this->file) return 'csv';
     }
 
+    public function isHandlingCategories()
+    {
+        return count($this->taxonomyMapping) > 0 || count($optionsToAddToEachElement) > 0;
+    }
+
     /**
      * Get id.
      *

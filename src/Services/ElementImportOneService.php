@@ -299,6 +299,7 @@ class ElementImportOneService
 
     private function createOptionValues($element, $row, $import)
     {
+        if (!$import->isHandlingCategories()) return;
         $element->resetOptionsValues();
         $optionsIdAdded = [];
         $defaultOption = ['index' => 0, 'description' => ''];
