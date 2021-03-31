@@ -11,6 +11,8 @@ use Geocoder\ProviderAggregator;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
 
 class UserController extends GoGoController
 {
@@ -99,17 +101,18 @@ class UserController extends GoGoController
             $user = $this->getUser();
             $userEmail = $user->getEmail();
             $element->setUserOwnerEmail($userEmail);
-            $session->getFlashBag()->add('success', 'Vous êtes maintenant propriétaire de la fiche '.$element->getName().' !');
+            $session->getFlashBag()->add('success', $t->trans('add_element.success_becomeOwner', $name=$element->getName() ));
             $dm->flush();
         } else {
-            $session->getFlashBag()->add('error', "Désolé, cet élément appartient déjà à quelqu'un !");
+            $session->getFlashBag()->add('error', $t->trans('add_element.success_becomeOwner'));
         }
 
         return $this->redirectToRoute('gogo_user_contributions');
     }
 
     public function profileAction(Request $request, SessionInterface $session, DocumentManager $dm,
-                                 ProviderAggregator $geocoder)
+                                 ProviderAggregator $geocoder, 
+                                 TranslatorInterface $t)
     {
         $user = $this->getUser();
         $current_user = clone $user;
@@ -141,17 +144,17 @@ class UserController extends GoGoController
             if ($form->isValid() /*&& !$alreadyUsedEmail */ && !$alreadyUsedUserName && !$locationSetToReceiveNewsletter && !$geocodeError) {
                 $dm->persist($user);
                 $dm->flush();
-                $session->getFlashBag()->add('info', 'Modifications sauvegardées !');
+                $session->getFlashBag()->add('info', $t->trans('add_element.info_saved'));
             } else {
                 // if ($alreadyUsedEmail) $form->get('email')->addError(new FormError('Cet email est déjà utilisé'));
                 if ($alreadyUsedUserName) {
-                    $form->get('username')->addError(new FormError("Ce nom d'utilisateur est déjà pris !"));
+                    $form->get('username')->addError(new FormError($t->trans('add_element.error_username')));
                 }
                 if ($locationSetToReceiveNewsletter) {
-                    $form->get('location')->addError(new FormError('Si vous voulez recevoir les nouveaux ajouts, vous devez renseigner une adresse'));
+                    $form->get('location')->addError(new FormError($t->trans('add_element.error_missing_adress')));
                 }
                 if ($geocodeError) {
-                    $form->get('location')->addError(new FormError('Impossible de localiser cette adresse'));
+                    $form->get('location')->addError(new FormError($t->trans('add_element.error_geocode')));
                 }
             }
         }

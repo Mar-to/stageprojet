@@ -1,6 +1,6 @@
 {# Admin section #}
 <div id="section_admin">
-	<h2 id="admin-title">Validation</h2>
+	<h2 id="admin-title">{{ "admin.title"|trans }}</h2>
 	
 	{% set emailFieldPresent = false %}
 	{% for field in config.getElementFormFields %}
@@ -10,7 +10,11 @@
 	{% if emailFieldPresent %}
 		<div class="checkbox-container col s12">
 			<input type="checkbox" name="send_mail" id="send_mail" checked/>
-			<label for="send_mail">Avertir {{ config.elementDisplayNameDefinite }} {{ editMode ? 'des modifications' : "de l'ajout" }} en lui envoyant un mail</label> 	
+			<label for="send_mail">
+			{{ "admin.send_mail.add"|trans({feature: config.elementDisplayNameIndefinite}) }}
+			{{ "admin.send_mail.modify"|trans({feature: config.elementDisplayNameIndefinite}) }}
+			{{ editMode ? 'des modifications' : "de l'ajout" }}
+			</label> 	
 		</div>
 	{% endif %}
 
@@ -25,13 +29,13 @@
 	{% if not editMode %}
 	<div class="checkbox-container col s12">
 		<input type="checkbox" name="recopyInfo" id="recopy-info"/>
-		<label for="recopy-info">Recopier les informations dans un nouveau formulaire</label> 	
+		<label for="recopy-info">{{ "admin.recopy_info"|trans }}</label> 	
 	</div>
 	{% endif %}
 
 	{% if editMode %}
 		<div class="col s12">
-			<input type="text" name="admin-message" id="admin-message" placeholder="Détail de la modification, ce texte remplacera 'customMessage' dans les mails automatiques"/>
+			<input type="text" name="admin-message" id="admin-message" placeholder="{{ 'admin.admin_message'|trans }}"/>
 		</div>
 	{% endif %}
 

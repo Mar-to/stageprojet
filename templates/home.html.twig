@@ -93,7 +93,7 @@
 		<div>
 			<p class="contribution-text">{{ config.home.addElementHintText }}</p>
 			<a href="{{ path('gogo_element_add') }}">
-				<button class="btn-secondary btn waves-effect waves-light">Ajouter {{ config.elementDisplayNameIndefinite }}</button>
+				<button class="btn-secondary btn waves-effect waves-light">{{ "add_element._label"|trans({feature: config.elementDisplayNameIndefinite}) }}</button>
 			</a>
 		</div>
 
@@ -121,7 +121,7 @@
 
 
 <section id="section-credits" class="">
-		Propulsé par <a href="https://gitlab.adullact.net/pixelhumain/GoGoCarto" style=\"font-weight:bold;color: #bdc900;" target="_blank"><strong>GoGoCarto</strong></a>
+		{{ 'home.credits'|trans({ggc: '<a href="https://gitlab.adullact.net/pixelhumain/GoGoCarto" style=\"font-weight:bold;color: #bdc900;" target="_blank"><strong>GoGoCarto</strong></a>'})|raw }}
 </section>
 
 {% endblock %}

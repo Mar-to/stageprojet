@@ -14,6 +14,8 @@ use App\Document\FeatureConfiguration;
 use App\Document\TileLayer;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
 
 class LoadConfiguration implements FixtureInterface
 {
@@ -61,20 +63,20 @@ class LoadConfiguration implements FixtureInterface
         } else {
             $configuration->setAppName('GoGoCarto');
             $configuration->setAppSlug('gogocarto');
-            $configuration->setAppBaseline('Créez des cartes à GoGo');
+            $configuration->setAppBaseline('Créez des cartes à GoGo'); // TODO translate
 
             $activateHomePage;
             $configuration->setActivatePartnersPage(true);
-            $configuration->setPartnerPageTitle('Partenaires');
+            $configuration->setPartnerPageTitle('Partenaires'); // TODO translate
             $configuration->setActivateAbouts(true);
-            $configuration->setAboutHeaderTitle('A propos');
+            $configuration->setAboutHeaderTitle('A propos'); // TODO translate
 
             // HOME
             $configuration->setActivateHomePage(true);
             $confHome = new ConfigurationHome();
             $confHome->setDisplayCategoriesToPick(false);
-            $confHome->setAddElementHintText('Contribuez à enrichir la base de donnée !');
-            $confHome->setSeeMoreButtonText('En savoir plus');
+            $confHome->setAddElementHintText($t->trans('load_configuration.AddElementHintText')); // TODO check translation
+            $confHome->setSeeMoreButtonText('En savoir plus'); // TODO translate
             $configuration->setHome($confHome);
 
             if ($container) {
@@ -107,7 +109,7 @@ class LoadConfiguration implements FixtureInterface
             $configuration->setDefaultSouthWestBoundsLng(-5);
 
             // FORM
-            $configuration->setElementFormGeocodingHelp('Ne mettez pas de ponctuation, les noms tout en majuscules ne sont pas reconnus non plus. Si la localisation ne fonctionne pas (il arrive que certaines adresses ne soient pas reconnues), entrez le nom de la ville/le village le plus proche, cliquez sur « Localiser », puis placer le point de localisation manuellement. Re-rentrez l’adresse complète dans la barre et passez à la suite du formulaire sans re-cliquer sur « localiser ».');
+            $configuration->setElementFormGeocodingHelp('Ne mettez pas de ponctuation, les noms tout en majuscules ne sont pas reconnus non plus. Si la localisation ne fonctionne pas (il arrive que certaines adresses ne soient pas reconnues), entrez le nom de la ville/le village le plus proche, cliquez sur « Localiser », puis placer le point de localisation manuellement. Re-rentrez l’adresse complète dans la barre et passez à la suite du formulaire sans re-cliquer sur « localiser ».');// TODO translate
             $configuration->setCollaborativeModerationExplanations("
             <p>
               Lorsqu'un élément est ajouté ou modifié, la mise à jour des données n'est pas instantanée. L'élément va d'abords apparaître \"grisé\" sur la carte,
@@ -118,7 +120,7 @@ class LoadConfiguration implements FixtureInterface
             <p>
               Au bout d'un certain nombre de votes, l'élément pourra alors être automatiquement validé ou refusé.
               En cas de litige (des votes à la fois positifs et négatifs), un modérateur interviendra au plus vite. On compte sur vous!
-            </p>");
+            </p>");// TODO translate
 
             // IMPORT
             $configuration->setFontImport('');

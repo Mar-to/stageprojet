@@ -12,7 +12,7 @@
 
 {% block title %}
 	{% if editMode %} Edition
-	{% else %}  Ajouter {{ config.elementDisplayNameIndefinite }}
+	{% else %}  {{ "add_element._label"|trans({feature: config.elementDisplayNameIndefinite}) }}
 	{% endif %}
 {% endblock %}
 

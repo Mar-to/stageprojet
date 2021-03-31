@@ -28,6 +28,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccountStatusException;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
 
 class ElementFormController extends GoGoController
 {
@@ -39,7 +41,8 @@ class ElementFormController extends GoGoController
     public function addAction(Request $request, SessionInterface $session, DocumentManager $dm,
                               ConfigurationService $configService,
                               ElementFormService $elementFormService, UserManagerInterface $userManager,
-                              ElementActionService $elementActionService, LoginManagerInterface $loginManager)
+                              ElementActionService $elementActionService, LoginManagerInterface $loginManager, 
+                              TranslatorInterface $t)
     {
         return $this->renderForm(new Element(), false, $request, $session, $dm, $configService, $elementFormService, $userManager, $elementActionService, $loginManager);
     }
@@ -47,12 +50,13 @@ class ElementFormController extends GoGoController
     public function editAction($id, Request $request, SessionInterface $session, DocumentManager $dm,
                                ConfigurationService $configService,
                                ElementFormService $elementFormService, UserManagerInterface $userManager,
-                               ElementActionService $elementActionService, LoginManagerInterface $loginManager)
+                               ElementActionService $elementActionService, LoginManagerInterface $loginManager, 
+                               TranslatorInterface $t)
     {
         $element = $dm->get('Element')->find($id);
 
         if (!$element) {
-            $this->addFlash('error', "L'élément demandé n'existe pas...");
+            $this->addFlash('error', $t->trans('add_element.controller.error'));
 
             return $this->redirectToRoute('gogo_directory');
         } elseif ($element->getStatus() > ElementStatus::PendingAdd && $element->isEditable()
@@ -274,11 +278,11 @@ class ElementFormController extends GoGoController
             $elementToUse = $editMode ? $realElement : $element;
             $elementShowOnMapUrl = $elementToUse->getShowUrlFromController($this->get('router'));
 
-            $noticeText = 'Merci de votre aide ! ';
+            
             if ($editMode) {
-                $noticeText .= 'Les modifications ont bien été prises en compte !';
+                $noticeText = $t->trans('add_element.controller.thankyou.edited');
             } else {
-                $noticeText .= ucwords($configService->getConfig()->getElementDisplayNameDefinite()).' a bien été ajouté :)';
+                $noticeText = $t->trans('add_element.controller.thankyou.thankyou_added', $name=ucwords($configService->getConfig()->getElementDisplayNameDefinite()));
             }
 
             if ($element->isPending()) {

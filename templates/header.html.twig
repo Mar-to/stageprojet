@@ -42,7 +42,7 @@
       {% if config.addFeature.active and (not config.addFeature.isOnlyAllowedForAdmin() or is_granted('ROLE_ADMIN')) %}
 			<div class="col menu-item">
 				<a href="{{ path('gogo_element_add') }}" {% if iframe %}target="_blank"{% endif %}>
-          <span class="header-icon gogo-icon-user-plus"></span><span class="text">{{ "add_element.add_feature"|trans({feature: config.elementDisplayNameIndefinite}) }}</span>
+          <span class="header-icon gogo-icon-user-plus"></span><span class="text">{{ "add_element._label"|trans({feature: config.elementDisplayNameIndefinite}) }}</span>
         </a>
 			</div>
       {% endif %}

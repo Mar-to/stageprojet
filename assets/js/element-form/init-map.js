@@ -46,6 +46,7 @@ function createMarker(position)
 		$('#input-longitude').attr('value',marker.getLatLng().lng);
   });
 
+  // TODO translate message
   marker.bindPopup("<center>Déplacez moi pour préciser la position</br>(au centre du bâtiment)</center>").openPopup();
 }
 

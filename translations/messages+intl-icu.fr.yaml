@@ -4,12 +4,22 @@ home:
   admin_interface: Interface admin
   my_space: Mon Espace
   logout: Se Déconnecter
+  credits: Propulsé par {ggc}
 
 add_element:
-    _label: Ajouter un élément
-    need_help: Aide ?
-    localize: Localiser
-    add_feature: Ajouter {feature}
+  _label: Ajouter {feature}
+  need_help: Aide ?
+  localize: Localiser
+  success_becomeOwner: Vous êtes maintenant propriétaire de la fiche {name} !'
+  error_becomeOwner: Désolé, cet élément appartient déjà à quelqu'un !
+  info_saved: Modifications sauvegardées !
+  error_username: Ce nom d'utilisateur est déjà pris !
+  error_missing_adress: Si vous voulez recevoir les nouveaux ajouts, vous devez renseigner une adresse
+  error_geocode: Impossible de localiser cette adresse
+  controller:
+    error: L'élément demandé n'existe pas...
+    thankyou_edited: Merci de votre aide ! Les modifications ont bien été prises en compte !
+    thankyou_added: Merci de votre aide ! {name} a bien été ajouté
     
 the_map:
   _label: La carte
@@ -32,6 +42,32 @@ login:
   _label: Connexion # voir aussi layout.login dans src/Application/Sonata/UserBundle/Resources/translations/FOSUserBundle.fr.yml
   register: Besoin d'un compte ? <a href="{url}">S'inscrire</a>
 
+admin:
+  title: Validation
+  send_mail:
+    add: Avertir des modifications {element} en lui envoyant un mail
+    modify: Avertir de l'ajout" {element} en lui envoyant un mail
+  recopy_info: Recopier les informations dans un nouveau formulaire
+  admin_message: Détail de la modification, ce texte remplacera 'customMessage' dans les mails automatiques
+
+load_configuration:
+  AppBaseline: Créez des cartes à GoGo
+  PartnerPageTitle: Partenaires
+  AboutHeaderTitle: A propos
+  AddElementHintText: Contribuez à enrichir la base de donnée !
+  SeeMoreButtonText: En savoir plus
+  ElementFormGeocodingHelp: Ne mettez pas de ponctuation, les noms tout en majuscules ne sont pas reconnus non plus. Si la localisation ne fonctionne pas (il arrive que certaines adresses ne soient pas reconnues), entrez le nom de la ville/le village le plus proche, cliquez sur « Localiser », puis placer le point de localisation manuellement. Re-rentrez l’adresse complète dans la barre et passez à la suite du formulaire sans re-cliquer sur « localiser ».
+  CollaborativeModerationExplanations: "
+            <p>
+              Lorsqu'un élément est ajouté ou modifié, la mise à jour des données n'est pas instantanée. L'élément va d'abords apparaître \"grisé\" sur la carte,
+              et il sera alors possible à tous les utilisateurs logué de voter une et une seule fois pour cet élément.
+              Ce vote n'est pas une opinion, mais un partage de connaissance.
+              Si vous connaissez cet élément, ou savez que cet élément n'existe pas, alors votre savoir nous intéresse !
+            </p>
+            <p>
+              Au bout d'un certain nombre de votes, l'élément pourra alors être automatiquement validé ou refusé.
+              En cas de litige (des votes à la fois positifs et négatifs), un modérateur interviendra au plus vite. On compte sur vous!
+            </p>"
 
 commons:
   newsletter-explanation: Soyez informé par mail des nouveaux points référencés près de chez vous !
