@@ -15,6 +15,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RegistrationFormType extends AbstractType
 {
@@ -47,6 +48,7 @@ class RegistrationFormType extends AbstractType
         $repeatedType = 'Symfony\Component\Form\Extension\Core\Type\RepeatedType';
         $passwordType = 'Symfony\Component\Form\Extension\Core\Type\PasswordType';
         $choiceType = 'Symfony\Component\Form\Extension\Core\Type\ChoiceType';
+        
 
         $builder
             ->add('username', null, array_merge([
@@ -76,11 +78,11 @@ class RegistrationFormType extends AbstractType
             ->add('newsletterFrequency', $choiceType, array_merge([
                 'label' => 'form.newsletterFrequency',
                 'translation_domain' => 'SonataUserBundle',
-                'choices' => [
-                    'Jamais' => 0,
-                    'Chaque semaine' => 1,
-                    'Chaque mois' => 2,
-                ],
+                   'choices' => [
+                        'commons.every.week' => 1,
+                        'commons.every.month' => 2,
+                        'commons.never' => 0,
+                   ],
                 'expanded' => true,  'multiple' => false,
                 'required' => false, 'placeholder' => false,
             ], $this->mergeOptions))

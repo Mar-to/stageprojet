@@ -1,10 +1,10 @@
 {% extends "user/layout.html.twig" %}
 
-{% set navTitle = "Mon espace" %}
-{% block title %}Mon espace{% endblock %}
+{% set navTitle = "home.my_space"|trans %}
+{% block title %}{{ "home.my_space"|trans }}{% endblock %}
 
 {% set pageName = 'user-space' %}
 
 {% block body_user_before_content %}
-  <h1>Mon espace</h1>
+  <h1>{{ "home.my_space"|trans }}</h1>
 {% endblock %}

@@ -15,12 +15,12 @@
         <li class="title">Menu</li>
 
         <a href="{{ path('gogo_user_profile') }}">
-          <li><i class="gogo-icon-filters-1"></i>Mes Paramètres</li>
+          <li><i class="gogo-icon-filters-1"></i>{{ "my_parameters._label"|trans }}</li>
         </a>
 
         {% if is_user_allowed('add') or is_user_allowed('edit') %}
           <a href="{{ path('gogo_user_contributions') }}">
-            <li><i class="gogo-icon-edit"></i>Mes contributions</li>
+            <li><i class="gogo-icon-edit"></i>{{ "my_contributions._label"|trans }}</li>
           </a>
         {% endif %}
 

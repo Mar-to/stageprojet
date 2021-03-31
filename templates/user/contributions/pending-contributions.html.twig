@@ -1,9 +1,9 @@
-<h2>Mes Contributions en attente</h2>
+<h2>{{ "pending-contributions._label"|trans }}</h2>
 {% if pendingContributions|length > 0 %}
   <table class="bordered">
     <thead>
       <tr>
-        <th>Fiche</th>
+        <th>{{ "pending-contributions.form"|trans }}</th>
         <th class="type">Type</th>
         <th class="date">Date</th>
         <th class="action">Action</th>
@@ -28,6 +28,6 @@
   </table>
 {% else %}
   <p class="empty-secton-message">
-    Vous n'avez aucune contribution en attente. N'hésitez pas à <a href="{{ path('gogo_element_add') }}">ajouter une fiche</a> !
+    {{ "pending-contributions.empty_section"|trans({url: path('gogo_element_add')})|raw }}
   </p>
 {% endif %}

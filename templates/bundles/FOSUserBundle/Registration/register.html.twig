@@ -15,7 +15,7 @@
             <div class="input-field col s12">
                 <i class="material-icons gogo-icon-account-circle prefix"></i>
                 {{ form_widget(form.username, {'id': 'input-username', 'attr': {'class': 'validate required'}}) }}
-                <label for="input-username" class="gogo-form-label">Nom d'utilisateur</label>
+                <label for="input-username" class="gogo-form-label">{{ "commons.username"|trans }}</label>
             </div>
 
             <div class="error">{{ form_errors(form.email) }}</div>
@@ -41,7 +41,7 @@
         <div class="divider"></div>
         <section>
             <h2 class="optional">Optionnel</h2>
-            <p class="newsletter-explanation gogo-neutral">Soyez informé par mail des nouveaux points référencés près de chez vous !</p>
+            <p class="newsletter-explanation gogo-neutral">{{ "commons.newsletter-explanation"|trans }}</p>
 
             {{ form_widget(form.newsletterFrequency, { 'id': "select-newsletterFrequency"}) }}
 

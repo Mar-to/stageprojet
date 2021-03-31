@@ -18,9 +18,9 @@ class UserProfileType extends AbstractType
               ->add('email', EmailType::class, ['required' => true])
               ->add('newsletterFrequency', ChoiceType::class, [
                    'choices' => [
-                       'Chaque semaine' => 1,
-                       'Chaque mois' => 2,
-                       'Jamais' => 0,
+                        'commons.every.week' => 1,
+                        'commons.every.month' => 2,
+                        'commons.never' => 0,
                    ],
                    'expanded' => true,  'multiple' => false,
                    'required' => false, 'placeholder' => false, ])

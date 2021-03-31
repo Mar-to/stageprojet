@@ -4,9 +4,9 @@
   {{ form_widget(form.fullAddress, {'id': 'input-address', 'value': element.getFormatedAddress(),
                   'attr': {'class': 'validate'  }}) }}
   <label for="input-address" class="gogo-form-label to-html">{{ field.label|raw }}</label>
-  <div class="btn-geolocalize btn btn-secondary waves-effect waves-light">Localiser</div>
+  <div class="btn-geolocalize btn btn-secondary waves-effect waves-light">{{ "add_element.localize"|trans }}</div>
   {% if config.elementFormGeocodingHelp %}
-    <div class="btn-geolocalize-help btn btn-neutral waves-effect waves-light" onclick="$('.geolocalize-help-text').toggle();">Aide ?</div>
+    <div class="btn-geolocalize-help btn btn-neutral waves-effect waves-light" onclick="$('.geolocalize-help-text').toggle();">{{ "add_element.need_help"|trans }}</div>
     <div class="geolocalize-help-text">
         {{ config.elementFormGeocodingHelp|raw}}
         <span class="btn-close gogo-icon-clear" onclick="$(this).parent().slideUp(200);";></span>

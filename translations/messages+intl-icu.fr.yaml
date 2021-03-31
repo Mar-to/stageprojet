@@ -1,10 +1,50 @@
 home:
   pick_category: "Choisissez une catégorie (par défaut : toutes)"
+  geolocalize: Géolocalisez votre position
+  admin_interface: Interface admin
+  my_space: Mon Espace
+  logout: Se Déconnecter
+
+add_element:
+    _label: Ajouter un élément
+    need_help: Aide ?
+    localize: Localiser
+    add_feature: Ajouter {feature}
+    
+the_map:
+  _label: La carte
+
+my_parameters:
+  _label: Mes paramètres
+  input_location: Votre adresse ou votre ville
+  range: 'Rayon de recherche :' # TODO add plurals ?
+  unit: kilomètres
+
+my_contributions:
+  _label: Mes contributions
+
+pending-contributions:
+  _label: Mes Contributions en attente
+  form: Fiche
+  empty_section: Vous n'avez aucune contribution en attente. N'hésitez pas à <a href="{url}">ajouter une fiche</a> !
+
+login:
+  _label: Connexion # voir aussi layout.login dans src/Application/Sonata/UserBundle/Resources/translations/FOSUserBundle.fr.yml
+  register: Besoin d'un compte ? <a href="{url}">S'inscrire</a>
+
 
 commons:
-  # If some messages are reused over diffeents pages
-  actions:
-    search: Rechercher # just an example, can be deleted
+  newsletter-explanation: Soyez informé par mail des nouveaux points référencés près de chez vous !
+  every:
+    week: Chaque semaine
+    month: Chaque mois
+  never: Jamais
+  username: Nom d'utilisateur
+
+# If some messages are reused over diffeents pages
+action:
+  search: Rechercher # just an example, can be deleted
+  submit: Enregistrer
 
 directory: # just an example, can be deleted
 

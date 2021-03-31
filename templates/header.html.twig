@@ -35,14 +35,14 @@
       <div class="nav-overlay" onclick="hideNavDropdown()"></div>
       {% if not iframe %}
   			<div class="col menu-item">
-  			  <a href="{{ path('gogo_directory') }}"><span class="header-icon gogo-icon-map"></span><span class="text">La carte</span></a>
+  			  <a href="{{ path('gogo_directory') }}"><span class="header-icon gogo-icon-map"></span><span class="text">{{"the_map._label"|trans }}</span></a>
   			</div>
       {% endif %}
 
       {% if config.addFeature.active and (not config.addFeature.isOnlyAllowedForAdmin() or is_granted('ROLE_ADMIN')) %}
 			<div class="col menu-item">
 				<a href="{{ path('gogo_element_add') }}" {% if iframe %}target="_blank"{% endif %}>
-          <span class="header-icon gogo-icon-user-plus"></span><span class="text">Ajouter {{ config.elementDisplayNameIndefinite }}</span>
+          <span class="header-icon gogo-icon-user-plus"></span><span class="text">{{ "add_element.add_feature"|trans({feature: config.elementDisplayNameIndefinite}) }}</span>
         </a>
 			</div>
       {% endif %}
@@ -77,19 +77,19 @@
         </div>
         <ul id='listUserActions' class='dropdown-content'>
             <li class="name only-for-admin" {{ is_granted('ROLE_SONATA_ADMIN') ? '' : 'style="display:none"' }}>
-              <a class="about-title-item waves-effect waves-light" href="{{ path('sonata_admin_dashboard') }}">Interface admin</a></li>
+              <a class="about-title-item waves-effect waves-light" href="{{ path('sonata_admin_dashboard') }}">{{ "home.admin_interface"|trans }}</a></li>
             <li class="item-divider"></li>
             <li class="name only-for-user" {{ app.user ? '' : 'style="display:none"' }}>
-              <a class="about-title-item waves-effect waves-light" href="{{ path('gogo_user_space') }}">Mon Espace</a></li>
+              <a class="about-title-item waves-effect waves-light" href="{{ path('gogo_user_space') }}">{{ "home.my_space"|trans }}</a></li>
             <li class="item-divider"></li>
             <li class="name">
-              <a class="about-title-item waves-effect waves-light" onclick="logout()">Se Déconnecter</a></li>
+              <a class="about-title-item waves-effect waves-light" onclick="logout()">{{ "home.logout"|trans }}</a></li>
         </ul>
 
       	<button {{ userName ? 'style="display:none"' : '' }}
   				onclick="$('#popup-login').openModal()" id="btn-login"
   				class="btn btn-login">
-          <span class="text">Connexion</span>
+          <span class="text">{{ "login._label"|trans }}</span>
   			</button>
       {% endif %}
 
