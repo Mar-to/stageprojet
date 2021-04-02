@@ -12,7 +12,7 @@ $(document).ready(function()
 	carto = goGoCarto('#gogocarto', gogoJsConf);
 
 	// on search submit, redirect to the route provided by gogocartoJs
-  $('.search-bar').on('searchRoute', function(evt, route) {
+	$('.search-bar').on('searchRoute', function(evt, route) {
 		var mainOption;
 		// in small screen a select is displayed
 		if ($('.category-field-select').is(':visible'))
@@ -29,7 +29,7 @@ $(document).ready(function()
 		if (mainOption) route += '?cat=' + mainOption;
 		var path = window.location.pathname + '/annuaire' + route;
 		window.location.href = window.location.origin + path.replace('//', '/');
-  })
+	})
 
 	// clear viewport and address cookies
 	eraseCookie('viewport');
