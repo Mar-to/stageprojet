@@ -104,6 +104,7 @@
   }
 
   .character-counter { margin-top: -10px; }
+  .option-field-description .character-counter { margin-top: 0; }
   textarea ~ .character-counter { margin-top: -15px; }
 
   .invalid-required {
