@@ -1,4 +1,6 @@
-<div class="categories-info neutral-color to-html">{{ field.label|raw }}</div>
+{% if field.label %}
+  <div class="categories-info neutral-color to-html">{{ field.label|raw }}</div>
+{% endif %}
 {% for mainCategory in mainCategories %}
   {% include 'element-form/form-partials/taxonomy-field.html.twig' with { 'category' : mainCategory } %}
 {% endfor %}
