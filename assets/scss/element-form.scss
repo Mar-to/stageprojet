@@ -519,4 +519,8 @@
     max-width: 800px;
     margin: 0 auto;
   }
+
+  .to-html:not(.initialized) {
+    visibility: hidden;
+  }
 }

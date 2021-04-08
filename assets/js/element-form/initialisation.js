@@ -1,3 +1,5 @@
+$('.to-html:not(.initialized)').each(function() { $(this).html($(this).text()).addClass('initialized'); });
+
 jQuery(document).ready(function()
 {
   $('select:not(.select2)').material_select();
@@ -20,7 +22,7 @@ jQuery(document).ready(function()
   $('.select2-search__field').focus(function() { $(this).closest('.input-field').find('.material-icons').addClass('active') })
   $('.select2-search__field').blur(function() { $(this).closest('.input-field').find('.material-icons').removeClass('active') })
 
-  $('.to-html').each(function() { $(this).html($(this).text()); });
+  $('.to-html:not(.initialized)').each(function() { $(this).html($(this).text()).addClass('initialized'); });
 
   // TIMEPICKERS
   $('.timepicker').each(function(e) {
