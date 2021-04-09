@@ -232,7 +232,7 @@ class Import extends AbstractFile
 
     public function isHandlingCategories()
     {
-        return count($this->taxonomyMapping) > 0 || count($optionsToAddToEachElement) > 0;
+        return count($this->taxonomyMapping) > 0 || count($this->optionsToAddToEachElement) > 0;
     }
 
     /**
