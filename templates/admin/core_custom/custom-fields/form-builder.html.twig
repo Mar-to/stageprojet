@@ -41,13 +41,15 @@
       };
 
       var iconAttr = { label: 'Icone', placeholder: 'Choisissez une icone'  }
+      var labelAttr = { label: 'Label' }
       var errorMsgAttrs = { label: "Msg. Erreur", placeholder: "Oups ce texte est un peu long ! // Veuillez renseigner une adresse email valide // ..." }
       var searchAttrs = { label: 'Recherche dans ce champ', type: 'checkbox' };
       var searchWeightAttrs = { label: 'Poids de la recherche', type: 'number', value: "1" };
-      var patternAttrs = { label: 'Pattern de validation', type: 'text', placeholder: "Expression régulière pour la validation de ce champ" };
+      var patternAttrs = { label: 'Pattern de validation', placeholder: "Expression régulière pour la validation de ce champ" };
       var typeUserAttrs = {
         text: {
           icon: iconAttr,
+          label: labelAttr,
           separator: { label: '' }, // separate important attrs from others
           subtype: { label: 'Type', options: {
               'text': 'Texte',
@@ -63,6 +65,7 @@
         },
         textarea: {
           icon: iconAttr,
+          label: labelAttr,
           subtype: { label: 'Type', options: {
               'textarea': 'Editeur simple',
               'wysiwyg': 'Editeur enrichi',
@@ -73,9 +76,17 @@
           errorMsg: errorMsgAttrs,
           separator: { label: '' }, // separate important attrs from others
         },
-        select: { icon: iconAttr, errorMsg: errorMsgAttrs },
-        number: { icon: iconAttr, errorMsg: errorMsgAttrs },
+        paragraph: { 
+          label: {
+            label: "Contenu",
+            type: "textarea"
+          }
+        },
+        header: { label: labelAttr },
+        select: { icon: iconAttr, label: labelAttr, errorMsg: errorMsgAttrs },
+        number: { icon: iconAttr, label: labelAttr, errorMsg: errorMsgAttrs },
         title: {
+          label: labelAttr,
           maxlength: { label: "Longueur Max."},
           icon: iconAttr,
           search: searchAttrs,
@@ -83,44 +94,54 @@
           errorMsg: errorMsgAttrs,
           separator: { label: '' }, // separate important attrs from others
         },
-        address: { icon: iconAttr },
+        address: { icon: iconAttr, label: labelAttr },
         'checkbox-group': {
-          style: { label: 'Style des cases', options: {
-            'normal': 'Normal',
-            'filled': 'Plein',
-          }, errorMsg: errorMsgAttrs }
+          style: { 
+            label: 'Style des cases', 
+            options: { 'normal': 'Normal', 'filled': 'Plein' }
+          }, 
+          errorMsg: errorMsgAttrs, 
+          label: labelAttr
         },
         checkbox: {
-          defaultvalue: { label: 'Valeur initiale', options: {
-            'no': 'Non cochée',
-            'yes': 'Cochée',
-          }, errorMsg: errorMsgAttrs }
+          label: labelAttr,
+          defaultvalue: { 
+            label: 'Valeur initiale', 
+            options: { 'no': 'Non cochée', 'yes': 'Cochée' }
+          },
+          errorMsg: errorMsgAttrs
         },
         email: {
           icon: iconAttr,
+          label: labelAttr,
           errorMsg: errorMsgAttrs,
           separator: { label: '' }, // separate important attrs from others
         },
         image: {
           icon: iconAttr,
+          label: labelAttr,
           errorMsg: errorMsgAttrs,
           separator: { label: '' }, // separate important attrs from others
         },
         images: {
           icon: iconAttr,
+          label: labelAttr,
           separator: { label: '' }, // separate important attrs from others
         },
         files: {
           icon: iconAttr,
+          label: labelAttr,
           accept: { label: "Fichier acceptés", placeholder: ".pdf audio/* .mp3 (séparés par des espaces)"},
           separator: { label: '' }, // separate important attrs from others
         },
         date: {
           icon: iconAttr,
+          label: labelAttr,
           timepicker: { label: "Timepicker", type: 'checkbox'},
           range: { label: "Intervale de dates", type: 'checkbox' },
         },
         elements: {
+          label: labelAttr,
           icon: iconAttr,
           reversedBy: { label: 'Inversée par', placeholder: "Le nom d'un autre champ de type \"lien vers un autre élément\"" },
           multiple: { label: 'Plusieurs choix', type: 'checkbox' },
@@ -162,6 +183,15 @@
         $('.input-control[data-type=files]').toggle($('.files-field').length == 0);
         $('.input-control[data-type=openhours]').toggle($('.openhours-field').length == 0);
 
+        $('input[type="textarea"]').replaceWith(function() {
+          const textarea = document.createElement('textarea')
+          textarea.id = this.id
+          textarea.name = this.name
+          textarea.value = this.value
+          textarea.classList = this.classList
+          textarea.title = this.title
+          return textarea
+        })
         // $('.name-wrap input[name=name]').val('email');
         // get all input names (used to check for uniqueness)
         var allNames = [];
@@ -302,4 +332,13 @@
   /* Make select2 looks like other inputs */
   .form-wrap.form-builder .form-control.select2-container { padding: 0; }
   .form-wrap.form-builder .form-control:not(.select2-dropdown-open) .select2-choice { border-radius: 5px !important; }
+
+  /* fix menu sticky position */
+  .form-wrap.form-builder .cb-wrap {
+    top: 100px !important;
+  }
+  /* Fix menu action soemtime not clickable */
+  .form-wrap.form-builder .frmb .field-actions {
+    z-index: 500000;
+  }
 </style>

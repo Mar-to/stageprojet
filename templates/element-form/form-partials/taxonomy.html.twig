@@ -1,4 +1,4 @@
-{% if field.label %}
+{% if field.label is defined and field.label != "undefined" %}
   <div class="categories-info neutral-color to-html">{{ field.label|raw }}</div>
 {% endif %}
 {% for mainCategory in mainCategories %}
