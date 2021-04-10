@@ -20,7 +20,7 @@
   {% endif %}
 
   {# ERROR MESSAGE #}
-  {% set errorMsg = fields.errorMsg|default(null) %}
+  {% set errorMsg = field.errorMsg|default(null) %}
   {% if not errorMsg %}
     {% if field.subtype is defined and field.subtype == "email" or field.type == 'email' %}
       {% set errorMsg = "Veuillez renseigner une adresse email valide" %}
@@ -71,6 +71,7 @@
       {% if field.rows is defined %} rows="{{ field.rows }}"{% endif %}
       {% if field.placeholder is defined %} placeholder="{{ field.placeholder }}"{% endif %}
       {% if field.maxlength is defined %} length="{{ field.maxlength }}"{% endif %}
+      {% if field.pattern is defined %} pattern="{{ field.pattern }}"{% endif %}
   {% if field.type == "textarea" %}
     ></textarea>
   {% else %}

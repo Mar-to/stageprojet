@@ -44,6 +44,7 @@
       var errorMsgAttrs = { label: "Msg. Erreur", placeholder: "Oups ce texte est un peu long ! // Veuillez renseigner une adresse email valide // ..." }
       var searchAttrs = { label: 'Recherche dans ce champ', type: 'checkbox' };
       var searchWeightAttrs = { label: 'Poids de la recherche', type: 'number', value: "1" };
+      var patternAttrs = { label: 'Pattern de validation', type: 'text', placeholder: "Expression régulière pour la validation de ce champ" };
       var typeUserAttrs = {
         text: {
           icon: iconAttr,
@@ -57,6 +58,7 @@
           },
           search: searchAttrs,
           searchWeight: searchWeightAttrs,
+          pattern: patternAttrs,
           errorMsg: errorMsgAttrs
         },
         textarea: {
