@@ -6,11 +6,15 @@
   <select name="data[{{ field.name }}]" {% if field.multiple is defined %}multiple{% endif %}>
     {% if field.placeholder is defined %}
       <option value="" disabled selected>{{ field.placeholder|raw }}</option>
+    {% else %}
+      {# Use label as placeholder, so the select input looks the same than the text input #}
+      <option value="" disabled selected class="to-html">{{ field.label|raw }}</option>
     {% endif %}
 
     {% for option in field.values %}
       <option value="{{ option.value }}"
-        {% if elementValue == option.value or not elementValue and option.selected is defined and not field.placeholder is defined %}selected{% endif %}>{{ option.label|raw }}</option>
+        {# or not elementValue and option.selected is defined and not field.placeholder is defined #}
+        {% if elementValue == option.value %}selected{% endif %}>{{ option.label|raw }}</option>
     {% endfor %}
   </select>
 

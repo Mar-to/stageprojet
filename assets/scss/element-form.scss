@@ -43,6 +43,12 @@
     color: inherit;
     font-weight: bold;
   }
+  .select-wrapper .caret {
+    opacity: .6;
+  }
+  .select-input:not(.initialized) {
+    label { opacity: 0; }
+  }
   .mandatory-asterisk:after {
     content: "*";
     margin-left: 5px;
