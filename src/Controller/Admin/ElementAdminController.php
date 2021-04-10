@@ -170,7 +170,8 @@ class ElementAdminController extends ElementAdminBulkController
         $newData = [];
         if ($request->get('data'))
             foreach($request->get('data') as $key => $value) {
-                $newData[slugify($key, false)] = $value;
+                // array data is displayed with json_encode, so we decode it when saving
+                $newData[slugify($key, false)] = json_decode($value) ?? $value;
             }
         $element->setCustomData($newData);
         $adr = $request->get('address');
