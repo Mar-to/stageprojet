@@ -40,7 +40,7 @@
 	  {# var editMode = true; #}
     var defaultBounds = {{ config.getDefaultBounds|json_encode|raw }};
     var defaultTileLayer = "{{ config.defaultTileLayer.url }}";
-	  initMap();
+	  setTimeout(function() { initMap(); }, 0);
 
     $('.geocode-btn').on('click', function() {
       var address = "";
