@@ -885,6 +885,11 @@
   resolved "https://registry.yarnpkg.com/@types/anymatch/-/anymatch-1.3.1.tgz#336badc1beecb9dacc38bea2cf32adf627a8421a"
   integrity sha512-/+CRPXpBDpo2RK9C68N3b2cOvO0Cf5B9aPijHsoDQTHivnGSObdOF2BRQOYjojWTDy6nQvMjmqRXIxH55VjxxA==
 
+"@types/geojson@*":
+  version "7946.0.7"
+  resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-7946.0.7.tgz#c8fa532b60a0042219cdf173ca21a975ef0666ad"
+  integrity sha512-wE2v81i4C4Ol09RtsWFAqg3BUitWbHSpSlIo+bNdsCJijO9sjme+zm+73ZMCa/qMC8UEERxzGbvmr1cffo2SiQ==
+
 "@types/glob@^7.1.1":
   version "7.1.3"
   resolved "https://registry.yarnpkg.com/@types/glob/-/glob-7.1.3.tgz#e6ba80f36b7daad2c685acd9266382e68985c183"
@@ -4112,10 +4117,10 @@ glogg@^1.0.0:
   dependencies:
     sparkles "^1.0.0"
 
-gogocarto-js@^1.7.2:
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/gogocarto-js/-/gogocarto-js-1.7.2.tgz#85aac85d9abebdbd70120357fd05eeba088cf419"
-  integrity sha512-VtaGtYxhZe6duWasWOZCX9SZhF+Xz3WQK7HK4/WK5zpK0lyuC9NgV0xqwZctNYd4d3Mc0z3PtASrq2VRQDlmCg==
+gogocarto-js@^1.7.3:
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/gogocarto-js/-/gogocarto-js-1.7.3.tgz#c79f430d422b089e5a4bca154529a5cc2bba0424"
+  integrity sha512-lBgCNymbkUopiLgB4POk4W90ZoL679ImVA9J9kgA/0wjgovau0i94dopBxGRdFbxVzAglSlKdxg/4rea48NFHQ==
   dependencies:
     commonmark "^0.29.0"
     diff "^4.0.1"
@@ -4126,7 +4131,7 @@ gogocarto-js@^1.7.2:
     nouislider "^14.0.3"
     nunjucks "^3.2.0"
     tinycolor2 "^1.4.1"
-    universal-geocoder "^0.3.0"
+    universal-geocoder "^0.13.0"
     unorm "^1.6.0"
 
 graceful-fs@^4.0.0, graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6:
@@ -8686,11 +8691,12 @@ unique-stream@^2.0.2:
     json-stable-stringify-without-jsonify "^1.0.1"
     through2-filter "^3.0.0"
 
-universal-geocoder@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/universal-geocoder/-/universal-geocoder-0.3.0.tgz#4d5e061734b44360fbfc2fcce6320810c0951756"
-  integrity sha512-WeNHbhZgTtzLKVsI//rGIVQWxFxFwRTRn8Q/VM6D1WxJniXkvVRFqWao9/o3z8AuEg698shJjfdY5+v3nc1zyQ==
+universal-geocoder@^0.13.0:
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/universal-geocoder/-/universal-geocoder-0.13.0.tgz#e8612f91b066babb2b8bd5766209c789d3e4f4a6"
+  integrity sha512-VK/oEoRjtPSnHHMoINW+rVXB4n2ddJ0mnv0rwYjYAp7jIhilZNRjnCEwUoH7OZkNXMnbeqzGnSDV5x4b32JMQw==
   dependencies:
+    "@types/geojson" "*"
     cross-fetch "^3.0.0"
 
 universal-geocoder@^0.5.0:
