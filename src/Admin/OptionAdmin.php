@@ -51,9 +51,9 @@ class OptionAdmin extends GoGoAbstractAdmin
         }
 
         $formMapper
-       ->tab('Principal')
-         ->panel('Paramètres principaux', ['class' => 'col-xs-12 col-md-6'])
-            ->add('name', null, ['required' => true, 'label' => 'Nom'])
+       ->tab('main')
+         ->halfPanel('main_parameters')
+            ->add('name', null, ['required' => true])
             ->add('color', null, ['required' => false, 'label' => 'Couleur', 'attr' => ['class' => 'gogo-color-picker']])
             ->add('icon', null, ['required' => false, 'label' => 'Icone', 'attr' => ['class' => 'gogo-icon-picker']])
             ->add('parent', ModelType::class, [
@@ -63,8 +63,8 @@ class OptionAdmin extends GoGoAbstractAdmin
               'label' => 'Groupe de Catégorie parent',
               'mapped' => true, ], [])
          ->end()
-         ->panel('Paramètres secondaires', ['class' => 'col-xs-12 col-md-6', 'box_class' => 'box'])
-            ->add('useIconForMarker', null, ['required' => false, 'label' => "Utiliser l'icone de cette catégorie pour le marqueur", 'label_attr' => ['title' => 'Le marqueur affichera toutes icones de chaque catégorie ayant cette option activée. Les icones seront classées par ordre de selection des catégories dans le formulaire']])
+         ->halfPanelDefault('Paramètres secondaires')
+            ->add('useIconForMarker')
             ->add('useColorForMarker', null, ['required' => false, 'label' => 'Utiliser la couleur de cette catégorie pour le marqueur', 'label_attr' => ['title' => 'Si un élément a plusieurs catégories qui donnent la couleur, on utilise la catégorie de plus bas niveau']])
          ->end()
          ->panel('Afficher la catégorie', ['class' => 'col-xs-12 col-md-6', 'box_class' => 'box'])

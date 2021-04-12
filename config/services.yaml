@@ -219,7 +219,7 @@ services:
         arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
         calls: [ [ setGoGoTranslator, ['@translator'] ] ]
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Fiche Détail }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: config_infobar._label }
 
     admin.config_marker:
         class: App\Admin\ConfigurationMarkerAdmin
@@ -270,7 +270,7 @@ services:
             - [setTemplate, ['list', 'admin/list/list_news.html.twig']]
             - [ setGoGoTranslator, ['@translator'] ]
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: emailing, label: Actualités (newsletter) }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: emailing, label: news._label }
 
     admin.config_api:
         class: App\Admin\ConfigurationAPIAdmin

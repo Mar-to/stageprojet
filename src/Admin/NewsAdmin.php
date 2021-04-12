@@ -26,9 +26,9 @@ final class NewsAdmin extends GoGoAbstractAdmin
                 'ckeditor_context' => 'full',
             ])
             ->add('publicationDate', DateTimeType::class, ['label' => 'Date de publication'])
-            ->add('status', ChoiceType::class, ['label' => 'Statut', 'choices' => [
-                'Brouillon (non publiée)' => NewsStatus::DRAFT,
-                'Publiée' => NewsStatus::PUBLISHED,
+            ->add('status', ChoiceType::class, ['choices' => [
+                'draft' => NewsStatus::DRAFT,
+                'published' => NewsStatus::PUBLISHED,
             ]])
         ;
     }
