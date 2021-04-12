@@ -45,6 +45,18 @@ class GoGoFormMapper extends FormMapper
             unset($options['hint']);                
         }
 
+        if (isset($options['choices'])) {
+            $newChoices = [];
+            foreach($options['choices'] as $key => $value) {
+                $labelKey = $this->admin->getLabelTranslatorStrategy()->getLabel($name, 'form', "choices.$key");
+                if ($this->admin->t_exists($labelKey)) $key = $this->admin->t($labelKey);
+                $valueKey = $this->admin->getLabelTranslatorStrategy()->getLabel($name, 'form', "choices.$value");
+                if ($this->admin->t_exists($valueKey)) $value = $this->admin->t($valueKey);
+                $newChoices[$key] = $value;
+            }
+            $options['choices'] = $newChoices;
+        }
+
         return parent::add($name, $type, $options, $fieldDescriptionOptions);
     }
 

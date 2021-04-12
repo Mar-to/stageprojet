@@ -39,8 +39,8 @@ final class NewsAdmin extends GoGoAbstractAdmin
             ->addIdentifier('title', 'text', ['label' => 'Titre'])
             ->add('publicationDate', 'datetime', ['label' => 'Date de publication', 'format' => 'd/m/Y à H:i'])
             ->add('status', 'choice', ['label' => 'Statut', 'choices' => [
-                NewsStatus::DRAFT => 'Brouillon (non publiée)',
-                NewsStatus::PUBLISHED => 'Publiée',
+                NewsStatus::DRAFT => $this->t('news.fields.status_choices.draft'),
+                NewsStatus::PUBLISHED => $this->t('news.fields.status_choices.published'),
             ]])
         ;
     }

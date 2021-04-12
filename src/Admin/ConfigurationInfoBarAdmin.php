@@ -32,7 +32,6 @@ class ConfigurationInfoBarAdmin extends ConfigurationAbstractAdmin
         $formMapper
             ->tab('Fiche détail')
                 ->panel("infobar_content")
-
                     ->add('infobar.headerTemplateUseMarkdown', CheckboxType::class, ['label' => 'Utiliser la syntaxe markdown pour le header (sinon uniquement la syntaxe Nunjucks)', 'attr' => ['class' => 'use-markdown'], 'required' => false])
                     ->add('infobar.headerTemplate', null, ['label' => 'En tête de la fiche (header)', 'attr' => ['class' => 'gogo-code-editor', 'format' => 'twig', 'height' => '200'], 'required' => false])
                     ->add('infobar.bodyTemplateUseMarkdown', CheckboxType::class, ['label' => 'Utiliser la syntaxe markdown pour le body (sinon uniquement la syntaxe Nunjucks)', 'attr' => ['class' => 'use-markdown'], 'required' => false])
