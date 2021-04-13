@@ -129,53 +129,36 @@ class UserAdmin extends GoGoAbstractAdmin
     /**
      * {@inheritdoc}
      */
-    protected function configureShowFields(ShowMapper $showMapper)
-    {
-        $showMapper
-            ->panel('General')
-                ->add('username')
-                ->add('email')
-            ->end()
-            ->panel('Groups')
-                ->add('groups')
-            ->end()
-            ->panel('Profile')
-                ->add('dateOfBirth')
-                ->add('firstname')
-                ->add('lastname')
-                ->add('website')
-                ->add('biography')
-                ->add('gender')
-                ->add('locale')
-                ->add('timezone')
-                ->add('phone')
-            ->end()
-            ->panel('Social')
-                ->add('facebookUid')
-                ->add('facebookName')
-                ->add('communsUid')
-                ->add('communsName')
-                ->add('gplusUid')
-                ->add('gplusName')
-            ->end()
-            ->panel('Security')
-                ->add('token')
-            ->end()
-        ;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function configureFormFields(FormMapper $formMapper)
     {
-        // define group zoning
         $formMapper
             ->tab('User')
-                ->panel('General', ['class' => 'col-md-6'])->end()
-                ->panel('Status', ['class' => 'col-md-6'])->end()
-                ->panel('Groups', ['class' => 'col-md-6'])->end()
-                ->panel('Notifications', ['class' => 'col-md-12'])
+                ->halfPanel('General')
+                    ->add('username')
+                    ->add('email')
+                    ->add('plainPassword', PasswordType::class, [
+                        'required' => (!$this->getSubject() || is_null($this->getSubject()->getId())),
+                    ])
+                    ->add('allowedStamps', ModelType::class, [
+                        'required' => false,
+                        'expanded' => false,
+                        'multiple' => true,
+                    ])
+                ->end()
+                ->halfPanel('Status')
+                    ->add('locked', CheckboxType::class, ['required' => false])
+                    ->add('expired', CheckboxType::class, ['required' => false])
+                    ->add('enabled', CheckboxType::class, ['required' => false])
+                    ->add('credentialsExpired', CheckboxType::class, ['required' => false])
+                ->end()
+                ->halfPanel('Groups')
+                    ->add('groups', ModelType::class, [
+                        'required' => false,
+                        'expanded' => true,
+                        'multiple' => true,
+                    ])
+                ->end()
+                ->panel('Notifications')
                     ->add('watchModeration', null, ['label' => "Etre notifié par email lorsque des éléments sont à modérer", 'required' => false])
                     ->add('watchModerationOnlyWithOptions', ModelType::class, [
                         'class' => 'App\Document\Option',
@@ -188,43 +171,6 @@ class UserAdmin extends GoGoAbstractAdmin
                         'label_attr' => ['title' => "Séparés par des virgules. On peut utiliser le symbole * pour choisir tout un département, par example : 40*, 47*, 48500"],
                         'required' => false,
                         'attr' => ['placeholder' => '40*, 47*, 48500']])
-                ->end()
-            ->end()
-            ->tab('Security')
-                ->panel('Roles', ['class' => 'col-md-12'])->end()
-            ->end()
-        ;
-
-        $now = new \DateTime();
-
-        $modelType = ModelType::class;
-
-        $formMapper
-            ->tab('User')
-                ->panel('General')
-                    ->add('username')
-                    ->add('email')
-                    ->add('plainPassword', PasswordType::class, [
-                        'required' => (!$this->getSubject() || is_null($this->getSubject()->getId())),
-                    ])
-                    ->add('allowedStamps', $modelType, [
-                        'required' => false,
-                        'expanded' => false,
-                        'multiple' => true,
-                    ])
-                ->end()
-                ->panel('Status')
-                    ->add('locked', CheckboxType::class, ['required' => false])
-                    ->add('expired', CheckboxType::class, ['required' => false])
-                    ->add('enabled', CheckboxType::class, ['required' => false])
-                    ->add('credentialsExpired', CheckboxType::class, ['required' => false])
-                ->end()
-                ->panel('Groups')
-                    ->add('groups', $modelType, [
-                        'required' => false,
-                        'expanded' => true,
-                        'multiple' => true,
-                    ])
                 ->end()
             ->end()
             ->tab('Security')

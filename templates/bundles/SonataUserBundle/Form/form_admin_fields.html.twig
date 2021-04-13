@@ -86,9 +86,8 @@ file that was distributed with this source code.
                 });
             });
 
-            $('.btn-check-all').click(function() {
+            $('.btn-check-all:not(.initialized)').click(function() {
                 var value = $(this).hasClass('checked');
-                console.log("vakye", value);
                 $(this).toggleClass('checked', !value);
                 var checkboxes = $('.role-group.object input[type=checkbox]');
                 $.each(checkboxes, function() {
@@ -96,7 +95,7 @@ file that was distributed with this source code.
                     if (value) $(this).parent().addClass('checked');
                     else $(this).parent().removeClass('checked');
                 });
-            });
+            }).addClass('.initialized');
 
             checkForChanges();
         });
