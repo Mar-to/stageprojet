@@ -305,7 +305,7 @@ services:
             - [ setUserManager, ['@fos_user.user_manager']]
             - [ setTranslationDomain, ['%sonata.user.admin.user.translation_domain%']]
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: sonata_user, label_catalogue: "%sonata.user.admin.label_catalogue%", label: "users", label_translator_strategy: "sonata.admin.label.strategy.underscore", icon: "%sonata.user.admin.groupicon%" }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: sonata_user, label: "sonata.user.user._label" }
     
     # -- Other ---
         

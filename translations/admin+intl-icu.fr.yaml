@@ -84,3 +84,6 @@ config_infobar:
           Contenu de la fiche détail
           <span class='btn btn-primary' id='generate-body-template' onclick='generateBodyTemplate()'>Générer automatiquement le contenu de la fiche détail</span>
         </h2>
+
+sonata.user.user:
+  _label: Utilisateurs
