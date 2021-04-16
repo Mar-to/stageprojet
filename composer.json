@@ -63,7 +63,8 @@
         "friendsofphp/php-cs-fixer": "^2.16",
         "symfony/debug-pack": "^1.0",
         "symfony/dotenv": "^4.4",
-        "symfony/profiler-pack": "^1.0"
+        "symfony/profiler-pack": "^1.0",
+        "symfony/web-server-bundle": "4.4.*"
     },
     "repositories": [
         { "type": "git", "url": "https://github.com/seballot/mongodb-odm.git" },
