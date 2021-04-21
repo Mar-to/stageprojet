@@ -385,6 +385,12 @@ class User extends BaseUser
      * @MongoDB\Field(type="string")
      */
     protected $token;
+    
+    /**
+     * @var string
+     * @MongoDB\Field(type="string")
+     */
+    protected $codeInvitation;
 
     public function __construct()
     {
@@ -912,6 +918,17 @@ class User extends BaseUser
         return $this->communsData;
     }
 
+	public function getCodeInvitation()
+	{
+        return $this->codeInvitation;
+    }
+
+    public function setCodeInvitation($codeInvitation)
+	{
+        $this->codeInvitation = $codeInvitation;
+
+        return $this;
+    }
     /**
      * Get be notified by email when an Element need moderation
      */ 
