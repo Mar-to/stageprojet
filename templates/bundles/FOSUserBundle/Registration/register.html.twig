@@ -37,6 +37,17 @@
                 {{ form_widget(form.plainPassword.second, {'id': 'input-plainPassword-2', 'attr': {'class': 'validate required'}}) }}
                 <label for="input-plainPassword-2" class="gogo-form-label">Retapez votre mot de passe</label>
             </div>
+
+            
+        </section>
+        <div class="divider"></div>
+
+        <section>
+        <div class="input-field col s12">
+            <i class="material-icons icon gogo-icon-redo prefix"></i>
+            {{ form_widget(form.codeInvitation, {'id': 'input-codeInvitation', 'attr': {'class': 'validate required'}}) }}
+            <label for="input-codeInvitation" class="gogo-form-label"> Indiquez votre code d'invitation</label>
+        </div>
         </section>
         <div class="divider"></div>
         <section>
