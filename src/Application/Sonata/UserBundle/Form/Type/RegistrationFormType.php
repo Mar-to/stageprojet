@@ -53,6 +53,10 @@ class RegistrationFormType extends AbstractType
                 'label' => 'form.username',
                 'translation_domain' => 'SonataUserBundle',
             ], $this->mergeOptions))
+            ->add('codeInvitation', null, array_merge([
+                'label' => 'form.codeInvitation',
+                'translation_domain' => 'SonataUserBundle',
+            ], $this->mergeOptions))
             ->add('email', $emailType, array_merge([
                 'label' => 'form.email',
                 'translation_domain' => 'SonataUserBundle',
