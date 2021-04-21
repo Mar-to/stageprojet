@@ -65,6 +65,8 @@ class FOSUBUserProvider extends BaseClass
             $user->setLastName($response->getLastName());
             $user->setEmail($response->getEmail());
             $user->setPassword($username);
+            $user->setCodeInvitation();
+
             $user->setEnabled(true);
         }
         // Update specific service info (facebookUid, facebookName ...)
