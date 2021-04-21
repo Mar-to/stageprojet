@@ -31,7 +31,8 @@ class UserProfileType extends AbstractType
                        'min' => 1,
                        'max' => 250,
                    ],
-                  ]);
+                  ])
+              ->add('codeInvitation');
     }
 
     public function configureOptions(OptionsResolver $resolver)
