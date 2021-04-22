@@ -10,6 +10,15 @@ gogo_core_help:
     path: /help
     defaults: { _controller: App\Controller\CoreController::helpAction }
 
+# KEY ACTIONS
+gogo_core_key:
+    path: /key
+    defaults: { _controller: App\Controller\Admin\KeyController::indexAction }
+
+gogo_key_generate:
+    path: /key/generate
+    defaults: { _controller: App\Controller\Admin\KeyController::generateAction }
+
 # BULK ACTIONS
 gogo_bulk_actions_index:
     path: /admin/bulkActions/index
