@@ -177,7 +177,7 @@ db.Project.updateMany({}, {$currentDate: {nextUpdateAt: true}})
 
 
 // FIX doctrine_increment_ids for every database
-var documents = ["Category","Option","About","Partner","Wrapper","Element","TileLayer","Configuration","fos_user_group","UserInteractionContribution","UserInteractionVote","UserInteractionReport","Stamp","PartnerImage","Import","ConfImage","GoGoLog"];
+var documents = ["Category","Option","About","Partner","Wrapper","Element","TileLayer","Configuration","fos_user_group","UserInteractionContribution","UserInteractionVote","UserInteractionReport","Stamp","PartnerImage","Import","ConfImage","CodeInvitation","GoGoLog"];
 var mongo = db.getMongo(); // or mongo = new Mongo();
 var count = 0;
 mongo.getDBNames().forEach(function(dbname){
