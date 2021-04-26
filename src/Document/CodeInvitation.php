@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
  * Codeinvitation.
  *
  * @MongoDB\Document(repositoryClass="App\Repository\CodeInvitationRepository")
+ * @MongoDB\Index(keys={"geo"="2d"})
  */
 class CodeInvitation
 {
