@@ -95,6 +95,9 @@
 {% block side_bar_after_nav %}
     {# CUSTOM Menu #}
     <ul class="sidebar-menu">
+        <li>
+            <a href="{{ path('gogo_core_key') }}"><i class="fa fa-key"></i><span>Créer une clé d'activation</span></a>
+        </li>
         {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_SUPER_ADMIN") %}
             <li class="first treeview">
                 <a href="{{ path('gogo_bulk_actions_index') }}"><i class="fa fa-bullhorn"></i><span>Actions de masse</span></a>
