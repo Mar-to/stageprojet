@@ -6,6 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use App\Document\CodeInvitation;
+use App\Repository\CodeInvitationRepository;
+
 
 class KeyController extends Controller
 {
@@ -23,6 +25,10 @@ class KeyController extends Controller
         //ObjectManager $manager
         $new_CodeInvitation = new CodeInvitation();
         $new_CodeInvitation->setCode($key);
+        $today = date("d.m.y");
+        $new_CodeInvitation->setDate($today);
+        $new_CodeInvitation->setActive(true);
+        
         $dm->persist($new_CodeInvitation);
 
         // we trigger saving of all abouts
