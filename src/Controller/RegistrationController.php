@@ -87,8 +87,17 @@ class RegistrationController extends FosController
                 }
             }
 
+            $codeInvitationExist = false;
+            $userCodeInvitation = $user->getCodeInvitation();
+            var_dump($codeInvitationExist);
+            $repository = $this->dm->get('CodeInvitation');
+            $codeInvitationExist = $repository->codeInvitationIsValid($userCodeInvitation);
+            var_dump($codeInvitationExist);
+
+            $geocodeError = true;
+
             // CHECK FORM IS VALID
-            if ($form->isValid() && !$locationSetToReceiveNewsletter && !$geocodeError) {
+            if ($form->isValid() && !$locationSetToReceiveNewsletter && !$geocodeError && $codeInvitationExist) {  
 
                 if ($confirmationEnabled) {
                     // SEND CONFIRM EMAIL
