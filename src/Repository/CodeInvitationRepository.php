@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Document\CodeInvitation;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 
 /**
@@ -18,5 +19,28 @@ class CodeInvitationRepository extends DocumentRepository
           ->sort('id', 'ASC')
           ->getQuery();
           //->execute();
+    }
+
+    public function codeInvitationIsValid($userCodeInvitation)
+    {
+        /*$test = $this->getRepository(CodeInvitation::class)->find($userCodeInvitation);
+
+        if($test == null){
+            return false;
+        }else{
+            return true;
+        }*/
+
+
+        $test = $this->createQueryBuilder('obj') 
+        ->where("obj.code = :$userCodeInvitation")
+        ->select('obj.code');
+
+        if($test == $userCodeInvitation){
+            return true;
+        }else{
+            return false;
+        }
+        
     }
 }
