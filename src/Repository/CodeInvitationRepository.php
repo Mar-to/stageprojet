@@ -23,24 +23,13 @@ class CodeInvitationRepository extends DocumentRepository
 
     public function codeInvitationIsValid($userCodeInvitation)
     {
-        /*$test = $this->getRepository(CodeInvitation::class)->find($userCodeInvitation);
-
-        if($test == null){
-            return false;
-        }else{
-            return true;
-        }*/
-
-
-        $test = $this->createQueryBuilder('obj') 
-        ->where("obj.code = :$userCodeInvitation")
-        ->select('obj.code');
-
-        if($test == $userCodeInvitation){
-            return true;
-        }else{
-            return false;
-        }
+        $test = $this->findOneBY(['code' => $userCodeInvitation, 'active' => true]);
         
+        if($test==null){
+            return false;
+        }else{
+            $this->findOneBY(['code' => $userCodeInvitation])->setActive(false);
+            return true;
+        }
     }
 }
