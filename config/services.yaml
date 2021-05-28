@@ -147,18 +147,25 @@ services:
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Contenus", label: Bandeaux de la page d'accueil }
 
-    admin.partners:
-        class: App\Admin\PartnerAdmin
-        arguments: [~, App\Document\Partner, 'PixSortableBehaviorBundle:SortableAdmin']
-        tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Contenus", label: Partenaires }
-
     admin.abouts_popup:
         class: App\Admin\AboutAdmin
         arguments: [~, App\Document\About, 'PixSortableBehaviorBundle:SortableAdmin']
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: "Contenus", label: Popups type "A propos" }
 
+    # ----------- ADD PAGES -------------
+
+    admin.partners:
+        class: App\Admin\PartnerAdmin
+        arguments: [~, App\Document\Partner, 'PixSortableBehaviorBundle:SortableAdmin']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "pages", label: Liste des Elements }
+    
+    admin.pages_config:
+        class: App\Admin\ConfigurationPages
+        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: "pages", label: Configuration }
 
     # --------- CONFIGURATION -----------
 
@@ -220,7 +227,13 @@ services:
         class: App\Admin\ConfigurationFormAdmin
         arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Formulaire }
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Formulaire Acteur 1 }
+        
+    admin.form_configV2:
+        class: App\Admin\ConfigurationFormAdminV2
+        arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
+        tags:
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Formulaire Acteur 2 }
 
     admin.contributions_config:
         class: App\Admin\ConfigurationContributionsAdmin
@@ -286,7 +299,7 @@ services:
         class: App\Admin\KeyAdmin
         arguments: [~, App\Document\CodeInvitation, '' ]
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: other_config, label: Clés d'activations }
+            - { name: sonata.admin, manager_type: doctrine_mongodb }
 
     admin.webhooks_config:
         class: App\Admin\WebhookAdmin

@@ -47,10 +47,26 @@
 			</div>
       {% endif %}
 
-      {% if config.activatePartnersPage and helper.countPartners %}
+      {% if config.ActivatePage1 and helper.countPartners %}
   			<div class="col menu-item">
-  				<a href="{{ path('gogo_partners') }}" {% if iframe %}target="_blank"{% endif %}>
-            <span class="header-icon gogo-icon-partner-3"></span><span class="text">{{ config.partnerPageTitle }}</span>
+  				<a href="{{ path('gogo_page1') }}" {% if iframe %}target="_blank"{% endif %}>
+            <span class="header-icon gogo-icon-partner-3"></span><span class="text">{{ config.Page1Title }}</span>
+          </a>
+  			</div>
+      {% endif %}
+
+      {% if config.ActivatePage2 and helper.countPartners %}
+  			<div class="col menu-item">
+  				<a href="{{ path('gogo_page2') }}" {% if iframe %}target="_blank"{% endif %}>
+            <span class="header-icon gogo-icon-partner-3"></span><span class="text">{{ config.Page2Title }}</span>
+          </a>
+  			</div>
+      {% endif %}
+
+      {% if config.ActivatePage3 and helper.countPartners %}
+  			<div class="col menu-item">
+  				<a href="{{ path('gogo_page3') }}" {% if iframe %}target="_blank"{% endif %}>
+            <span class="header-icon gogo-icon-partner-3"></span><span class="text">{{ config.Page3Title }}</span>
           </a>
   			</div>
       {% endif %}

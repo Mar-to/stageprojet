@@ -35,20 +35,23 @@ class PartnerAdmin extends AbstractAdmin
                 'class' => 'App\Document\PartnerImage',
                 'placeholder' => 'Séléctionnez une image déjà importée, ou ajoutez en une !',
                 'required' => false,
-                'label' => 'Logo',
+                'label' => 'Image',
                 'mapped' => true, ])
-            ->add('websiteUrl', null, ['required' => false]);
+            ->add('websiteUrl', null, ['required' => false])
+            ->add('page');
     }
 
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
-        $datagridMapper->add('name');
+        $datagridMapper
+            ->add('page');
     }
 
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
             ->addIdentifier('name')
+            ->addIdentifier('page')
             ->add('_action', 'actions', [
                 'actions' => [
                     'show' => [],

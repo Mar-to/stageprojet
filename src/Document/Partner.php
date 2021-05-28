@@ -52,6 +52,13 @@ class Partner
      */
     private $position;
 
+    /**
+     * 
+     * @MongoDB\Field(type="int")
+     */
+    private $page;
+
+
     public function __constructor()
     {
     }
@@ -160,6 +167,30 @@ class Partner
     public function getPosition()
     {
         return $this->position;
+    }
+
+    /**
+     * Set page.
+     *
+     * @param int $page
+     *
+     * @return $this
+     */
+    public function setPage($page)
+    {
+        $this->page = $page;
+
+        return $this;
+    }
+
+    /**
+     * Get page.
+     *
+     * @return int $page
+     */
+    public function getPage()
+    {
+        return $this->page;
     }
 
     /**

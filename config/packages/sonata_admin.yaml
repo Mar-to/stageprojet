@@ -10,8 +10,8 @@ sonata_admin:
 
     options:
         confirm_exit: false
-    title: GoGoCarto Admin
-    title_logo: /img/default-icon.png
+    title: Portail Kids & Family
+    title_logo: /img/com-lm-kf.png
     templates:
         # default global templates
         layout:  "bundles/SonataAdminBundle/layout.html.twig"
@@ -32,6 +32,9 @@ sonata_admin:
             custom:
                 label: Personnalisation
                 icon: <i class='fa fa-paint-brush'></i>
+            pages:
+                label: Pages Additionelles
+                icon: <i class='fa fa-bookmark'></i>
             emailing:
                 label: Mails / Newsletter
                 icon: <i class='fa fa-envelope'></i>

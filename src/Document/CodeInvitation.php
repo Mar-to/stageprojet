@@ -38,6 +38,13 @@ class CodeInvitation
      * @MongoDB\Field(type="bool") @MongoDB\Index
      */
     private $active;
+
+    /**
+     * @var int
+     *
+     * @MongoDB\Field(type="int")
+     */
+    private $usable;
     
     /**
      * Get id.
@@ -119,5 +126,29 @@ class CodeInvitation
         $this->active = $active;
 
         return $this;
+    }
+
+    /**
+     * Set Usable.
+     *
+     * @param int $usable
+     *
+     * @return CodeInvitation
+     */
+    public function setUsable($usable)
+    {
+        $this->usable = $usable;
+
+        return $this;
+    }
+
+    /**
+     * Get Usable.
+     *
+     * @return int
+     */
+    public function getUsable()
+    {
+        return $this->usable;
     }
 }

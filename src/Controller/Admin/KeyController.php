@@ -21,12 +21,11 @@ class KeyController extends Controller
         $keyLength = 10;
         $key = substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($keyLength/strlen($x)) )),1,$keyLength);
 
-
-        //ObjectManager $manager
         $new_CodeInvitation = new CodeInvitation();
         $new_CodeInvitation->setCode($key);
         $today = date("d.m.y");
-        $new_CodeInvitation->setDate($today);
+        $new_CodeInvitation->setDate(strtotime($today. ' + 6 months'));
+        $new_CodeInvitation->setUsable('1');
         $new_CodeInvitation->setActive(true);
         
         $dm->persist($new_CodeInvitation);
@@ -36,6 +35,6 @@ class KeyController extends Controller
         
         $session->getFlashBag()->add('success', ' La clé générée est : '.$key);
 
-        return $this->redirect($this->generateUrl('gogo_core_key'));
+        return $this->redirect($this->generateUrl('admin_app_codeinvitation_list'));
     }
 }

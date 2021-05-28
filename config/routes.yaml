@@ -39,9 +39,17 @@ gogo_app_shell:
     path:     /appli
     defaults: { _controller: App\Controller\DirectoryController::appShell }
 
-gogo_partners:
-    path: /qui-sommes-nous
-    defaults: { _controller: App\Controller\CoreController::partnersAction }
+gogo_page1:
+    path: /page-1
+    defaults: { _controller: App\Controller\CoreController::page1Action }
+
+gogo_page2:
+    path: /page-2
+    defaults: { _controller: App\Controller\CoreController::page2Action }
+
+gogo_page3:
+    path: /page-3
+    defaults: { _controller: App\Controller\CoreController::page3Action }
 
 # ELEMENT CRUD
 gogo_element_add:

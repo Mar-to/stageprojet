@@ -125,16 +125,32 @@ class Configuration implements \JsonSerializable
     protected $activateHomePage;
 
     /** @MongoDB\Field(type="bool") */
-    protected $activatePartnersPage;
-
-    /** @MongoDB\Field(type="string") */
-    protected $partnerPageTitle;
-
-    /** @MongoDB\Field(type="bool") */
     protected $activateAbouts;
 
     /** @MongoDB\Field(type="string") */
     protected $aboutHeaderTitle;
+
+    // ----------------------------
+    // -------- NEW PAGES ---------
+    // ----------------------------
+
+    /** @MongoDB\Field(type="bool") */
+    protected $ActivatePage1;
+
+    /** @MongoDB\Field(type="string") */
+    protected $Page1Title;
+
+    /** @MongoDB\Field(type="bool") */
+    protected $ActivatePage2;
+
+    /** @MongoDB\Field(type="string") */
+    protected $Page2Title;
+
+    /** @MongoDB\Field(type="bool") */
+    protected $ActivatePage3;
+
+    /** @MongoDB\Field(type="string") */
+    protected $Page3Title;
 
     // ----------------------------
     // ---------- USER -----------
@@ -2417,53 +2433,161 @@ class Configuration implements \JsonSerializable
         return $this->favicon;
     }
 
+    //----------------------------------------------------------------------------
+
     /**
-     * Set activatePartnersPage.
+     * Set ActivatePage1.
      *
-     * @param bool $activatePartnersPage
+     * @param bool $ActivatePage1
      *
      * @return $this
      */
-    public function setActivatePartnersPage($activatePartnersPage)
+    public function setActivatePage1($ActivatePage1)
     {
-        $this->activatePartnersPage = $activatePartnersPage;
+        $this->ActivatePage1 = $ActivatePage1;
 
         return $this;
     }
 
     /**
-     * Get activatePartnersPage.
+     * Get ActivatePage1.
      *
-     * @return bool $activatePartnersPage
+     * @return bool $ActivatePage1
      */
-    public function getActivatePartnersPage()
+    public function GetActivatePage1()
     {
-        return $this->activatePartnersPage;
+        return $this->ActivatePage1;
     }
 
     /**
-     * Set partnerPageTitle.
+     * Set Page1Title.
      *
-     * @param string $partnerPageTitle
+     * @param string $Page1Title
      *
      * @return $this
      */
-    public function setPartnerPageTitle($partnerPageTitle)
+    public function setPage1Title($Page1Title)
     {
-        $this->partnerPageTitle = $partnerPageTitle;
+        $this->Page1Title = $Page1Title;
 
         return $this;
     }
 
     /**
-     * Get partnerPageTitle.
+     * Get Page1Title.
      *
-     * @return string $partnerPageTitle
+     * @return string $Page1Title
      */
-    public function getPartnerPageTitle()
+    public function getPage1Title()
     {
-        return $this->partnerPageTitle;
+        return $this->Page1Title;
     }
+
+    //----------------------------------------------------------------------------
+
+    //----------------------------------------------------------------------------
+
+    /**
+     * Set ActivatePage2.
+     *
+     * @param bool $ActivatePage2
+     *
+     * @return $this
+     */
+    public function setActivatePage2($ActivatePage2)
+    {
+        $this->ActivatePage2 = $ActivatePage2;
+
+        return $this;
+    }
+
+    /**
+     * Get ActivatePage2.
+     *
+     * @return bool $ActivatePage2
+     */
+    public function GetActivatePage2()
+    {
+        return $this->ActivatePage2;
+    }
+
+    /**
+     * Set Page2Title.
+     *
+     * @param string $Page2Title
+     *
+     * @return $this
+     */
+    public function setPage2Title($Page2Title)
+    {
+        $this->Page2Title = $Page2Title;
+
+        return $this;
+    }
+
+    /**
+     * Get Page2Title.
+     *
+     * @return string $Page2Title
+     */
+    public function getPage2Title()
+    {
+        return $this->Page2Title;
+    }
+
+    //----------------------------------------------------------------------------
+
+    //----------------------------------------------------------------------------
+
+    /**
+     * Set ActivatePage3.
+     *
+     * @param bool $ActivatePage3
+     *
+     * @return $this
+     */
+    public function setActivatePage3($ActivatePage3)
+    {
+        $this->ActivatePage3 = $ActivatePage3;
+
+        return $this;
+    }
+
+    /**
+     * Get ActivatePage3.
+     *
+     * @return bool $ActivatePage3
+     */
+    public function GetActivatePage3()
+    {
+        return $this->ActivatePage3;
+    }
+
+    /**
+     * Set Page3Title.
+     *
+     * @param string $Page3Title
+     *
+     * @return $this
+     */
+    public function setPage3Title($Page3Title)
+    {
+        $this->Page3Title = $Page3Title;
+
+        return $this;
+    }
+
+    /**
+     * Get Page3Title.
+     *
+     * @return string $Page3Title
+     */
+    public function getPage3Title()
+    {
+        return $this->Page3Title;
+    }
+
+    //----------------------------------------------------------------------------
 
     /**
      * Set activateAbouts.

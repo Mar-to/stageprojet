@@ -41,14 +41,34 @@ class CoreController extends GoGoController
             'gogoConfig' => $gogoJsService->getConfig() ]);
     }
 
-    public function partnersAction(DocumentManager $dm)
+    public function page1Action(DocumentManager $dm)
     {
         $repository = $dm->get('Partner');
         $config = $dm->get('Configuration')->findConfiguration();
 
         $listPartners = $repository->findAllOrderedByPosition();
 
-        return $this->render('partners.html.twig', ['listPartners' => $listPartners, 'config' => $config]);
+        return $this->render('page1.html.twig', ['listPartners' => $listPartners, 'config' => $config]);
+    }
+
+    public function page2Action(DocumentManager $dm)
+    {
+        $repository = $dm->get('Partner');
+        $config = $dm->get('Configuration')->findConfiguration();
+
+        $listPartners = $repository->findAllOrderedByPosition();
+
+        return $this->render('page2.html.twig', ['listPartners' => $listPartners, 'config' => $config]);
+    }
+
+    public function page3Action(DocumentManager $dm)
+    {
+        $repository = $dm->get('Partner');
+        $config = $dm->get('Configuration')->findConfiguration();
+
+        $listPartners = $repository->findAllOrderedByPosition();
+
+        return $this->render('page3.html.twig', ['listPartners' => $listPartners, 'config' => $config]);
     }
 
     public function helpAction()

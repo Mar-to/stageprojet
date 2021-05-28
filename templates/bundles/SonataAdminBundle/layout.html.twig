@@ -87,7 +87,7 @@
       <ul class="dropdown-menu">
         <li><a href={{ path('gogo_directory') }} target='_blank'>La Carte</a></li>
         <li><a href={{ path('gogo_element_add') }} target='_blank'>Formulaire</a></li>
-        <li><a href={{ path('gogo_partners') }} target='_blank'>Qui sommes nous</a></li>
+        <li><a href={{ path('gogo_page1') }} target='_blank'>Page 1</a></li>
       </ul>
     </div>
 {% endblock %}
@@ -97,7 +97,7 @@
     <ul class="sidebar-menu">
         {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_SUPER_ADMIN") %}
             <li>
-                <a href="{{ path('gogo_core_key') }}"><i class="fa fa-key"></i><span>Créer une clé d'activation</span></a>
+                <a href="{{ path('admin_app_codeinvitation_list') }}"><i class="fa fa-key"></i><span>Clés d'activations</span></a>
             </li>
             <li class="first treeview">
                 <a href="{{ path('gogo_bulk_actions_index') }}"><i class="fa fa-bullhorn"></i><span>Actions de masse</span></a>
