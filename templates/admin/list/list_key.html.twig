@@ -1,0 +1,6 @@
+{% extends "admin/list/base_list_custom_batch.html.twig" %}
+
+{% block list_header %}
+  <div><a class="btn btn-primary btn-sm pull-left" style="margin: 10px;"
+          href={{ path('gogo_key_generate') }}>Générer une clé d'activation à usage unique</a></div>
+{% endblock %}
