@@ -45,6 +45,12 @@
           <span class="header-icon gogo-icon-user-plus"></span><span class="text">Ajouter {{ config.elementDisplayNameIndefinite }}</span>
         </a>
 			</div>
+
+      <div class="col menu-item">
+				<a href="{{ path('gogo_element_add2') }}" {% if iframe %}target="_blank"{% endif %}>
+          <span class="header-icon gogo-icon-user-plus"></span><span class="text">Ajouter {{ config.elementDisplayNameIndefinite2 }}</span>
+        </a>
+			</div>
       {% endif %}
 
       {% if config.ActivatePage1 and helper.countPartners %}

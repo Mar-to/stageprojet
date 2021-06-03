@@ -56,6 +56,10 @@ gogo_element_add:
     path:     /elements/add
     defaults: { _controller: App\Controller\ElementFormController::addAction }
 
+gogo_element_add2:
+    path:     /elements/add2
+    defaults: { _controller: App\Controller\ElementFormController2::addAction }
+
 gogo_element_edit:
     path:     /elements/edit/{id}
     defaults: { _controller: App\Controller\ElementFormController::editAction }

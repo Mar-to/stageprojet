@@ -222,19 +222,19 @@ services:
         arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Marqueur / Popup }
-
+    
     admin.form_config:
         class: App\Admin\ConfigurationFormAdmin
         arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Formulaire Acteur 1 }
-        
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Formulaire 1 }
+            
     admin.form_configV2:
         class: App\Admin\ConfigurationFormAdminV2
         arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
         tags:
-            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Formulaire Acteur 2 }
-
+            - { name: sonata.admin, manager_type: doctrine_mongodb, group: custom, label: Formulaire 2 }
+          
     admin.contributions_config:
         class: App\Admin\ConfigurationContributionsAdmin
         arguments: [~, App\Document\Configuration, 'App\Controller\Admin\ConfigurationAdminController']
@@ -347,6 +347,7 @@ services:
         arguments: [~, App\Document\Element, 'App\Controller\Admin\ElementAdminController']
         tags:
             - { name: sonata.admin, manager_type: doctrine_mongodb, group: "data", label: Éléments }
+            
 
     admin.imports:
         class: App\Admin\ImportAdmin

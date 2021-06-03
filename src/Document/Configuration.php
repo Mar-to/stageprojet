@@ -100,6 +100,18 @@ class Configuration implements \JsonSerializable
     /** @MongoDB\Field(type="string") */
     protected $elementDisplayNamePlural = 'éléments'; // elements
 
+      /** @MongoDB\Field(type="string") */
+      protected $elementDisplayName2 = 'acteur'; // actor
+
+      /** @MongoDB\Field(type="string") */
+      protected $elementDisplayNameDefinite2 = "l'acteur"; // the actor
+  
+      /** @MongoDB\Field(type="string") */
+      protected $elementDisplayNameIndefinite2 = 'un acteur'; // an actor
+  
+      /** @MongoDB\Field(type="string") */
+      protected $elementDisplayNamePlural2 = 'acteurs'; // actors
+
     // -----------------------------
     // ----------- PWA -------------
     // -----------------------------
@@ -352,6 +364,9 @@ class Configuration implements \JsonSerializable
 
     /** @MongoDB\Field(type="string") */
     protected $elementFormFieldsJson = "[{\"type\":\"taxonomy\",\"label\":\"Choisissez la ou les catégories par ordre d'importance\",\"name\":\"taxonomy\"},{\"type\":\"separator\",\"label\":\"Séparateur de section\",\"name\":\"separator-1539422234804\"},{\"type\":\"header\",\"subtype\":\"h1\",\"label\":\"Informations\"},{\"type\":\"title\",\"required\":true,\"label\":\"Titre de la fiche\",\"name\":\"name\",\"maxlength\":\"80\",\"icon\":\"gogo-icon-account-circle\"},{\"type\":\"textarea\",\"required\":true,\"label\":\"Description courte\",\"name\":\"description\",\"subtype\":\"textarea\",\"maxlength\":\"250\"},{\"type\":\"textarea\",\"label\":\"Description longue\",\"name\":\"descriptionMore\",\"subtype\":\"textarea\",\"maxlength\":\"600\"},{\"type\":\"address\",\"label\":\"Adresse complète\",\"name\":\"address\",\"icon\":\"gogo-icon-marker-symbol\"},{\"type\":\"separator\",\"label\":\"Séparateur de section\",\"name\":\"separator-1539423917238\"},{\"type\":\"header\",\"subtype\":\"h1\",\"label\":\"Contact (optionnel)\"},{\"type\":\"text\",\"subtype\":\"tel\",\"label\":\"Téléphone\",\"name\":\"telephone\"},{\"type\":\"email\",\"label\":\"Mail\",\"name\":\"email\"},{\"type\":\"text\",\"subtype\":\"url\",\"label\":\"Site web\",\"name\":\"website\"},{\"type\":\"separator\",\"label\":\"Séparateur de section\",\"name\":\"separator-1539424058076\"},{\"type\":\"header\",\"subtype\":\"h1\",\"label\":\"Horaires (optionnel)\"},{\"type\":\"openhours\",\"label\":\"Horaires\",\"name\":\"openhours\"}]";
+
+    /** @MongoDB\Field(type="string") */
+    protected $elementFormFieldsJson2 = "[{\"type\":\"taxonomy\",\"label\":\"Choisissez la ou les catégories par ordre d'importance\",\"name\":\"taxonomy\"},{\"type\":\"separator\",\"label\":\"Séparateur de section\",\"name\":\"separator-1539422234804\"},{\"type\":\"header\",\"subtype\":\"h1\",\"label\":\"Informations\"},{\"type\":\"title\",\"required\":true,\"label\":\"Titre de la fiche\",\"name\":\"name\",\"maxlength\":\"80\",\"icon\":\"gogo-icon-account-circle\"},{\"type\":\"textarea\",\"required\":true,\"label\":\"Description courte\",\"name\":\"description\",\"subtype\":\"textarea\",\"maxlength\":\"250\"},{\"type\":\"textarea\",\"label\":\"Description longue\",\"name\":\"descriptionMore\",\"subtype\":\"textarea\",\"maxlength\":\"600\"},{\"type\":\"address\",\"label\":\"Adresse complète\",\"name\":\"address\",\"icon\":\"gogo-icon-marker-symbol\"},{\"type\":\"separator\",\"label\":\"Séparateur de section\",\"name\":\"separator-1539423917238\"},{\"type\":\"header\",\"subtype\":\"h1\",\"label\":\"Contact (optionnel)\"},{\"type\":\"text\",\"subtype\":\"tel\",\"label\":\"Téléphone\",\"name\":\"telephone\"},{\"type\":\"email\",\"label\":\"Mail\",\"name\":\"email\"},{\"type\":\"text\",\"subtype\":\"url\",\"label\":\"Site web\",\"name\":\"website\"},{\"type\":\"separator\",\"label\":\"Séparateur de section\",\"name\":\"separator-1539424058076\"},{\"type\":\"header\",\"subtype\":\"h1\",\"label\":\"Horaires (optionnel)\"},{\"type\":\"openhours\",\"label\":\"Horaires\",\"name\":\"openhours\"}]";
 
     // ----------------------------
     // -------- IMPORTS -----------
@@ -627,6 +642,11 @@ class Configuration implements \JsonSerializable
     public function getElementFormFields()
     {
         return json_decode($this->getElementFormFieldsJson());
+    }
+
+    public function getElementFormFields2()
+    {
+        return json_decode($this->getElementFormFieldsJson2());
     }
 
     // Ex: [ 'name' => [ 'type' => 'text', 'label' => 'A title'] ]
@@ -1590,6 +1610,77 @@ class Configuration implements \JsonSerializable
     }
 
     /**
+     * Set elementDisplayNameDefinite.
+     *
+     * @param string $elementDisplayNameDefinite
+     *
+     * @return $this
+     */
+    public function setElementDisplayNameDefinite2($elementDisplayNameDefinite)
+    {
+        $this->elementDisplayNameDefinite2 = $elementDisplayNameDefinite;
+
+        return $this;
+    }
+
+    /**
+     * Get elementDisplayNameDefinite.
+     *
+     * @return string $elementDisplayNameDefinite
+     */
+    public function getElementDisplayNameDefinite2()
+    {
+        return $this->elementDisplayNameDefinite2;
+    }
+
+    /**
+     * Set elementDisplayNameIndefinite2.
+     *
+     * @param string $elementDisplayNameIndefinite2
+     *
+     * @return $this
+     */
+    public function setElementDisplayNameIndefinite2($elementDisplayNameIndefinite)
+    {
+        $this->elementDisplayNameIndefinite2 = $elementDisplayNameIndefinite;
+
+        return $this;
+    }
+
+    /**
+     * Get elementDisplayNameIndefinite2.
+     *
+     * @return string $elementDisplayNameIndefinite2
+     */
+    public function getElementDisplayNameIndefinite2()
+    {
+        return $this->elementDisplayNameIndefinite2;
+    }
+
+    /**
+     * Set elementDisplayNamePlural2.
+     *
+     * @param string $elementDisplayNamePlural2
+     *
+     * @return $this
+     */
+    public function setElementDisplayNamePlural2($elementDisplayNamePlural)
+    {
+        $this->elementDisplayNamePlural2 = $elementDisplayNamePlural;
+
+        return $this;
+    }
+
+    /**
+     * Get elementDisplayNamePlural2.
+     *
+     * @return string $elementDisplayNamePlural2
+     */
+    public function getElementDisplayNamePlural2()
+    {
+        return $this->elementDisplayNamePlural2;
+    }
+    /**
      * Set fontImport.
      *
      * @param string $fontImport
@@ -1659,6 +1750,30 @@ class Configuration implements \JsonSerializable
     public function getElementDisplayName()
     {
         return $this->elementDisplayName;
+    }
+
+    /**
+     * Set elementDisplayName2.
+     *
+     * @param string $elementDisplayName2
+     *
+     * @return $this
+     */
+    public function setElementDisplayName2($elementDisplayName)
+    {
+        $this->elementDisplayName2 = $elementDisplayName;
+
+        return $this;
+    }
+
+    /**
+     * Get elementDisplayName2.
+     *
+     * @return string $elementDisplayName2
+     */
+    public function getElementDisplayName2()
+    {
+        return $this->elementDisplayName2;
     }
 
     /**
@@ -2756,6 +2871,31 @@ class Configuration implements \JsonSerializable
     public function getElementFormFieldsJson()
     {
         return $this->elementFormFieldsJson;
+    }
+
+      /**
+     * Set elementFormFieldsJson2.
+     *
+     * @param string $elementFormFieldsJson2
+     *
+     * @return $this
+     */
+    public function setElementFormFieldsJson2($elementFormFieldsJson2)
+    {
+        if ($elementFormFieldsJson2)
+            $this->elementFormFieldsJson2 = $elementFormFieldsJson2;
+
+        return $this;
+    }
+
+    /**
+     * Get elementFormFieldsJson2.
+     *
+     * @return string $elementFormFieldsJson2
+     */
+    public function getElementFormFieldsJson2()
+    {
+        return $this->elementFormFieldsJson2;
     }
 
     /**

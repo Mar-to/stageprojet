@@ -23,6 +23,11 @@ const scriptsElementForm = () =>
     .pipe(concat('element-form.js'))
     .pipe(gulp.dest('web/js'));
 
+const scriptsElementForm2 = () =>
+  gulp.src(['assets/js/element-form/**/*.js', 'node_modules/universal-geocoder/dist/universal-geocoder.js'])
+    .pipe(concat('element-form.js'))
+    .pipe(gulp.dest('web/js'));
+
 const scriptsLibs = () => {
   const gogocarto = gulp.src(['node_modules/gogocarto-js/dist/gogocarto.js', 'assets/js/init-sw.js', 'custom/**/*.js'])
     .pipe(concat('gogocarto.js'))
@@ -100,6 +105,12 @@ exports.watch = () => {
   gulp.watch(['assets/js/**/*.js', '!assets/js/element-form/**/*.js'],
               gulp.series(scriptsExternalPages, serviceWorker));
 
+  gulp.watch(['assets/js/element-formV2/**/*.js'],
+              gulp.series(scriptsElementForm2, serviceWorker));
+
+  gulp.watch(['assets/js/**/*.js', '!assets/js/element-formV2/**/*.js'],
+              gulp.series(scriptsExternalPages, serviceWorker));
+
   gulp.watch(['node_modules/gogocarto-js/dist/**/*', 'custom/**/*.css'],
               gulp.series(gogocarto_assets, serviceWorker));
 
@@ -115,6 +126,6 @@ const cleanCss = () =>
 const cleanJs = () =>
   del(['web/js']);
 
-exports.build = gulp.series(cleanJs, cleanCss, gulp.parallel(stylesBuild, scriptsLibs, scriptsHome, scriptsExternalPages, scriptsElementForm, gogocarto_assets), serviceWorker);
+exports.build = gulp.series(cleanJs, cleanCss, gulp.parallel(stylesBuild, scriptsLibs, scriptsHome, scriptsExternalPages, scriptsElementForm, scriptsElementForm2, gogocarto_assets), serviceWorker);
 
 exports.production = gulp.parallel(gulp.series(prod_styles, gzip_styles), gulp.series(prod_js, gzip_js));

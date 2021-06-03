@@ -2,8 +2,8 @@
 /**
  * @Author: Sebastian Castro
  * @Date:   2017-03-28 15:29:03
- * @Last Modified by:   Sebastian Castro
- * @Last Modified time: 2018-04-22 19:45:15
+ * @Last Modified by:   Van Buynderen Mario
+ * @Last Modified time: 2021-06-03 17:54:29
  */
 
 namespace App\Admin;
@@ -15,9 +15,9 @@ use App\Helper\GoGoHelper;
 
 class ConfigurationFormAdminV2 extends ConfigurationAbstractAdmin
 {
-    protected $baseRouteName = 'gogo_core_bundle_config_form_admin_classname';
+    protected $baseRouteName = 'gogo_core_bundle_config_form_admin_classname2';
 
-    protected $baseRoutePattern = 'gogo/core/configuration-form';
+    protected $baseRoutePattern = 'gogo/core/configuration-form2';
 
     protected function configureFormFields(FormMapper $formMapper)
     {
@@ -31,7 +31,7 @@ class ConfigurationFormAdminV2 extends ConfigurationAbstractAdmin
                     <div class='text-and-iframe-container'><div class='iframe-container-aside'><iframe height='200' sandbox='allow-same-origin allow-scripts' src='https://video.colibris-outilslibres.org/videos/embed/2dd4dad3-63fa-4bb4-b48c-e518f8e56d36' frameborder='0' allowfullscreen></iframe></div>
                     <b>Le formulaire permet d'ajouter/éditer des données depuis l'interface publique</b></br>
                     Si vous avez importé des données, vous pouvez ajouter un champ au formulaire et le lier au champ importé grâce à l'attribut \"Nom du champ\"</div>"])
-                    ->add('elementFormFieldsJson', HiddenType::class, ['attr' => ['class' => 'gogo-form-builder', 'data-props' => $elementProperties]])
+                    ->add('elementFormFieldsJson2', HiddenType::class, ['attr' => ['class' => 'gogo-form-builder2', 'data-props' => $elementProperties]])
                 ->end()
             ->end()
             ->tab('Autres textes et options')

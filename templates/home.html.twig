@@ -52,6 +52,10 @@
 				{% set placeholder = placeholder ~ delimiter ~ config.elementDisplayNameIndefinite %}
 				{% set delimiter = ', ' %}
 			{% endif %}
+			{% if config.searchElementsFeature.isAllowed(app.user, inIframe) %}
+				{% set placeholder = placeholder ~ delimiter ~ config.elementDisplayNameIndefinite2 %}
+				{% set delimiter = ', ' %}
+			{% endif %}
 			{% if config.searchCategoriesFeature.isAllowed(app.user, inIframe) %}
 				{% set placeholder = placeholder ~ delimiter ~ 'une catégorie' %}
 			{% endif %}
@@ -94,6 +98,9 @@
 			<p class="contribution-text">{{ config.home.addElementHintText }}</p>
 			<a href="{{ path('gogo_element_add') }}">
 				<button class="btn-secondary btn waves-effect waves-light">Ajouter {{ config.elementDisplayNameIndefinite }}</button>
+			</a>
+			<a href="{{ path('gogo_element_add2') }}">
+				<button class="btn-secondary btn waves-effect waves-light">Ajouter {{ config.elementDisplayNameIndefinite2 }}</button>
 			</a>
 		</div>
 

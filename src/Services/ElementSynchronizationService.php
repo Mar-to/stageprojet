@@ -322,7 +322,7 @@ class ElementSynchronizationService
             return ['result' => false, 'duplicates' => []];
         }
     }
-
+    
     /**
      * Extract the mains tags from the osm feature
      */
