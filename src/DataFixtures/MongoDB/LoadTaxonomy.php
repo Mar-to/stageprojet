@@ -34,6 +34,9 @@ class LoadTaxonomy implements FixtureInterface
         $s['red'] = '#ce3a2f';
         $c['darkgreen'] = '#1e8065';
         $s['darkgreen'] = '#1e8065';
+        $c['grey'] = '#839192';
+        $s['grey'] = '#839192';
+
 
         // main
         $mainCategory = new Category();
@@ -56,6 +59,7 @@ class LoadTaxonomy implements FixtureInterface
             ['Sortie & Culture', 'fa fa-coffee', 'pink', '', 'Sorties', false],
             ['Voyages', 'fa fa-suitcase', 'darkgreen', '', '', false],
             ['Economie & Finance', 'fa fa-euro', 'yellow', '', 'Economie/Finance', false],
+            ['Acteurs', 'fa fa-file', 'grey', '', '', true],
         ];
 
         foreach ($mains as $key => $main) {
