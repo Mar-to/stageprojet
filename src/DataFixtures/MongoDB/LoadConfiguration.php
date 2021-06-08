@@ -67,7 +67,7 @@ class LoadConfiguration implements FixtureInterface
             $configuration->setActivatePage1(true);
             $configuration->setPage1Title('Page 1');
             $configuration->setActivatePage2(false);
-            $configuration->setActivatePage3(true);
+            $configuration->setActivatePage3(false);
             $configuration->setActivateAbouts(true);
             $configuration->setAboutHeaderTitle('A propos');
 

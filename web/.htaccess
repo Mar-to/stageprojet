@@ -1,5 +1,17 @@
-Options -MultiViews
-RewriteEngine On
-RewriteRule ^js/.* - [L]
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)$ /index.php [QSA,L]
+<IfModule mod_rewrite.c>
+
+    RewriteEngine On
+
+    # remove "www" from URI
+    RewriteCond %{HTTP_HOST} ^www\.(.+) [NC]
+    RewriteRule ^ http://%1%{REQUEST_URI} [L,R=301]
+
+    # force HTTPS
+    RewriteCond %{HTTPS} !on
+    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # use public as starting point
+    RewriteRule ^$ public/ [L]
+    RewriteRule (.*) public/$1 [L]
+
+</IfModule>

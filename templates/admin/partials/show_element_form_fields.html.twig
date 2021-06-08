@@ -212,6 +212,7 @@
   }
   th { background-color: #f1f1f1; }
   #generate-body-template { float: right; }
+  #generate-body-template2 { float: right; }
 </style>
 
 <script>
@@ -221,6 +222,15 @@
       template += $(this).text() + '\n';
     })
     $('textarea[data-id="body-template"]').text(template).change();
+    $('input[type=checkbox].use-markdown').prop('checked', true)
+  }
+
+  function generateBodyTemplate2() {
+    var template = ""
+    $('td.value').each(function() {
+      template += $(this).text() + '\n';
+    })
+    $('textarea[data-id="body-template2"]').text(template).change();
     $('input[type=checkbox].use-markdown').prop('checked', true)
   }
   $(document).ready(function() {
