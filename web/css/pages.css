@@ -1,0 +1,1237 @@
+/*** Colors ***/
+/*** Badges ***/
+/*** Buttons ***/
+/*** Cards ***/
+/*** Collapsible ***/
+/*** Dropdown ***/
+/*** Fonts ***/
+/*** Forms ***/
+/*** Global ***/
+/*** Navbar ***/
+/*** SideNav ***/
+/*** Photo Slider ***/
+/*** Spinners | Loaders ***/
+/*** Tabs ***/
+/*** Tables ***/
+/*** Toasts ***/
+/*** Typography ***/
+/*** Collections ***/
+/* Progress Bar */
+/* roboto-regular - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: local("Roboto"), local("Roboto-Regular"), url("../fonts/roboto-v20-latin-regular.woff2") format("woff2"), url("../fonts/roboto-v20-latin-regular.woff") format("woff");
+  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */ }
+
+/* roboto-900 - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 900;
+  src: local("Roboto Black"), local("Roboto-Black"), url("../fonts/roboto-v20-latin-900.woff2") format("woff2"), url("../fonts/roboto-v20-latin-900.woff") format("woff");
+  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */ }
+
+@font-face {
+  font-family: 'Roboto Bk';
+  font-style: normal;
+  font-weight: 400;
+  src: local("Roboto"), local("Roboto-Black"), url("../fonts/Roboto-Black.woff2") format("woff2"), url("../fonts/Roboto-Black.woff") format("woff");
+  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */ }
+
+@font-face {
+  font-family: 'Roboto Lt';
+  font-style: normal;
+  font-weight: 400;
+  src: local("Roboto"), local("Roboto-Light"), url("../fonts/Roboto-Light.woff2") format("woff2"), url("../fonts/Roboto-Light.woff") format("woff");
+  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */ }
+
+/* lobster-regular - latin */
+@font-face {
+  font-family: 'Lobster';
+  font-style: normal;
+  font-weight: 400;
+  src: local("Lobster Regular"), local("Lobster-Regular"), url("../fonts/lobster-v22-latin-regular.woff2") format("woff2"), url("../fonts/lobster-v22-latin-regular.woff") format("woff");
+  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */ }
+
+/* open-sans-regular - latin */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local("Open Sans Regular"), local("OpenSans-Regular"), url("../fonts/open-sans-v17-latin-regular.woff2") format("woff2"), url("../fonts/open-sans-v17-latin-regular.woff") format("woff");
+  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */ }
+
+/* open-sans-800 - latin */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 800;
+  src: local("Open Sans ExtraBold"), local("OpenSans-ExtraBold"), url("../fonts/open-sans-v17-latin-800.woff2") format("woff2"), url("../fonts/open-sans-v17-latin-800.woff") format("woff");
+  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */ }
+
+/* ubuntu-regular - latin */
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: 400;
+  src: local("Ubuntu Regular"), local("Ubuntu-Regular"), url("../fonts/ubuntu-v14-latin-regular.woff2") format("woff2"), url("../fonts/ubuntu-v14-latin-regular.woff") format("woff");
+  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */ }
+
+/* ubuntu-700 - latin */
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: 700;
+  src: local("Ubuntu Bold"), local("Ubuntu-Bold"), url("../fonts/ubuntu-v14-latin-700.woff2") format("woff2"), url("../fonts/ubuntu-v14-latin-700.woff") format("woff");
+  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */ }
+
+/* oxygen-regular - latin */
+@font-face {
+  font-family: 'Oxygen';
+  font-style: normal;
+  font-weight: 400;
+  src: local("Oxygen Regular"), local("Oxygen-Regular"), url("../fonts/oxygen-v9-latin-regular.woff2") format("woff2"), url("../fonts/oxygen-v9-latin-regular.woff") format("woff");
+  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */ }
+
+/* oxygen-700 - latin */
+@font-face {
+  font-family: 'Oxygen';
+  font-style: normal;
+  font-weight: 700;
+  src: local("Oxygen Bold"), local("Oxygen-Bold"), url("../fonts/oxygen-v9-latin-700.woff2") format("woff2"), url("../fonts/oxygen-v9-latin-700.woff") format("woff");
+  /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */ }
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  src: local("Nunito SemiBold"), local("Nunito-SemiBold"), url("../fonts/Nunito-SemiBold.ttf"); }
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 600;
+  src: local("Nunito Bold"), local("Nunito-Bold"), url("../fonts/Nunito-Bold.ttf"); }
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 700;
+  src: local("Nunito ExtraBold"), local("Nunito-ExtraBold"), url("../fonts/Nunito-ExtraBold.ttf"); }
+
+.custom-scroll-bar::-webkit-scrollbar-track {
+  background-color: #f6f6f6;
+  border: 1px solid #f0f0f0; }
+
+.custom-scroll-bar::-webkit-scrollbar {
+  width: 12px; }
+
+.custom-scroll-bar::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  border: 3px solid #f6f6f6;
+  background-color: #C5C5C5; }
+
+.custom-scroll-bar-light::-webkit-scrollbar-track {
+  background-color: #f6f6f6;
+  border: 1px solid #f0f0f0; }
+
+.custom-scroll-bar-light::-webkit-scrollbar {
+  width: 7px; }
+
+.custom-scroll-bar-light::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  background-color: #c3c3c3; }
+
+/*
+* @Author: Sebastian Castro
+* @Date:   2017-04-05 15:04:49
+* @Last Modified by:   Sebastian Castro
+* @Last Modified time: 2018-04-25 18:24:08
+*/
+@media only screen and (max-width: 600px) {
+  .modal.page-modal {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    top: 0 !important; }
+    .modal.page-modal h1 {
+      text-align: center !important;
+      margin-right: 3rem; } }
+
+@media only screen and (min-width: 601px) {
+  .modal.page-modal.vertical-align {
+    top: 50% !important;
+    transform: scaleX(1) translate(0, -50%) !important; } }
+
+.modal.page-modal .modal-content {
+  padding: 24px; }
+  @media only screen and (min-width: 601px) {
+    .modal.page-modal .modal-content {
+      padding: 40px 15px; } }
+  @media only screen and (min-width: 1201px) {
+    .modal.page-modal .modal-content {
+      padding: 40px; } }
+
+.modal.page-modal .btn-back {
+  float: left;
+  font-size: 2rem;
+  line-height: 4rem;
+  padding: 0 2rem;
+  padding-top: .3rem;
+  margin-left: -2rem;
+  color: white !important; }
+  @media only screen and (min-width: 601px) {
+    .modal.page-modal .btn-back {
+      display: none; } }
+
+@media only screen and (min-width: 601px) {
+  .modal.page-modal {
+    width: 100%;
+    max-height: 80%; } }
+
+@media only screen and (min-width: 1200px) {
+  .modal.page-modal {
+    min-width: 800px;
+    width: 60% !important;
+    max-height: 80%; } }
+
+@media only screen and (max-width: 600px) {
+  .modal.page-modal .modal-content.page-modal-content {
+    height: 100%;
+    border-radius: none !important; } }
+
+.modal.page-modal .modal-content.page-modal-content .page-modal-footer {
+  text-align: right;
+  margin-top: 2rem; }
+
+html {
+  position: absolute;
+  height: 100%;
+  width: 100%; }
+
+body {
+  height: 100%;
+  width: 100%; }
+
+#page-container {
+  -webkit-box-flex: 1 auto;
+  -moz-box-flex: 1 auto;
+  -webkit-flex: 1 auto;
+  -ms-flex: 1 auto;
+  flex: 1 auto; }
+
+#page-content {
+  position: relative; }
+
+body.gogo-load-css {
+  height: auto;
+  min-height: 100%;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: vertical;
+  -moz-flex-direction: vertical;
+  -ms-flex-direction: column;
+  -webkit-flex-direction: column;
+  flex-direction: column; }
+
+.gogo-load-css {
+  /*
+* @Author: Sebastian Castro
+* @Date:   2017-03-22 16:36:09
+* @Last Modified by:   Sebastian Castro
+* @Last Modified time: 2017-09-21 08:51:10
+*/
+  /*
+* @Author: Sebastian Castro
+* @Date:   2017-03-31 08:51:24
+* @Last Modified by:   Sebastian Castro
+* @Last Modified time: 2018-06-12 15:37:48
+*/
+  /*
+* @Author: Sebastian Castro
+* @Date:   2017-04-03 13:24:36
+* @Last Modified by:   Sebastian Castro
+* @Last Modified time: 2018-03-18 14:22:17
+*/
+  /*
+* @Author: Sebastian Castro
+* @Date:   2017-03-22 17:36:44
+* @Last Modified by:   Sebastian Castro
+* @Last Modified time: 2017-07-29 08:43:30
+*/
+  /*
+* @Author: Sebastian Castro
+* @Date:   2017-07-29 08:13:02
+* @Last Modified by:   Sebastian Castro
+* @Last Modified time: 2017-07-29 08:14:37
+*/
+  /*
+* @Author: Sebastian Castro
+* @Date:   2017-05-10 15:43:00
+* @Last Modified by:   Sebastian Castro
+* @Last Modified time: 2017-07-28 16:15:27
+*/
+  /*
+* @Author: Sebastian Castro
+* @Date:   2017-04-03 13:36:02
+* @Last Modified by:   Sebastian Castro
+* @Last Modified time: 2018-03-18 13:46:56
+*/
+  /*
+* @Author: Sebastian Castro
+* @Date:   2017-06-22 18:43:02
+* @Last Modified by:   Sebastian Castro
+* @Last Modified time: 2017-11-08 15:59:54
+*/
+  /*
+* @Author: Sebastian Castro
+* @Date:   2018-02-11 12:03:45
+* @Last Modified by:   Sebastian Castro
+* @Last Modified time: 2018-03-19 16:09:33
+*/
+  /*
+* @Author: Sebastian Castro
+* @Date:   2018-03-17 12:11:03
+* @Last Modified by:   Sebastian Castro
+* @Last Modified time: 2018-03-19 14:47:31
+*/
+  /*
+* @Author: Sebastian Castro
+* @Date:   2018-03-18 13:48:38
+* @Last Modified by:   Sebastian Castro
+* @Last Modified time: 2018-03-28 12:41:22
+*/
+  /*
+* @Author: Sebastian Castro
+* @Date:   2018-03-19 14:33:23
+* @Last Modified by:   Sebastian Castro
+* @Last Modified time: 2018-03-19 14:41:29
+*/
+  /*
+* @Author: Sebastian Castro
+* @Date:   2017-09-21 08:51:56
+* @Last Modified by:   Sebastian Castro
+* @Last Modified time: 2017-09-21 09:14:57
+*/ }
+  .gogo-load-css .modal.about-modal .modal-content {
+    text-align: justify;
+    padding: 1rem 1.5rem; }
+    @media screen and (min-width: 601px) {
+      .gogo-load-css .modal.about-modal .modal-content {
+        padding: 2rem 2.5rem; } }
+  .gogo-load-css .modal.about-modal h1 {
+    text-align: center; }
+  .gogo-load-css #popup-login {
+    text-align: center; }
+    @media only screen and (min-width: 601px) {
+      .gogo-load-css #popup-login.without-oauth {
+        min-width: 550px;
+        width: 550px; } }
+    .gogo-load-css #popup-login a {
+      color: white;
+      text-decoration: underline; }
+    .gogo-load-css #popup-login .register {
+      font-weight: bold;
+      margin-top: 3rem;
+      margin-bottom: 1rem; }
+    .gogo-load-css #popup-login .login-form {
+      margin-top: 40px; }
+    .gogo-load-css #popup-login .oauth-section {
+      padding-right: 2rem !important; }
+      .gogo-load-css #popup-login .oauth-section .oauth-btn {
+        height: 3rem;
+        line-height: 3rem;
+        color: white;
+        text-align: left;
+        width: 100%;
+        font-weight: 600;
+        padding-left: 1.5rem;
+        margin-bottom: 1rem;
+        text-decoration: none !important; }
+        .gogo-load-css #popup-login .oauth-section .oauth-btn.facebook {
+          background-color: #446da0; }
+        .gogo-load-css #popup-login .oauth-section .oauth-btn.gplus {
+          background-color: #cf5d46; }
+        .gogo-load-css #popup-login .oauth-section .oauth-btn.yahoo {
+          background-color: #834fd6; }
+        .gogo-load-css #popup-login .oauth-section .oauth-btn.communs {
+          background-color: white;
+          color: #e87151; }
+        .gogo-load-css #popup-login .oauth-section .oauth-btn.printemps {
+          background-color: #785fa1; }
+        .gogo-load-css #popup-login .oauth-section .oauth-btn i.icon {
+          font-size: 20px;
+          line-height: 3.5rem;
+          padding: 0; }
+    .gogo-load-css #popup-login p.facebook-alert {
+      font-style: italic;
+      color: #b5b4b7;
+      font-size: .95rem;
+      margin: 0;
+      margin-bottom: 1rem; }
+    .gogo-load-css #popup-login.with-oauth .form-section {
+      padding-left: 2rem !important;
+      border-left: 1px solid #909090; }
+    .gogo-load-css #popup-login .form-section {
+      text-align: left; }
+      .gogo-load-css #popup-login .form-section #login-form {
+        margin-bottom: 1rem; }
+      .gogo-load-css #popup-login .form-section .error-message {
+        text-align: center;
+        border-radius: 2px;
+        font-style: italic;
+        color: #fff;
+        font-weight: bold; }
+      .gogo-load-css #popup-login .form-section .input-field label {
+        left: 0 !important;
+        color: #ccc8c8; }
+      .gogo-load-css #popup-login .form-section label#remember-me-checkbox {
+        left: 0 !important;
+        color: white; }
+      .gogo-load-css #popup-login .form-section .input-field input[type=text], .gogo-load-css #popup-login .form-section .input-field input[type=password] {
+        margin-bottom: 0 !important;
+        border-color: white !important;
+        height: 2rem;
+        margin-top: 10px; }
+        .gogo-load-css #popup-login .form-section .input-field input[type=text]#username, .gogo-load-css #popup-login .form-section .input-field input[type=password]#username {
+          margin-bottom: 10px !important; }
+      .gogo-load-css #popup-login .form-section [type="checkbox"] + label#remember-me-checkbox:before {
+        top: 3px;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #bfbfbf; }
+      .gogo-load-css #popup-login .form-section [type="checkbox"]:checked + label#remember-me-checkbox:before {
+        top: -1px;
+        width: 10px;
+        height: 18px;
+        border-right: 2px solid #dedede;
+        border-bottom: 2px solid #dedede;
+        border-top: 2px solid transparent;
+        border-left: 2px solid transparent; }
+      .gogo-load-css #popup-login .form-section button {
+        font-size: .9rem;
+        padding: 0 1.8rem;
+        margin-right: 1rem; }
+      .gogo-load-css #popup-login .form-section a.forgotten-password {
+        display: inline-block;
+        font-size: .85rem;
+        line-height: 3rem;
+        color: #bfbfbf !important; }
+    @media only screen and (max-width: 600px) {
+      .gogo-load-css #popup-login .oauth-section {
+        padding: 0 !important; }
+      .gogo-load-css #popup-login .oauth-section.oauth-btn {
+        padding-left: 1rem;
+        font-size: .9rem; }
+      .gogo-load-css #popup-login .form-section {
+        padding: 0 !important;
+        border-left: none; }
+      .gogo-load-css #popup-login .register {
+        margin-top: 2rem; } }
+  .gogo-load-css header {
+    color: white; }
+    @media only screen and (max-width: 701px) {
+      .gogo-load-css header {
+        margin-bottom: -1px; } }
+    .gogo-load-css header #menu {
+      margin: 0;
+      font-size: .85rem;
+      padding: 0 .5rem;
+      height: 3rem;
+      width: 100%; }
+      @media only screen and (min-width: 701px) {
+        .gogo-load-css header #menu {
+          font-size: 1rem;
+          margin-bottom: 0px;
+          padding: 0;
+          height: 3.5rem; } }
+      .gogo-load-css header #menu #menu-home {
+        display: inline-block;
+        font-weight: bold;
+        font-size: 1.4rem;
+        line-height: 3rem;
+        margin-right: 0; }
+        .gogo-load-css header #menu #menu-home .small-logo {
+          display: inline-block;
+          height: 100%;
+          padding: 6px 0;
+          margin-left: -5px; }
+          .gogo-load-css header #menu #menu-home .small-logo img {
+            height: 100%; }
+        .gogo-load-css header #menu #menu-home .large-logo {
+          display: none; }
+        .gogo-load-css header #menu #menu-home #logo-inline {
+          height: 2.5rem;
+          position: absolute;
+          top: .3rem; }
+        .gogo-load-css header #menu #menu-home .small-logo .header-icon {
+          font-size: 1.8rem;
+          padding-top: 3px;
+          color: #ffffff;
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 3rem;
+          border-radius: 0 18px 18px 0;
+          margin: 0;
+          padding: 0 1.3rem 0 1rem;
+          padding-top: 3px; }
+        @media screen and (min-width: 900px) {
+          .gogo-load-css header #menu #menu-home .small-logo {
+            display: none; }
+          .gogo-load-css header #menu #menu-home .large-logo {
+            display: inline-block; } }
+        @media screen and (min-width: 701px) {
+          .gogo-load-css header #menu #menu-home {
+            margin-left: .7rem;
+            font-size: 1.6rem;
+            line-height: 3.5rem; }
+            .gogo-load-css header #menu #menu-home #logo-inline {
+              top: .5rem; } }
+        @media screen and (max-width: 700px) {
+          .gogo-load-css header #menu #menu-home {
+            line-height: 3rem;
+            height: 3rem;
+            padding: 0; } }
+      .gogo-load-css header #menu #btn-nav-open-menu {
+        font-size: 2rem;
+        margin-top: 5px;
+        float: left;
+        padding: 0 .5rem 0 .7rem; }
+        @media screen and (min-width: 701px) {
+          .gogo-load-css header #menu #btn-nav-open-menu {
+            display: none !important; } }
+      .gogo-load-css header #menu #nav-page-title {
+        font-size: 1.5rem;
+        display: inline-block;
+        padding-left: 1rem;
+        line-height: 2.1rem; }
+        @media screen and (min-width: 701px) {
+          .gogo-load-css header #menu #nav-page-title {
+            display: none; } }
+      .gogo-load-css header #menu #nav-btn-dropdown {
+        float: right;
+        margin-top: 6px;
+        font-size: 1.8rem;
+        padding: 0 .5rem 0 1rem; }
+        @media screen and (min-width: 701px) {
+          .gogo-load-css header #menu #nav-btn-dropdown {
+            display: none; } }
+      @media screen and (max-width: 700px) {
+        .gogo-load-css header #menu #menu-actions {
+          display: none;
+          line-height: 2.5rem;
+          position: absolute;
+          padding: .5rem 0;
+          left: 0;
+          right: 0;
+          top: 3rem;
+          padding-bottom: 1rem;
+          text-align: center;
+          background-color: inherit; } }
+      @media screen and (min-width: 701px) {
+        .gogo-load-css header #menu #menu-actions {
+          display: inline-block !important;
+          line-height: 3rem;
+          float: right;
+          line-height: 3.5rem;
+          position: relative; } }
+      .gogo-load-css header #menu #menu-actions .nav-overlay {
+        position: fixed;
+        top: 0;
+        z-index: -1;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.17); }
+        @media screen and (min-width: 701px) {
+          .gogo-load-css header #menu #menu-actions .nav-overlay {
+            display: none !important; } }
+      .gogo-load-css header #menu .menu-item {
+        -webkit-transition: all 0.2s;
+        -moz-transition: all 0.2s;
+        -o-transition: all 0.2s;
+        -ms-transition: all 0.2s;
+        transition: all 0.2s;
+        padding: 0 .75rem !important; }
+        @media only screen and (max-width: 700px) {
+          .gogo-load-css header #menu .menu-item {
+            text-align: center;
+            padding: 0 .5rem !important;
+            font-size: inherit; }
+            .gogo-load-css header #menu .menu-item:not(#menu-home) {
+              width: 100%;
+              padding: 0 !important;
+              margin: 0; } }
+        @media only screen and (min-width: 701px) {
+          .gogo-load-css header #menu .menu-item {
+            margin-right: .5rem;
+            float: none;
+            height: 100%;
+            display: inline-block;
+            width: auto; } }
+        @media only screen and (min-width: 1000px) {
+          .gogo-load-css header #menu .menu-item {
+            margin-right: 2rem; } }
+        .gogo-load-css header #menu .menu-item:hover {
+          cursor: pointer; }
+        .gogo-load-css header #menu .menu-item a {
+          color: inherit;
+          cursor: pointer;
+          font-size: inherit;
+          width: 100%;
+          border-radius: 0;
+          border: none;
+          background-color: transparent; }
+          .gogo-load-css header #menu .menu-item a .header-icon {
+            display: none;
+            font-size: 1.2rem;
+            margin-left: .5rem;
+            padding-top: 6px;
+            color: #eaeaea; }
+          @media only screen and (min-width: 801px) {
+            .gogo-load-css header #menu .menu-item a .header-icon {
+              display: none; }
+            .gogo-load-css header #menu .menu-item a .text {
+              display: inline; } }
+      .gogo-load-css header #menu .arrow-after {
+        display: inline-block;
+        border: solid 5px;
+        margin-left: 5px;
+        margin-bottom: -3px;
+        margin-right: 0px; }
+      .gogo-load-css header #menu .btn-login {
+        margin: 0;
+        height: 2rem;
+        line-height: 2.5rem;
+        padding: 0 10px !important;
+        font-size: .85rem;
+        text-transform: uppercase;
+        border-radius: 2px;
+        margin: 0;
+        line-height: 2.3rem; }
+        @media only screen and (min-width: 701px) {
+          .gogo-load-css header #menu .btn-login {
+            margin-right: 1rem; } }
+        @media only screen and (min-width: 801px) {
+          .gogo-load-css header #menu .btn-login {
+            padding: 0 1.5rem;
+            margin-right: 2rem;
+            margin-top: 0px;
+            line-height: 2rem; } }
+      .gogo-load-css header #menu #btn-logout {
+        padding: 0 1rem 0 0rem !important;
+        margin-right: 0;
+        font-weight: bold; }
+        @media only screen and (min-width: 801px) {
+          .gogo-load-css header #menu #btn-logout {
+            padding: 0 3rem 0 1rem !important; } }
+      .gogo-load-css header #menu ul#listUserActions {
+        top: 100% !important;
+        right: 0 !important;
+        min-width: 140px !important;
+        left: initial !important;
+        opacity: 1;
+        margin: 0 !important; }
+        .gogo-load-css header #menu ul#listUserActions .about-title-item {
+          text-align: center; }
+      .gogo-load-css header #menu .dropdown-content {
+        margin-top: 2.3rem;
+        margin-right: 2rem; }
+        .gogo-load-css header #menu .dropdown-content li {
+          color: inherit !important; }
+        .gogo-load-css header #menu .dropdown-content li:hover {
+          background-color: transparent; }
+        .gogo-load-css header #menu .dropdown-content li a {
+          -webkit-transition: all 0.2s;
+          -moz-transition: all 0.2s;
+          -o-transition: all 0.2s;
+          -ms-transition: all 0.2s;
+          transition: all 0.2s; }
+        @media screen and (max-width: 500px) {
+          .gogo-load-css header #menu .dropdown-content {
+            margin-top: 2.5rem; } }
+        @media only screen and (min-width: 701px) {
+          .gogo-load-css header #menu .dropdown-content {
+            margin-top: 3.5rem;
+            width: auto !important; } }
+        .gogo-load-css header #menu .dropdown-content .about-title-item {
+          font-size: .9rem;
+          text-align: center;
+          color: inherit; }
+          @media screen and (min-width: 700px) {
+            .gogo-load-css header #menu .dropdown-content .about-title-item {
+              text-align: left; } }
+        .gogo-load-css header #menu .dropdown-content .item-divider {
+          height: 1px;
+          overflow: hidden; }
+  .gogo-load-css .flash-messages-container {
+    display: inline-block;
+    width: 100%; }
+  .gogo-load-css .flash-message {
+    text-align: center;
+    font-weight: 500;
+    font-style: italic;
+    background-color: #444444;
+    color: white;
+    padding: 1rem;
+    margin-bottom: 1rem; }
+    .gogo-load-css .flash-message a {
+      color: white;
+      text-decoration: underline; }
+      .gogo-load-css .flash-message a:hover {
+        color: #de5a5f; }
+    .gogo-load-css .flash-message.fos_user_error {
+      background-color: #9e171d; }
+    .gogo-load-css .flash-message.sonata_user_error {
+      background-color: #9e171d; }
+    .gogo-load-css .flash-message .btn-close {
+      display: none; }
+    .gogo-load-css .flash-message.notice {
+      background-color: #444444; }
+      .gogo-load-css .flash-message.notice a:hover {
+        color: #de5a5f; }
+    .gogo-load-css .flash-message.error {
+      background-color: #b90303; }
+      .gogo-load-css .flash-message.error a:hover {
+        color: white; }
+    .gogo-load-css .flash-message.success {
+      background-color: #4caf50; }
+      .gogo-load-css .flash-message.success a:hover {
+        color: #444444; }
+  .gogo-load-css #page-content.partners .image-container {
+    width: 25%;
+    padding-right: 1rem;
+    padding-top: 1.8rem;
+    float: left; }
+  .gogo-load-css #page-content.partners .partner-logo {
+    width: 100%; }
+  .gogo-load-css #page-content.partners .partner-text {
+    width: 75%;
+    float: left;
+    padding: 1rem;
+    font-size: .9rem; }
+    .gogo-load-css #page-content.partners .partner-text h2 {
+      text-align: left; }
+  .gogo-load-css #page-content.contributor-login {
+    max-width: 700px !important; }
+    @media only screen and (min-width: 601px) {
+      .gogo-load-css #page-content.contributor-login .input-field {
+        margin-left: 2rem;
+        margin-right: 2rem; } }
+    .gogo-load-css #page-content.contributor-login h1 {
+      margin-bottom: 2.5rem; }
+    .gogo-load-css #page-content.contributor-login .explanations {
+      text-align: center;
+      font-style: italic;
+      font-size: .8rem;
+      color: #404040;
+      margin-bottom: 1rem; }
+    .gogo-load-css #page-content.contributor-login .login-section {
+      text-align: center; }
+      .gogo-load-css #page-content.contributor-login .login-section h3 {
+        font-size: 1rem;
+        margin-bottom: 1rem; }
+      .gogo-load-css #page-content.contributor-login .login-section .oauth-section .oauth-btn {
+        height: 3rem;
+        line-height: 3rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #707680;
+        margin-right: 5px;
+        width: auto;
+        text-transform: none;
+        padding-left: 5px;
+        margin-bottom: 0;
+        background-color: transparent; }
+        .gogo-load-css #page-content.contributor-login .login-section .oauth-section .oauth-btn:not(:last-child):after {
+          content: "/";
+          color: #c7c7c7;
+          margin-left: 1rem; }
+        @media only screen and (max-width: 800px) {
+          .gogo-load-css #page-content.contributor-login .login-section .oauth-section .oauth-btn {
+            width: 100%;
+            margin-left: .5rem;
+            text-align: left; }
+            .gogo-load-css #page-content.contributor-login .login-section .oauth-section .oauth-btn:after {
+              content: "" !important; } }
+        .gogo-load-css #page-content.contributor-login .login-section .oauth-section .oauth-btn.facebook {
+          color: #446da0; }
+        .gogo-load-css #page-content.contributor-login .login-section .oauth-section .oauth-btn.gplus {
+          color: #cf5d46; }
+        .gogo-load-css #page-content.contributor-login .login-section .oauth-section .oauth-btn.yahoo {
+          color: #834fd6; }
+        .gogo-load-css #page-content.contributor-login .login-section .oauth-section .oauth-btn.communs {
+          color: #e87151; }
+        .gogo-load-css #page-content.contributor-login .login-section .oauth-section .oauth-btn.printemps {
+          color: #785fa1; }
+        .gogo-load-css #page-content.contributor-login .login-section .oauth-section .oauth-btn i.icon {
+          font-size: 20px;
+          line-height: 3.5rem;
+          padding: 0; }
+        .gogo-load-css #page-content.contributor-login .login-section .oauth-section .oauth-btn.instance-login img {
+          height: 23px;
+          float: left;
+          top: 10px;
+          margin-top: 9px;
+          margin-right: 1rem; }
+    .gogo-load-css #page-content.contributor-login .or-label {
+      position: relative;
+      margin-top: 15px;
+      margin-bottom: 25px;
+      margin-left: 2rem;
+      margin-right: 2rem;
+      text-align: center;
+      clear: both;
+      overflow: hidden;
+      color: #5a5a5a; }
+      .gogo-load-css #page-content.contributor-login .or-label:before {
+        right: 0.5em;
+        margin-left: -50%; }
+      .gogo-load-css #page-content.contributor-login .or-label:after {
+        left: 0.5em;
+        margin-right: -50%; }
+      .gogo-load-css #page-content.contributor-login .or-label:before, .gogo-load-css #page-content.contributor-login .or-label:after {
+        content: '';
+        position: relative;
+        width: 50%;
+        background-color: rgba(0, 0, 0, 0.2);
+        display: inline-block;
+        height: 1px;
+        vertical-align: middle; }
+  .gogo-load-css #page-content.element-form {
+    max-width: 700px !important;
+    background-color: transparent !important; }
+  .gogo-load-css #page-content.check-for-duplicates {
+    padding: 1rem 1rem 2rem 1rem; }
+    @media only screen and (min-width: 601px) {
+      .gogo-load-css #page-content.check-for-duplicates {
+        padding: 3rem; } }
+    .gogo-load-css #page-content.check-for-duplicates .duplicate-list {
+      margin: 2rem 0; }
+    .gogo-load-css #page-content.check-for-duplicates .element {
+      padding-bottom: 1rem;
+      border-bottom: 1px dashed grey;
+      line-height: 1.5rem; }
+      .gogo-load-css #page-content.check-for-duplicates .element .name {
+        font-weight: bold; }
+      .gogo-load-css #page-content.check-for-duplicates .element .description {
+        font-style: italic;
+        color: #5f5f5f; }
+  .gogo-load-css #page-content.register {
+    max-width: 600px !important;
+    background-color: transparent !important; }
+    @media only screen and (max-width: 600px) {
+      .gogo-load-css #page-content.register {
+        padding-top: 10px; } }
+    .gogo-load-css #page-content.register .form-actions {
+      text-align: center;
+      margin-top: 1rem;
+      height: 2rem; }
+      @media only screen and (min-width: 601px) {
+        .gogo-load-css #page-content.register .form-actions {
+          margin-top: 2rem; } }
+      .gogo-load-css #page-content.register .form-actions .btn {
+        width: 100%; }
+    .gogo-load-css #page-content.register h2.optional {
+      margin: 0; }
+  .gogo-load-css form.gogo_user_profile #input-range, .gogo-load-css form.fos_user_registration_register #input-range {
+    box-shadow: none !important;
+    border: 0 !important; }
+  .gogo-load-css form.gogo_user_profile .range-field, .gogo-load-css form.fos_user_registration_register .range-field {
+    margin-left: 3rem; }
+  .gogo-load-css form.gogo_user_profile .range-icon-prefix, .gogo-load-css form.fos_user_registration_register .range-icon-prefix {
+    float: left;
+    width: 3rem;
+    color: #707680;
+    font-size: 2rem;
+    font-size: 24px;
+    padding-left: 4px;
+    padding-top: 4px;
+    line-height: 3rem; }
+  .gogo-load-css form.gogo_user_profile .error ul, .gogo-load-css form.fos_user_registration_register .error ul {
+    margin-bottom: 20px;
+    margin-top: 0; }
+    .gogo-load-css form.gogo_user_profile .error ul li, .gogo-load-css form.fos_user_registration_register .error ul li {
+      margin-left: 3rem; }
+  .gogo-load-css form.gogo_user_profile .newsletter-explanation, .gogo-load-css form.fos_user_registration_register .newsletter-explanation {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-style: italic; }
+  .gogo-load-css form.gogo_user_profile #select-newsletterFrequency, .gogo-load-css form.fos_user_registration_register #select-newsletterFrequency {
+    padding-left: 3px; }
+    .gogo-load-css form.gogo_user_profile #select-newsletterFrequency label, .gogo-load-css form.fos_user_registration_register #select-newsletterFrequency label {
+      padding-left: 40px; }
+      .gogo-load-css form.gogo_user_profile #select-newsletterFrequency label:not(:last-child), .gogo-load-css form.fos_user_registration_register #select-newsletterFrequency label:not(:last-child) {
+        margin-right: 40px; }
+      @media only screen and (max-width: 600px) {
+        .gogo-load-css form.gogo_user_profile #select-newsletterFrequency label, .gogo-load-css form.fos_user_registration_register #select-newsletterFrequency label {
+          display: block;
+          margin-bottom: 15px; } }
+  .gogo-load-css form.gogo_user_profile .divider, .gogo-load-css form.fos_user_registration_register .divider {
+    border: none; }
+  .gogo-load-css form.gogo_user_profile h2, .gogo-load-css form.fos_user_registration_register h2 {
+    text-align: center !important; }
+  .gogo-load-css #page-content.error {
+    padding: 3rem;
+    text-align: center; }
+  .gogo-load-css body.directory {
+    height: 100% !important;
+    display: flex;
+    flex-direction: column; }
+  .gogo-load-css #page-container.directory {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    height: 5px;
+    width: 100%; }
+  .gogo-load-css #page-content.directory {
+    width: 100%;
+    margin: 0;
+    max-width: 100%;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -ms-flex-flow: column;
+    -webkit-flex-flow: column;
+    flex-flow: column; }
+    .gogo-load-css #page-content.directory section {
+      padding: 0;
+      margin: 0; }
+    .gogo-load-css #page-content.directory .flash-messages-container {
+      display: block;
+      margin: 0; }
+      .gogo-load-css #page-content.directory .flash-messages-container .flash-message {
+        padding: .5rem;
+        text-align: center;
+        margin-bottom: 0;
+        background-color: #4a7874;
+        color: #fff;
+        border-bottom: 2px solid #37504e;
+        border-radius: 0 !important; }
+        .gogo-load-css #page-content.directory .flash-messages-container .flash-message a.validation-process {
+          text-decoration: underline;
+          cursor: help;
+          color: #354254; }
+        .gogo-load-css #page-content.directory .flash-messages-container .flash-message .btn-close {
+          display: block;
+          top: .5rem;
+          color: white;
+          font-size: 20px;
+          margin: 0 1rem;
+          position: absolute;
+          right: 0; }
+          .gogo-load-css #page-content.directory .flash-messages-container .flash-message .btn-close:hover {
+            color: #de5a5f;
+            cursor: pointer; }
+  .gogo-load-css #directory-container {
+    height: 100%;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-flex: 1 auto;
+    -moz-box-flex: 1 auto;
+    -webkit-flex: 1 auto;
+    -ms-flex: 1 auto;
+    flex: 1 auto;
+    position: relative; }
+  .gogo-load-css #page-content.user-contributions h2 {
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem; }
+  .gogo-load-css #page-content.user-contributions th.action {
+    width: 7rem;
+    padding-left: 1.3rem; }
+  .gogo-load-css #page-content.user-contributions th.date {
+    width: 7rem; }
+  .gogo-load-css #page-content.user-contributions th.type {
+    width: 5rem; }
+  .gogo-load-css #page-content.user-contributions th.status {
+    width: 12rem; }
+  .gogo-load-css #page-content.user-contributions th.owner {
+    width: 7rem; }
+  .gogo-load-css #page-content.user-contributions th.small-status {
+    width: 7rem; }
+  .gogo-load-css #page-content.user-contributions th.vote {
+    width: 10rem; }
+  .gogo-load-css #page-content.user-contributions th.report {
+    width: 12rem; }
+  .gogo-load-css #page-content.user-contributions .empty-secton-message {
+    text-align: center; }
+  .gogo-load-css #page-content.user-contributions #become-owner-confirmation-modal .modal-footer {
+    padding: 4px 20px;
+    height: 60px; }
+  .gogo-load-css #menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    display: none;
+    background-color: rgba(0, 0, 0, 0.49); }
+  .gogo-load-css .menu-user-button {
+    font-size: 2rem;
+    line-height: 4.3rem;
+    float: left;
+    padding: 1rem; }
+    @media (min-width: 901px) {
+      .gogo-load-css .menu-user-button {
+        display: none; } }
+  .gogo-load-css .menu-user {
+    width: 200px;
+    z-index: 20;
+    position: fixed;
+    left: 20px;
+    top: calc(3.5rem + 30px); }
+    @media (min-width: 1400px) {
+      .gogo-load-css .menu-user {
+        position: absolute;
+        left: -215px;
+        top: 0; } }
+    @media (max-width: 900px) {
+      .gogo-load-css .menu-user {
+        display: none;
+        height: 100%;
+        left: 0;
+        top: 3rem; } }
+    @media (min-width: 901px) {
+      .gogo-load-css .menu-user {
+        display: block !important; } }
+    .gogo-load-css .menu-user ul {
+      margin: 0; }
+      .gogo-load-css .menu-user ul a {
+        color: inherit; }
+        @media (min-width: 901px) {
+          .gogo-load-css .menu-user ul a:last-child li {
+            border-radius: 0 0 5px 5px; } }
+      .gogo-load-css .menu-user ul li {
+        line-height: 3rem;
+        height: 3rem;
+        padding: 0 20px 0 13px;
+        overflow: hidden; }
+        .gogo-load-css .menu-user ul li.title {
+          font-size: 1.1rem;
+          font-weight: bold;
+          padding-left: 16px; }
+          @media (min-width: 901px) {
+            .gogo-load-css .menu-user ul li.title {
+              border-radius: 5px 5px 0 0; } }
+        .gogo-load-css .menu-user ul li.active {
+          text-decoration: underline; }
+        .gogo-load-css .menu-user ul li:hover:not(.title) {
+          cursor: pointer;
+          -webkit-transition: all 0.3s;
+          -moz-transition: all 0.3s;
+          -o-transition: all 0.3s;
+          -ms-transition: all 0.3s;
+          transition: all 0.3s; }
+        .gogo-load-css .menu-user ul li i {
+          line-height: 3.2rem;
+          font-size: 1.2rem;
+          opacity: .8;
+          margin-right: 1rem;
+          float: left; }
+  .gogo-load-css #page-content.user-profile .input-field .prefix ~ label {
+    margin-left: 2.2rem; }
+  .gogo-load-css #page-content.user-profile .separator {
+    padding-top: .8rem; }
+  .gogo-load-css #page-content.user-profile .newsletter-explanation {
+    margin-top: 40px;
+    margin-bottom: 30px; }
+  .gogo-load-css #page-content.user-profile button[type=submit] {
+    width: 100%;
+    margin-top: 2rem;
+    margin-bottom: .5rem; }
+  .gogo-load-css #page-content.user-profile #address-preview-map {
+    height: 13rem;
+    margin-top: 1.5rem;
+    border-radius: 5px;
+    z-index: 500; }
+  .gogo-load-css #page-content.user-profile a.leaflet-control-zoom-in {
+    font-size: 18px !important;
+    color: #3d3d3d; }
+  .gogo-load-css #page-content.user-profile a.leaflet-control-zoom-out {
+    font-size: 25px !important;
+    font-weight: normal;
+    color: #3d3d3d;
+    text-indent: 0; }
+  .gogo-load-css #page-content.user-space h1 {
+    padding-top: 2rem;
+    padding-bottom: 1rem; }
+  .gogo-load-css #page-content.user-space .menu-user {
+    position: relative;
+    margin: 0 auto;
+    top: 0;
+    left: 0;
+    display: block !important; }
+    .gogo-load-css #page-content.user-space .menu-user li.title {
+      display: none; }
+  .gogo-load-css #page-content.user-space .menu-user-button {
+    display: none !important; }
+  .gogo-load-css .wysiwyg-content ul li {
+    list-style-type: disc;
+    margin-left: 1.5rem; }
+  .gogo-load-css .wysiwyg-content strong {
+    font-weight: bold; }
+  .gogo-load-css .wysiwyg-content a {
+    font-style: normal;
+    text-decoration: none !important; }
+  .gogo-load-css input[type=range] {
+    height: 21px;
+    -webkit-appearance: none;
+    margin: 10px 0;
+    width: 100%; }
+    .gogo-load-css input[type=range] ~ .thumb {
+      display: none; }
+  .gogo-load-css input[type=range]:focus {
+    outline: none; }
+  .gogo-load-css input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 3px;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0px 0px 0px #000000;
+    background: #D3D4D2;
+    border-radius: 9px;
+    border: 0px solid #000000; }
+  .gogo-load-css input[type=range]::-webkit-slider-thumb {
+    box-shadow: 0px 0px 0px #000000;
+    border: 0px solid #2497E3;
+    height: 15px;
+    width: 15px;
+    border-radius: 50px;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -6px; }
+  .gogo-load-css input[type=range]:focus::-webkit-slider-runnable-track {
+    background: #D3D4D2; }
+  .gogo-load-css input[type=range]::-moz-range-track {
+    width: 100%;
+    height: 3px;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0px 0px 0px #000000;
+    background: #D3D4D2;
+    border-radius: 9px;
+    border: 0px solid #000000; }
+  .gogo-load-css input[type=range]::-moz-range-thumb {
+    box-shadow: 0px 0px 0px #000000;
+    border: 0px solid #2497E3;
+    height: 15px;
+    width: 15px;
+    border-radius: 50px;
+    cursor: pointer; }
+  .gogo-load-css input[type=range]::-ms-track {
+    width: 100%;
+    height: 3px;
+    cursor: pointer;
+    transition: 0.2s;
+    background: transparent;
+    border-color: transparent;
+    color: transparent; }
+  .gogo-load-css input[type=range]::-ms-fill-lower {
+    background: #D3D4D2;
+    border: 0px solid #000000;
+    border-radius: 18px;
+    box-shadow: 0px 0px 0px #000000; }
+  .gogo-load-css input[type=range]::-ms-fill-upper {
+    background: #D3D4D2;
+    border: 0px solid #000000;
+    border-radius: 18px;
+    box-shadow: 0px 0px 0px #000000; }
+  .gogo-load-css input[type=range]::-ms-thumb {
+    margin-top: 1px;
+    box-shadow: 0px 0px 0px #000000;
+    border: 0px solid #2497E3;
+    height: 15px;
+    width: 15px;
+    border-radius: 50px;
+    cursor: pointer; }
+  .gogo-load-css input[type=range]:focus::-ms-fill-lower {
+    background: #D3D4D2; }
+  .gogo-load-css input[type=range]:focus::-ms-fill-upper {
+    background: #D3D4D2; }
+  .gogo-load-css header {
+    width: 100%;
+    top: 0;
+    z-index: 1000; }
+  @media only screen and (min-width: 900px) and (max-width: 1400px) {
+    .gogo-load-css #page-container.with-sidebar {
+      padding-left: 215px; } }
+  .gogo-load-css #page-content {
+    position: relative;
+    margin-top: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    padding: 0rem; }
+    @media screen and (min-width: 900px) {
+      .gogo-load-css #page-content {
+        margin-top: 30px;
+        max-width: 900px;
+        width: 80%; } }
+    @media only screen and (min-width: 900px) and (max-width: 1400px) {
+      .gogo-load-css #page-content.with-sidebar {
+        width: auto;
+        margin: 0 20px;
+        margin-top: 30px; } }
+  .gogo-load-css section {
+    padding: 1rem;
+    background-color: transparent; }
+    @media screen and (min-width: 600px) {
+      .gogo-load-css section {
+        padding: 2rem 3.5rem 2rem 2.5rem;
+        margin-bottom: 1rem; } }
+  .gogo-load-css #page-content.with-section {
+    background-color: transparent; }
+    .gogo-load-css #page-content.with-section section {
+      border-radius: 5px; }
+  .gogo-load-css .divider {
+    overflow: hidden;
+    border-bottom: 2px dashed;
+    overflow: hidden;
+    background-color: transparent;
+    margin-bottom: 1rem; }
+    @media screen and (min-width: 600px) {
+      .gogo-load-css .divider {
+        display: none; } }
+  .gogo-load-css h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    padding-top: .5rem;
+    margin-top: 0; }
+    @media screen and (min-width: 600px) {
+      .gogo-load-css h1 {
+        font-size: 3.5rem; } }
+  .gogo-load-css h2 {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin: 0.5rem 0 1.3rem 0;
+    text-align: center; }
+  .gogo-load-css h2.error, .gogo-load-css h1.error {
+    font-weight: normal; }
+  .gogo-load-css h2.no-margin-bottom {
+    margin-bottom: 0; }
+  .gogo-load-css .btn-gogo {
+    height: auto; }
+    .gogo-load-css .btn-gogo.small {
+      font-size: .85rem;
+      line-height: 2rem;
+      height: 2rem;
+      padding: 0 15px; }

@@ -1,0 +1,77 @@
+.gogo-load-css #page-content.duplicates {
+  background-color: transparent;
+  max-width: 1400px;
+  width: 100%; }
+  .gogo-load-css #page-content.duplicates a {
+    color: #636363; }
+  .gogo-load-css #page-content.duplicates a:hover {
+    color: black;
+    cursor: pointer; }
+  .gogo-load-css #page-content.duplicates .explanations {
+    font-style: italic;
+    text-align: center; }
+  .gogo-load-css #page-content.duplicates .duplicate-node {
+    display: flex;
+    flex-direction: row;
+    margin: 2rem 0; }
+    .gogo-load-css #page-content.duplicates .duplicate-node button.btn {
+      height: 2rem;
+      padding: 0 10px;
+      margin-left: 10px;
+      font-size: .9rem;
+      font-weight: bold;
+      line-height: 2rem;
+      box-shadow: none; }
+      .gogo-load-css #page-content.duplicates .duplicate-node button.btn.btn-merge {
+        background-color: rgba(76, 175, 80, 0.88); }
+      .gogo-load-css #page-content.duplicates .duplicate-node button.btn.btn-non-duplicates {
+        background-color: rgba(244, 67, 54, 0.78); }
+      .gogo-load-css #page-content.duplicates .duplicate-node button.btn.action-done {
+        background-color: #607D8B; }
+    .gogo-load-css #page-content.duplicates .duplicate-node .group-actions {
+      display: flex;
+      min-width: 150px;
+      flex-direction: column;
+      padding-right: 1rem;
+      justify-content: center; }
+      .gogo-load-css #page-content.duplicates .duplicate-node .group-actions .btn {
+        margin-bottom: 5px; }
+    .gogo-load-css #page-content.duplicates .duplicate-node .duplicates {
+      flex: 1 auto; }
+      .gogo-load-css #page-content.duplicates .duplicate-node .duplicates ul {
+        border-left: 5px solid grey;
+        margin: 0; }
+        .gogo-load-css #page-content.duplicates .duplicate-node .duplicates ul .collapsible-header {
+          line-height: 2rem;
+          padding: .5rem 1rem; }
+          .gogo-load-css #page-content.duplicates .duplicate-node .duplicates ul .collapsible-header .name {
+            font-weight: bold; }
+          .gogo-load-css #page-content.duplicates .duplicate-node .duplicates ul .collapsible-header .updated-at {
+            font-style: italic;
+            opacity: .7; }
+          .gogo-load-css #page-content.duplicates .duplicate-node .duplicates ul .collapsible-header .actions {
+            float: right;
+            padding-top: 3px; }
+          .gogo-load-css #page-content.duplicates .duplicate-node .duplicates ul .collapsible-header .btn-edit {
+            font-size: 1.3rem;
+            margin-left: 10px;
+            padding-top: 2px;
+            margin-right: 5px;
+            height: 2rem;
+            float: left; }
+          .gogo-load-css #page-content.duplicates .duplicate-node .duplicates ul .collapsible-header .description {
+            line-height: 1.5rem;
+            opacity: .8; }
+          .gogo-load-css #page-content.duplicates .duplicate-node .duplicates ul .collapsible-header .options {
+            font-weight: bold;
+            opacity: .7;
+            font-style: italic; }
+        .gogo-load-css #page-content.duplicates .duplicate-node .duplicates ul .collapsible-body {
+          padding: 1rem;
+          padding-bottom: 0; }
+          .gogo-load-css #page-content.duplicates .duplicate-node .duplicates ul .collapsible-body .key {
+            font-weight: bold; }
+          .gogo-load-css #page-content.duplicates .duplicate-node .duplicates ul .collapsible-body .value {
+            opacity: .7; }
+          .gogo-load-css #page-content.duplicates .duplicate-node .duplicates ul .collapsible-body div {
+            margin-bottom: 1rem; }

@@ -1,0 +1,123 @@
+/*
+* @Author: Sebastian Castro
+* @Date:   2017-05-11 11:26:03
+* @Last Modified by:   Sebastian Castro
+* @Last Modified time: 2018-01-06 17:30:46
+*/
+.interactive-section
+{
+	padding: 0 1rem 0 .8rem;
+	@media #{$medium-and-up} { padding: 0 1rem 0 1.6rem; }
+	position: relative;
+	line-height: 3rem;
+
+  & > div { position: relative; }
+
+	.result-message
+	{
+		text-align: center;
+	  font-weight: bold;
+	  color: white;
+	  line-height: 1.7rem;
+    padding: .6rem 0;
+	}
+}
+
+#directory-content-list
+{
+	.interactive-section
+	{
+		display:none;
+	}
+
+	.element-item.active
+	{
+		.interactive-section { display: block;}
+	}
+}
+
+.vote-section, .moderation-section
+{
+	.gogo-icon-attention, .gogo-icon-moderation
+	{
+		color: white;
+		font-size: 20px;
+		padding-top: 3px;
+		position: absolute;
+	}
+
+  @media #{$small-only} {
+    .gogo-icon-attention { display:none; }
+    .pending-text { margin-left : 0 !important; }    
+  } 
+
+  @media (max-width: 460px) {
+    .long-text { display: none }
+  } 
+
+  @media (max-width: 360px) {
+    .pending-text { opacity: 0 }
+  } 
+
+	.text { 
+    margin-left : 2.2rem; 
+    color: white;
+  }	
+
+	.btn-vote-more-info
+	{
+    line-height: 1.2rem;
+    position: absolute;
+    top: 14px;
+    right: 90px;
+    padding: 0;
+    font-size: .85rem;
+    color: white;
+	}
+
+	.action-btn
+	{ 
+		position: absolute; 
+		right: 0;
+		top: 8px;
+		margin: 0;
+    background-color: #dedede;
+    color: #272626;
+    font-size: .85rem;
+	}
+
+  .moderation-input-comment {
+    color:white;
+    border-color: #cccccc !important;
+    height: 2.2rem;
+    &::-webkit-input-placeholder { 
+    color: #cccccc;
+    }
+    &::-moz-placeholder { 
+      color: #cccccc;
+    }
+    &:-ms-input-placeholder { 
+      color: #cccccc;
+    }
+    &:-moz-placeholder { 
+      color: #cccccc;
+    }
+  }
+}
+
+.validation-process-info
+{
+  //text-decoration: underline;
+  &:hover
+  {
+      cursor: help;
+      border-bottom: 1px dashed;
+      border-color: inherit;
+      text-decoration: none;
+  }
+}
+
+#element-info-bar.small-width 
+{
+  .btn-vote-more-info { display:none; }
+}

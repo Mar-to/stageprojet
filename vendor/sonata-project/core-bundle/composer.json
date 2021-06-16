@@ -1,0 +1,86 @@
+{
+    "name": "sonata-project/core-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony SonataCoreBundle (abandoned)",
+    "keywords": [
+        "sonata"
+    ],
+    "homepage": "https://sonata-project.org/bundles/core",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Thomas Rabaix",
+            "email": "thomas.rabaix@sonata-project.org"
+        },
+        {
+            "name": "Sonata Community",
+            "homepage": "https://github.com/sonata-project/SonataCoreBundle/contributors"
+        }
+    ],
+    "require": {
+        "php": "^7.2",
+        "cocur/slugify": "^3.0 || ^4.0",
+        "sonata-project/doctrine-extensions": "^1.5",
+        "symfony/config": "^4.3",
+        "symfony/dependency-injection": "^4.3",
+        "symfony/event-dispatcher": "^4.3",
+        "symfony/form": "^4.3",
+        "symfony/framework-bundle": "^4.3",
+        "symfony/http-foundation": "^4.3",
+        "symfony/http-kernel": "^4.3",
+        "symfony/options-resolver": "^4.3",
+        "symfony/property-access": "^4.3",
+        "symfony/security-csrf": "^4.3",
+        "symfony/translation": "^4.3",
+        "symfony/twig-bridge": "^4.3",
+        "symfony/validator": "^4.3",
+        "twig/extensions": "^1.5",
+        "twig/twig": "^2.12.1"
+    },
+    "conflict": {
+        "sonata-project/exporter": "< 1.11"
+    },
+    "require-dev": {
+        "doctrine/orm": "^2.4",
+        "doctrine/phpcr-odm": "^1.0",
+        "jackalope/jackalope-doctrine-dbal": "^1.0",
+        "jms/serializer-bundle": "^2.0",
+        "matthiasnoback/symfony-config-test": "^4.2",
+        "matthiasnoback/symfony-dependency-injection-test": "^4.1",
+        "nelmio/api-doc-bundle": "^2.11",
+        "phpspec/prophecy": "^1.10.3",
+        "sonata-project/exporter": "^1.11 || ^2.0",
+        "symfony/browser-kit": "^3.4 || ^4.3 || ^5.0",
+        "symfony/phpunit-bridge": "^5.0"
+    },
+    "suggest": {
+        "sonata-project/doctrine-extensions": "Direct replacement for Doctrine behavioral extensions",
+        "sonata-project/form-extensions": "Direct replacement for Symfony form extensions",
+        "sonata-project/twig-extensions": "Direct replacement for Twig Extensions"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.x-dev"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Sonata\\CoreBundle\\": "src/CoreBundle/",
+            "Sonata\\Form\\": "src/Form/",
+            "Sonata\\Serializer\\": "src/Serializer/",
+            "Sonata\\Twig\\": "src/Twig/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sonata\\CoreBundle\\Tests\\": "tests/CoreBundle/",
+            "Sonata\\Form\\Tests\\": "tests/Form/",
+            "Sonata\\Serializer\\Tests\\": "tests/Serializer/",
+            "Sonata\\Twig\\Tests\\": "tests/Twig/"
+        }
+    },
+    "abandoned": true
+}
